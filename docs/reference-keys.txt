@@ -29,3 +29,16 @@ evaluation-and-interpretation
 theoretical-properties-of-value-iteration
 summary-table-1
 conclusion-1
+model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r
+introduction-2
+theoretical-background
+temporal-difference-learning-q-learning
+monte-carlo-methods
+step-1-defining-the-environment-in-r
+step-2-q-learning-implementation-in-r
+step-3-monte-carlo-every-visit-implementation
+step-4-simulating-outcome-devaluation
+step-5-comparing-policies-before-and-after-devaluation
+step-6-visualizing-the-policies
+interpretation-and-discussion
+conclusion-2

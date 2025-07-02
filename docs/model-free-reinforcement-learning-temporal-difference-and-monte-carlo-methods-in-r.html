@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-07-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="markov-decision-processes-and-dynamic-programming.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.3</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.4</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.5</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-2" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Introduction<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In many real-world decision-making problems, the environment model—comprising transition probabilities and reward functions—is unknown or too complex to specify explicitly. Model-free reinforcement learning (RL) methods address this by learning optimal policies directly from experience or sample trajectories, without requiring full knowledge of the underlying Markov Decision Process (MDP).</p>
+<p>Two foundational model-free methods are <strong>Temporal Difference (TD) learning</strong> and <strong>Monte Carlo (MC) methods</strong>. TD learning updates value estimates online based on one-step lookahead and bootstrapping, while MC methods learn from complete episodes by averaging returns. This post presents these approaches with mathematical intuition, R implementations, and an illustrative environment. We also compare how learned policies adapt—or fail to adapt—when rewards are changed after training, illuminating the distinction between goal-directed and habitual learning.</p>
+</div>
+<div id="theoretical-background" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Theoretical Background<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Suppose an agent interacts with an environment defined by states <span class="math inline">\(S\)</span>, actions <span class="math inline">\(A\)</span>, a discount factor <span class="math inline">\(\gamma \in [0,1]\)</span>, and an unknown MDP dynamics. The goal is to learn the action-value function <span class="math inline">\(Q^\pi(s,a)\)</span>, the expected discounted return starting from state <span class="math inline">\(s\)</span>, taking action <span class="math inline">\(a\)</span>, and following policy <span class="math inline">\(\pi\)</span> thereafter:</p>
+<p><span class="math display">\[
+Q^\pi(s,a) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty \gamma^t R_{t+1} \mid S_0 = s, A_0 = a \right]
+\]</span></p>
+<div id="temporal-difference-learning-q-learning" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Temporal Difference Learning (Q-Learning)<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Q-Learning is an off-policy TD control method that updates the estimate <span class="math inline">\(Q(s,a)\)</span> incrementally after each transition:</p>
+<p><span class="math display">\[
+Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right)
+\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the learning rate, <span class="math inline">\(r\)</span> the reward received, and <span class="math inline">\(s&#39;\)</span> the next state. This update uses the current estimate of <span class="math inline">\(Q\)</span> at <span class="math inline">\(s&#39;\)</span> (bootstrapping).</p>
+</div>
+<div id="monte-carlo-methods" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Monte Carlo Methods<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Monte Carlo methods learn <span class="math inline">\(Q\)</span> by averaging returns observed after visiting <span class="math inline">\((s,a)\)</span>. Every-visit MC estimates <span class="math inline">\(Q\)</span> by averaging the total discounted return <span class="math inline">\(G_t\)</span> following each occurrence of <span class="math inline">\((s,a)\)</span> within complete episodes:</p>
+<p><span class="math display">\[
+Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}
+\]</span></p>
+<p>where <span class="math inline">\(N(s,a)\)</span> is the count of visits to <span class="math inline">\((s,a)\)</span> and <span class="math inline">\(G_t^{(i)}\)</span> is the return following the <span class="math inline">\(i\)</span>-th visit.</p>
+</div>
+<div id="step-1-defining-the-environment-in-r" class="section level3 hasAnchor" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Step 1: Defining the Environment in R<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We use a 10-state, 2-action environment with stochastic transitions and rewards, as in previous work:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
+<span id="cb9-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb9-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb9-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb9-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb9-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-6" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-7" tabindex="-1"></a><span class="co"># Environment: transition + reward models</span></span>
+<span id="cb9-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb9-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb9-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb9-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb9-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb9-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb9-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-15" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb9-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-17" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb9-18"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-18" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-19" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb9-20"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-20" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb9-21"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-21" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb9-22"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-22" tabindex="-1"></a>  }</span>
+<span id="cb9-23"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-23" tabindex="-1"></a>}</span>
+<span id="cb9-24"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-24" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-25" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb9-26"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-26" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb9-27"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-27" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-28" tabindex="-1"></a><span class="co"># Sampling function</span></span>
+<span id="cb9-29"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-29" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb9-30"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-30" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb9-31"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-31" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb9-32"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-32" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb9-33"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-33" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb9-34"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-34" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="step-2-q-learning-implementation-in-r" class="section level3 hasAnchor" number="4.2.4">
+<h3><span class="header-section-number">4.2.4</span> Step 2: Q-Learning Implementation in R<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The Q-Learning function runs episodes, selects actions using <span class="math inline">\(\epsilon\)</span>-greedy policy, updates Q-values using the TD rule, and outputs a policy by greedy action selection:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-1" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb10-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-2" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb10-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-3" tabindex="-1"></a>  </span>
+<span id="cb10-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-4" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb10-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-5" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb10-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-6" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
+<span id="cb10-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-7" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
+<span id="cb10-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-8" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb10-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-9" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb10-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-10" tabindex="-1"></a>      reward <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb10-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-11" tabindex="-1"></a>      </span>
+<span id="cb10-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-12" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb10-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-13" tabindex="-1"></a>      </span>
+<span id="cb10-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-14" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> n_states) <span class="cf">break</span></span>
+<span id="cb10-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-15" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb10-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-16" tabindex="-1"></a>    }</span>
+<span id="cb10-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-17" tabindex="-1"></a>  }</span>
+<span id="cb10-18"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-18" tabindex="-1"></a>  <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max)</span>
+<span id="cb10-19"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-19" tabindex="-1"></a>}</span></code></pre></div>
+<p>Running this yields the learned policy:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb11-1" tabindex="-1"></a>ql_policy_before <span class="ot">&lt;-</span> <span class="fu">q_learning</span>()</span></code></pre></div>
+</div>
+<div id="step-3-monte-carlo-every-visit-implementation" class="section level3 hasAnchor" number="4.2.5">
+<h3><span class="header-section-number">4.2.5</span> Step 3: Monte Carlo Every-Visit Implementation<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>This MC method generates episodes, stores the full sequence of state-action-reward tuples, and updates <span class="math inline">\(Q\)</span> by averaging discounted returns for every visit of <span class="math inline">\((s,a)\)</span>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-1" tabindex="-1"></a>monte_carlo <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb12-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-2" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb12-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-3" tabindex="-1"></a>  returns <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">&quot;list&quot;</span>, n_states <span class="sc">*</span> n_actions)</span>
+<span id="cb12-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-4" tabindex="-1"></a>  <span class="fu">names</span>(returns) <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="at">each =</span> n_actions), <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, n_states), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb12-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-5" tabindex="-1"></a>  </span>
+<span id="cb12-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-6" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb12-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-7" tabindex="-1"></a>    episode <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb12-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-8" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb12-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-9" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
+<span id="cb12-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-10" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
+<span id="cb12-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-11" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb12-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-12" tabindex="-1"></a>      episode[[<span class="fu">length</span>(episode) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">state =</span> s, <span class="at">action =</span> a, <span class="at">reward =</span> out<span class="sc">$</span>reward)</span>
+<span id="cb12-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-13" tabindex="-1"></a>      <span class="cf">if</span> (out<span class="sc">$</span>s_prime <span class="sc">==</span> n_states) <span class="cf">break</span></span>
+<span id="cb12-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-14" tabindex="-1"></a>      s <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb12-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-15" tabindex="-1"></a>    }</span>
+<span id="cb12-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-16" tabindex="-1"></a>    </span>
+<span id="cb12-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-17" tabindex="-1"></a>    G <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb12-18"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-18" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="fu">length</span>(episode)<span class="sc">:</span><span class="dv">1</span>) {</span>
+<span id="cb12-19"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-19" tabindex="-1"></a>      s <span class="ot">&lt;-</span> episode[[t]]<span class="sc">$</span>state</span>
+<span id="cb12-20"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-20" tabindex="-1"></a>      a <span class="ot">&lt;-</span> episode[[t]]<span class="sc">$</span>action</span>
+<span id="cb12-21"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-21" tabindex="-1"></a>      r <span class="ot">&lt;-</span> episode[[t]]<span class="sc">$</span>reward</span>
+<span id="cb12-22"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-22" tabindex="-1"></a>      G <span class="ot">&lt;-</span> gamma <span class="sc">*</span> G <span class="sc">+</span> r</span>
+<span id="cb12-23"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-23" tabindex="-1"></a>      key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb12-24"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-24" tabindex="-1"></a>      returns[[key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(returns[[key]], G)</span>
+<span id="cb12-25"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-25" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> <span class="fu">mean</span>(returns[[key]])</span>
+<span id="cb12-26"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-26" tabindex="-1"></a>    }</span>
+<span id="cb12-27"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-27" tabindex="-1"></a>  }</span>
+<span id="cb12-28"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-28" tabindex="-1"></a>  <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max)</span>
+<span id="cb12-29"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-29" tabindex="-1"></a>}</span></code></pre></div>
+<p>The resulting policy is computed by:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb13-1" tabindex="-1"></a>mc_policy_before <span class="ot">&lt;-</span> <span class="fu">monte_carlo</span>()</span></code></pre></div>
+</div>
+<div id="step-4-simulating-outcome-devaluation" class="section level3 hasAnchor" number="4.2.6">
+<h3><span class="header-section-number">4.2.6</span> Step 4: Simulating Outcome Devaluation<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We now alter the environment by removing the reward for reaching the terminal state, simulating a devaluation:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-1" tabindex="-1"></a><span class="co"># Devalue terminal reward</span></span>
+<span id="cb14-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-2" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb14-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-3" tabindex="-1"></a>  reward_model[s, <span class="dv">1</span>, n_states] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-4" tabindex="-1"></a>  reward_model[s, <span class="dv">2</span>, n_states] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb14-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-5" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="step-5-comparing-policies-before-and-after-devaluation" class="section level3 hasAnchor" number="4.2.7">
+<h3><span class="header-section-number">4.2.7</span> Step 5: Comparing Policies Before and After Devaluation<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We compare policies derived via:</p>
+<ul>
+<li><strong>Dynamic Programming (DP)</strong> which has full model knowledge and updates instantly after reward changes,</li>
+<li><strong>Q-Learning</strong> and <strong>Monte Carlo</strong> which keep their previously learned policies (habitual behavior without retraining).</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-1" tabindex="-1"></a><span class="co"># DP recomputes policy based on updated reward model</span></span>
+<span id="cb15-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-2" tabindex="-1"></a>dp_policy_after <span class="ot">&lt;-</span> <span class="fu">value_iteration</span>()<span class="sc">$</span>policy</span>
+<span id="cb15-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-3" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-4" tabindex="-1"></a><span class="co"># Q-learning and MC keep previous policy (habitual)</span></span>
+<span id="cb15-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-5" tabindex="-1"></a>ql_policy_after <span class="ot">&lt;-</span> ql_policy_before</span>
+<span id="cb15-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-6" tabindex="-1"></a>mc_policy_after <span class="ot">&lt;-</span> mc_policy_before</span></code></pre></div>
+</div>
+<div id="step-6-visualizing-the-policies" class="section level3 hasAnchor" number="4.2.8">
+<h3><span class="header-section-number">4.2.8</span> Step 6: Visualizing the Policies<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-1" tabindex="-1"></a>plot_policy <span class="ot">&lt;-</span> <span class="cf">function</span>(policy, label, <span class="at">col =</span> <span class="st">&quot;skyblue&quot;</span>) {</span>
+<span id="cb16-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-2" tabindex="-1"></a>  <span class="fu">barplot</span>(policy, <span class="at">names.arg =</span> <span class="dv">1</span><span class="sc">:</span>n_states, <span class="at">col =</span> col,</span>
+<span id="cb16-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-3" tabindex="-1"></a>          <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>), <span class="at">ylab =</span> <span class="st">&quot;Action (1=A1, 2=A2)&quot;</span>,</span>
+<span id="cb16-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-4" tabindex="-1"></a>          <span class="at">main =</span> label)</span>
+<span id="cb16-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-5" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h =</span> <span class="fl">1.5</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;gray&quot;</span>)</span>
+<span id="cb16-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-6" tabindex="-1"></a>}</span>
+<span id="cb16-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-7" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-8" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>))</span>
+<span id="cb16-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-9" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-10" tabindex="-1"></a><span class="fu">plot_policy</span>(dp_policy_before, <span class="st">&quot;DP Policy Before&quot;</span>)</span>
+<span id="cb16-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-11" tabindex="-1"></a><span class="fu">plot_policy</span>(dp_policy_after,  <span class="st">&quot;DP Policy After&quot;</span>, <span class="st">&quot;lightgreen&quot;</span>)</span>
+<span id="cb16-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-12" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-13" tabindex="-1"></a><span class="fu">plot_policy</span>(ql_policy_before, <span class="st">&quot;Q-Learning Policy Before&quot;</span>)</span>
+<span id="cb16-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-14" tabindex="-1"></a><span class="fu">plot_policy</span>(ql_policy_after,  <span class="st">&quot;Q-Learning Policy After&quot;</span>, <span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb16-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-15" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-16" tabindex="-1"></a><span class="fu">plot_policy</span>(mc_policy_before, <span class="st">&quot;MC Policy Before&quot;</span>)</span>
+<span id="cb16-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-17" tabindex="-1"></a><span class="fu">plot_policy</span>(mc_policy_after,  <span class="st">&quot;MC Policy After&quot;</span>, <span class="st">&quot;orchid&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="interpretation-and-discussion" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Interpretation and Discussion<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dynamic Programming adapts immediately after devaluation because it recalculates the policy using the updated reward model. In contrast, Q-Learning and Monte Carlo methods, which are model-free and learn from past experience, maintain their prior policies unless explicitly retrained. This reflects <strong>habitual behavior</strong> — a policy learned from experience that does not flexibly adjust to changed outcomes without further learning.</p>
+<p>This illustrates a core difference:</p>
+<ul>
+<li><p><strong>Model-based methods</strong> (like DP) support goal-directed behavior, recomputing optimal decisions as the environment changes.</p></li>
+<li><p><strong>Model-free methods</strong> (like Q-Learning and MC) support habitual behavior, relying on cached values learned from past rewards.</p></li>
+</ul>
+</div>
+<div id="conclusion-2" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Conclusion<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Temporal Difference and Monte Carlo methods provide powerful approaches to reinforcement learning when the environment is unknown. TD learning’s bootstrapping allows online updates after each transition, while Monte Carlo averages full returns after complete episodes. Both learn policies from experience rather than models. Future posts will explore extensions including function approximation and policy gradient methods.</p>
+<table>
+<colgroup>
+<col width="15%" />
+<col width="42%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Aspect</strong></th>
+<th><strong>Monte Carlo (MC)</strong></th>
+<th><strong>Temporal Difference (Q-Learning)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Approach</strong></td>
+<td>Learns from complete episodes by averaging returns after each episode.</td>
+<td>Learns incrementally after each state-action transition using bootstrapping.</td>
+</tr>
+<tr class="even">
+<td><strong>Update Rule</strong></td>
+<td>Updates Q-value as the mean of observed returns: <br> <span class="math inline">\(Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}\)</span></td>
+<td>Updates Q-value using TD error: <br> <span class="math inline">\(Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right)\)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Episode Requirement</strong></td>
+<td>Requires complete episodes to compute returns (<span class="math inline">\(G_t\)</span>).</td>
+<td>Does not require complete episodes; updates online after each step.</td>
+</tr>
+<tr class="even">
+<td><strong>Bias and Variance</strong></td>
+<td>Unbiased estimate of Q-value, but high variance due to full episode returns.</td>
+<td>Biased due to bootstrapping (relies on current Q estimates), but lower variance.</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy Type</strong></td>
+<td>Typically on-policy (e.g., with ε-greedy exploration), but can be adapted for off-policy.</td>
+<td>Off-policy; learns optimal policy regardless of exploration policy.</td>
+</tr>
+<tr class="even">
+<td><strong>Computational Efficiency</strong></td>
+<td>Less efficient; must wait for episode completion before updating.</td>
+<td>More efficient; updates Q-values immediately after each transition.</td>
+</tr>
+<tr class="odd">
+<td><strong>Adaptation to Change</strong></td>
+<td>Slow to adapt to environment changes without retraining, as it relies on past episode returns.</td>
+<td>Slow to adapt without retraining, but incremental updates allow faster response to changes.</td>
+</tr>
+<tr class="even">
+<td><strong>Implementation in Code</strong></td>
+<td>Stores state-action-reward sequences, computes discounted returns backward.</td>
+<td>Updates Q-values online using immediate reward and next state’s Q-value.</td>
+</tr>
+<tr class="odd">
+<td><strong>Example in Provided Code</strong></td>
+<td>Every-visit MC: averages returns for each <span class="math inline">\((s,a)\)</span> visit in an episode.</td>
+<td>Q-Learning: updates Q-values after each transition using TD rule.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="markov-decision-processes-and-dynamic-programming.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/04-MCTD.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/04-MCTD.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
