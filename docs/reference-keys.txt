@@ -42,3 +42,16 @@ step-5-comparing-policies-before-and-after-devaluation
 step-6-visualizing-the-policies
 interpretation-and-discussion
 conclusion-2
+on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r
+introduction-3
+sarsa-on-policy
+q-learning-off-policy
+off-policy-monte-carlo-with-importance-sampling
+key-differences
+interpretation-and-discussion-1
+policy-differences
+devaluation
+practical-implications
+experimental-observations
+conclusion-3
+comparison-table

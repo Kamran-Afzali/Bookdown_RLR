@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 5 On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-07-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.3</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.4</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.5</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-3" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Introduction<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In model-free reinforcement learning (RL), agents learn optimal policies directly from experience without a model of the environment’s dynamics. Two key approaches are on-policy and off-policy methods, exemplified by SARSA (State-Action-Reward-State-Action) and Q-Learning, respectively. Additionally, off-policy Monte Carlo methods leverage importance sampling to learn optimal policies from exploratory data. This post explores these methods, focusing on their theoretical foundations, practical implications, and implementation in R. We use a 10-state, 2-action environment to compare how SARSA, Q-Learning, and off-policy Monte Carlo learn policies and adapt to environmental changes, such as outcome devaluation. Mathematical formulations and R code are provided to illustrate the concepts. SARSA, Q-Learning, and off-policy Monte Carlo aim to estimate the action-value function <span class="math inline">\(Q^\pi(s,a)\)</span>, the expected discounted return for taking action <span class="math inline">\(a\)</span> in state <span class="math inline">\(s\)</span> and following policy <span class="math inline">\(\pi\)</span>:</p>
+<p><span class="math display">\[
+Q^\pi(s,a) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty \gamma^t R_{t+1} \mid S_0 = s, A_0 = a \right]
+\]</span></p>
+<p>where <span class="math inline">\(\gamma \in [0,1]\)</span> is the discount factor, and <span class="math inline">\(R_{t+1}\)</span> is the reward at time <span class="math inline">\(t+1\)</span>.</p>
+</div>
+<div id="sarsa-on-policy" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> SARSA (On-Policy)<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>SARSA is an on-policy method, meaning it learns the value of the policy being followed, including exploration. The update rule is:</p>
+<p><span class="math display">\[
+Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma Q(s&#39;, a&#39;) - Q(s,a) \right)
+\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the learning rate, <span class="math inline">\(r\)</span> is the reward, <span class="math inline">\(s&#39;\)</span> is the next state, and <span class="math inline">\(a&#39;\)</span> is the action actually taken in <span class="math inline">\(s&#39;\)</span> according to the current policy (e.g., <span class="math inline">\(\epsilon\)</span>-greedy). SARSA updates <span class="math inline">\(Q\)</span> based on the next state-action pair <span class="math inline">\((s&#39;, a&#39;)\)</span>, making it sensitive to the exploration policy. In the 10-state environment, SARSA learns a policy that accounts for exploratory actions, potentially avoiding risky moves that lead to lower rewards.</p>
+</div>
+<div id="q-learning-off-policy" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Q-Learning (Off-Policy)<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Q-Learning is an off-policy method, meaning it learns the optimal policy <span class="math inline">\(\pi^*\)</span> regardless of the exploration policy (e.g., <span class="math inline">\(\epsilon\)</span>-greedy). The update rule is:</p>
+<p><span class="math display">\[
+Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right)
+\]</span></p>
+<p>where <span class="math inline">\(\max_{a&#39;} Q(s&#39;, a&#39;)\)</span> estimates the value of the next state assuming the optimal action. This bootstrapping makes Q-Learning converge to the optimal action-value function <span class="math inline">\(Q^*(s,a)\)</span>. In the 10-state environment, Q-Learning favors actions that maximize future rewards (e.g., action 1 in state 9, yielding a 1.0 reward at the terminal state), ignoring exploration effects.</p>
+</div>
+<div id="off-policy-monte-carlo-with-importance-sampling" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Off-Policy Monte Carlo with Importance Sampling<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Off-policy Monte Carlo uses importance sampling to learn the value of a target policy (e.g., greedy) from episodes generated by a behavior policy (e.g., random). The return <span class="math inline">\(G_t\)</span> (cumulative discounted reward from time <span class="math inline">\(t\)</span> onward) is weighted by the importance sampling ratio:</p>
+<p><span class="math display">\[
+\rho_t = \prod_{k=t}^T \frac{\pi(a_k|s_k)}{\mu(a_k|s_k)}
+\]</span></p>
+<p>where <span class="math inline">\(\pi\)</span> is the target policy, <span class="math inline">\(\mu\)</span> is the behavior policy, and <span class="math inline">\(T\)</span> is the episode length. The Q-value update is:</p>
+<p><span class="math display">\[
+Q(s,a) \leftarrow Q(s,a) + \alpha \left( \rho_t G_t - Q(s,a) \right)
+\]</span></p>
+<p><strong>Importance Sampling Mechanics</strong>: In the 10-state environment, suppose the behavior policy is random (0.5 probability for actions 1 and 2), but the target policy is greedy (choosing the action with the highest Q-value). If the agent in state 9 takes action 2 (reward 0.5 at the terminal state), but the greedy policy prefers action 1 (reward 1.0), the importance sampling ratio <span class="math inline">\(\rho_t\)</span> is low (e.g., 0 if the greedy policy assigns zero probability to action 2), reducing the update’s impact. This allows learning the optimal policy from exploratory trajectories, but high variance can occur if the policies diverge significantly. Weighted importance sampling (as in the code below) normalizes weights to reduce variance, and early termination (stopping when <span class="math inline">\(\rho_t = 0\)</span>) improves efficiency.</p>
+</div>
+<div id="key-differences" class="section level2 hasAnchor" number="5.5">
+<h2><span class="header-section-number">5.5</span> Key Differences<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="10%" />
+<col width="23%" />
+<col width="23%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Aspect</strong></th>
+<th><strong>SARSA (On-Policy)</strong></th>
+<th><strong>Q-Learning (Off-Policy)</strong></th>
+<th><strong>Off-Policy Monte Carlo</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Update Rule</strong></td>
+<td>Uses <span class="math inline">\(Q(s&#39;, a&#39;)\)</span>, where <span class="math inline">\(a&#39;\)</span> is sampled from the current policy.</td>
+<td>Uses <span class="math inline">\(\max_{a&#39;} Q(s&#39;, a&#39;)\)</span>, assuming the optimal action.</td>
+<td>Uses <span class="math inline">\(\rho_t G_t\)</span>, where <span class="math inline">\(\rho_t\)</span> reweights returns based on policy likelihoods.</td>
+</tr>
+<tr class="even">
+<td><strong>Policy Learning</strong></td>
+<td>Learns the value of the policy being followed (including exploration).</td>
+<td>Learns the optimal policy, independent of exploration.</td>
+<td>Learns the optimal policy using importance sampling from exploratory trajectories.</td>
+</tr>
+<tr class="odd">
+<td><strong>Exploration Impact</strong></td>
+<td>Exploration affects learned Q-values.</td>
+<td>Exploration does not affect learned Q-values.</td>
+<td>Exploration affects returns, reweighted by importance sampling.</td>
+</tr>
+<tr class="even">
+<td><strong>Convergence</strong></td>
+<td>Converges to the policy’s value if exploration decreases (e.g., <span class="math inline">\(\epsilon \to 0\)</span>).</td>
+<td>Converges to the optimal policy even with fixed exploration.</td>
+<td>Converges to the optimal policy, but variance depends on policy similarity.</td>
+</tr>
+<tr class="odd">
+<td><strong>Behavior</strong></td>
+<td>More conservative, accounts for exploration risks.</td>
+<td>More aggressive, assumes optimal future actions.</td>
+<td>Aggressive, but variance can lead to unstable learning if policies differ significantly.</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
+<span id="cb17-2"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb17-3"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb17-4"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb17-5"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb17-6"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-6" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-7" tabindex="-1"></a><span class="co"># Environment: transition and reward models</span></span>
+<span id="cb17-8"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb17-9"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb17-10"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb17-11"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-11" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb17-13"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb17-14"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb17-15"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb17-16"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb17-17"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-17" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb17-18"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-18" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb17-19"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-19" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb17-20"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-20" tabindex="-1"></a>  }</span>
+<span id="cb17-21"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-21" tabindex="-1"></a>}</span>
+<span id="cb17-22"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-22" tabindex="-1"></a></span>
+<span id="cb17-23"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-23" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-24"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-24" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-25"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-25" tabindex="-1"></a></span>
+<span id="cb17-26"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-26" tabindex="-1"></a><span class="co"># Helper function: Epsilon-greedy policy</span></span>
+<span id="cb17-27"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-27" tabindex="-1"></a>epsilon_greedy <span class="ot">&lt;-</span> <span class="cf">function</span>(Q, state, epsilon) {</span>
+<span id="cb17-28"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-28" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb17-29"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-29" tabindex="-1"></a>    <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb17-30"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-30" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb17-31"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-31" tabindex="-1"></a>    <span class="fu">which.max</span>(Q[state, ])</span>
+<span id="cb17-32"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-32" tabindex="-1"></a>  }</span>
+<span id="cb17-33"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-33" tabindex="-1"></a>}</span>
+<span id="cb17-34"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-34" tabindex="-1"></a></span>
+<span id="cb17-35"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-35" tabindex="-1"></a><span class="co"># Helper function: Simulate environment</span></span>
+<span id="cb17-36"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-36" tabindex="-1"></a>simulate_step <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action) {</span>
+<span id="cb17-37"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-37" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[state, action, ]</span>
+<span id="cb17-38"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-38" tabindex="-1"></a>  next_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb17-39"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-39" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[state, action, next_state]</span>
+<span id="cb17-40"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-40" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">next_state =</span> next_state, <span class="at">reward =</span> reward)</span>
+<span id="cb17-41"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-41" tabindex="-1"></a>}</span>
+<span id="cb17-42"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-42" tabindex="-1"></a></span>
+<span id="cb17-43"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-43" tabindex="-1"></a><span class="co"># SARSA</span></span>
+<span id="cb17-44"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-44" tabindex="-1"></a>sarsa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n_episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb17-45"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-45" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, n_states, n_actions)</span>
+<span id="cb17-46"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-46" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states)</span>
+<span id="cb17-47"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-47" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb17-48"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-48" tabindex="-1"></a>  </span>
+<span id="cb17-49"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-49" tabindex="-1"></a>  <span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb17-50"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-50" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb17-51"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-51" tabindex="-1"></a>    action <span class="ot">&lt;-</span> <span class="fu">epsilon_greedy</span>(Q, state, epsilon)</span>
+<span id="cb17-52"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-52" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-53"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-53" tabindex="-1"></a>    </span>
+<span id="cb17-54"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-54" tabindex="-1"></a>    <span class="cf">while</span> (state <span class="sc">!=</span> terminal_state) {</span>
+<span id="cb17-55"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-55" tabindex="-1"></a>      step <span class="ot">&lt;-</span> <span class="fu">simulate_step</span>(state, action)</span>
+<span id="cb17-56"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-56" tabindex="-1"></a>      next_state <span class="ot">&lt;-</span> step<span class="sc">$</span>next_state</span>
+<span id="cb17-57"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-57" tabindex="-1"></a>      reward <span class="ot">&lt;-</span> step<span class="sc">$</span>reward</span>
+<span id="cb17-58"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-58" tabindex="-1"></a>      next_action <span class="ot">&lt;-</span> <span class="fu">epsilon_greedy</span>(Q, next_state, epsilon)</span>
+<span id="cb17-59"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-59" tabindex="-1"></a>      </span>
+<span id="cb17-60"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-60" tabindex="-1"></a>      Q[state, action] <span class="ot">&lt;-</span> Q[state, action] <span class="sc">+</span> alpha <span class="sc">*</span> (</span>
+<span id="cb17-61"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-61" tabindex="-1"></a>        reward <span class="sc">+</span> gamma <span class="sc">*</span> Q[next_state, next_action] <span class="sc">-</span> Q[state, action]</span>
+<span id="cb17-62"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-62" tabindex="-1"></a>      )</span>
+<span id="cb17-63"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-63" tabindex="-1"></a>      </span>
+<span id="cb17-64"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-64" tabindex="-1"></a>      state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb17-65"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-65" tabindex="-1"></a>      action <span class="ot">&lt;-</span> next_action</span>
+<span id="cb17-66"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-66" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> reward</span>
+<span id="cb17-67"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-67" tabindex="-1"></a>    }</span>
+<span id="cb17-68"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-68" tabindex="-1"></a>    rewards[episode] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb17-69"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-69" tabindex="-1"></a>  }</span>
+<span id="cb17-70"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-70" tabindex="-1"></a>  </span>
+<span id="cb17-71"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-71" tabindex="-1"></a>  policy[<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fu">apply</span>(Q[<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), ], <span class="dv">1</span>, which.max)</span>
+<span id="cb17-72"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-72" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb17-73"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-73" tabindex="-1"></a>}</span>
+<span id="cb17-74"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-74" tabindex="-1"></a></span>
+<span id="cb17-75"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-75" tabindex="-1"></a><span class="co"># Q-Learning</span></span>
+<span id="cb17-76"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-76" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n_episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb17-77"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-77" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, n_states, n_actions)</span>
+<span id="cb17-78"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-78" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states)</span>
+<span id="cb17-79"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-79" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb17-80"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-80" tabindex="-1"></a>  </span>
+<span id="cb17-81"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-81" tabindex="-1"></a>  <span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb17-82"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-82" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb17-83"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-83" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-84"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-84" tabindex="-1"></a>    </span>
+<span id="cb17-85"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-85" tabindex="-1"></a>    <span class="cf">while</span> (state <span class="sc">!=</span> terminal_state) {</span>
+<span id="cb17-86"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-86" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">epsilon_greedy</span>(Q, state, epsilon)</span>
+<span id="cb17-87"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-87" tabindex="-1"></a>      step <span class="ot">&lt;-</span> <span class="fu">simulate_step</span>(state, action)</span>
+<span id="cb17-88"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-88" tabindex="-1"></a>      next_state <span class="ot">&lt;-</span> step<span class="sc">$</span>next_state</span>
+<span id="cb17-89"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-89" tabindex="-1"></a>      reward <span class="ot">&lt;-</span> step<span class="sc">$</span>reward</span>
+<span id="cb17-90"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-90" tabindex="-1"></a>      </span>
+<span id="cb17-91"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-91" tabindex="-1"></a>      Q[state, action] <span class="ot">&lt;-</span> Q[state, action] <span class="sc">+</span> alpha <span class="sc">*</span> (</span>
+<span id="cb17-92"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-92" tabindex="-1"></a>        reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[next_state, ]) <span class="sc">-</span> Q[state, action]</span>
+<span id="cb17-93"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-93" tabindex="-1"></a>      )</span>
+<span id="cb17-94"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-94" tabindex="-1"></a>      </span>
+<span id="cb17-95"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-95" tabindex="-1"></a>      state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb17-96"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-96" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> reward</span>
+<span id="cb17-97"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-97" tabindex="-1"></a>    }</span>
+<span id="cb17-98"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-98" tabindex="-1"></a>    rewards[episode] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb17-99"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-99" tabindex="-1"></a>  }</span>
+<span id="cb17-100"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-100" tabindex="-1"></a>  </span>
+<span id="cb17-101"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-101" tabindex="-1"></a>  policy[<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fu">apply</span>(Q[<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), ], <span class="dv">1</span>, which.max)</span>
+<span id="cb17-102"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-102" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb17-103"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-103" tabindex="-1"></a>}</span>
+<span id="cb17-104"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-104" tabindex="-1"></a></span>
+<span id="cb17-105"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-105" tabindex="-1"></a><span class="co"># Off-Policy Monte Carlo</span></span>
+<span id="cb17-106"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-106" tabindex="-1"></a>off_policy_mc <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n_episodes =</span> <span class="dv">1000</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb17-107"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-107" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, n_states, n_actions)</span>
+<span id="cb17-108"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-108" tabindex="-1"></a>  C <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, n_states, n_actions)  <span class="co"># Cumulative weights</span></span>
+<span id="cb17-109"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-109" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states)</span>
+<span id="cb17-110"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-110" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb17-111"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-111" tabindex="-1"></a>  </span>
+<span id="cb17-112"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-112" tabindex="-1"></a>  <span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb17-113"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-113" tabindex="-1"></a>    <span class="co"># Generate episode using behavior policy (epsilon-greedy)</span></span>
+<span id="cb17-114"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-114" tabindex="-1"></a>    states <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">0</span>)</span>
+<span id="cb17-115"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-115" tabindex="-1"></a>    actions <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">0</span>)</span>
+<span id="cb17-116"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-116" tabindex="-1"></a>    rewards_ep <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">0</span>)</span>
+<span id="cb17-117"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-117" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb17-118"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-118" tabindex="-1"></a>    </span>
+<span id="cb17-119"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-119" tabindex="-1"></a>    <span class="cf">while</span> (state <span class="sc">!=</span> terminal_state) {</span>
+<span id="cb17-120"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-120" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)  <span class="co"># Behavior policy: random</span></span>
+<span id="cb17-121"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-121" tabindex="-1"></a>      step <span class="ot">&lt;-</span> <span class="fu">simulate_step</span>(state, action)</span>
+<span id="cb17-122"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-122" tabindex="-1"></a>      next_state <span class="ot">&lt;-</span> step<span class="sc">$</span>next_state</span>
+<span id="cb17-123"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-123" tabindex="-1"></a>      reward <span class="ot">&lt;-</span> step<span class="sc">$</span>reward</span>
+<span id="cb17-124"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-124" tabindex="-1"></a>      </span>
+<span id="cb17-125"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-125" tabindex="-1"></a>      states <span class="ot">&lt;-</span> <span class="fu">c</span>(states, state)</span>
+<span id="cb17-126"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-126" tabindex="-1"></a>      actions <span class="ot">&lt;-</span> <span class="fu">c</span>(actions, action)</span>
+<span id="cb17-127"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-127" tabindex="-1"></a>      rewards_ep <span class="ot">&lt;-</span> <span class="fu">c</span>(rewards_ep, reward)</span>
+<span id="cb17-128"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-128" tabindex="-1"></a>      state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb17-129"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-129" tabindex="-1"></a>    }</span>
+<span id="cb17-130"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-130" tabindex="-1"></a>    rewards[episode] <span class="ot">&lt;-</span> <span class="fu">sum</span>(rewards_ep)</span>
+<span id="cb17-131"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-131" tabindex="-1"></a>    </span>
+<span id="cb17-132"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-132" tabindex="-1"></a>    <span class="co"># Update Q using importance sampling</span></span>
+<span id="cb17-133"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-133" tabindex="-1"></a>    G <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-134"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-134" tabindex="-1"></a>    W <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb17-135"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-135" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="fu">length</span>(states)<span class="sc">:</span><span class="dv">1</span>) {</span>
+<span id="cb17-136"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-136" tabindex="-1"></a>      state <span class="ot">&lt;-</span> states[t]</span>
+<span id="cb17-137"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-137" tabindex="-1"></a>      action <span class="ot">&lt;-</span> actions[t]</span>
+<span id="cb17-138"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-138" tabindex="-1"></a>      reward <span class="ot">&lt;-</span> rewards_ep[t]</span>
+<span id="cb17-139"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-139" tabindex="-1"></a>      </span>
+<span id="cb17-140"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-140" tabindex="-1"></a>      G <span class="ot">&lt;-</span> gamma <span class="sc">*</span> G <span class="sc">+</span> reward</span>
+<span id="cb17-141"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-141" tabindex="-1"></a>      C[state, action] <span class="ot">&lt;-</span> C[state, action] <span class="sc">+</span> W</span>
+<span id="cb17-142"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-142" tabindex="-1"></a>      Q[state, action] <span class="ot">&lt;-</span> Q[state, action] <span class="sc">+</span> (W <span class="sc">/</span> C[state, action]) <span class="sc">*</span> (G <span class="sc">-</span> Q[state, action])</span>
+<span id="cb17-143"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-143" tabindex="-1"></a>      </span>
+<span id="cb17-144"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-144" tabindex="-1"></a>      pi_action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
+<span id="cb17-145"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-145" tabindex="-1"></a>      <span class="cf">if</span> (action <span class="sc">!=</span> pi_action) <span class="cf">break</span></span>
+<span id="cb17-146"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-146" tabindex="-1"></a>      W <span class="ot">&lt;-</span> W <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">/</span> n_actions)  <span class="co"># Importance sampling ratio</span></span>
+<span id="cb17-147"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-147" tabindex="-1"></a>    }</span>
+<span id="cb17-148"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-148" tabindex="-1"></a>  }</span>
+<span id="cb17-149"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-149" tabindex="-1"></a>  </span>
+<span id="cb17-150"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-150" tabindex="-1"></a>  policy[<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fu">apply</span>(Q[<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), ], <span class="dv">1</span>, which.max)</span>
+<span id="cb17-151"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-151" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb17-152"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-152" tabindex="-1"></a>}</span>
+<span id="cb17-153"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-153" tabindex="-1"></a></span>
+<span id="cb17-154"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-154" tabindex="-1"></a><span class="co"># Value Iteration (from DP)</span></span>
+<span id="cb17-155"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-155" tabindex="-1"></a>value_iteration <span class="ot">&lt;-</span> <span class="cf">function</span>(transition_model, reward_model, gamma, <span class="at">epsilon =</span> <span class="fl">1e-6</span>, <span class="at">max_iter =</span> <span class="dv">1000</span>) {</span>
+<span id="cb17-156"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-156" tabindex="-1"></a>  V <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states)</span>
+<span id="cb17-157"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-157" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states)</span>
+<span id="cb17-158"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-158" tabindex="-1"></a>  delta <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb17-159"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-159" tabindex="-1"></a>  iter <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-160"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-160" tabindex="-1"></a>  </span>
+<span id="cb17-161"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-161" tabindex="-1"></a>  <span class="cf">while</span> (delta <span class="sc">&gt;</span> epsilon <span class="sc">&amp;&amp;</span> iter <span class="sc">&lt;</span> max_iter) {</span>
+<span id="cb17-162"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-162" tabindex="-1"></a>    delta <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-163"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-163" tabindex="-1"></a>    V_old <span class="ot">&lt;-</span> V</span>
+<span id="cb17-164"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-164" tabindex="-1"></a>    </span>
+<span id="cb17-165"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-165" tabindex="-1"></a>    <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb17-166"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-166" tabindex="-1"></a>      Q <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_actions)</span>
+<span id="cb17-167"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-167" tabindex="-1"></a>      <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
+<span id="cb17-168"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-168" tabindex="-1"></a>        Q[a] <span class="ot">&lt;-</span> <span class="fu">sum</span>(transition_model[s, a, ] <span class="sc">*</span> (reward_model[s, a, ] <span class="sc">+</span> gamma <span class="sc">*</span> V))</span>
+<span id="cb17-169"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-169" tabindex="-1"></a>      }</span>
+<span id="cb17-170"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-170" tabindex="-1"></a>      V[s] <span class="ot">&lt;-</span> <span class="fu">max</span>(Q)</span>
+<span id="cb17-171"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-171" tabindex="-1"></a>      policy[s] <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q)</span>
+<span id="cb17-172"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-172" tabindex="-1"></a>      delta <span class="ot">&lt;-</span> <span class="fu">max</span>(delta, <span class="fu">abs</span>(V[s] <span class="sc">-</span> V_old[s]))</span>
+<span id="cb17-173"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-173" tabindex="-1"></a>    }</span>
+<span id="cb17-174"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-174" tabindex="-1"></a>    iter <span class="ot">&lt;-</span> iter <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb17-175"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-175" tabindex="-1"></a>  }</span>
+<span id="cb17-176"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-176" tabindex="-1"></a>  </span>
+<span id="cb17-177"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-177" tabindex="-1"></a>  <span class="co"># Evaluate DP policy</span></span>
+<span id="cb17-178"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-178" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">1000</span>)</span>
+<span id="cb17-179"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-179" tabindex="-1"></a>  <span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
+<span id="cb17-180"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-180" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb17-181"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-181" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb17-182"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-182" tabindex="-1"></a>    <span class="cf">while</span> (state <span class="sc">!=</span> terminal_state) {</span>
+<span id="cb17-183"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-183" tabindex="-1"></a>      action <span class="ot">&lt;-</span> policy[state]</span>
+<span id="cb17-184"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-184" tabindex="-1"></a>      step <span class="ot">&lt;-</span> <span class="fu">simulate_step</span>(state, action)</span>
+<span id="cb17-185"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-185" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> step<span class="sc">$</span>reward</span>
+<span id="cb17-186"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-186" tabindex="-1"></a>      state <span class="ot">&lt;-</span> step<span class="sc">$</span>next_state</span>
+<span id="cb17-187"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-187" tabindex="-1"></a>    }</span>
+<span id="cb17-188"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-188" tabindex="-1"></a>    rewards[episode] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb17-189"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-189" tabindex="-1"></a>  }</span>
+<span id="cb17-190"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-190" tabindex="-1"></a>  </span>
+<span id="cb17-191"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-191" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">V =</span> V, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb17-192"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-192" tabindex="-1"></a>}</span>
+<span id="cb17-193"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-193" tabindex="-1"></a></span>
+<span id="cb17-194"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-194" tabindex="-1"></a><span class="co"># Run algorithms</span></span>
+<span id="cb17-195"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-195" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb17-196"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-196" tabindex="-1"></a>dp_result <span class="ot">&lt;-</span> <span class="fu">value_iteration</span>(transition_model, reward_model, gamma)</span>
+<span id="cb17-197"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-197" tabindex="-1"></a>sarsa_result <span class="ot">&lt;-</span> <span class="fu">sarsa</span>(<span class="at">n_episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb17-198"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-198" tabindex="-1"></a>qlearn_result <span class="ot">&lt;-</span> <span class="fu">q_learning</span>(<span class="at">n_episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb17-199"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-199" tabindex="-1"></a>mc_result <span class="ot">&lt;-</span> <span class="fu">off_policy_mc</span>(<span class="at">n_episodes =</span> <span class="dv">1000</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb17-200"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-200" tabindex="-1"></a></span>
+<span id="cb17-201"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-201" tabindex="-1"></a><span class="co"># Visualization</span></span>
+<span id="cb17-202"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-202" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb17-203"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-203" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb17-204"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-204" tabindex="-1"></a></span>
+<span id="cb17-205"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-205" tabindex="-1"></a><span class="co"># Policy comparison</span></span>
+<span id="cb17-206"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-206" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-207"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-207" tabindex="-1"></a>  <span class="at">State =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">4</span>),</span>
+<span id="cb17-208"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-208" tabindex="-1"></a>  <span class="at">Policy =</span> <span class="fu">c</span>(dp_result<span class="sc">$</span>policy, sarsa_result<span class="sc">$</span>policy, qlearn_result<span class="sc">$</span>policy, mc_result<span class="sc">$</span>policy),</span>
+<span id="cb17-209"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-209" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;DP&quot;</span>, <span class="st">&quot;SARSA&quot;</span>, <span class="st">&quot;Q-Learning&quot;</span>, <span class="st">&quot;Off-Policy MC&quot;</span>), <span class="at">each =</span> n_states)</span>
+<span id="cb17-210"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-210" tabindex="-1"></a>)</span>
+<span id="cb17-211"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-211" tabindex="-1"></a>policy_df<span class="sc">$</span>Policy[n_states <span class="sc">*</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">+</span> n_states] <span class="ot">&lt;-</span> <span class="cn">NA</span>  <span class="co"># Terminal state</span></span>
+<span id="cb17-212"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-212" tabindex="-1"></a></span>
+<span id="cb17-213"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-213" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy, <span class="at">color =</span> Algorithm)) <span class="sc">+</span></span>
+<span id="cb17-214"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-214" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb17-215"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-215" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> Algorithm), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb17-216"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-216" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb17-217"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-217" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Optimal Policies by Algorithm&quot;</span>, <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-218"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-218" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb17-219"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-219" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb17-220"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-220" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
+<span id="cb17-221"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-221" tabindex="-1"></a></span>
+<span id="cb17-222"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-222" tabindex="-1"></a><span class="co"># Reward comparison</span></span>
+<span id="cb17-223"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-223" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-224"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-224" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="dv">4</span>),</span>
+<span id="cb17-225"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-225" tabindex="-1"></a>  <span class="at">Reward =</span> <span class="fu">c</span>(</span>
+<span id="cb17-226"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-226" tabindex="-1"></a>    <span class="fu">cumsum</span>(dp_result<span class="sc">$</span>rewards),</span>
+<span id="cb17-227"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-227" tabindex="-1"></a>    <span class="fu">cumsum</span>(sarsa_result<span class="sc">$</span>rewards),</span>
+<span id="cb17-228"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-228" tabindex="-1"></a>    <span class="fu">cumsum</span>(qlearn_result<span class="sc">$</span>rewards),</span>
+<span id="cb17-229"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-229" tabindex="-1"></a>    <span class="fu">cumsum</span>(mc_result<span class="sc">$</span>rewards)</span>
+<span id="cb17-230"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-230" tabindex="-1"></a>  ),</span>
+<span id="cb17-231"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-231" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;DP&quot;</span>, <span class="st">&quot;SARSA&quot;</span>, <span class="st">&quot;Q-Learning&quot;</span>, <span class="st">&quot;Off-Policy MC&quot;</span>), <span class="at">each =</span> <span class="dv">1000</span>)</span>
+<span id="cb17-232"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-232" tabindex="-1"></a>)</span>
+<span id="cb17-233"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-233" tabindex="-1"></a></span>
+<span id="cb17-234"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-234" tabindex="-1"></a>reward_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reward_df, <span class="fu">aes</span>(<span class="at">x =</span> Episode, <span class="at">y =</span> Reward, <span class="at">color =</span> Algorithm)) <span class="sc">+</span></span>
+<span id="cb17-235"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-235" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb17-236"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-236" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb17-237"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-237" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cumulative Reward Comparison&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Cumulative Reward&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-238"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-238" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
+<span id="cb17-239"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-239" tabindex="-1"></a></span>
+<span id="cb17-240"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-240" tabindex="-1"></a><span class="co"># Display plots</span></span>
+<span id="cb17-241"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-241" tabindex="-1"></a><span class="fu">grid.arrange</span>(policy_plot, reward_plot, <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb17-242"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-242" tabindex="-1"></a></span>
+<span id="cb17-243"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-243" tabindex="-1"></a><span class="co"># Print performance metrics</span></span>
+<span id="cb17-244"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-244" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Average Cumulative Reward per Episode:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-245"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-245" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;DP:&quot;</span>, <span class="fu">mean</span>(dp_result<span class="sc">$</span>rewards), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-246"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-246" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;SARSA:&quot;</span>, <span class="fu">mean</span>(sarsa_result<span class="sc">$</span>rewards), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-247"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-247" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Q-Learning:&quot;</span>, <span class="fu">mean</span>(qlearn_result<span class="sc">$</span>rewards), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-248"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-248" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Off-Policy MC:&quot;</span>, <span class="fu">mean</span>(mc_result<span class="sc">$</span>rewards), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-249"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#cb17-249" tabindex="-1"></a>                            </span></code></pre></div>
+</div>
+<div id="interpretation-and-discussion-1" class="section level2 hasAnchor" number="5.6">
+<h2><span class="header-section-number">5.6</span> Interpretation and Discussion<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="policy-differences" class="section level4 hasAnchor" number="5.6.0.1">
+<h4><span class="header-section-number">5.6.0.1</span> Policy Differences<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#policy-differences" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li><strong>SARSA</strong>: As an on-policy method, it learns the value of the <span class="math inline">\(\epsilon\)</span>-greedy policy, which includes exploratory actions. In the 10-state environment, SARSA may balance between actions 1 and 2, reflecting the impact of random exploration, leading to a more conservative policy.</li>
+<li><strong>Q-Learning</strong>: As an off-policy method, it learns the optimal policy, favoring action 1 in state 9 (higher terminal reward of 1.0) due to its greedy updates. Its policy is less sensitive to exploration noise, as it assumes optimal future actions.</li>
+<li><strong>Off-Policy Monte Carlo</strong>: Also off-policy, it learns the optimal policy using importance sampling to reweight returns from a random behavior policy. It may align closely with Q-Learning’s policy but can exhibit variability due to high variance in importance sampling ratios, especially if the random policy frequently selects action 2 (lower reward).</li>
+</ul>
+</div>
+<div id="devaluation" class="section level4 hasAnchor" number="5.6.0.2">
+<h4><span class="header-section-number">5.6.0.2</span> Devaluation<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#devaluation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>All methods exhibit habitual behavior without retraining, retaining their original policies after the terminal reward is removed. This highlights a limitation of model-free methods compared to model-based approaches (e.g., dynamic programming), which adapt instantly to reward changes.</p>
+</div>
+<div id="practical-implications" class="section level4 hasAnchor" number="5.6.0.3">
+<h4><span class="header-section-number">5.6.0.3</span> Practical Implications<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#practical-implications" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li><strong>SARSA</strong>: Better suited for environments where the exploration policy must be accounted for, such as safety-critical systems (e.g., robotics), where risky exploratory actions could lead to poor outcomes.</li>
+<li><strong>Q-Learning</strong>: Ideal for scenarios where the optimal policy is desired regardless of exploration, such as games or simulations where exploration does not incur real-world costs.</li>
+<li><strong>Off-Policy Monte Carlo</strong>: Suitable for offline learning from logged data (e.g., recommendation systems), but high variance can make it less stable than Q-Learning in dynamic environments.</li>
+</ul>
+</div>
+<div id="experimental-observations" class="section level4 hasAnchor" number="5.6.0.4">
+<h4><span class="header-section-number">5.6.0.4</span> Experimental Observations<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#experimental-observations" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>Before devaluation, Q-Learning and off-policy Monte Carlo likely favor action 1 in state 9 due to its higher terminal reward, while SARSA’s policy may show more variability due to exploration.</li>
+<li>After devaluation, all policies remain unchanged without retraining, illustrating their reliance on cached Q-values.</li>
+<li>Off-policy Monte Carlo’s performance depends on the similarity between the random behavior policy and the greedy target policy, with high variance potentially leading to less consistent policies compared to Q-Learning.</li>
+</ul>
+</div>
+</div>
+<div id="conclusion-3" class="section level2 hasAnchor" number="5.7">
+<h2><span class="header-section-number">5.7</span> Conclusion<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>SARSA, Q-Learning, and off-policy Monte Carlo represent distinct paradigms in model-free RL. SARSA’s on-policy updates reflect the exploration policy, making it conservative. Q-Learning’s off-policy updates target the optimal policy, ignoring exploration effects. Off-policy Monte Carlo uses importance sampling to learn from diverse trajectories, enabling offline learning but introducing variance. The R implementations demonstrate these differences in a 10-state environment, and the devaluation experiment underscores their habitual nature. Future posts could explore advanced topics, such as SARSA(<span class="math inline">\(\lambda\)</span>), deep RL extensions, or variance reduction in off-policy Monte Carlo.</p>
+</div>
+<div id="comparison-table" class="section level2 hasAnchor" number="5.8">
+<h2><span class="header-section-number">5.8</span> Comparison Table<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="23%" />
+<col width="23%" />
+<col width="40%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Aspect</strong></th>
+<th><strong>SARSA (On-Policy)</strong></th>
+<th><strong>Q-Learning (Off-Policy)</strong></th>
+<th><strong>Off-Policy Monte Carlo</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Learning Approach</strong></td>
+<td>Learns incrementally, updates based on action taken by behavior policy.</td>
+<td>Learns incrementally, updates based on best action in next state.</td>
+<td>Learns from complete episodes, using importance sampling.</td>
+</tr>
+<tr class="even">
+<td><strong>Update Rule</strong></td>
+<td><span class="math inline">\(Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma Q(s&#39;, a&#39;) - Q(s,a) \right)\)</span></td>
+<td><span class="math inline">\(Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right)\)</span></td>
+<td><span class="math inline">\(Q(s,a) \leftarrow Q(s,a) + \alpha \left( \rho_t G_t - Q(s,a) \right)\)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Episode Requirement</strong></td>
+<td>Updates online, no episode completion needed.</td>
+<td>Updates online, no episode completion needed.</td>
+<td>Requires complete episodes for returns and importance weights.</td>
+</tr>
+<tr class="even">
+<td><strong>Bias and Variance</strong></td>
+<td>Biased due to bootstrapping, moderate variance.</td>
+<td>Biased due to bootstrapping, lower variance.</td>
+<td>Unbiased but high variance due to importance sampling.</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy Type</strong></td>
+<td>On-policy; learns value of behavior policy.</td>
+<td>Off-policy; learns optimal policy via max Q-value.</td>
+<td>Off-policy; learns greedy policy using importance sampling.</td>
+</tr>
+<tr class="even">
+<td><strong>Exploration Impact</strong></td>
+<td>Exploration affects learned Q-values.</td>
+<td>Exploration does not affect learned Q-values.</td>
+<td>Exploration affects returns, reweighted by importance sampling.</td>
+</tr>
+<tr class="odd">
+<td><strong>Convergence</strong></td>
+<td>Converges to policy’s value if <span class="math inline">\(\epsilon \to 0\)</span>.</td>
+<td>Converges to optimal policy even with fixed <span class="math inline">\(\epsilon\)</span>.</td>
+<td>Converges to optimal policy, but variance depends on policy similarity.</td>
+</tr>
+<tr class="even">
+<td><strong>Behavior</strong></td>
+<td>Conservative, accounts for exploration risks.</td>
+<td>Aggressive, assumes optimal future actions.</td>
+<td>Aggressive, but variance can lead to instability.</td>
+</tr>
+<tr class="odd">
+<td><strong>Example in Environment</strong></td>
+<td>Balances actions 1 and 2, sensitive to exploration.</td>
+<td>Favors action 1 (higher reward) in state 9.</td>
+<td>Favors action 1, but variance may cause variability.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/05-SARSA_Q.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/05-SARSA_Q.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
