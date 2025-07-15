@@ -55,3 +55,9 @@ practical-implications
 experimental-observations
 conclusion-3
 comparison-table
+function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r
+introduction-4
+theoretical-background-1
+q-learning-with-function-approximation
+comparison-with-tabular-q-learning
+r-implementation

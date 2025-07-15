@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 6 Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-07-15" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.3</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.4</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.5</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R<a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-4" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Introduction<a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In reinforcement learning (RL), tabular methods like SARSA and
+Q-Learning store a separate Q-value for each state-action pair, which
+becomes infeasible in large or continuous state spaces. Function
+approximation addresses this by representing the action-value function
+<span class="math inline">\(Q(s, a)\)</span> as a parameterized function <span class="math inline">\(Q(s, a; \theta)\)</span>, enabling
+generalization across states and scalability. This post explores
+Q-Learning with linear function approximation, using a 10-state,
+2-action environment to demonstrate how it learns policies compared to
+tabular methods. We provide mathematical formulations, R code, and
+comparisons with tabular Q-Learning, focusing on generalization,
+scalability, and practical implications.</p>
+</div>
+<div id="theoretical-background-1" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Theoretical Background<a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Function approximation in RL aims to estimate the action-value function:</p>
+<p><span class="math display">\[
+Q^\pi(s, a) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty \gamma^t R_{t+1} \mid S_0 = s, A_0 = a \right]
+\]</span></p>
+<p>where <span class="math inline">\(\gamma \in [0,1]\)</span> is the discount factor, and <span class="math inline">\(R_{t+1}\)</span> is the
+reward at time <span class="math inline">\(t+1\)</span>. Instead of storing <span class="math inline">\(Q(s, a)\)</span> in a table, we
+approximate it as:</p>
+<p><span class="math display">\[
+Q(s, a; \theta) = \phi(s, a)^T \theta
+\]</span></p>
+<p>where <span class="math inline">\(\phi(s, a)\)</span> is a feature vector for state-action pair <span class="math inline">\((s, a)\)</span>,
+and <span class="math inline">\(\theta\)</span> is a parameter vector learned via optimization, typically
+stochastic gradient descent (SGD).</p>
+<div id="q-learning-with-function-approximation" class="section level3 hasAnchor" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Q-Learning with Function Approximation<a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Q-Learning with function approximation is an off-policy method that
+learns the optimal policy by updating <span class="math inline">\(\theta\)</span> to minimize the temporal
+difference (TD) error. The update rule is:</p>
+<p><span class="math display">\[
+\theta \leftarrow \theta + \alpha \delta \nabla_\theta Q(s, a; \theta)
+\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the learning rate, and the TD error <span class="math inline">\(\delta\)</span> is:</p>
+<p><span class="math display">\[
+\delta = r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;; \theta) - Q(s, a; \theta)
+\]</span></p>
+<p>Here, <span class="math inline">\(r\)</span> is the reward, <span class="math inline">\(s&#39;\)</span> is the next state, and
+<span class="math inline">\(\max_{a&#39;} Q(s&#39;, a&#39;; \theta)\)</span> estimates the value of the next state
+assuming the optimal action. For linear function approximation, the
+gradient is:</p>
+<p><span class="math display">\[
+\nabla_\theta Q(s, a; \theta) = \phi(s, a)
+\]</span></p>
+<p>Thus, the update becomes:</p>
+<p><span class="math display">\[
+\theta \leftarrow \theta + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;; \theta) - Q(s, a; \theta) \right) \phi(s, a)
+\]</span></p>
+<p>In our 10-state environment, we use one-hot encoding for <span class="math inline">\(\phi(s, a)\)</span>,
+mimicking tabular Q-Learning for simplicity but demonstrating the
+framework’s potential for generalization with more complex features.</p>
+</div>
+<div id="comparison-with-tabular-q-learning" class="section level3 hasAnchor" number="6.2.2">
+<h3><span class="header-section-number">6.2.2</span> Comparison with Tabular Q-Learning<a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Tabular Q-Learning updates a table of Q-values directly:</p>
+<p><span class="math display">\[
+Q(s, a) \leftarrow Q(s, a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s, a) \right)
+\]</span></p>
+<p>Function approximation generalizes across states via <span class="math inline">\(\phi(s, a)\)</span>,
+reducing memory requirements and enabling learning in large or
+continuous spaces. However, it introduces approximation errors and
+requires careful feature design to ensure convergence.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="24%" />
+<col width="34%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Aspect</strong></th>
+<th><strong>Tabular Q-Learning</strong></th>
+<th><strong>Q-Learning with Function Approximation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Representation</strong></td>
+<td>Table of <span class="math inline">\(Q(s, a)\)</span> values</td>
+<td><span class="math inline">\(Q(s, a; \theta) = \phi(s, a)^T \theta\)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Memory</strong></td>
+<td><span class="math inline">\(O(|\mathcal{S}| \cdot |\mathcal{A}|)\)</span></td>
+<td><span class="math inline">\(O(|\theta|)\)</span>, depends on feature size</td>
+</tr>
+<tr class="odd">
+<td><strong>Generalization</strong></td>
+<td>None; state-action specific</td>
+<td>Yes; depends on feature design</td>
+</tr>
+<tr class="even">
+<td><strong>Scalability</strong></td>
+<td>Poor for large/continuous spaces</td>
+<td>Good for large/continuous spaces with proper features</td>
+</tr>
+<tr class="odd">
+<td><strong>Update Rule</strong></td>
+<td>Direct Q-value update</td>
+<td>Parameter update via gradient descent</td>
+</tr>
+<tr class="even">
+<td><strong>Convergence</strong></td>
+<td>Guaranteed to optimal <span class="math inline">\(Q^*\)</span> under conditions</td>
+<td>Converges to approximation of <span class="math inline">\(Q^*\)</span>; depends on features</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="r-implementation" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> R Implementation<a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We implement Q-Learning with linear function approximation in a
+10-state, 2-action environment, using one-hot encoding for <span class="math inline">\(\phi(s, a)\)</span>.
+The environment mirrors the previous post, with action 1 yielding a 1.0
+reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
+<span id="cb18-2"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb18-3"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb18-4"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb18-5"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb18-6"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-6" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-7" tabindex="-1"></a><span class="co"># Environment: transition and reward models</span></span>
+<span id="cb18-8"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb18-9"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb18-10"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb18-11"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-11" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb18-13"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb18-14"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb18-15"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb18-16"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb18-17"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-17" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb18-18"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-18" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb18-19"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-19" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb18-20"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-20" tabindex="-1"></a>  }</span>
+<span id="cb18-21"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-21" tabindex="-1"></a>}</span>
+<span id="cb18-22"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-22" tabindex="-1"></a></span>
+<span id="cb18-23"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-23" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb18-24"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-24" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb18-25"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-25" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-26" tabindex="-1"></a><span class="co"># Sampling function</span></span>
+<span id="cb18-27"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-27" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb18-28"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-28" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb18-29"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-29" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb18-30"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-30" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb18-31"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-31" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb18-32"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-32" tabindex="-1"></a>}</span>
+<span id="cb18-33"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-33" tabindex="-1"></a></span>
+<span id="cb18-34"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-34" tabindex="-1"></a><span class="co"># Create one-hot features for (state, action) pairs</span></span>
+<span id="cb18-35"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-35" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
+<span id="cb18-36"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-36" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
+<span id="cb18-37"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-37" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
+<span id="cb18-38"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-38" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb18-39"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-39" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
+<span id="cb18-40"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-40" tabindex="-1"></a>}</span>
+<span id="cb18-41"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-41" tabindex="-1"></a></span>
+<span id="cb18-42"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-42" tabindex="-1"></a><span class="co"># Initialize weights</span></span>
+<span id="cb18-43"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-43" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
+<span id="cb18-44"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-44" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb18-45"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-45" tabindex="-1"></a></span>
+<span id="cb18-46"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-46" tabindex="-1"></a><span class="co"># Q-value approximation function</span></span>
+<span id="cb18-47"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-47" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
+<span id="cb18-48"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-48" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb18-49"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-49" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
+<span id="cb18-50"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-50" tabindex="-1"></a>}</span>
+<span id="cb18-51"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-51" tabindex="-1"></a></span>
+<span id="cb18-52"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-52" tabindex="-1"></a><span class="co"># Q-Learning with function approximation</span></span>
+<span id="cb18-53"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-53" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb18-54"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-54" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb18-55"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-55" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb18-56"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-56" tabindex="-1"></a>  </span>
+<span id="cb18-57"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-57" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb18-58"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-58" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb18-59"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-59" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb18-60"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-60" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
+<span id="cb18-61"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-61" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb18-62"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-62" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb18-63"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-63" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb18-64"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-64" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb18-65"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-65" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
+<span id="cb18-66"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-66" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
+<span id="cb18-67"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-67" tabindex="-1"></a>      }</span>
+<span id="cb18-68"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-68" tabindex="-1"></a>      </span>
+<span id="cb18-69"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-69" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb18-70"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-70" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb18-71"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-71" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb18-72"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-72" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
+<span id="cb18-73"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-73" tabindex="-1"></a>      </span>
+<span id="cb18-74"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-74" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
+<span id="cb18-75"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-75" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
+<span id="cb18-76"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-76" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="dv">0</span> <span class="cf">else</span> <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
+<span id="cb18-77"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-77" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
+<span id="cb18-78"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-78" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
+<span id="cb18-79"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-79" tabindex="-1"></a>      </span>
+<span id="cb18-80"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-80" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
+<span id="cb18-81"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-81" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb18-82"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-82" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
+<span id="cb18-83"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-83" tabindex="-1"></a>      </span>
+<span id="cb18-84"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-84" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
+<span id="cb18-85"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-85" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb18-86"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-86" tabindex="-1"></a>    }</span>
+<span id="cb18-87"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-87" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb18-88"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-88" tabindex="-1"></a>  }</span>
+<span id="cb18-89"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-89" tabindex="-1"></a>  </span>
+<span id="cb18-90"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-90" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
+<span id="cb18-91"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-91" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
+<span id="cb18-92"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-92" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) <span class="cn">NA</span> <span class="cf">else</span> <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
+<span id="cb18-93"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-93" tabindex="-1"></a>  })</span>
+<span id="cb18-94"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-94" tabindex="-1"></a>  </span>
+<span id="cb18-95"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-95" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb18-96"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-96" tabindex="-1"></a>}</span>
+<span id="cb18-97"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-97" tabindex="-1"></a></span>
+<span id="cb18-98"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-98" tabindex="-1"></a><span class="co"># Run Q-Learning with function approximation</span></span>
+<span id="cb18-99"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-99" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb18-100"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-100" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb18-101"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-101" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
+<span id="cb18-102"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-102" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span>
+<span id="cb18-103"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-103" tabindex="-1"></a></span>
+<span id="cb18-104"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-104" tabindex="-1"></a><span class="co"># Visualize policy</span></span>
+<span id="cb18-105"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-105" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb18-106"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-106" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb18-107"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-107" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
+<span id="cb18-108"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-108" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
+<span id="cb18-109"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-109" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb18-110"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-110" tabindex="-1"></a>)</span>
+<span id="cb18-111"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-111" tabindex="-1"></a>policy_df<span class="sc">$</span>Policy[n_states] <span class="ot">&lt;-</span> <span class="cn">NA</span>  <span class="co"># Terminal state</span></span>
+<span id="cb18-112"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-112" tabindex="-1"></a></span>
+<span id="cb18-113"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-113" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
+<span id="cb18-114"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-114" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-115"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-115" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-116"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-116" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-117"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-117" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-118"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-118" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb18-119"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-119" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb18-120"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-120" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb18-121"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-121" tabindex="-1"></a></span>
+<span id="cb18-122"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-122" tabindex="-1"></a><span class="co"># Visualize cumulative rewards</span></span>
+<span id="cb18-123"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-123" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb18-124"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-124" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb18-125"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-125" tabindex="-1"></a>  <span class="at">Reward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
+<span id="cb18-126"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-126" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb18-127"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-127" tabindex="-1"></a>)</span>
+<span id="cb18-128"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-128" tabindex="-1"></a></span>
+<span id="cb18-129"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#cb18-129" tabindex="-1"></a>policy_plot</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/06-Q_FA.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/06-Q_FA.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
