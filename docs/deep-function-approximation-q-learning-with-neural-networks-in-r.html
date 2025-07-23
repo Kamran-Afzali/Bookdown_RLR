@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 8 Deep Function Approximation: Q-Learning with Neural Networks in R | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 8 Deep Function Approximation: Q-Learning with Neural Networks in R | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 8 Deep Function Approximation: Q-Learning with Neural Networks in R | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 8 Deep Function Approximation: Q-Learning with Neural Networks in R | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-07-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.3</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.4</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.5</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="deep-function-approximation-q-learning-with-neural-networks-in-r" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Deep Function Approximation: Q-Learning with Neural Networks in R<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#deep-function-approximation-q-learning-with-neural-networks-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-6" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Introduction<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Our exploration of function approximation in reinforcement learning has progressed from linear models to ensemble methods, each offering increasing sophistication in capturing complex relationships between states, actions, and their values. Neural networks represent the natural next step in this evolution, providing the theoretical foundation for modern deep reinforcement learning while maintaining practical implementability in R.</p>
+<p>Neural network function approximation transcends the limitations of both linear models and tree-based methods by learning hierarchical feature representations automatically. Where linear models assume additive relationships and Random Forests rely on axis-aligned splits, neural networks can discover arbitrary non-linear transformations of the input space. This capability proves particularly valuable in reinforcement learning, where the optimal action-value function often exhibits complex dependencies that resist simple parametric forms.</p>
+<p>This post demonstrates Q-Learning with neural network function approximation using R’s <code>nnet</code> package, continuing our 10-state environment while examining how artificial neural networks learn Q-value approximations. We explore the theoretical foundations, implementation challenges, and practical considerations that distinguish neural network approaches from their predecessors.</p>
+</div>
+<div id="theoretical-foundation" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> Theoretical Foundation<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Neural network function approximation replaces our previous parameterizations with a multi-layered composition of non-linear transformations. The action-value function becomes:</p>
+<p><span class="math display">\[
+Q(s, a; \theta) = f_L(W_L f_{L-1}(W_{L-1} \cdots f_1(W_1 \phi(s, a) + b_1) \cdots + b_{L-1}) + b_L)
+\]</span></p>
+<p>where <span class="math inline">\(f_i\)</span> represents the activation function at layer <span class="math inline">\(i\)</span>, <span class="math inline">\(W_i\)</span> and <span class="math inline">\(b_i\)</span> are weight matrices and bias vectors, and <span class="math inline">\(\theta = \{W_1, b_1, \ldots, W_L, b_L\}\)</span> encompasses all trainable parameters. This hierarchical structure enables the network to learn increasingly abstract representations of the state-action space.</p>
+<div id="universal-approximation-and-expressivity" class="section level3 hasAnchor" number="8.2.1">
+<h3><span class="header-section-number">8.2.1</span> Universal Approximation and Expressivity<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The theoretical appeal of neural networks stems from universal approximation theorems, which guarantee that feedforward networks with sufficient hidden units can approximate any continuous function to arbitrary precision. In the context of Q-Learning, this suggests that neural networks can, in principle, represent any action-value function arising from a Markov decision process.</p>
+<p>For our implementation, we employ a single hidden layer architecture with sigmoid activation functions:</p>
+<p><span class="math display">\[
+Q(s, a; \theta) = W_2 \sigma(W_1 \phi(s, a) + b_1) + b_2
+\]</span></p>
+<p>where <span class="math inline">\(\sigma(z) = \frac{1}{1 + e^{-z}}\)</span> is the sigmoid function, providing the non-linearity necessary for complex function approximation.</p>
+</div>
+<div id="gradient-based-learning" class="section level3 hasAnchor" number="8.2.2">
+<h3><span class="header-section-number">8.2.2</span> Gradient-Based Learning<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Neural network training relies on backpropagation to compute gradients of the temporal difference error with respect to all network parameters. The loss function for a single transition becomes:</p>
+<p><span class="math display">\[
+L(\theta) = \frac{1}{2}(y - Q(s, a; \theta))^2
+\]</span></p>
+<p>where <span class="math inline">\(y = r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;; \theta)\)</span> is the TD target. The gradient with respect to parameters <span class="math inline">\(\theta\)</span> follows the chain rule:</p>
+<p><span class="math display">\[
+\nabla_\theta L(\theta) = (Q(s, a; \theta) - y) \nabla_\theta Q(s, a; \theta)
+\]</span></p>
+<p>This gradient guides parameter updates through standard optimization algorithms, though the non-convex nature of neural network loss surfaces introduces challenges absent in linear approximation.</p>
+</div>
+<div id="comparison-with-previous-approaches" class="section level3 hasAnchor" number="8.2.3">
+<h3><span class="header-section-number">8.2.3</span> Comparison with Previous Approaches<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Neural networks offer several theoretical advantages over linear and tree-based methods. Unlike linear approximation, they can learn feature interactions without explicit engineering. Unlike Random Forests, they provide smooth function approximations suitable for gradient-based optimization. However, this flexibility comes with increased computational complexity and potential instability during training.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="22%" />
+<col width="30%" />
+<col width="23%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Characteristic</strong></th>
+<th><strong>Linear Approximation</strong></th>
+<th><strong>Random Forest</strong></th>
+<th><strong>Neural Network</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Function Class</strong></td>
+<td>Linear combinations</td>
+<td>Piecewise constant</td>
+<td>Universal approximators</td>
+</tr>
+<tr class="even">
+<td><strong>Feature Learning</strong></td>
+<td>None</td>
+<td>Implicit via splits</td>
+<td>Explicit representation learning</td>
+</tr>
+<tr class="odd">
+<td><strong>Optimization</strong></td>
+<td>Convex (guaranteed convergence)</td>
+<td>Non-parametric</td>
+<td>Non-convex (local minima)</td>
+</tr>
+<tr class="even">
+<td><strong>Interpretability</strong></td>
+<td>High (weight inspection)</td>
+<td>Moderate (tree visualization)</td>
+<td>Low (distributed representations)</td>
+</tr>
+<tr class="odd">
+<td><strong>Sample Efficiency</strong></td>
+<td>High</td>
+<td>Moderate</td>
+<td>Variable (depends on architecture)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="r-implementation-2" class="section level2 hasAnchor" number="8.3">
+<h2><span class="header-section-number">8.3</span> R Implementation<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Our neural network implementation builds upon the established environment while introducing the complexities of gradient-based optimization and network training. The <code>nnet</code> package provides a lightweight implementation suitable for demonstrating core concepts without the overhead of deep learning frameworks.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb20-2"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-2" tabindex="-1"></a><span class="fu">library</span>(nnet)</span>
+<span id="cb20-3"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb20-4"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-5" tabindex="-1"></a><span class="co"># Environment setup (consistent with previous implementations)</span></span>
+<span id="cb20-6"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-6" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb20-7"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-7" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb20-8"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-8" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb20-9"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-9" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb20-10"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-10" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-11" tabindex="-1"></a><span class="co"># Environment: transition and reward models</span></span>
+<span id="cb20-12"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-12" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb20-13"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-13" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb20-14"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-14" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb20-15"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-15" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-16" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb20-17"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-17" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb20-18"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-18" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb20-19"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-19" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb20-20"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-20" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb20-21"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-21" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb20-22"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-22" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb20-23"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-23" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb20-24"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-24" tabindex="-1"></a>  }</span>
+<span id="cb20-25"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-25" tabindex="-1"></a>}</span>
+<span id="cb20-26"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-26" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-27" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb20-28"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-28" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb20-29"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-29" tabindex="-1"></a></span>
+<span id="cb20-30"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-30" tabindex="-1"></a><span class="co"># Sampling function</span></span>
+<span id="cb20-31"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-31" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb20-32"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-32" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb20-33"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-33" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb20-34"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-34" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb20-35"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-35" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb20-36"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-36" tabindex="-1"></a>}</span>
+<span id="cb20-37"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-37" tabindex="-1"></a></span>
+<span id="cb20-38"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-38" tabindex="-1"></a><span class="co"># Feature encoding for neural network input</span></span>
+<span id="cb20-39"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-39" tabindex="-1"></a>encode_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
+<span id="cb20-40"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-40" tabindex="-1"></a>  state_vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states)</span>
+<span id="cb20-41"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-41" tabindex="-1"></a>  action_vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_actions)</span>
+<span id="cb20-42"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-42" tabindex="-1"></a>  state_vec[s] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb20-43"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-43" tabindex="-1"></a>  action_vec[a] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb20-44"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-44" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(state_vec, action_vec))</span>
+<span id="cb20-45"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-45" tabindex="-1"></a>}</span>
+<span id="cb20-46"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-46" tabindex="-1"></a></span>
+<span id="cb20-47"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-47" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">+</span> n_actions</span>
+<span id="cb20-48"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-48" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-49" tabindex="-1"></a><span class="co"># Q-Learning with neural network function approximation</span></span>
+<span id="cb20-50"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-50" tabindex="-1"></a>q_learning_nn <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, <span class="at">hidden_size =</span> <span class="dv">10</span>, </span>
+<span id="cb20-51"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-51" tabindex="-1"></a>                          <span class="at">retrain_freq =</span> <span class="dv">10</span>, <span class="at">min_samples =</span> <span class="dv">50</span>) {</span>
+<span id="cb20-52"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-52" tabindex="-1"></a>  <span class="co"># Initialize training data storage</span></span>
+<span id="cb20-53"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-53" tabindex="-1"></a>  q_data_x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> n_features)</span>
+<span id="cb20-54"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-54" tabindex="-1"></a>  q_data_y <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">0</span>)</span>
+<span id="cb20-55"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-55" tabindex="-1"></a>  q_model <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb20-56"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-56" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb20-57"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-57" tabindex="-1"></a>  training_losses <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb20-58"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-58" tabindex="-1"></a>  </span>
+<span id="cb20-59"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-59" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb20-60"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-60" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)  <span class="co"># Start from non-terminal state</span></span>
+<span id="cb20-61"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-61" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb20-62"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-62" tabindex="-1"></a>    </span>
+<span id="cb20-63"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-63" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
+<span id="cb20-64"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-64" tabindex="-1"></a>      <span class="co"># Predict Q-values for all actions</span></span>
+<span id="cb20-65"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-65" tabindex="-1"></a>      q_preds <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) {</span>
+<span id="cb20-66"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-66" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">encode_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb20-67"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-67" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(q_model)) {</span>
+<span id="cb20-68"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-68" tabindex="-1"></a>          <span class="fu">as.numeric</span>(<span class="fu">predict</span>(q_model, <span class="fu">as.data.frame</span>(<span class="fu">t</span>(x))))</span>
+<span id="cb20-69"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-69" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb20-70"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-70" tabindex="-1"></a>          <span class="fu">runif</span>(<span class="dv">1</span>)  <span class="co"># Random initialization</span></span>
+<span id="cb20-71"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-71" tabindex="-1"></a>        }</span>
+<span id="cb20-72"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-72" tabindex="-1"></a>      })</span>
+<span id="cb20-73"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-73" tabindex="-1"></a>      </span>
+<span id="cb20-74"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-74" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb20-75"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-75" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb20-76"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-76" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb20-77"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-77" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb20-78"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-78" tabindex="-1"></a>        <span class="fu">which.max</span>(q_preds)</span>
+<span id="cb20-79"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-79" tabindex="-1"></a>      }</span>
+<span id="cb20-80"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-80" tabindex="-1"></a>      </span>
+<span id="cb20-81"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-81" tabindex="-1"></a>      <span class="co"># Take action and observe outcome</span></span>
+<span id="cb20-82"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-82" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb20-83"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-83" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb20-84"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-84" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb20-85"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-85" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
+<span id="cb20-86"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-86" tabindex="-1"></a>      </span>
+<span id="cb20-87"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-87" tabindex="-1"></a>      <span class="co"># Compute TD target</span></span>
+<span id="cb20-88"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-88" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) {</span>
+<span id="cb20-89"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-89" tabindex="-1"></a>        <span class="dv">0</span></span>
+<span id="cb20-90"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-90" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb20-91"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-91" tabindex="-1"></a>        <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) {</span>
+<span id="cb20-92"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-92" tabindex="-1"></a>          x_next <span class="ot">&lt;-</span> <span class="fu">encode_features</span>(s_prime, a_, n_states, n_actions)</span>
+<span id="cb20-93"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-93" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(q_model)) {</span>
+<span id="cb20-94"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-94" tabindex="-1"></a>            <span class="fu">as.numeric</span>(<span class="fu">predict</span>(q_model, <span class="fu">as.data.frame</span>(<span class="fu">t</span>(x_next))))</span>
+<span id="cb20-95"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-95" tabindex="-1"></a>          } <span class="cf">else</span> {</span>
+<span id="cb20-96"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-96" tabindex="-1"></a>            <span class="dv">0</span></span>
+<span id="cb20-97"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-97" tabindex="-1"></a>          }</span>
+<span id="cb20-98"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-98" tabindex="-1"></a>        }))</span>
+<span id="cb20-99"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-99" tabindex="-1"></a>      }</span>
+<span id="cb20-100"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-100" tabindex="-1"></a>      </span>
+<span id="cb20-101"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-101" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
+<span id="cb20-102"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-102" tabindex="-1"></a>      </span>
+<span id="cb20-103"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-103" tabindex="-1"></a>      <span class="co"># Store training example</span></span>
+<span id="cb20-104"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-104" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">encode_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb20-105"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-105" tabindex="-1"></a>      q_data_x <span class="ot">&lt;-</span> <span class="fu">rbind</span>(q_data_x, x)</span>
+<span id="cb20-106"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-106" tabindex="-1"></a>      q_data_y <span class="ot">&lt;-</span> <span class="fu">c</span>(q_data_y, target)</span>
+<span id="cb20-107"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-107" tabindex="-1"></a>      </span>
+<span id="cb20-108"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-108" tabindex="-1"></a>      <span class="co"># Train neural network periodically</span></span>
+<span id="cb20-109"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-109" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(q_data_x) <span class="sc">&gt;=</span> min_samples <span class="sc">&amp;&amp;</span> ep <span class="sc">%%</span> retrain_freq <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb20-110"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-110" tabindex="-1"></a>        <span class="co"># Suppress nnet output for cleaner execution</span></span>
+<span id="cb20-111"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-111" tabindex="-1"></a>        <span class="fu">capture.output</span>({</span>
+<span id="cb20-112"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-112" tabindex="-1"></a>          q_model <span class="ot">&lt;-</span> <span class="fu">nnet</span>(</span>
+<span id="cb20-113"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-113" tabindex="-1"></a>            <span class="at">x =</span> q_data_x,</span>
+<span id="cb20-114"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-114" tabindex="-1"></a>            <span class="at">y =</span> q_data_y,</span>
+<span id="cb20-115"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-115" tabindex="-1"></a>            <span class="at">size =</span> hidden_size,</span>
+<span id="cb20-116"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-116" tabindex="-1"></a>            <span class="at">linout =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-117"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-117" tabindex="-1"></a>            <span class="at">maxit =</span> <span class="dv">100</span>,</span>
+<span id="cb20-118"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-118" tabindex="-1"></a>            <span class="at">decay =</span> <span class="fl">0.01</span>,</span>
+<span id="cb20-119"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-119" tabindex="-1"></a>            <span class="at">trace =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-120"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-120" tabindex="-1"></a>          )</span>
+<span id="cb20-121"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-121" tabindex="-1"></a>        })</span>
+<span id="cb20-122"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-122" tabindex="-1"></a>        </span>
+<span id="cb20-123"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-123" tabindex="-1"></a>        <span class="co"># Track training loss</span></span>
+<span id="cb20-124"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-124" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(q_model)) {</span>
+<span id="cb20-125"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-125" tabindex="-1"></a>          predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(q_model, <span class="fu">as.data.frame</span>(q_data_x))</span>
+<span id="cb20-126"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-126" tabindex="-1"></a>          mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((predictions <span class="sc">-</span> q_data_y)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb20-127"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-127" tabindex="-1"></a>          training_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(training_losses, mse)</span>
+<span id="cb20-128"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-128" tabindex="-1"></a>        }</span>
+<span id="cb20-129"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-129" tabindex="-1"></a>      }</span>
+<span id="cb20-130"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-130" tabindex="-1"></a>      </span>
+<span id="cb20-131"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-131" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
+<span id="cb20-132"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-132" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb20-133"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-133" tabindex="-1"></a>    }</span>
+<span id="cb20-134"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-134" tabindex="-1"></a>    </span>
+<span id="cb20-135"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-135" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb20-136"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-136" tabindex="-1"></a>  }</span>
+<span id="cb20-137"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-137" tabindex="-1"></a>  </span>
+<span id="cb20-138"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-138" tabindex="-1"></a>  <span class="co"># Derive final policy</span></span>
+<span id="cb20-139"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-139" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>(n_states<span class="dv">-1</span>), <span class="cf">function</span>(s) {</span>
+<span id="cb20-140"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-140" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(q_model)) {</span>
+<span id="cb20-141"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-141" tabindex="-1"></a>      q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) {</span>
+<span id="cb20-142"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-142" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">encode_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb20-143"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-143" tabindex="-1"></a>        <span class="fu">as.numeric</span>(<span class="fu">predict</span>(q_model, <span class="fu">as.data.frame</span>(<span class="fu">t</span>(x))))</span>
+<span id="cb20-144"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-144" tabindex="-1"></a>      })</span>
+<span id="cb20-145"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-145" tabindex="-1"></a>      <span class="fu">which.max</span>(q_vals)</span>
+<span id="cb20-146"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-146" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb20-147"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-147" tabindex="-1"></a>      <span class="dv">1</span>  <span class="co"># Default action</span></span>
+<span id="cb20-148"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-148" tabindex="-1"></a>    }</span>
+<span id="cb20-149"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-149" tabindex="-1"></a>  })</span>
+<span id="cb20-150"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-150" tabindex="-1"></a>  </span>
+<span id="cb20-151"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-151" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">model =</span> q_model, <span class="at">policy =</span> <span class="fu">c</span>(policy, <span class="cn">NA</span>), <span class="at">rewards =</span> rewards,</span>
+<span id="cb20-152"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-152" tabindex="-1"></a>       <span class="at">training_losses =</span> training_losses,</span>
+<span id="cb20-153"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-153" tabindex="-1"></a>       <span class="at">training_data =</span> <span class="fu">list</span>(<span class="at">x =</span> q_data_x, <span class="at">y =</span> q_data_y))</span>
+<span id="cb20-154"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-154" tabindex="-1"></a>}</span>
+<span id="cb20-155"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-155" tabindex="-1"></a></span>
+<span id="cb20-156"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-156" tabindex="-1"></a><span class="co"># Run Q-Learning with neural network approximation</span></span>
+<span id="cb20-157"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-157" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb20-158"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-158" tabindex="-1"></a>nn_result <span class="ot">&lt;-</span> <span class="fu">q_learning_nn</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, <span class="at">hidden_size =</span> <span class="dv">10</span>)</span>
+<span id="cb20-159"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-159" tabindex="-1"></a>nn_policy <span class="ot">&lt;-</span> nn_result<span class="sc">$</span>policy</span>
+<span id="cb20-160"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-160" tabindex="-1"></a>nn_rewards <span class="ot">&lt;-</span> nn_result<span class="sc">$</span>rewards</span>
+<span id="cb20-161"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-161" tabindex="-1"></a></span>
+<span id="cb20-162"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-162" tabindex="-1"></a><span class="co"># Visualize learned policy</span></span>
+<span id="cb20-163"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-163" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-164"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-164" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
+<span id="cb20-165"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-165" tabindex="-1"></a>  <span class="at">Policy =</span> nn_policy,</span>
+<span id="cb20-166"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-166" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning NN&quot;</span></span>
+<span id="cb20-167"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-167" tabindex="-1"></a>)</span>
+<span id="cb20-168"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-168" tabindex="-1"></a></span>
+<span id="cb20-169"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-169" tabindex="-1"></a>policy_plot_nn <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df[<span class="dv">1</span><span class="sc">:</span>(n_states<span class="dv">-1</span>), ], <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
+<span id="cb20-170"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-170" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">&quot;coral&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-171"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-171" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;coral&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb20-172"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-172" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb20-173"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-173" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-174"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-174" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Neural Network Approximation&quot;</span>,</span>
+<span id="cb20-175"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-175" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, </span>
+<span id="cb20-176"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-176" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Action&quot;</span></span>
+<span id="cb20-177"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-177" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-178"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-178" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb20-179"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-179" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">2.5</span>)) <span class="sc">+</span></span>
+<span id="cb20-180"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-180" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb20-181"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-181" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb20-182"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-182" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb20-183"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-183" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb20-184"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-184" tabindex="-1"></a>  )</span>
+<span id="cb20-185"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-185" tabindex="-1"></a></span>
+<span id="cb20-186"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-186" tabindex="-1"></a><span class="co"># Learning curve with smoothing</span></span>
+<span id="cb20-187"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-187" tabindex="-1"></a>rewards_smooth <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(nn_rewards))</span>
+<span id="cb20-188"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-188" tabindex="-1"></a>window_size <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb20-189"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-189" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(nn_rewards)) {</span>
+<span id="cb20-190"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-190" tabindex="-1"></a>  start_idx <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, i <span class="sc">-</span> window_size <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb20-191"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-191" tabindex="-1"></a>  rewards_smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(nn_rewards[start_idx<span class="sc">:</span>i])</span>
+<span id="cb20-192"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-192" tabindex="-1"></a>}</span>
+<span id="cb20-193"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-193" tabindex="-1"></a></span>
+<span id="cb20-194"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-194" tabindex="-1"></a>reward_df_nn <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-195"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-195" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb20-196"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-196" tabindex="-1"></a>  <span class="at">Reward =</span> rewards_smooth,</span>
+<span id="cb20-197"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-197" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning NN&quot;</span></span>
+<span id="cb20-198"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-198" tabindex="-1"></a>)</span>
+<span id="cb20-199"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-199" tabindex="-1"></a></span>
+<span id="cb20-200"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-200" tabindex="-1"></a>reward_plot_nn <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reward_df_nn, <span class="fu">aes</span>(<span class="at">x =</span> Episode, <span class="at">y =</span> Reward)) <span class="sc">+</span></span>
+<span id="cb20-201"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-201" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;coral&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb20-202"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-202" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb20-203"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-203" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-204"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-204" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Learning Curve: Q-Learning with Neural Network (50-episode moving average)&quot;</span>,</span>
+<span id="cb20-205"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-205" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
+<span id="cb20-206"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-206" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Average Reward&quot;</span></span>
+<span id="cb20-207"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-207" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-208"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-208" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb20-209"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-209" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb20-210"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-210" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb20-211"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-211" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb20-212"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-212" tabindex="-1"></a>  )</span>
+<span id="cb20-213"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-213" tabindex="-1"></a></span>
+<span id="cb20-214"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-214" tabindex="-1"></a><span class="co"># Training loss evolution</span></span>
+<span id="cb20-215"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-215" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(nn_result<span class="sc">$</span>training_losses) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb20-216"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-216" tabindex="-1"></a>  loss_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-217"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-217" tabindex="-1"></a>    <span class="at">Update =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(nn_result<span class="sc">$</span>training_losses),</span>
+<span id="cb20-218"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-218" tabindex="-1"></a>    <span class="at">Loss =</span> nn_result<span class="sc">$</span>training_losses</span>
+<span id="cb20-219"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-219" tabindex="-1"></a>  )</span>
+<span id="cb20-220"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-220" tabindex="-1"></a>  </span>
+<span id="cb20-221"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-221" tabindex="-1"></a>  loss_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(loss_df, <span class="fu">aes</span>(<span class="at">x =</span> Update, <span class="at">y =</span> Loss)) <span class="sc">+</span></span>
+<span id="cb20-222"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-222" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb20-223"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-223" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb20-224"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-224" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb20-225"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-225" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Neural Network Training Loss Evolution&quot;</span>,</span>
+<span id="cb20-226"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-226" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;Training Update&quot;</span>,</span>
+<span id="cb20-227"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-227" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;Mean Squared Error&quot;</span></span>
+<span id="cb20-228"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-228" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb20-229"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-229" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb20-230"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-230" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb20-231"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-231" tabindex="-1"></a>      <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb20-232"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-232" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb20-233"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-233" tabindex="-1"></a>    )</span>
+<span id="cb20-234"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-234" tabindex="-1"></a>  </span>
+<span id="cb20-235"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-235" tabindex="-1"></a>  <span class="fu">print</span>(loss_plot)</span>
+<span id="cb20-236"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-236" tabindex="-1"></a>}</span>
+<span id="cb20-237"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-237" tabindex="-1"></a></span>
+<span id="cb20-238"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-238" tabindex="-1"></a><span class="co"># Display main plots</span></span>
+<span id="cb20-239"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-239" tabindex="-1"></a><span class="fu">print</span>(policy_plot_nn)</span>
+<span id="cb20-240"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-240" tabindex="-1"></a><span class="fu">print</span>(reward_plot_nn)</span>
+<span id="cb20-241"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-241" tabindex="-1"></a></span>
+<span id="cb20-242"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-242" tabindex="-1"></a><span class="co"># Model diagnostics and analysis</span></span>
+<span id="cb20-243"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-243" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(nn_result<span class="sc">$</span>model)) {</span>
+<span id="cb20-244"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-244" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Neural Network Model Summary:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-245"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-245" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Architecture: Input(&quot;</span>, n_features, <span class="st">&quot;) -&gt; Hidden(&quot;</span>, nn_result<span class="sc">$</span>model<span class="sc">$</span>n[<span class="dv">2</span>], <span class="st">&quot;) -&gt; Output(1)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-246"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-246" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Total parameters:&quot;</span>, <span class="fu">length</span>(nn_result<span class="sc">$</span>model<span class="sc">$</span>wts), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-247"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-247" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Training examples:&quot;</span>, <span class="fu">nrow</span>(nn_result<span class="sc">$</span>training_data<span class="sc">$</span>x), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-248"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-248" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Final training loss:&quot;</span>, <span class="fu">tail</span>(nn_result<span class="sc">$</span>training_losses, <span class="dv">1</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-249"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-249" tabindex="-1"></a>  </span>
+<span id="cb20-250"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-250" tabindex="-1"></a>  <span class="co"># Weight analysis</span></span>
+<span id="cb20-251"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-251" tabindex="-1"></a>  weights <span class="ot">&lt;-</span> nn_result<span class="sc">$</span>model<span class="sc">$</span>wts</span>
+<span id="cb20-252"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-252" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Weight statistics:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-253"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-253" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Mean:&quot;</span>, <span class="fu">round</span>(<span class="fu">mean</span>(weights), <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-254"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-254" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Standard deviation:&quot;</span>, <span class="fu">round</span>(<span class="fu">sd</span>(weights), <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-255"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-255" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Range: [&quot;</span>, <span class="fu">round</span>(<span class="fu">min</span>(weights), <span class="dv">4</span>), <span class="st">&quot;,&quot;</span>, <span class="fu">round</span>(<span class="fu">max</span>(weights), <span class="dv">4</span>), <span class="st">&quot;]</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb20-256"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#cb20-256" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="analysis-and-interpretation" class="section level2 hasAnchor" number="8.4">
+<h2><span class="header-section-number">8.4</span> Analysis and Interpretation<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="learning-dynamics" class="section level3 hasAnchor" number="8.4.1">
+<h3><span class="header-section-number">8.4.1</span> Learning Dynamics<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Neural network function approximation introduces several unique characteristics compared to linear and tree-based methods. The non-convex optimization landscape means that training can exhibit complex dynamics, including periods of rapid improvement followed by plateaus. The learning curve often shows more volatility than linear methods due to the continuous parameter updates and potential for local minima.</p>
+</div>
+<div id="function-representation" class="section level3 hasAnchor" number="8.4.2">
+<h3><span class="header-section-number">8.4.2</span> Function Representation<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Unlike Random Forests that learn piecewise constant approximations, neural networks produce smooth function approximations. This continuity can be advantageous for policy learning, as small changes in state typically result in small changes in Q-values. The hidden layer learns intermediate representations that capture relevant features for action-value estimation.</p>
+</div>
+<div id="generalization-properties" class="section level3 hasAnchor" number="8.4.3">
+<h3><span class="header-section-number">8.4.3</span> Generalization Properties<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Neural networks excel at discovering relevant patterns in the state-action space without explicit feature engineering. The hidden units automatically learn combinations of input features that prove useful for Q-value prediction. This automatic feature discovery becomes increasingly valuable as problem complexity grows.</p>
+</div>
+<div id="training-stability" class="section level3 hasAnchor" number="8.4.4">
+<h3><span class="header-section-number">8.4.4</span> Training Stability<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The batch retraining approach helps stabilize learning compared to online neural network updates, which can suffer from catastrophic forgetting. However, the periodic retraining introduces discontinuities in the learned function that can temporarily disrupt policy performance.</p>
+</div>
+</div>
+<div id="practical-considerations" class="section level2 hasAnchor" number="8.5">
+<h2><span class="header-section-number">8.5</span> Practical Considerations<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="architecture-selection" class="section level3 hasAnchor" number="8.5.1">
+<h3><span class="header-section-number">8.5.1</span> Architecture Selection<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The choice of network architecture significantly impacts performance. Too few hidden units may underfit the true Q-function, while too many can lead to overfitting with limited training data. Our single hidden layer with 10 units provides a reasonable balance for the 10-state environment.</p>
+</div>
+<div id="training-frequency" class="section level3 hasAnchor" number="8.5.2">
+<h3><span class="header-section-number">8.5.2</span> Training Frequency<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The retraining frequency presents a trade-off between computational efficiency and learning responsiveness. More frequent retraining provides better adaptation to new experience but increases computational cost. The optimal frequency depends on the environment complexity and available computational resources.</p>
+</div>
+<div id="regularization" class="section level3 hasAnchor" number="8.5.3">
+<h3><span class="header-section-number">8.5.3</span> Regularization<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Neural networks benefit from regularization techniques to prevent overfitting. Our implementation includes weight decay (L2 regularization) to encourage smaller weights and improve generalization. Other techniques like dropout or early stopping could further enhance performance.</p>
+</div>
+<div id="initialization-and-convergence" class="section level3 hasAnchor" number="8.5.4">
+<h3><span class="header-section-number">8.5.4</span> Initialization and Convergence<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Neural network training depends critically on weight initialization and optimization parameters. Poor initialization can trap the network in suboptimal local minima, while inappropriate learning rates can cause divergence or slow convergence.</p>
+</div>
+</div>
+<div id="comparison-across-function-approximation-methods" class="section level2 hasAnchor" number="8.6">
+<h2><span class="header-section-number">8.6</span> Comparison Across Function Approximation Methods<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Our progression from tabular to linear to ensemble to neural network methods illustrates the evolution of function approximation in reinforcement learning. Each method offers distinct advantages for different problem characteristics.</p>
+<p>Tabular methods provide exact representation but fail to scale. Linear methods offer guaranteed convergence and interpretability but assume additive relationships. Random Forests handle non-linearities while maintaining interpretability but produce discontinuous approximations. Neural networks provide universal approximation capabilities and smooth functions but introduce optimization challenges and reduced interpretability.</p>
+<p>The choice among methods depends on problem requirements, available data, computational constraints, and interpretability needs. Neural networks shine when function complexity exceeds simpler methods’ capabilities and sufficient training data is available.</p>
+</div>
+<div id="future-directions" class="section level2 hasAnchor" number="8.7">
+<h2><span class="header-section-number">8.7</span> Future Directions<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This exploration establishes the foundation for more advanced neural network approaches in reinforcement learning. Extensions could include deeper architectures, convolutional networks for spatial problems, recurrent networks for partially observable environments, or modern techniques like attention mechanisms.</p>
+<p>The theoretical framework developed here scales naturally to these more complex architectures, with the core principles of temporal difference learning and gradient-based optimization remaining constant while the function approximation capabilities expand dramatically.</p>
+</div>
+<div id="conclusion-5" class="section level2 hasAnchor" number="8.8">
+<h2><span class="header-section-number">8.8</span> Conclusion<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Neural network function approximation represents a significant step toward the sophisticated methods underlying modern deep reinforcement learning. While maintaining the theoretical foundations of Q-Learning, neural networks provide the flexibility to tackle complex environments that challenge simpler approximation methods.</p>
+<p>The implementation demonstrates how classical reinforcement learning principles extend naturally to neural network settings, preserving core algorithmic structure while enhancing representational power. This foundation enables practitioners to understand and implement more advanced methods building on these fundamental concepts.</p>
+<p>The journey through different function approximation approaches reveals the rich landscape of reinforcement learning methods, each contributing unique insights and capabilities. Neural networks, as universal approximators, provide the theoretical and practical foundation for tackling increasingly complex decision-making problems across diverse domains.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/08-Q_FA_NN.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/08-Q_FA_NN.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
