@@ -4,7 +4,6 @@ author: "Kamran Afzalui"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
-
 # **Understanding Reinforcement Learning: From Bandits to Policy Optimization**
 
 ## Introduction to Reinforcement Learning
@@ -21,7 +20,7 @@ Despite its simplicity, the bandit framework introduces crucial ideas such as re
 
 The limitations of bandit models become evident when we consider sequential decision-making problems where actions influence future states and rewards. This leads to the formalism of Markov Decision Processes (MDPs), which model environments through states $S$, actions $A$, transition probabilities $P(s'|s, a)$, rewards $R(s, a)$, and a discount factor $\gamma \in [0, 1]$. The Markov property assumes that the future is independent of the past given the present state, simplifying the dynamics and enabling tractable analysis.
 
-The agent’s goal is to learn an optimal policy $\pi^*(s)$ that maximizes the expected cumulative return:
+The agent's goal is to learn an optimal policy $\pi^*(s)$ that maximizes the expected cumulative return:
 
 $G_t = \mathbb{E}_\pi \left[ \sum_{k=0}^\infty \gamma^k R_{t+k+1} \right]$
 
@@ -41,6 +40,7 @@ To frame this spectrum of approaches clearly, the table below summarizes key RL 
 | Dynamic Programming           | Yes           | Yes            | Yes           | No                | Yes                     | Known model              | Value Iteration, Policy Iteration |
 | Monte Carlo                   | No            | Yes            | Yes           | No                | Yes (episodic)          | Episodic tasks           | MC Prediction, MC Control         |
 | TD Learning                   | No            | Yes            | Yes           | Moderate          | Yes                     | Ongoing tasks            | SARSA, Q-Learning                 |
+| Dyna-style Methods            | Yes (learned) | Yes            | Yes           | High              | Yes (with perfect model)| Sample-limited tasks     | Dyna-Q, Dyna+, Prioritized Sweeping |
 | Q-Learning + Function Approx. | No            | Yes            | Yes           | Moderate          | Not always (non-linear) | High-dimensional spaces  | DQN                               |
 | Policy Gradient               | No            | Yes            | Maybe         | Low               | Local Optimum           | Continuous action spaces | REINFORCE, PPO, A2C               |
 | Actor-Critic                  | No            | Yes            | Yes           | Moderate          | Local Optimum           | Most RL settings         | A2C, DDPG, SAC                    |
@@ -62,7 +62,29 @@ Although DP methods guarantee convergence to the optimal policy, they are rarely
 
 When the model is unknown, we turn to model-free methods that learn directly from sampled experience. Monte Carlo methods estimate the value of policies by averaging the total return over multiple episodes. These methods are simple and intuitive, suitable for episodic environments, but suffer from high variance and are not efficient in online learning scenarios.
 
-Temporal Difference (TD) learning bridges the gap between Monte Carlo and DP by updating value estimates based on partial returns. Algorithms like SARSA and Q-learning fall into this category. SARSA is on-policy, updating values based on the actual trajectory taken, while Q-learning is off-policy, learning about the greedy policy regardless of the agent’s current behavior. These methods do not require waiting until the end of an episode and are thus applicable in ongoing tasks. They offer a tradeoff between bias and variance in value estimation.
+Temporal Difference (TD) learning bridges the gap between Monte Carlo and DP by updating value estimates based on partial returns. Algorithms like SARSA and Q-learning fall into this category. SARSA is on-policy, updating values based on the actual trajectory taken, while Q-learning is off-policy, learning about the greedy policy regardless of the agent's current behavior. These methods do not require waiting until the end of an episode and are thus applicable in ongoing tasks. They offer a tradeoff between bias and variance in value estimation.
+
+### Dyna: Bridging Model-Free and Model-Based Learning
+
+The Dyna architecture, introduced by Richard Sutton, represents an elegant solution to combining model-free learning with model-based planning. Dyna methods simultaneously learn a model of the environment while using that model to generate synthetic experiences for additional learning. This approach addresses a fundamental limitation of pure model-free methods: their sample inefficiency.
+
+The core Dyna algorithm operates through three interleaved processes:
+
+1. **Direct RL**: Learn from real experience using standard model-free methods (e.g., Q-learning)
+2. **Model Learning**: Update the learned model based on observed transitions
+3. **Planning**: Use the learned model to generate simulated experiences and update the value function
+
+The basic Dyna-Q algorithm combines Q-learning with a simple tabular model. After each real experience $(s, a, r, s')$, the agent updates both its Q-values and its model estimates $\hat{R}(s,a)$ and $\hat{T}(s,a)$. The agent then performs several planning steps by randomly sampling previously visited state-action pairs and using the model to generate simulated transitions for additional Q-learning updates.
+
+**Dyna+ and Exploration Bonuses**: The original Dyna-Q algorithm can suffer when the environment changes, as the learned model becomes outdated. Dyna+ addresses this by adding exploration bonuses to state-action pairs that haven't been visited recently, encouraging the agent to re-explore and update its model. The bonus term is typically:
+
+$\text{bonus}(s,a) = \kappa \sqrt{\tau(s,a)}$
+
+where $\kappa$ is a small constant and $\tau(s,a)$ is the time since state-action pair $(s,a)$ was last visited.
+
+**Prioritized Sweeping**: Rather than randomly selecting state-action pairs for planning updates, prioritized sweeping focuses computational resources on the most important updates. It maintains a priority queue of state-action pairs, prioritizing those where the model predicts large changes in value. This targeted approach can significantly improve learning efficiency compared to uniform random planning.
+
+The Dyna framework demonstrates that the dichotomy between model-free and model-based methods is not absolute. By learning and using simple models alongside direct RL, Dyna methods can achieve much better sample efficiency than pure model-free approaches while remaining more robust than methods that rely entirely on learned models.
 
 ### Q-Learning and Function Approximation
 
@@ -88,11 +110,11 @@ Model-based approaches, such as MuZero or Dreamer, offer a complementary strateg
 
 ## Conclusion and Further Directions
 
-Reinforcement Learning has evolved into a mature and diverse field, offering a rich set of tools for decision-making under uncertainty. From simple bandit strategies to deep policy optimization and model-based reasoning, RL provides a versatile framework for learning from interaction. However, key challenges remain: training instability, sample inefficiency, reward mis-specification, and generalization across tasks. These remain active areas of research.
+Reinforcement Learning has evolved into a mature and diverse field, offering a rich set of tools for decision-making under uncertainty. From simple bandit strategies to deep policy optimization and model-based reasoning, RL provides a versatile framework for learning from interaction. The Dyna architecture exemplifies how combining different learning paradigms can yield methods that are both sample-efficient and robust, highlighting the value of hybrid approaches in RL.
 
-A solid understanding of the main categories—such as those outlined in the comparative table—is essential for navigating the RL landscape. Whether one is interested in theoretical foundations, algorithm development, or practical deployment, the key ideas of exploration, value estimation, policy optimization, and model learning form the backbone of modern RL. For further reading, *Reinforcement Learning: An Introduction* by Sutton and Barto remains the canonical text. Online resources like OpenAI's Spinning Up, DeepMind's technical blog, and repositories of papers on arXiv are excellent for staying current with the latest advancements. As artificial agents continue to tackle more complex and dynamic environments, reinforcement learning stands at the forefront of AI research and application.
+However, key challenges remain: training instability, sample inefficiency, reward mis-specification, and generalization across tasks. These remain active areas of research, with promising directions including meta-learning, hierarchical RL, and more sophisticated model learning techniques.
 
-
+A solid understanding of the main categories—such as those outlined in the comparative table—is essential for navigating the RL landscape. Whether one is interested in theoretical foundations, algorithm development, or practical deployment, the key ideas of exploration, value estimation, policy optimization, and model learning form the backbone of modern RL. For further reading, *Reinforcement Learning: An Introduction* by Sutton and Barto remains the canonical text. As artificial agents continue to do more complex and dynamic environments, reinforcement learning stands at the forefront of AI research and application.
 
 
 ## References

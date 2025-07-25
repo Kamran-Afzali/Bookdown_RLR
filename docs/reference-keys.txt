@@ -5,6 +5,7 @@ transition-to-markov-decision-processes
 comparing-reinforcement-learning-methods
 dynamic-programming-model-based-learning
 model-free-approaches-monte-carlo-and-td-learning
+dyna-bridging-model-free-and-model-based-learning
 q-learning-and-function-approximation
 policy-gradient-and-actor-critic-methods
 advanced-policy-optimization-techniques

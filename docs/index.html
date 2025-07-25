@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-07-23" />
+<meta name="date" content="2025-07-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -149,9 +149,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
 <li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
-<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.3</b> Q-Learning and Function Approximation</a></li>
-<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.4</b> Policy Gradient and Actor-Critic Methods</a></li>
-<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.5</b> Advanced Policy Optimization Techniques</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
 </ul></li>
 <li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
 <li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
@@ -293,7 +294,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Reinforcement Learning in R</h1>
 <p class="author"><em>Kamran Afzalui</em></p>
-<p class="date"><em>2025-07-23</em></p>
+<p class="date"><em>2025-07-25</em></p>
 </div>
 <div id="understanding-reinforcement-learning-from-bandits-to-policy-optimization" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">Chapter 1</span> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong><a href="index.html#understanding-reinforcement-learning-from-bandits-to-policy-optimization" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -383,6 +384,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>SARSA, Q-Learning</td>
 </tr>
 <tr class="odd">
+<td>Dyna-style Methods</td>
+<td>Yes (learned)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>High</td>
+<td>Yes (with perfect model)</td>
+<td>Sample-limited tasks</td>
+<td>Dyna-Q, Dyna+, Prioritized Sweeping</td>
+</tr>
+<tr class="even">
 <td>Q-Learning + Function Approx.</td>
 <td>No</td>
 <td>Yes</td>
@@ -392,7 +403,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>High-dimensional spaces</td>
 <td>DQN</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Policy Gradient</td>
 <td>No</td>
 <td>Yes</td>
@@ -402,7 +413,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>Continuous action spaces</td>
 <td>REINFORCE, PPO, A2C</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Actor-Critic</td>
 <td>No</td>
 <td>Yes</td>
@@ -412,7 +423,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>Most RL settings</td>
 <td>A2C, DDPG, SAC</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Model-Based RL</td>
 <td>Yes (learned)</td>
 <td>Yes</td>
@@ -437,19 +448,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>When the model is unknown, we turn to model-free methods that learn directly from sampled experience. Monte Carlo methods estimate the value of policies by averaging the total return over multiple episodes. These methods are simple and intuitive, suitable for episodic environments, but suffer from high variance and are not efficient in online learning scenarios.</p>
 <p>Temporal Difference (TD) learning bridges the gap between Monte Carlo and DP by updating value estimates based on partial returns. Algorithms like SARSA and Q-learning fall into this category. SARSA is on-policy, updating values based on the actual trajectory taken, while Q-learning is off-policy, learning about the greedy policy regardless of the agent’s current behavior. These methods do not require waiting until the end of an episode and are thus applicable in ongoing tasks. They offer a tradeoff between bias and variance in value estimation.</p>
 </div>
-<div id="q-learning-and-function-approximation" class="section level3 hasAnchor" number="1.4.3">
-<h3><span class="header-section-number">1.4.3</span> Q-Learning and Function Approximation<a href="index.html#q-learning-and-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="dyna-bridging-model-free-and-model-based-learning" class="section level3 hasAnchor" number="1.4.3">
+<h3><span class="header-section-number">1.4.3</span> Dyna: Bridging Model-Free and Model-Based Learning<a href="index.html#dyna-bridging-model-free-and-model-based-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The Dyna architecture, introduced by Richard Sutton, represents an elegant solution to combining model-free learning with model-based planning. Dyna methods simultaneously learn a model of the environment while using that model to generate synthetic experiences for additional learning. This approach addresses a fundamental limitation of pure model-free methods: their sample inefficiency.</p>
+<p>The core Dyna algorithm operates through three interleaved processes:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Direct RL</strong>: Learn from real experience using standard model-free methods (e.g., Q-learning)</li>
+<li><strong>Model Learning</strong>: Update the learned model based on observed transitions</li>
+<li><strong>Planning</strong>: Use the learned model to generate simulated experiences and update the value function</li>
+</ol>
+<p>The basic Dyna-Q algorithm combines Q-learning with a simple tabular model. After each real experience <span class="math inline">\((s, a, r, s&#39;)\)</span>, the agent updates both its Q-values and its model estimates <span class="math inline">\(\hat{R}(s,a)\)</span> and <span class="math inline">\(\hat{T}(s,a)\)</span>. The agent then performs several planning steps by randomly sampling previously visited state-action pairs and using the model to generate simulated transitions for additional Q-learning updates.</p>
+<p><strong>Dyna+ and Exploration Bonuses</strong>: The original Dyna-Q algorithm can suffer when the environment changes, as the learned model becomes outdated. Dyna+ addresses this by adding exploration bonuses to state-action pairs that haven’t been visited recently, encouraging the agent to re-explore and update its model. The bonus term is typically:</p>
+<p><span class="math inline">\(\text{bonus}(s,a) = \kappa \sqrt{\tau(s,a)}\)</span></p>
+<p>where <span class="math inline">\(\kappa\)</span> is a small constant and <span class="math inline">\(\tau(s,a)\)</span> is the time since state-action pair <span class="math inline">\((s,a)\)</span> was last visited.</p>
+<p><strong>Prioritized Sweeping</strong>: Rather than randomly selecting state-action pairs for planning updates, prioritized sweeping focuses computational resources on the most important updates. It maintains a priority queue of state-action pairs, prioritizing those where the model predicts large changes in value. This targeted approach can significantly improve learning efficiency compared to uniform random planning.</p>
+<p>The Dyna framework demonstrates that the dichotomy between model-free and model-based methods is not absolute. By learning and using simple models alongside direct RL, Dyna methods can achieve much better sample efficiency than pure model-free approaches while remaining more robust than methods that rely entirely on learned models.</p>
+</div>
+<div id="q-learning-and-function-approximation" class="section level3 hasAnchor" number="1.4.4">
+<h3><span class="header-section-number">1.4.4</span> Q-Learning and Function Approximation<a href="index.html#q-learning-and-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Q-learning is one of the most widely used RL algorithms due to its simplicity and theoretical guarantees. However, when dealing with large state-action spaces, tabular Q-learning becomes infeasible. Function approximation, particularly using neural networks, allows Q-learning to scale to high-dimensional problems. This gave rise to Deep Q-Networks (DQNs), where a neural network is trained to approximate the Q-function.</p>
 <p>DQNs introduced mechanisms like experience replay—storing and reusing past interactions to reduce correlation between updates—and target networks—fixed Q-value targets updated slowly to stabilize learning. These enhancements enabled RL to tackle complex environments like Atari games directly from pixels. Nonetheless, deep RL methods often suffer from sample inefficiency and training instability, especially when generalizing to new environments.</p>
 </div>
-<div id="policy-gradient-and-actor-critic-methods" class="section level3 hasAnchor" number="1.4.4">
-<h3><span class="header-section-number">1.4.4</span> Policy Gradient and Actor-Critic Methods<a href="index.html#policy-gradient-and-actor-critic-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="policy-gradient-and-actor-critic-methods" class="section level3 hasAnchor" number="1.4.5">
+<h3><span class="header-section-number">1.4.5</span> Policy Gradient and Actor-Critic Methods<a href="index.html#policy-gradient-and-actor-critic-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>While value-based methods derive policies from value functions, policy-based methods directly parameterize and optimize the policy itself. Policy Gradient methods compute the gradient of expected return with respect to policy parameters and perform gradient ascent. The REINFORCE algorithm is the archetype of this approach, but it often suffers from high variance in gradient estimates. The Policy Gradient Theorem provides the theoretical foundation:</p>
 <p><span class="math inline">\(\nabla J(\theta) = \mathbb{E}_{\pi_\theta} [\nabla_\theta \log \pi_\theta(a|s) Q^{\pi}(s,a)]\)</span></p>
 <p>To address variance, Actor-Critic methods introduce a second component: the critic, which estimates value functions to inform and stabilize the updates of the actor (policy). Algorithms like Advantage Actor-Critic (A2C), Deep Deterministic Policy Gradient (DDPG), and Soft Actor-Critic (SAC) build on this architecture, each adding unique elements to improve performance and stability.</p>
 </div>
-<div id="advanced-policy-optimization-techniques" class="section level3 hasAnchor" number="1.4.5">
-<h3><span class="header-section-number">1.4.5</span> Advanced Policy Optimization Techniques<a href="index.html#advanced-policy-optimization-techniques" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="advanced-policy-optimization-techniques" class="section level3 hasAnchor" number="1.4.6">
+<h3><span class="header-section-number">1.4.6</span> Advanced Policy Optimization Techniques<a href="index.html#advanced-policy-optimization-techniques" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>More recent advances in policy optimization have focused on improving training stability and sample efficiency. Trust Region Policy Optimization (TRPO) constrains policy updates to stay within a trust region defined by the KL divergence, ensuring small, safe steps in parameter space. Proximal Policy Optimization (PPO) simplifies TRPO with a clipped objective function, striking a balance between ease of implementation and empirical performance.</p>
 <p>Soft Actor-Critic (SAC), on the other hand, incorporates an entropy maximization objective, encouraging exploration by maintaining a degree of randomness in the policy. This leads to better performance in environments with sparse or deceptive rewards and is particularly effective in continuous control tasks.</p>
 <p>Model-based approaches, such as MuZero or Dreamer, offer a complementary strategy: by learning a model of the environment dynamics and reward structure, they can generate synthetic experiences to improve sample efficiency. However, model inaccuracies can lead to cascading errors and suboptimal policies.</p>
@@ -457,8 +484,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="conclusion-and-further-directions" class="section level2 hasAnchor" number="1.5">
 <h2><span class="header-section-number">1.5</span> Conclusion and Further Directions<a href="index.html#conclusion-and-further-directions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Reinforcement Learning has evolved into a mature and diverse field, offering a rich set of tools for decision-making under uncertainty. From simple bandit strategies to deep policy optimization and model-based reasoning, RL provides a versatile framework for learning from interaction. However, key challenges remain: training instability, sample inefficiency, reward mis-specification, and generalization across tasks. These remain active areas of research.</p>
-<p>A solid understanding of the main categories—such as those outlined in the comparative table—is essential for navigating the RL landscape. Whether one is interested in theoretical foundations, algorithm development, or practical deployment, the key ideas of exploration, value estimation, policy optimization, and model learning form the backbone of modern RL. For further reading, <em>Reinforcement Learning: An Introduction</em> by Sutton and Barto remains the canonical text. Online resources like OpenAI’s Spinning Up, DeepMind’s technical blog, and repositories of papers on arXiv are excellent for staying current with the latest advancements. As artificial agents continue to tackle more complex and dynamic environments, reinforcement learning stands at the forefront of AI research and application.</p>
+<p>Reinforcement Learning has evolved into a mature and diverse field, offering a rich set of tools for decision-making under uncertainty. From simple bandit strategies to deep policy optimization and model-based reasoning, RL provides a versatile framework for learning from interaction. The Dyna architecture exemplifies how combining different learning paradigms can yield methods that are both sample-efficient and robust, highlighting the value of hybrid approaches in RL.</p>
+<p>However, key challenges remain: training instability, sample inefficiency, reward mis-specification, and generalization across tasks. These remain active areas of research, with promising directions including meta-learning, hierarchical RL, and more sophisticated model learning techniques.</p>
+<p>A solid understanding of the main categories—such as those outlined in the comparative table—is essential for navigating the RL landscape. Whether one is interested in theoretical foundations, algorithm development, or practical deployment, the key ideas of exploration, value estimation, policy optimization, and model learning form the backbone of modern RL. For further reading, <em>Reinforcement Learning: An Introduction</em> by Sutton and Barto remains the canonical text. As artificial agents continue to do more complex and dynamic environments, reinforcement learning stands at the forefront of AI research and application.</p>
 </div>
 <div id="references" class="section level2 hasAnchor" number="1.6">
 <h2><span class="header-section-number">1.6</span> References<a href="index.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h2>
