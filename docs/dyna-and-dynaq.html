@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 Dyna and DynaQ | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 9 Dyna and DynaQ | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 Dyna and DynaQ | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 Dyna and DynaQ | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-08-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="dyna-and-dynaq" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Chapter 9</span> Dyna and DynaQ<a href="dyna-and-dynaq.html#dyna-and-dynaq" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-7" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Introduction<a href="dyna-and-dynaq.html#introduction-7" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Traditional reinforcement learning methods fall into two categories: model-free approaches like SARSA and Q-Learning that learn directly from experience, and model-based methods that first learn environment dynamics then use planning algorithms. Dyna, introduced by Sutton (1990), bridges this gap by combining direct reinforcement learning with indirect learning through an internal model of the environment.</p>
+<p>The key insight behind Dyna is that real experience can serve dual purposes: updating value functions directly and improving an internal model that generates simulated experience for additional learning. This architecture allows agents to benefit from both the sample efficiency of planning and the robustness of direct learning, making it particularly effective in environments where experience is costly or limited.</p>
+</div>
+<div id="theoretical-framework" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Theoretical Framework<a href="dyna-and-dynaq.html#theoretical-framework" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="the-dyna-architecture" class="section level3 hasAnchor" number="9.2.1">
+<h3><span class="header-section-number">9.2.1</span> The Dyna Architecture<a href="dyna-and-dynaq.html#the-dyna-architecture" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Dyna integrates three key components within a unified learning system:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Direct RL</strong>: Learning from real experience using standard temporal difference methods</li>
+<li><strong>Model Learning</strong>: Building an internal model of environment dynamics from experience<br />
+</li>
+<li><strong>Planning</strong>: Using the learned model to generate simulated experience for additional value function updates</li>
+</ol>
+<p>The complete Dyna update cycle can be formalized as follows. For each real experience tuple <span class="math inline">\((s, a, r, s&#39;)\)</span>:</p>
+<p><strong>Direct Learning (Q-Learning)</strong>:
+<span class="math display">\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right]\]</span></p>
+<p><strong>Model Update</strong>:
+<span class="math display">\[\hat{T}(s,a) \leftarrow s&#39;\]</span>
+<span class="math display">\[\hat{R}(s,a) \leftarrow r\]</span></p>
+<p><strong>Planning Phase</strong> (repeat <span class="math inline">\(n\)</span> times):
+<span class="math display">\[s \leftarrow \text{random previously visited state}\]</span>
+<span class="math display">\[a \leftarrow \text{random action previously taken in } s\]</span>
+<span class="math display">\[r \leftarrow \hat{R}(s,a)\]</span>
+<span class="math display">\[s&#39; \leftarrow \hat{T}(s,a)\]</span>
+<span class="math display">\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right]\]</span></p>
+<p>The parameter <span class="math inline">\(n\)</span> controls the number of planning steps per real experience, representing the computational budget available for internal simulation.</p>
+</div>
+<div id="model-representation" class="section level3 hasAnchor" number="9.2.2">
+<h3><span class="header-section-number">9.2.2</span> Model Representation<a href="dyna-and-dynaq.html#model-representation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In its simplest form, Dyna uses a deterministic table-based model where <span class="math inline">\(\hat{T}(s,a)\)</span> stores the last observed next state for state-action pair <span class="math inline">\((s,a)\)</span>, and <span class="math inline">\(\hat{R}(s,a)\)</span> stores the last observed reward. This approach works well for deterministic environments but can be extended to handle stochastic dynamics through sampling-based representations.</p>
+</div>
+<div id="convergence-properties" class="section level3 hasAnchor" number="9.2.3">
+<h3><span class="header-section-number">9.2.3</span> Convergence Properties<a href="dyna-and-dynaq.html#convergence-properties" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Under standard assumptions (all state-action pairs visited infinitely often, appropriate learning rates), Dyna inherits the convergence guarantees of its underlying RL algorithm. The addition of planning typically accelerates convergence by allowing each real experience to propagate information more widely through the value function.</p>
+</div>
+</div>
+<div id="implementation-in-r" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Implementation in R<a href="dyna-and-dynaq.html#implementation-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We implement Dyna-Q using the same 10-state environment from previous posts, allowing direct comparison with pure Q-Learning and SARSA approaches.</p>
+<div id="environment-setup" class="section level3 hasAnchor" number="9.3.1">
+<h3><span class="header-section-number">9.3.1</span> Environment Setup<a href="dyna-and-dynaq.html#environment-setup" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="dyna-and-dynaq.html#cb21-1" tabindex="-1"></a><span class="co"># Environment parameters</span></span>
+<span id="cb21-2"><a href="dyna-and-dynaq.html#cb21-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb21-3"><a href="dyna-and-dynaq.html#cb21-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb21-4"><a href="dyna-and-dynaq.html#cb21-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb21-5"><a href="dyna-and-dynaq.html#cb21-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb21-6"><a href="dyna-and-dynaq.html#cb21-6" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="dyna-and-dynaq.html#cb21-7" tabindex="-1"></a><span class="co"># Transition and reward models (same as previous posts)</span></span>
+<span id="cb21-8"><a href="dyna-and-dynaq.html#cb21-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb21-9"><a href="dyna-and-dynaq.html#cb21-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb21-10"><a href="dyna-and-dynaq.html#cb21-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb21-11"><a href="dyna-and-dynaq.html#cb21-11" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="dyna-and-dynaq.html#cb21-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb21-13"><a href="dyna-and-dynaq.html#cb21-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb21-14"><a href="dyna-and-dynaq.html#cb21-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb21-15"><a href="dyna-and-dynaq.html#cb21-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb21-16"><a href="dyna-and-dynaq.html#cb21-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb21-17"><a href="dyna-and-dynaq.html#cb21-17" tabindex="-1"></a>  </span>
+<span id="cb21-18"><a href="dyna-and-dynaq.html#cb21-18" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb21-19"><a href="dyna-and-dynaq.html#cb21-19" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb21-20"><a href="dyna-and-dynaq.html#cb21-20" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb21-21"><a href="dyna-and-dynaq.html#cb21-21" tabindex="-1"></a>  }</span>
+<span id="cb21-22"><a href="dyna-and-dynaq.html#cb21-22" tabindex="-1"></a>}</span>
+<span id="cb21-23"><a href="dyna-and-dynaq.html#cb21-23" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="dyna-and-dynaq.html#cb21-24" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-25"><a href="dyna-and-dynaq.html#cb21-25" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb21-26"><a href="dyna-and-dynaq.html#cb21-26" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="dyna-and-dynaq.html#cb21-27" tabindex="-1"></a><span class="co"># Environment interaction function</span></span>
+<span id="cb21-28"><a href="dyna-and-dynaq.html#cb21-28" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb21-29"><a href="dyna-and-dynaq.html#cb21-29" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb21-30"><a href="dyna-and-dynaq.html#cb21-30" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb21-31"><a href="dyna-and-dynaq.html#cb21-31" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb21-32"><a href="dyna-and-dynaq.html#cb21-32" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb21-33"><a href="dyna-and-dynaq.html#cb21-33" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="dyna-q-implementation" class="section level3 hasAnchor" number="9.3.2">
+<h3><span class="header-section-number">9.3.2</span> Dyna-Q Implementation<a href="dyna-and-dynaq.html#dyna-q-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="dyna-and-dynaq.html#cb22-1" tabindex="-1"></a><span class="co"># Dyna-Q algorithm with episode-wise performance tracking</span></span>
+<span id="cb22-2"><a href="dyna-and-dynaq.html#cb22-2" tabindex="-1"></a>dyna_q <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, <span class="at">n_planning =</span> <span class="dv">5</span>) {</span>
+<span id="cb22-3"><a href="dyna-and-dynaq.html#cb22-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb22-4"><a href="dyna-and-dynaq.html#cb22-4" tabindex="-1"></a>  model_T <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb22-5"><a href="dyna-and-dynaq.html#cb22-5" tabindex="-1"></a>  model_R <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb22-6"><a href="dyna-and-dynaq.html#cb22-6" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb22-7"><a href="dyna-and-dynaq.html#cb22-7" tabindex="-1"></a>  </span>
+<span id="cb22-8"><a href="dyna-and-dynaq.html#cb22-8" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb22-9"><a href="dyna-and-dynaq.html#cb22-9" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb22-10"><a href="dyna-and-dynaq.html#cb22-10" tabindex="-1"></a>  </span>
+<span id="cb22-11"><a href="dyna-and-dynaq.html#cb22-11" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb22-12"><a href="dyna-and-dynaq.html#cb22-12" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb22-13"><a href="dyna-and-dynaq.html#cb22-13" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb22-14"><a href="dyna-and-dynaq.html#cb22-14" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb22-15"><a href="dyna-and-dynaq.html#cb22-15" tabindex="-1"></a>    </span>
+<span id="cb22-16"><a href="dyna-and-dynaq.html#cb22-16" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {  <span class="co"># Add max steps to prevent infinite loops</span></span>
+<span id="cb22-17"><a href="dyna-and-dynaq.html#cb22-17" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb22-18"><a href="dyna-and-dynaq.html#cb22-18" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb22-19"><a href="dyna-and-dynaq.html#cb22-19" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb22-20"><a href="dyna-and-dynaq.html#cb22-20" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[s, ])</span>
+<span id="cb22-21"><a href="dyna-and-dynaq.html#cb22-21" tabindex="-1"></a>      }</span>
+<span id="cb22-22"><a href="dyna-and-dynaq.html#cb22-22" tabindex="-1"></a>      </span>
+<span id="cb22-23"><a href="dyna-and-dynaq.html#cb22-23" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb22-24"><a href="dyna-and-dynaq.html#cb22-24" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb22-25"><a href="dyna-and-dynaq.html#cb22-25" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb22-26"><a href="dyna-and-dynaq.html#cb22-26" tabindex="-1"></a>      </span>
+<span id="cb22-27"><a href="dyna-and-dynaq.html#cb22-27" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
+<span id="cb22-28"><a href="dyna-and-dynaq.html#cb22-28" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb22-29"><a href="dyna-and-dynaq.html#cb22-29" tabindex="-1"></a>      </span>
+<span id="cb22-30"><a href="dyna-and-dynaq.html#cb22-30" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb22-31"><a href="dyna-and-dynaq.html#cb22-31" tabindex="-1"></a>      </span>
+<span id="cb22-32"><a href="dyna-and-dynaq.html#cb22-32" tabindex="-1"></a>      model_T[s, a] <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb22-33"><a href="dyna-and-dynaq.html#cb22-33" tabindex="-1"></a>      model_R[s, a] <span class="ot">&lt;-</span> r</span>
+<span id="cb22-34"><a href="dyna-and-dynaq.html#cb22-34" tabindex="-1"></a>      </span>
+<span id="cb22-35"><a href="dyna-and-dynaq.html#cb22-35" tabindex="-1"></a>      sa_key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb22-36"><a href="dyna-and-dynaq.html#cb22-36" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>(sa_key <span class="sc">%in%</span> <span class="fu">names</span>(visited_sa))) {</span>
+<span id="cb22-37"><a href="dyna-and-dynaq.html#cb22-37" tabindex="-1"></a>        visited_sa[[sa_key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(s, a)</span>
+<span id="cb22-38"><a href="dyna-and-dynaq.html#cb22-38" tabindex="-1"></a>      }</span>
+<span id="cb22-39"><a href="dyna-and-dynaq.html#cb22-39" tabindex="-1"></a>      </span>
+<span id="cb22-40"><a href="dyna-and-dynaq.html#cb22-40" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(visited_sa) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb22-41"><a href="dyna-and-dynaq.html#cb22-41" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_planning) {</span>
+<span id="cb22-42"><a href="dyna-and-dynaq.html#cb22-42" tabindex="-1"></a>          sa_sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(visited_sa, <span class="dv">1</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb22-43"><a href="dyna-and-dynaq.html#cb22-43" tabindex="-1"></a>          s_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">1</span>]</span>
+<span id="cb22-44"><a href="dyna-and-dynaq.html#cb22-44" tabindex="-1"></a>          a_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">2</span>]</span>
+<span id="cb22-45"><a href="dyna-and-dynaq.html#cb22-45" tabindex="-1"></a>          </span>
+<span id="cb22-46"><a href="dyna-and-dynaq.html#cb22-46" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(model_T[s_plan, a_plan])) {</span>
+<span id="cb22-47"><a href="dyna-and-dynaq.html#cb22-47" tabindex="-1"></a>            s_prime_plan <span class="ot">&lt;-</span> model_T[s_plan, a_plan]</span>
+<span id="cb22-48"><a href="dyna-and-dynaq.html#cb22-48" tabindex="-1"></a>            r_plan <span class="ot">&lt;-</span> model_R[s_plan, a_plan]</span>
+<span id="cb22-49"><a href="dyna-and-dynaq.html#cb22-49" tabindex="-1"></a>            </span>
+<span id="cb22-50"><a href="dyna-and-dynaq.html#cb22-50" tabindex="-1"></a>            Q[s_plan, a_plan] <span class="ot">&lt;-</span> Q[s_plan, a_plan] <span class="sc">+</span> </span>
+<span id="cb22-51"><a href="dyna-and-dynaq.html#cb22-51" tabindex="-1"></a>              alpha <span class="sc">*</span> (r_plan <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime_plan, ]) <span class="sc">-</span> Q[s_plan, a_plan])</span>
+<span id="cb22-52"><a href="dyna-and-dynaq.html#cb22-52" tabindex="-1"></a>          }</span>
+<span id="cb22-53"><a href="dyna-and-dynaq.html#cb22-53" tabindex="-1"></a>        }</span>
+<span id="cb22-54"><a href="dyna-and-dynaq.html#cb22-54" tabindex="-1"></a>      }</span>
+<span id="cb22-55"><a href="dyna-and-dynaq.html#cb22-55" tabindex="-1"></a>      </span>
+<span id="cb22-56"><a href="dyna-and-dynaq.html#cb22-56" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb22-57"><a href="dyna-and-dynaq.html#cb22-57" tabindex="-1"></a>    }</span>
+<span id="cb22-58"><a href="dyna-and-dynaq.html#cb22-58" tabindex="-1"></a>    </span>
+<span id="cb22-59"><a href="dyna-and-dynaq.html#cb22-59" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
+<span id="cb22-60"><a href="dyna-and-dynaq.html#cb22-60" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
+<span id="cb22-61"><a href="dyna-and-dynaq.html#cb22-61" tabindex="-1"></a>  }</span>
+<span id="cb22-62"><a href="dyna-and-dynaq.html#cb22-62" tabindex="-1"></a>  </span>
+<span id="cb22-63"><a href="dyna-and-dynaq.html#cb22-63" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
+<span id="cb22-64"><a href="dyna-and-dynaq.html#cb22-64" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
+<span id="cb22-65"><a href="dyna-and-dynaq.html#cb22-65" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="standard-q-learning-for-comparison" class="section level3 hasAnchor" number="9.3.3">
+<h3><span class="header-section-number">9.3.3</span> Standard Q-Learning for Comparison<a href="dyna-and-dynaq.html#standard-q-learning-for-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="dyna-and-dynaq.html#cb23-1" tabindex="-1"></a><span class="co"># Q-Learning with performance tracking</span></span>
+<span id="cb23-2"><a href="dyna-and-dynaq.html#cb23-2" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb23-3"><a href="dyna-and-dynaq.html#cb23-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb23-4"><a href="dyna-and-dynaq.html#cb23-4" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb23-5"><a href="dyna-and-dynaq.html#cb23-5" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb23-6"><a href="dyna-and-dynaq.html#cb23-6" tabindex="-1"></a>  </span>
+<span id="cb23-7"><a href="dyna-and-dynaq.html#cb23-7" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb23-8"><a href="dyna-and-dynaq.html#cb23-8" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb23-9"><a href="dyna-and-dynaq.html#cb23-9" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb23-10"><a href="dyna-and-dynaq.html#cb23-10" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb23-11"><a href="dyna-and-dynaq.html#cb23-11" tabindex="-1"></a>    </span>
+<span id="cb23-12"><a href="dyna-and-dynaq.html#cb23-12" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {</span>
+<span id="cb23-13"><a href="dyna-and-dynaq.html#cb23-13" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
+<span id="cb23-14"><a href="dyna-and-dynaq.html#cb23-14" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb23-15"><a href="dyna-and-dynaq.html#cb23-15" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb23-16"><a href="dyna-and-dynaq.html#cb23-16" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb23-17"><a href="dyna-and-dynaq.html#cb23-17" tabindex="-1"></a>      </span>
+<span id="cb23-18"><a href="dyna-and-dynaq.html#cb23-18" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
+<span id="cb23-19"><a href="dyna-and-dynaq.html#cb23-19" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb23-20"><a href="dyna-and-dynaq.html#cb23-20" tabindex="-1"></a>      </span>
+<span id="cb23-21"><a href="dyna-and-dynaq.html#cb23-21" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb23-22"><a href="dyna-and-dynaq.html#cb23-22" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb23-23"><a href="dyna-and-dynaq.html#cb23-23" tabindex="-1"></a>    }</span>
+<span id="cb23-24"><a href="dyna-and-dynaq.html#cb23-24" tabindex="-1"></a>    </span>
+<span id="cb23-25"><a href="dyna-and-dynaq.html#cb23-25" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
+<span id="cb23-26"><a href="dyna-and-dynaq.html#cb23-26" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
+<span id="cb23-27"><a href="dyna-and-dynaq.html#cb23-27" tabindex="-1"></a>  }</span>
+<span id="cb23-28"><a href="dyna-and-dynaq.html#cb23-28" tabindex="-1"></a>  </span>
+<span id="cb23-29"><a href="dyna-and-dynaq.html#cb23-29" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
+<span id="cb23-30"><a href="dyna-and-dynaq.html#cb23-30" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
+<span id="cb23-31"><a href="dyna-and-dynaq.html#cb23-31" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="experimental-analysis" class="section level2 hasAnchor" number="9.4">
+<h2><span class="header-section-number">9.4</span> Experimental Analysis<a href="dyna-and-dynaq.html#experimental-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="learning-efficiency-comparison" class="section level3 hasAnchor" number="9.4.1">
+<h3><span class="header-section-number">9.4.1</span> Learning Efficiency Comparison<a href="dyna-and-dynaq.html#learning-efficiency-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We compare Dyna-Q against standard Q-Learning across different numbers of planning steps:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="dyna-and-dynaq.html#cb24-1" tabindex="-1"></a><span class="co"># Run comprehensive experiments</span></span>
+<span id="cb24-2"><a href="dyna-and-dynaq.html#cb24-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb24-3"><a href="dyna-and-dynaq.html#cb24-3" tabindex="-1"></a>n_runs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb24-4"><a href="dyna-and-dynaq.html#cb24-4" tabindex="-1"></a>episodes <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb24-5"><a href="dyna-and-dynaq.html#cb24-5" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="dyna-and-dynaq.html#cb24-6" tabindex="-1"></a><span class="co"># Initialize results storage</span></span>
+<span id="cb24-7"><a href="dyna-and-dynaq.html#cb24-7" tabindex="-1"></a>all_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb24-8"><a href="dyna-and-dynaq.html#cb24-8" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="dyna-and-dynaq.html#cb24-9" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Running experiments...&quot;</span>)</span>
+<span id="cb24-10"><a href="dyna-and-dynaq.html#cb24-10" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="dyna-and-dynaq.html#cb24-11" tabindex="-1"></a><span class="cf">for</span> (run <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_runs) {</span>
+<span id="cb24-12"><a href="dyna-and-dynaq.html#cb24-12" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Run&quot;</span>, run, <span class="st">&quot;of&quot;</span>, n_runs, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-13"><a href="dyna-and-dynaq.html#cb24-13" tabindex="-1"></a>  </span>
+<span id="cb24-14"><a href="dyna-and-dynaq.html#cb24-14" tabindex="-1"></a>  <span class="co"># Run algorithms</span></span>
+<span id="cb24-15"><a href="dyna-and-dynaq.html#cb24-15" tabindex="-1"></a>  ql_result <span class="ot">&lt;-</span> <span class="fu">q_learning</span>(<span class="at">episodes =</span> episodes)</span>
+<span id="cb24-16"><a href="dyna-and-dynaq.html#cb24-16" tabindex="-1"></a>  dyna5_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">5</span>)</span>
+<span id="cb24-17"><a href="dyna-and-dynaq.html#cb24-17" tabindex="-1"></a>  dyna10_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">10</span>)</span>
+<span id="cb24-18"><a href="dyna-and-dynaq.html#cb24-18" tabindex="-1"></a>  dyna20_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">20</span>)</span>
+<span id="cb24-19"><a href="dyna-and-dynaq.html#cb24-19" tabindex="-1"></a>  </span>
+<span id="cb24-20"><a href="dyna-and-dynaq.html#cb24-20" tabindex="-1"></a>  <span class="co"># Store results</span></span>
+<span id="cb24-21"><a href="dyna-and-dynaq.html#cb24-21" tabindex="-1"></a>  run_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb24-22"><a href="dyna-and-dynaq.html#cb24-22" tabindex="-1"></a>    <span class="at">episode =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>episodes, <span class="dv">4</span>),</span>
+<span id="cb24-23"><a href="dyna-and-dynaq.html#cb24-23" tabindex="-1"></a>    <span class="at">run =</span> run,</span>
+<span id="cb24-24"><a href="dyna-and-dynaq.html#cb24-24" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span>, <span class="st">&quot;Dyna-Q (n=10)&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span>), <span class="at">each =</span> episodes),</span>
+<span id="cb24-25"><a href="dyna-and-dynaq.html#cb24-25" tabindex="-1"></a>    <span class="at">reward =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_rewards, dyna5_result<span class="sc">$</span>episode_rewards, </span>
+<span id="cb24-26"><a href="dyna-and-dynaq.html#cb24-26" tabindex="-1"></a>               dyna10_result<span class="sc">$</span>episode_rewards, dyna20_result<span class="sc">$</span>episode_rewards),</span>
+<span id="cb24-27"><a href="dyna-and-dynaq.html#cb24-27" tabindex="-1"></a>    <span class="at">steps =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_steps, dyna5_result<span class="sc">$</span>episode_steps,</span>
+<span id="cb24-28"><a href="dyna-and-dynaq.html#cb24-28" tabindex="-1"></a>              dyna10_result<span class="sc">$</span>episode_steps, dyna20_result<span class="sc">$</span>episode_steps)</span>
+<span id="cb24-29"><a href="dyna-and-dynaq.html#cb24-29" tabindex="-1"></a>  )</span>
+<span id="cb24-30"><a href="dyna-and-dynaq.html#cb24-30" tabindex="-1"></a>  </span>
+<span id="cb24-31"><a href="dyna-and-dynaq.html#cb24-31" tabindex="-1"></a>  all_results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_results, run_data)</span>
+<span id="cb24-32"><a href="dyna-and-dynaq.html#cb24-32" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code># Compute smoothed averages
+smoothed_results &lt;- all_results %&gt;%
+  group_by(algorithm, episode) %&gt;%
+  summarise(
+    mean_reward = mean(reward),
+    se_reward = sd(reward) / sqrt(n()),
+    mean_steps = mean(steps),
+    se_steps = sd(steps) / sqrt(n()),
+    .groups = &#39;drop&#39;
+  ) %&gt;%
+  group_by(algorithm) %&gt;%
+  mutate(
+    smooth_reward = stats::filter(mean_reward, rep(1/10, 10), sides = 2),
+    smooth_steps = stats::filter(mean_steps, rep(1/10, 10), sides = 2)
+  )
+
+# Create comprehensive visualization
+# Plot 1: Learning Curves (Rewards)
+p1 &lt;- ggplot(smoothed_results, aes(x = episode, y = mean_reward, color = algorithm)) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = mean_reward - se_reward, ymax = mean_reward + se_reward, fill = algorithm), 
+              alpha = 0.2, color = NA) +
+  scale_color_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
+                                &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
+  scale_fill_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
+                               &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
+  labs(title = &quot;Learning Performance: Average Episode Rewards&quot;,
+       x = &quot;Episode&quot;, y = &quot;Average Reward per Episode&quot;,
+       color = &quot;Algorithm&quot;, fill = &quot;Algorithm&quot;) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = &quot;bold&quot;),
+        legend.position = &quot;bottom&quot;)
+
+# Plot 2: Steps to Terminal (Efficiency)
+p2 &lt;- ggplot(smoothed_results, aes(x = episode, y = mean_steps, color = algorithm)) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = mean_steps - se_steps, ymax = mean_steps + se_steps, fill = algorithm), 
+              alpha = 0.2, color = NA) +
+  scale_color_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
+                                &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
+  scale_fill_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
+                               &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
+  labs(title = &quot;Learning Efficiency: Steps to Reach Terminal State&quot;,
+       x = &quot;Episode&quot;, y = &quot;Average Steps per Episode&quot;,
+       color = &quot;Algorithm&quot;, fill = &quot;Algorithm&quot;) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = &quot;bold&quot;),
+        legend.position = &quot;bottom&quot;)
+
+# Plot 3: Final performance comparison (last 50 episodes)
+final_performance &lt;- all_results %&gt;%
+  filter(episode &gt; episodes - 50) %&gt;%
+  group_by(algorithm, run) %&gt;%
+  summarise(avg_reward = mean(reward), .groups = &#39;drop&#39;)
+
+p3 &lt;- ggplot(final_performance, aes(x = algorithm, y = avg_reward, fill = algorithm)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.5) +
+  scale_fill_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
+                               &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
+  labs(title = &quot;Final Performance Comparison (Last 50 Episodes)&quot;,
+       x = &quot;Algorithm&quot;, y = &quot;Average Reward&quot;,
+       fill = &quot;Algorithm&quot;) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = &quot;bold&quot;),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = &quot;none&quot;)
+
+# Display all plots
+print(p1)
+print(p2)
+print(p3)</code></pre>
+</div>
+</div>
+<div id="discussion" class="section level2 hasAnchor" number="9.5">
+<h2><span class="header-section-number">9.5</span> Discussion<a href="dyna-and-dynaq.html#discussion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dyna demonstrates a fundamental trade-off between sample efficiency and computational cost, requiring <span class="math inline">\((n+1)\)</span> times the computation per step compared to model-free methods due to additional planning updates. This computational investment typically yields faster convergence, particularly when real experience is expensive or dangerous to obtain, though optimal planning steps depend on problem characteristics—moderate values (5-10) generally provide good improvements without excessive overhead while very large values can produce diminishing returns or hurt performance with inaccurate models. The algorithm’s effectiveness critically depends on model quality, with our deterministic table-based implementation becoming increasingly accurate as more state-action pairs are visited, though this approach assumes deterministic transitions and uses simple model representation (storing only last observed transitions) that works well for stationary environments but struggles with non-stationary dynamics where more sophisticated representations maintaining transition probability distributions could improve robustness at increased computational cost. The interaction between exploration and planning creates a distinctive advantage where <span class="math inline">\(\epsilon\)</span>-greedy exploration ensures diverse state-action coverage that directly improves model quality and planning effectiveness, establishing a positive feedback loop where better exploration enhances the model, making planning more effective and leading to better policies with potentially more informed exploration. Relative to pure model-free methods like Q-Learning, Dyna typically shows faster convergence and better sample efficiency by allowing each real experience to propagate information more widely through planning, while compared to pure model-based approaches, it maintains robustness through continued direct learning even with imperfect models. However, basic Dyna has notable limitations including poor representation of stochastic environments through deterministic models and suboptimal uniform sampling for planning, though modern extensions like Dyna-Q+ with exploration bonuses, prioritized sweeping focusing on high-value updates, and model-based variants maintaining probability distributions over transitions address many of these constraints.</p>
+</div>
+<div id="implementation-considerations-and-conclusion" class="section level2 hasAnchor" number="9.6">
+<h2><span class="header-section-number">9.6</span> Implementation Considerations and Conclusion<a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dyna requires additional memory to store the learned model alongside the value function. In our implementation, this doubles the memory requirements compared to pure Q-Learning. For larger state-action spaces, this can become a significant consideration, potentially requiring sparse representations or function approximation techniques. The planning phase introduces variable computational demands that can complicate real-time applications. While the number of planning steps can be adjusted based on available computational budget, this flexibility requires careful consideration of timing constraints in online learning scenarios. Dyna introduces additional hyperparameters, particularly the number of planning steps <span class="math inline">\(n\)</span>. This parameter requires tuning based on the specific problem characteristics and computational constraints. Unlike some hyperparameters that can be set based on theoretical considerations, <span class="math inline">\(n\)</span> often requires empirical validation.</p>
+<p>Dyna represents an elegant solution to integrating learning and planning in reinforcement learning, combining the sample efficiency of model-based methods with the robustness of model-free approaches. Our R implementation demonstrates both the benefits and challenges of this integration, showing improved learning speed at the cost of increased computational and memory requirements. The key insight of using real experience for both direct learning and model improvement creates a powerful synergy that can significantly accelerate learning in many environments. However, the approach requires careful consideration of model representation, computational constraints, and hyperparameter tuning to achieve optimal performance. Future extensions could explore more sophisticated model representations, prioritized planning strategies, or integration with function approximation techniques for handling larger state spaces. The fundamental principle of combining direct and indirect learning remains a valuable paradigm in modern reinforcement learning research.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/09-Q_Dyna.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/09-Q_Dyna.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

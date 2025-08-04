@@ -96,3 +96,17 @@ initialization-and-convergence
 comparison-across-function-approximation-methods
 future-directions
 conclusion-5
+dyna-and-dynaq
+introduction-7
+theoretical-framework
+the-dyna-architecture
+model-representation
+convergence-properties
+implementation-in-r
+environment-setup
+dyna-q-implementation
+standard-q-learning-for-comparison
+experimental-analysis
+learning-efficiency-comparison
+discussion
+implementation-considerations-and-conclusion

@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-07-25" />
+<meta name="date" content="2025-08-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"/>
-
+<link rel="next" href="dyna-and-dynaq.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -271,6 +271,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
 <li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
 <li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -702,8 +724,8 @@ L(\theta) = \frac{1}{2}(y - Q(s, a; \theta))^2
           </div>
         </div>
       </div>
-<a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="dyna-and-dynaq.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
