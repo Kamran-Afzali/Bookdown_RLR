@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 10 Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 10 Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 10 Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 10 Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-08-11" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="dyna-and-dynaq.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#conclusion-and-further-directions"><i class="fa fa-check"></i><b>1.5</b> Conclusion and Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><i class="fa fa-check"></i><b>10</b> Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#introduction-8"><i class="fa fa-check"></i><b>10.1</b> Introduction</a></li>
+<li class="chapter" data-level="10.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#theoretical-framework-1"><i class="fa fa-check"></i><b>10.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#the-exploration-bonus-mechanism"><i class="fa fa-check"></i><b>10.2.1</b> The Exploration Bonus Mechanism</a></li>
+<li class="chapter" data-level="10.2.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#complete-dyna-q-algorithm"><i class="fa fa-check"></i><b>10.2.2</b> Complete Dyna-Q+ Algorithm</a></li>
+<li class="chapter" data-level="10.2.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#convergence-and-stability"><i class="fa fa-check"></i><b>10.2.3</b> Convergence and Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="10.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#implementation-in-r-1"><i class="fa fa-check"></i><b>10.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#environment-setup-1"><i class="fa fa-check"></i><b>10.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="10.3.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-implementation-1"><i class="fa fa-check"></i><b>10.3.2</b> Dyna-Q+ Implementation</a></li>
+<li class="chapter" data-level="10.3.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#standard-dyna-for-comparison"><i class="fa fa-check"></i><b>10.3.3</b> Standard Dyna for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#experimental-analysis-1"><i class="fa fa-check"></i><b>10.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="10.4.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#adaptation-to-environmental-changes"><i class="fa fa-check"></i><b>10.4.1</b> Adaptation to Environmental Changes</a></li>
+<li class="chapter" data-level="10.4.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#parameter-sensitivity-analysis"><i class="fa fa-check"></i><b>10.4.2</b> Parameter Sensitivity Analysis</a></li>
+<li class="chapter" data-level="10.4.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#exploration-pattern-analysis"><i class="fa fa-check"></i><b>10.4.3</b> Exploration Pattern Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#discussion-and-implementation-considerations"><i class="fa fa-check"></i><b>10.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="10.6" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#conclusion-6"><i class="fa fa-check"></i><b>10.6</b> Conclusion</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="dyna-q-enhanced-exploration-in-integrated-learning-and-planning" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">Chapter 10</span> Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-enhanced-exploration-in-integrated-learning-and-planning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-8" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> Introduction<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#introduction-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>While Dyna successfully bridges model-free and model-based reinforcement learning, it carries an inherent assumption that can limit its effectiveness in changing environments: that the world remains static. When an agent has learned to navigate one version of an environment, what happens if the rules suddenly change? Standard Dyna may find itself stuck, continuing to plan based on outdated information while failing to adequately explore the new reality.</p>
+<p>Dyna-Q+, introduced by Sutton (1990) alongside the original Dyna framework, addresses this limitation through a deceptively simple yet powerful mechanism: it rewards curiosity. By providing exploration bonuses for state-action pairs that haven’t been tried recently, Dyna-Q+ maintains a healthy skepticism about its model’s continued accuracy. This approach proves particularly valuable in non-stationary environments where adaptation speed can mean the difference between success and failure.</p>
+<p>The enhancement might seem minor—just an additional term in the reward calculation—but its implications run deep. Dyna-Q+ acknowledges that in a changing world, forgetting can be as important as remembering, and that an agent’s confidence in its model should decay over time unless continually refreshed by recent experience.</p>
+</div>
+<div id="theoretical-framework-1" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> Theoretical Framework<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#theoretical-framework-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="the-exploration-bonus-mechanism" class="section level3 hasAnchor" number="10.2.1">
+<h3><span class="header-section-number">10.2.1</span> The Exploration Bonus Mechanism<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#the-exploration-bonus-mechanism" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Dyna-Q+ modifies the planning phase of standard Dyna by augmenting rewards with an exploration bonus based on the time elapsed since each state-action pair was last visited. The core insight lies in treating the passage of time as information: the longer an agent hasn’t verified a particular transition, the less confident it should be about that transition’s current validity.</p>
+<p>For each state-action pair <span class="math inline">\((s,a)\)</span>, we maintain a timestamp <span class="math inline">\(\\tau(s,a)\)</span> recording when it was last experienced. During planning, instead of using the stored reward <span class="math inline">\(\\hat{R}(s,a)\)</span> directly, we calculate an augmented reward:</p>
+<p><span class="math display">\[r_{augmented} = \hat{R}(s,a) + \kappa \sqrt{t - \tau(s,a)}\]</span></p>
+<p>where <span class="math inline">\(t\)</span> represents the current time step, and <span class="math inline">\(\\kappa\)</span> is a parameter controlling the strength of the exploration bonus. The square root function provides a diminishing bonus that grows with time but at a decreasing rate, reflecting the intuition that uncertainty about a transition increases with time but not linearly.</p>
+</div>
+<div id="complete-dyna-q-algorithm" class="section level3 hasAnchor" number="10.2.2">
+<h3><span class="header-section-number">10.2.2</span> Complete Dyna-Q+ Algorithm<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#complete-dyna-q-algorithm" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The full algorithm extends standard Dyna with minimal modifications. For each real experience tuple <span class="math inline">\((s, a, r, s&#39;)\)</span>:</p>
+<p><strong>Direct Learning</strong>:
+<span class="math display">\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right]\]</span></p>
+<p><strong>Model and Timestamp Updates</strong>:
+<span class="math display">\[\hat{T}(s,a) \leftarrow s&#39;\]</span><span class="math display">\[\hat{R}(s,a) \leftarrow r\]</span><span class="math display">\[\tau(s,a) \leftarrow t\]</span></p>
+<p><strong>Planning Phase</strong> (repeat <span class="math inline">\(n\)</span> times):
+<span class="math display">\[s_{plan} \leftarrow \text{random previously visited state}\]</span></p>
+<p><span class="math display">\[a_{plan} \leftarrow \text{random action previously taken in } s_{plan}\]</span></p>
+<p><span class="math display">\[r_{plan} \leftarrow \hat{R}(s_{plan},a_{plan}) + \kappa \sqrt{t - \tau(s_{plan},a_{plan})}\]</span></p>
+<p><span class="math display">\[s&#39;_{plan} \leftarrow \hat{T}(s_{plan},a_{plan})\]</span></p>
+<p><span class="math display">\[Q(s_{plan},a_{plan}) \leftarrow Q(s_{plan},a_{plan}) + \alpha \left[ r_{plan} + \gamma \max_{a&#39;} Q(s&#39;_{plan}, a&#39;) - Q(s_{plan},a_{plan}) \right]\]</span></p>
+</div>
+<div id="convergence-and-stability" class="section level3 hasAnchor" number="10.2.3">
+<h3><span class="header-section-number">10.2.3</span> Convergence and Stability<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#convergence-and-stability" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The theoretical properties of Dyna-Q+ are more complex than those of standard Dyna due to the non-stationary nature of the augmented rewards. In stationary environments, the exploration bonuses for frequently visited state-action pairs will remain small, and convergence properties approach those of standard Dyna. However, the algorithm sacrifices some theoretical guarantees about convergence to optimal policies in exchange for improved adaptability.</p>
+<p>The parameter <span class="math inline">\(\\kappa\)</span> requires careful tuning. Too small, and the exploration bonus becomes negligible, reducing Dyna-Q+ to standard Dyna. Too large, and the algorithm may exhibit excessive exploration even in stable environments, potentially degrading performance. The square root scaling helps moderate this trade-off by providing significant bonuses for truly neglected state-action pairs while keeping bonuses manageable for recently visited ones.</p>
+</div>
+</div>
+<div id="implementation-in-r-1" class="section level2 hasAnchor" number="10.3">
+<h2><span class="header-section-number">10.3</span> Implementation in R<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#implementation-in-r-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Building on our previous Dyna implementation, we extend the framework to include timestamp tracking and exploration bonuses.</p>
+<div id="environment-setup-1" class="section level3 hasAnchor" number="10.3.1">
+<h3><span class="header-section-number">10.3.1</span> Environment Setup<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#environment-setup-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We’ll use the same 10-state environment as before, but we’ll also create scenarios with environmental changes to demonstrate Dyna-Q+’s adaptive capabilities:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-1" tabindex="-1"></a><span class="co"># Environment parameters (same as before)</span></span>
+<span id="cb26-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb26-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb26-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb26-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb26-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-6" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-7" tabindex="-1"></a><span class="co"># Transition and reward models</span></span>
+<span id="cb26-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb26-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb26-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb26-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-11" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb26-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb26-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb26-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb26-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb26-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-17" tabindex="-1"></a>  </span>
+<span id="cb26-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-18" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb26-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-19" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb26-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-20" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb26-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-21" tabindex="-1"></a>  }</span>
+<span id="cb26-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-22" tabindex="-1"></a>}</span>
+<span id="cb26-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-23" tabindex="-1"></a></span>
+<span id="cb26-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-24" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb26-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-25" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb26-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-26" tabindex="-1"></a></span>
+<span id="cb26-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-27" tabindex="-1"></a><span class="co"># Environment interaction function with optional modification capability</span></span>
+<span id="cb26-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-28" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, <span class="at">modified =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb26-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-29" tabindex="-1"></a>  <span class="cf">if</span> (modified) {</span>
+<span id="cb26-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-30" tabindex="-1"></a>    <span class="co"># Simulate environmental change by blocking previously optimal path</span></span>
+<span id="cb26-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-31" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> <span class="dv">5</span> <span class="sc">&amp;&amp;</span> a <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb26-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-32" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">s_prime =</span> <span class="dv">1</span>, <span class="at">reward =</span> <span class="sc">-</span><span class="fl">0.5</span>))  <span class="co"># Penalty for blocked path</span></span>
+<span id="cb26-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-33" tabindex="-1"></a>    }</span>
+<span id="cb26-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-34" tabindex="-1"></a>  }</span>
+<span id="cb26-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-35" tabindex="-1"></a>  </span>
+<span id="cb26-36"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-36" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb26-37"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-37" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb26-38"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-38" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb26-39"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-39" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb26-40"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb26-40" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="dyna-q-implementation-1" class="section level3 hasAnchor" number="10.3.2">
+<h3><span class="header-section-number">10.3.2</span> Dyna-Q+ Implementation<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-implementation-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The key modification involves maintaining timestamps and calculating exploration bonuses during planning:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-1" tabindex="-1"></a>dyna_q_plus <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, </span>
+<span id="cb27-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-2" tabindex="-1"></a>                        <span class="at">n_planning =</span> <span class="dv">5</span>, <span class="at">kappa =</span> <span class="fl">0.1</span>, <span class="at">change_episode =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb27-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-3" tabindex="-1"></a>  <span class="co"># Initialize Q-values, model, and timestamps</span></span>
+<span id="cb27-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-4" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb27-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-5" tabindex="-1"></a>  model_T <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb27-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-6" tabindex="-1"></a>  model_R <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb27-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-7" tabindex="-1"></a>  timestamps <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))  <span class="co"># When last visited</span></span>
+<span id="cb27-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-8" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb27-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-9" tabindex="-1"></a>  </span>
+<span id="cb27-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-10" tabindex="-1"></a>  current_time <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb27-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-11" tabindex="-1"></a>  environment_changed <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb27-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-12" tabindex="-1"></a>  </span>
+<span id="cb27-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-13" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb27-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-14" tabindex="-1"></a>    <span class="co"># Check if we should change the environment</span></span>
+<span id="cb27-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-15" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(change_episode) <span class="sc">&amp;&amp;</span> ep <span class="sc">==</span> change_episode) {</span>
+<span id="cb27-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-16" tabindex="-1"></a>      environment_changed <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb27-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-17" tabindex="-1"></a>    }</span>
+<span id="cb27-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-18" tabindex="-1"></a>    </span>
+<span id="cb27-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-19" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb27-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-20" tabindex="-1"></a>    </span>
+<span id="cb27-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-21" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state) {</span>
+<span id="cb27-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-22" tabindex="-1"></a>      current_time <span class="ot">&lt;-</span> current_time <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb27-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-23" tabindex="-1"></a>      </span>
+<span id="cb27-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-24" tabindex="-1"></a>      <span class="co"># Action selection (epsilon-greedy)</span></span>
+<span id="cb27-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-25" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb27-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-26" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb27-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-27" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb27-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-28" tabindex="-1"></a>        <span class="co"># Break ties randomly</span></span>
+<span id="cb27-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-29" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">which</span>(Q[s, ] <span class="sc">==</span> <span class="fu">max</span>(Q[s, ])), <span class="dv">1</span>)</span>
+<span id="cb27-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-30" tabindex="-1"></a>      }</span>
+<span id="cb27-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-31" tabindex="-1"></a>      </span>
+<span id="cb27-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-32" tabindex="-1"></a>      <span class="co"># Take action and observe outcome</span></span>
+<span id="cb27-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-33" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a, <span class="at">modified =</span> environment_changed)</span>
+<span id="cb27-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-34" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb27-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-35" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb27-36"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-36" tabindex="-1"></a>      </span>
+<span id="cb27-37"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-37" tabindex="-1"></a>      <span class="co"># Direct learning (Q-Learning update)</span></span>
+<span id="cb27-38"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-38" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb27-39"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-39" tabindex="-1"></a>      </span>
+<span id="cb27-40"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-40" tabindex="-1"></a>      <span class="co"># Model learning and timestamp update</span></span>
+<span id="cb27-41"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-41" tabindex="-1"></a>      model_T[s, a] <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb27-42"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-42" tabindex="-1"></a>      model_R[s, a] <span class="ot">&lt;-</span> r</span>
+<span id="cb27-43"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-43" tabindex="-1"></a>      timestamps[s, a] <span class="ot">&lt;-</span> current_time</span>
+<span id="cb27-44"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-44" tabindex="-1"></a>      </span>
+<span id="cb27-45"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-45" tabindex="-1"></a>      <span class="co"># Track visited state-action pairs</span></span>
+<span id="cb27-46"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-46" tabindex="-1"></a>      sa_key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb27-47"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-47" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>(sa_key <span class="sc">%in%</span> <span class="fu">names</span>(visited_sa))) {</span>
+<span id="cb27-48"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-48" tabindex="-1"></a>        visited_sa[[sa_key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(s, a)</span>
+<span id="cb27-49"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-49" tabindex="-1"></a>      }</span>
+<span id="cb27-50"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-50" tabindex="-1"></a>      </span>
+<span id="cb27-51"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-51" tabindex="-1"></a>      <span class="co"># Planning phase with exploration bonuses</span></span>
+<span id="cb27-52"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-52" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(visited_sa) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb27-53"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-53" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_planning) {</span>
+<span id="cb27-54"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-54" tabindex="-1"></a>          <span class="co"># Sample random previously visited state-action pair</span></span>
+<span id="cb27-55"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-55" tabindex="-1"></a>          sa_sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(visited_sa, <span class="dv">1</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb27-56"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-56" tabindex="-1"></a>          s_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">1</span>]</span>
+<span id="cb27-57"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-57" tabindex="-1"></a>          a_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">2</span>]</span>
+<span id="cb27-58"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-58" tabindex="-1"></a>          </span>
+<span id="cb27-59"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-59" tabindex="-1"></a>          <span class="co"># Get simulated experience from model</span></span>
+<span id="cb27-60"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-60" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(model_T[s_plan, a_plan])) {</span>
+<span id="cb27-61"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-61" tabindex="-1"></a>            s_prime_plan <span class="ot">&lt;-</span> model_T[s_plan, a_plan]</span>
+<span id="cb27-62"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-62" tabindex="-1"></a>            r_base <span class="ot">&lt;-</span> model_R[s_plan, a_plan]</span>
+<span id="cb27-63"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-63" tabindex="-1"></a>            </span>
+<span id="cb27-64"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-64" tabindex="-1"></a>            <span class="co"># Calculate exploration bonus</span></span>
+<span id="cb27-65"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-65" tabindex="-1"></a>            time_since_visit <span class="ot">&lt;-</span> current_time <span class="sc">-</span> timestamps[s_plan, a_plan]</span>
+<span id="cb27-66"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-66" tabindex="-1"></a>            exploration_bonus <span class="ot">&lt;-</span> kappa <span class="sc">*</span> <span class="fu">sqrt</span>(time_since_visit)</span>
+<span id="cb27-67"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-67" tabindex="-1"></a>            r_plan <span class="ot">&lt;-</span> r_base <span class="sc">+</span> exploration_bonus</span>
+<span id="cb27-68"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-68" tabindex="-1"></a>            </span>
+<span id="cb27-69"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-69" tabindex="-1"></a>            <span class="co"># Planning update with augmented reward</span></span>
+<span id="cb27-70"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-70" tabindex="-1"></a>            Q[s_plan, a_plan] <span class="ot">&lt;-</span> Q[s_plan, a_plan] <span class="sc">+</span> </span>
+<span id="cb27-71"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-71" tabindex="-1"></a>              alpha <span class="sc">*</span> (r_plan <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime_plan, ]) <span class="sc">-</span> Q[s_plan, a_plan])</span>
+<span id="cb27-72"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-72" tabindex="-1"></a>          }</span>
+<span id="cb27-73"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-73" tabindex="-1"></a>        }</span>
+<span id="cb27-74"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-74" tabindex="-1"></a>      }</span>
+<span id="cb27-75"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-75" tabindex="-1"></a>      </span>
+<span id="cb27-76"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-76" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb27-77"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-77" tabindex="-1"></a>    }</span>
+<span id="cb27-78"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-78" tabindex="-1"></a>  }</span>
+<span id="cb27-79"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-79" tabindex="-1"></a>  </span>
+<span id="cb27-80"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-80" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
+<span id="cb27-81"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-81" tabindex="-1"></a>       <span class="at">model_T =</span> model_T, <span class="at">model_R =</span> model_R, <span class="at">timestamps =</span> timestamps)</span>
+<span id="cb27-82"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb27-82" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="standard-dyna-for-comparison" class="section level3 hasAnchor" number="10.3.3">
+<h3><span class="header-section-number">10.3.3</span> Standard Dyna for Comparison<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#standard-dyna-for-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We also implement standard Dyna to highlight the differences:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-1" tabindex="-1"></a>dyna_q_standard <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, </span>
+<span id="cb28-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-2" tabindex="-1"></a>                            <span class="at">n_planning =</span> <span class="dv">5</span>, <span class="at">change_episode =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb28-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb28-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-4" tabindex="-1"></a>  model_T <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb28-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-5" tabindex="-1"></a>  model_R <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb28-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-6" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb28-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-7" tabindex="-1"></a>  </span>
+<span id="cb28-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-8" tabindex="-1"></a>  environment_changed <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb28-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-9" tabindex="-1"></a>  </span>
+<span id="cb28-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-10" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb28-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-11" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(change_episode) <span class="sc">&amp;&amp;</span> ep <span class="sc">==</span> change_episode) {</span>
+<span id="cb28-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-12" tabindex="-1"></a>      environment_changed <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb28-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-13" tabindex="-1"></a>    }</span>
+<span id="cb28-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-14" tabindex="-1"></a>    </span>
+<span id="cb28-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-15" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb28-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-16" tabindex="-1"></a>    </span>
+<span id="cb28-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-17" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state) {</span>
+<span id="cb28-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-18" tabindex="-1"></a>      <span class="co"># Action selection</span></span>
+<span id="cb28-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-19" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb28-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-20" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb28-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-21" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb28-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-22" tabindex="-1"></a>        <span class="co"># Break ties randomly</span></span>
+<span id="cb28-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-23" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">which</span>(Q[s, ] <span class="sc">==</span> <span class="fu">max</span>(Q[s, ])), <span class="dv">1</span>)</span>
+<span id="cb28-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-24" tabindex="-1"></a>      }</span>
+<span id="cb28-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-25" tabindex="-1"></a>      </span>
+<span id="cb28-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-26" tabindex="-1"></a>      <span class="co"># Take action</span></span>
+<span id="cb28-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-27" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a, <span class="at">modified =</span> environment_changed)</span>
+<span id="cb28-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-28" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb28-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-29" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb28-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-30" tabindex="-1"></a>      </span>
+<span id="cb28-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-31" tabindex="-1"></a>      <span class="co"># Direct learning</span></span>
+<span id="cb28-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-32" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb28-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-33" tabindex="-1"></a>      </span>
+<span id="cb28-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-34" tabindex="-1"></a>      <span class="co"># Model learning (no timestamp tracking)</span></span>
+<span id="cb28-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-35" tabindex="-1"></a>      model_T[s, a] <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb28-36"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-36" tabindex="-1"></a>      model_R[s, a] <span class="ot">&lt;-</span> r</span>
+<span id="cb28-37"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-37" tabindex="-1"></a>      </span>
+<span id="cb28-38"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-38" tabindex="-1"></a>      <span class="co"># Track visited pairs</span></span>
+<span id="cb28-39"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-39" tabindex="-1"></a>      sa_key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb28-40"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-40" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>(sa_key <span class="sc">%in%</span> <span class="fu">names</span>(visited_sa))) {</span>
+<span id="cb28-41"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-41" tabindex="-1"></a>        visited_sa[[sa_key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(s, a)</span>
+<span id="cb28-42"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-42" tabindex="-1"></a>      }</span>
+<span id="cb28-43"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-43" tabindex="-1"></a>      </span>
+<span id="cb28-44"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-44" tabindex="-1"></a>      <span class="co"># Standard planning (no exploration bonus)</span></span>
+<span id="cb28-45"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-45" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(visited_sa) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb28-46"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-46" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_planning) {</span>
+<span id="cb28-47"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-47" tabindex="-1"></a>          sa_sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(visited_sa, <span class="dv">1</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb28-48"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-48" tabindex="-1"></a>          s_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">1</span>]</span>
+<span id="cb28-49"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-49" tabindex="-1"></a>          a_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">2</span>]</span>
+<span id="cb28-50"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-50" tabindex="-1"></a>          </span>
+<span id="cb28-51"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-51" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(model_T[s_plan, a_plan])) {</span>
+<span id="cb28-52"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-52" tabindex="-1"></a>            s_prime_plan <span class="ot">&lt;-</span> model_T[s_plan, a_plan]</span>
+<span id="cb28-53"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-53" tabindex="-1"></a>            r_plan <span class="ot">&lt;-</span> model_R[s_plan, a_plan]  <span class="co"># No bonus here</span></span>
+<span id="cb28-54"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-54" tabindex="-1"></a>            </span>
+<span id="cb28-55"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-55" tabindex="-1"></a>            Q[s_plan, a_plan] <span class="ot">&lt;-</span> Q[s_plan, a_plan] <span class="sc">+</span> </span>
+<span id="cb28-56"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-56" tabindex="-1"></a>              alpha <span class="sc">*</span> (r_plan <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime_plan, ]) <span class="sc">-</span> Q[s_plan, a_plan])</span>
+<span id="cb28-57"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-57" tabindex="-1"></a>          }</span>
+<span id="cb28-58"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-58" tabindex="-1"></a>        }</span>
+<span id="cb28-59"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-59" tabindex="-1"></a>      }</span>
+<span id="cb28-60"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-60" tabindex="-1"></a>      </span>
+<span id="cb28-61"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-61" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb28-62"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-62" tabindex="-1"></a>    }</span>
+<span id="cb28-63"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-63" tabindex="-1"></a>  }</span>
+<span id="cb28-64"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-64" tabindex="-1"></a>  </span>
+<span id="cb28-65"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-65" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max))</span>
+<span id="cb28-66"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb28-66" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="experimental-analysis-1" class="section level2 hasAnchor" number="10.4">
+<h2><span class="header-section-number">10.4</span> Experimental Analysis<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#experimental-analysis-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="adaptation-to-environmental-changes" class="section level3 hasAnchor" number="10.4.1">
+<h3><span class="header-section-number">10.4.1</span> Adaptation to Environmental Changes<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#adaptation-to-environmental-changes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The most compelling demonstration of Dyna-Q+’s advantages comes from scenarios where the environment changes mid-learning. We’ll compare how quickly both algorithms adapt:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-1" tabindex="-1"></a><span class="co"># Function to evaluate policy performance</span></span>
+<span id="cb29-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-2" tabindex="-1"></a>evaluate_policy_performance <span class="ot">&lt;-</span> <span class="cf">function</span>(Q, <span class="at">episodes =</span> <span class="dv">100</span>, <span class="at">modified =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb29-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-3" tabindex="-1"></a>  total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb29-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-4" tabindex="-1"></a>  total_steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb29-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-5" tabindex="-1"></a>  </span>
+<span id="cb29-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-6" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb29-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-7" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb29-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-8" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb29-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-9" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb29-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-10" tabindex="-1"></a>    </span>
+<span id="cb29-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-11" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">50</span>) {  <span class="co"># Prevent infinite loops</span></span>
+<span id="cb29-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-12" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">which</span>(Q[s, ] <span class="sc">==</span> <span class="fu">max</span>(Q[s, ])), <span class="dv">1</span>) <span class="co"># Break ties randomly</span></span>
+<span id="cb29-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-13" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a, <span class="at">modified =</span> modified)</span>
+<span id="cb29-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-14" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb29-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-15" tabindex="-1"></a>      s <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb29-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-16" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb29-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-17" tabindex="-1"></a>    }</span>
+<span id="cb29-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-18" tabindex="-1"></a>    </span>
+<span id="cb29-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-19" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> episode_reward</span>
+<span id="cb29-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-20" tabindex="-1"></a>    total_steps <span class="ot">&lt;-</span> total_steps <span class="sc">+</span> steps</span>
+<span id="cb29-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-21" tabindex="-1"></a>  }</span>
+<span id="cb29-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-22" tabindex="-1"></a>  </span>
+<span id="cb29-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-23" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">avg_reward =</span> total_reward <span class="sc">/</span> episodes, <span class="at">avg_steps =</span> total_steps <span class="sc">/</span> episodes)</span>
+<span id="cb29-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-24" tabindex="-1"></a>}</span>
+<span id="cb29-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-25" tabindex="-1"></a></span>
+<span id="cb29-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-26" tabindex="-1"></a><span class="co"># Comparative experiment with environmental change</span></span>
+<span id="cb29-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-27" tabindex="-1"></a>adaptation_experiment <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb29-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-28" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb29-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-29" tabindex="-1"></a>  n_runs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb29-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-30" tabindex="-1"></a>  change_point <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb29-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-31" tabindex="-1"></a>  total_episodes <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb29-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-32" tabindex="-1"></a>  </span>
+<span id="cb29-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-33" tabindex="-1"></a>  <span class="co"># Storage for results</span></span>
+<span id="cb29-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-34" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb29-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-35" tabindex="-1"></a>    <span class="at">episode =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>total_episodes, <span class="dv">2</span>),</span>
+<span id="cb29-36"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-36" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Dyna-Q&quot;</span>, <span class="st">&quot;Dyna-Q+&quot;</span>), <span class="at">each =</span> total_episodes),</span>
+<span id="cb29-37"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-37" tabindex="-1"></a>    <span class="at">performance =</span> <span class="fu">numeric</span>(total_episodes <span class="sc">*</span> <span class="dv">2</span>),</span>
+<span id="cb29-38"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-38" tabindex="-1"></a>    <span class="at">run =</span> <span class="fu">rep</span>(<span class="dv">1</span>, total_episodes <span class="sc">*</span> <span class="dv">2</span>)</span>
+<span id="cb29-39"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-39" tabindex="-1"></a>  )</span>
+<span id="cb29-40"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-40" tabindex="-1"></a>  </span>
+<span id="cb29-41"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-41" tabindex="-1"></a>  <span class="cf">for</span> (run <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_runs) {</span>
+<span id="cb29-42"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-42" tabindex="-1"></a>    <span class="co"># Train both algorithms</span></span>
+<span id="cb29-43"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-43" tabindex="-1"></a>    <span class="co"># For a full experiment, you would re-initialize Q here for each run</span></span>
+<span id="cb29-44"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-44" tabindex="-1"></a>    dyna_standard_result <span class="ot">&lt;-</span> <span class="fu">dyna_q_standard</span>(<span class="at">episodes =</span> total_episodes, </span>
+<span id="cb29-45"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-45" tabindex="-1"></a>                                            <span class="at">change_episode =</span> change_point)</span>
+<span id="cb29-46"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-46" tabindex="-1"></a>    dyna_plus_result <span class="ot">&lt;-</span> <span class="fu">dyna_q_plus</span>(<span class="at">episodes =</span> total_episodes, </span>
+<span id="cb29-47"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-47" tabindex="-1"></a>                                    <span class="at">change_episode =</span> change_point,</span>
+<span id="cb29-48"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-48" tabindex="-1"></a>                                    <span class="at">kappa =</span> <span class="fl">0.1</span>)</span>
+<span id="cb29-49"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-49" tabindex="-1"></a>    </span>
+<span id="cb29-50"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-50" tabindex="-1"></a>    <span class="co"># Evaluate performance at each episode (simplified for illustration)</span></span>
+<span id="cb29-51"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-51" tabindex="-1"></a>    <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>total_episodes) {</span>
+<span id="cb29-52"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-52" tabindex="-1"></a>      modified_env <span class="ot">&lt;-</span> ep <span class="sc">&gt;=</span> change_point</span>
+<span id="cb29-53"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-53" tabindex="-1"></a>      </span>
+<span id="cb29-54"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-54" tabindex="-1"></a>      <span class="co"># This is a simplified evaluation - in practice, you&#39;d want to</span></span>
+<span id="cb29-55"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-55" tabindex="-1"></a>      <span class="co"># track performance throughout training</span></span>
+<span id="cb29-56"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-56" tabindex="-1"></a>      <span class="cf">if</span> (ep <span class="sc">%%</span> <span class="dv">50</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb29-57"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-57" tabindex="-1"></a>        std_perf <span class="ot">&lt;-</span> <span class="fu">evaluate_policy_performance</span>(dyna_standard_result<span class="sc">$</span>Q, </span>
+<span id="cb29-58"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-58" tabindex="-1"></a>                                                <span class="at">episodes =</span> <span class="dv">10</span>, </span>
+<span id="cb29-59"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-59" tabindex="-1"></a>                                                <span class="at">modified =</span> modified_env)</span>
+<span id="cb29-60"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-60" tabindex="-1"></a>        plus_perf <span class="ot">&lt;-</span> <span class="fu">evaluate_policy_performance</span>(dyna_plus_result<span class="sc">$</span>Q, </span>
+<span id="cb29-61"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-61" tabindex="-1"></a>                                                 <span class="at">episodes =</span> <span class="dv">10</span>, </span>
+<span id="cb29-62"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-62" tabindex="-1"></a>                                                 <span class="at">modified =</span> modified_env)</span>
+<span id="cb29-63"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-63" tabindex="-1"></a>        </span>
+<span id="cb29-64"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-64" tabindex="-1"></a>        <span class="co"># Store results (this is simplified - you&#39;d want better tracking)</span></span>
+<span id="cb29-65"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-65" tabindex="-1"></a>        idx_std <span class="ot">&lt;-</span> (run <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> total_episodes <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> ep</span>
+<span id="cb29-66"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-66" tabindex="-1"></a>        idx_plus <span class="ot">&lt;-</span> (run <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> total_episodes <span class="sc">*</span> <span class="dv">2</span> <span class="sc">+</span> total_episodes <span class="sc">+</span> ep</span>
+<span id="cb29-67"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-67" tabindex="-1"></a>        </span>
+<span id="cb29-68"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-68" tabindex="-1"></a>        <span class="cf">if</span> (run <span class="sc">==</span> <span class="dv">1</span>) {  <span class="co"># Just store first run for illustration</span></span>
+<span id="cb29-69"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-69" tabindex="-1"></a>          results<span class="sc">$</span>performance[ep] <span class="ot">&lt;-</span> std_perf<span class="sc">$</span>avg_reward</span>
+<span id="cb29-70"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-70" tabindex="-1"></a>          results<span class="sc">$</span>performance[total_episodes <span class="sc">+</span> ep] <span class="ot">&lt;-</span> plus_perf<span class="sc">$</span>avg_reward</span>
+<span id="cb29-71"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-71" tabindex="-1"></a>        }</span>
+<span id="cb29-72"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-72" tabindex="-1"></a>      }</span>
+<span id="cb29-73"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-73" tabindex="-1"></a>    }</span>
+<span id="cb29-74"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-74" tabindex="-1"></a>  }</span>
+<span id="cb29-75"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-75" tabindex="-1"></a>  </span>
+<span id="cb29-76"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-76" tabindex="-1"></a>  <span class="fu">return</span>(results)</span>
+<span id="cb29-77"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb29-77" tabindex="-1"></a>}</span></code></pre></div>
+<div id="example-running-the-adaptation-experiment" class="section level4 hasAnchor" number="10.4.1.1">
+<h4><span class="header-section-number">10.4.1.1</span> Example: Running the Adaptation Experiment<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#example-running-the-adaptation-experiment" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Here we execute the experiment defined above. The resulting plot shows that both algorithms perform similarly until the environment changes at episode 500. After the change, Dyna-Q (<code>kappa = 0</code>) fails to adapt because its model is outdated, leading to a sharp drop in performance. In contrast, Dyna-Q+ uses its exploration bonus to re-evaluate old paths, quickly discovering the change and finding a new optimal policy, thus recovering its performance.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb30-1" tabindex="-1"></a><span class="co"># Setup chunk for libraries</span></span>
+<span id="cb30-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb30-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;ggplot2&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;ggplot2&quot;</span>)</span>
+<span id="cb30-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb30-3" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;dplyr&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;dplyr&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;tidyr&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;tidyr&quot;</span>)</span>
+<span id="cb34-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-2" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb34-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb34-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-5" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb34-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-6" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-7" tabindex="-1"></a><span class="co"># Run the experiment.</span></span>
+<span id="cb34-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-8" tabindex="-1"></a><span class="co"># Note: The original experiment function evaluates performance every 50 episodes,</span></span>
+<span id="cb34-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-9" tabindex="-1"></a><span class="co"># resulting in a plot that connects these discrete data points.</span></span>
+<span id="cb34-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-10" tabindex="-1"></a>adaptation_results_df <span class="ot">&lt;-</span> <span class="fu">adaptation_experiment</span>()</span>
+<span id="cb34-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-11" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-12" tabindex="-1"></a><span class="co"># Prepare data for plotting by filtering out unevaluated episodes</span></span>
+<span id="cb34-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-13" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> adaptation_results_df <span class="sc">%&gt;%</span></span>
+<span id="cb34-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-14" tabindex="-1"></a>  <span class="fu">filter</span>(performance <span class="sc">!=</span> <span class="dv">0</span>)</span>
+<span id="cb34-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-15" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-16" tabindex="-1"></a><span class="co"># Generate the plot</span></span>
+<span id="cb34-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-17" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> episode, <span class="at">y =</span> performance, <span class="at">color =</span> algorithm)) <span class="sc">+</span></span>
+<span id="cb34-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-18" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb34-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-19" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb34-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-20" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">500</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb34-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-21" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">480</span>, <span class="at">y =</span> <span class="fu">min</span>(plot_data<span class="sc">$</span>performance, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">*</span> <span class="fl">1.1</span>, <span class="at">label =</span> <span class="st">&quot;Environment</span><span class="sc">\n</span><span class="st">Change&quot;</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size=</span><span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb34-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-22" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb34-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-23" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Dyna-Q+ vs. Standard Dyna-Q in a Changing Environment&quot;</span>,</span>
+<span id="cb34-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-24" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Performance comparison before and after an environmental change at episode 500.&quot;</span>,</span>
+<span id="cb34-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-25" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
+<span id="cb34-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-26" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Average Reward&quot;</span>,</span>
+<span id="cb34-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-27" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;Algorithm&quot;</span></span>
+<span id="cb34-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-28" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb34-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-29" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb34-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-30" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Dyna-Q&quot;</span> <span class="ot">=</span> <span class="st">&quot;#d95f02&quot;</span>, <span class="st">&quot;Dyna-Q+&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1b9e77&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb34-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-31" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb34-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-32" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb34-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-33" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb34-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-34" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;grey30&quot;</span>)</span>
+<span id="cb34-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb34-35" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="parameter-sensitivity-analysis" class="section level3 hasAnchor" number="10.4.2">
+<h3><span class="header-section-number">10.4.2</span> Parameter Sensitivity Analysis<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#parameter-sensitivity-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The exploration parameter <span class="math inline">\(\\kappa\)</span> significantly influences Dyna-Q+’s behavior. Let’s examine its effects:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-1" tabindex="-1"></a>kappa_sensitivity_analysis <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb35-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-2" tabindex="-1"></a>  kappa_values <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span>)</span>
+<span id="cb35-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-3" tabindex="-1"></a>  change_point <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb35-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-4" tabindex="-1"></a>  total_episodes <span class="ot">&lt;-</span> <span class="dv">600</span></span>
+<span id="cb35-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-5" tabindex="-1"></a>  </span>
+<span id="cb35-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-6" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb35-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-7" tabindex="-1"></a>  </span>
+<span id="cb35-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-8" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(kappa_values)) {</span>
+<span id="cb35-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-9" tabindex="-1"></a>    <span class="fu">set.seed</span>(<span class="dv">42</span>)  <span class="co"># Consistent conditions</span></span>
+<span id="cb35-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-10" tabindex="-1"></a>    </span>
+<span id="cb35-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-11" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">dyna_q_plus</span>(<span class="at">episodes =</span> total_episodes,</span>
+<span id="cb35-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-12" tabindex="-1"></a>                          <span class="at">change_episode =</span> change_point,</span>
+<span id="cb35-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-13" tabindex="-1"></a>                          <span class="at">kappa =</span> kappa_values[i],</span>
+<span id="cb35-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-14" tabindex="-1"></a>                          <span class="at">n_planning =</span> <span class="dv">10</span>)</span>
+<span id="cb35-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-15" tabindex="-1"></a>    </span>
+<span id="cb35-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-16" tabindex="-1"></a>    <span class="co"># Create a temporary Q matrix for evaluation before the change</span></span>
+<span id="cb35-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-17" tabindex="-1"></a>    <span class="co"># We can&#39;t know the exact Q before the change without modifying the main loop,</span></span>
+<span id="cb35-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-18" tabindex="-1"></a>    <span class="co"># so we run a separate short training for pre-change evaluation.</span></span>
+<span id="cb35-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-19" tabindex="-1"></a>    pre_change_result <span class="ot">&lt;-</span> <span class="fu">dyna_q_plus</span>(<span class="at">episodes =</span> change_point, <span class="at">kappa =</span> kappa_values[i], <span class="at">n_planning=</span><span class="dv">10</span>)</span>
+<span id="cb35-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-20" tabindex="-1"></a>    </span>
+<span id="cb35-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-21" tabindex="-1"></a>    pre_change_perf <span class="ot">&lt;-</span> <span class="fu">evaluate_policy_performance</span>(pre_change_result<span class="sc">$</span>Q, <span class="at">modified =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb35-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-22" tabindex="-1"></a>    post_change_perf <span class="ot">&lt;-</span> <span class="fu">evaluate_policy_performance</span>(result<span class="sc">$</span>Q, <span class="at">modified =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb35-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-23" tabindex="-1"></a>    </span>
+<span id="cb35-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-24" tabindex="-1"></a>    <span class="co"># Handle division by zero or near-zero rewards</span></span>
+<span id="cb35-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-25" tabindex="-1"></a>    adaptation_ratio <span class="ot">&lt;-</span> <span class="cf">if</span> (pre_change_perf<span class="sc">$</span>avg_reward <span class="sc">&gt;</span> <span class="fl">1e-5</span>) {</span>
+<span id="cb35-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-26" tabindex="-1"></a>      post_change_perf<span class="sc">$</span>avg_reward <span class="sc">/</span> pre_change_perf<span class="sc">$</span>avg_reward</span>
+<span id="cb35-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-27" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb35-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-28" tabindex="-1"></a>      <span class="cn">NA</span> <span class="co"># Avoid meaningless ratios</span></span>
+<span id="cb35-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-29" tabindex="-1"></a>    }</span>
+<span id="cb35-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-30" tabindex="-1"></a></span>
+<span id="cb35-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-31" tabindex="-1"></a>    results[[i]] <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb35-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-32" tabindex="-1"></a>      <span class="at">kappa =</span> kappa_values[i],</span>
+<span id="cb35-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-33" tabindex="-1"></a>      <span class="at">pre_change_reward =</span> pre_change_perf<span class="sc">$</span>avg_reward,</span>
+<span id="cb35-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-34" tabindex="-1"></a>      <span class="at">post_change_reward =</span> post_change_perf<span class="sc">$</span>avg_reward,</span>
+<span id="cb35-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-35" tabindex="-1"></a>      <span class="at">adaptation_ratio =</span> adaptation_ratio</span>
+<span id="cb35-36"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-36" tabindex="-1"></a>    )</span>
+<span id="cb35-37"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-37" tabindex="-1"></a>  }</span>
+<span id="cb35-38"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-38" tabindex="-1"></a>  </span>
+<span id="cb35-39"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-39" tabindex="-1"></a>  <span class="co"># Convert to data frame for analysis</span></span>
+<span id="cb35-40"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-40" tabindex="-1"></a>  sensitivity_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(results, <span class="cf">function</span>(x) {</span>
+<span id="cb35-41"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-41" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">kappa =</span> x<span class="sc">$</span>kappa,</span>
+<span id="cb35-42"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-42" tabindex="-1"></a>               <span class="at">pre_change =</span> x<span class="sc">$</span>pre_change_reward,</span>
+<span id="cb35-43"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-43" tabindex="-1"></a>               <span class="at">post_change =</span> x<span class="sc">$</span>post_change_reward,</span>
+<span id="cb35-44"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-44" tabindex="-1"></a>               <span class="at">adaptation =</span> x<span class="sc">$</span>adaptation_ratio)</span>
+<span id="cb35-45"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-45" tabindex="-1"></a>  }))</span>
+<span id="cb35-46"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-46" tabindex="-1"></a>  </span>
+<span id="cb35-47"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-47" tabindex="-1"></a>  <span class="fu">return</span>(sensitivity_df)</span>
+<span id="cb35-48"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-48" tabindex="-1"></a>}</span>
+<span id="cb35-49"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-49" tabindex="-1"></a></span>
+<span id="cb35-50"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-50" tabindex="-1"></a><span class="co"># Visualization function</span></span>
+<span id="cb35-51"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-51" tabindex="-1"></a>plot_kappa_sensitivity <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb35-52"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-52" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb35-53"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-53" tabindex="-1"></a>  </span>
+<span id="cb35-54"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-54" tabindex="-1"></a>  <span class="co"># Plot 1: Performance vs kappa</span></span>
+<span id="cb35-55"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-55" tabindex="-1"></a>  <span class="fu">plot</span>(data<span class="sc">$</span>kappa, data<span class="sc">$</span>post_change, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">&quot;darkred&quot;</span>,</span>
+<span id="cb35-56"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-56" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;Kappa Value (κ)&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Post-Change Average Reward&quot;</span>,</span>
+<span id="cb35-57"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-57" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">&quot;Performance After Change&quot;</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="fu">min</span>(data<span class="sc">$</span>post_change, <span class="at">na.rm=</span>T)<span class="sc">*</span><span class="fl">0.9</span>, <span class="fu">max</span>(data<span class="sc">$</span>post_change, <span class="at">na.rm=</span>T)<span class="sc">*</span><span class="fl">1.1</span>))</span>
+<span id="cb35-58"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-58" tabindex="-1"></a>  <span class="fu">grid</span>(<span class="at">lty =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;gray90&quot;</span>)</span>
+<span id="cb35-59"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-59" tabindex="-1"></a>  </span>
+<span id="cb35-60"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-60" tabindex="-1"></a>  <span class="co"># Plot 2: Adaptation ratio vs kappa</span></span>
+<span id="cb35-61"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-61" tabindex="-1"></a>  <span class="fu">plot</span>(data<span class="sc">$</span>kappa, data<span class="sc">$</span>adaptation, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">&quot;darkblue&quot;</span>,</span>
+<span id="cb35-62"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-62" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;Kappa Value (κ)&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Adaptation Ratio (Post/Pre)&quot;</span>,</span>
+<span id="cb35-63"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-63" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">&quot;Adaptation vs Exploration&quot;</span>)</span>
+<span id="cb35-64"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-64" tabindex="-1"></a>  <span class="fu">grid</span>(<span class="at">lty =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;gray90&quot;</span>)</span>
+<span id="cb35-65"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-65" tabindex="-1"></a>  </span>
+<span id="cb35-66"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-66" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb35-67"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb35-67" tabindex="-1"></a>}</span></code></pre></div>
+<div id="example-running-the-sensitivity-analysis" class="section level4 hasAnchor" number="10.4.2.1">
+<h4><span class="header-section-number">10.4.2.1</span> Example: Running the Sensitivity Analysis<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#example-running-the-sensitivity-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We run the analysis for different values of <span class="math inline">\(\\kappa\)</span>. A value of <span class="math inline">\(\\kappa = 0\)</span> corresponds to standard Dyna-Q. The table shows the average reward before and after the environmental change. The plots visualize how post-change performance and the adaptation ratio change with <span class="math inline">\(\\kappa\)</span>. There is a sweet spot for <span class="math inline">\(\\kappa\)</span> (around 0.1-0.2 in this case) that provides the best adaptation. If <span class="math inline">\(\\kappa\)</span> is too low, adaptation is slow; if it’s too high, the agent explores too much, which can also hurt performance.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-1" tabindex="-1"></a><span class="co"># 1. Generate the data</span></span>
+<span id="cb36-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-2" tabindex="-1"></a>sensitivity_data <span class="ot">&lt;-</span> <span class="fu">kappa_sensitivity_analysis</span>()</span>
+<span id="cb36-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-3" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-4" tabindex="-1"></a><span class="co"># 2. Display the data as a formatted table</span></span>
+<span id="cb36-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-5" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;knitr&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;knitr&quot;</span>)</span>
+<span id="cb36-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-6" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sensitivity_data,</span>
+<span id="cb36-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-7" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">&quot;Kappa Parameter Sensitivity Analysis Results&quot;</span>,</span>
+<span id="cb36-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-8" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Kappa (κ)&quot;</span>, <span class="st">&quot;Pre-Change Reward&quot;</span>, <span class="st">&quot;Post-Change Reward&quot;</span>, <span class="st">&quot;Adaptation Ratio&quot;</span>),</span>
+<span id="cb36-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-9" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb36-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb36-10" tabindex="-1"></a>      <span class="at">align =</span> <span class="st">&#39;c&#39;</span>)</span></code></pre></div>
+<table>
+<caption><span id="tab:unnamed-chunk-7">Table 10.1: </span>Kappa Parameter Sensitivity Analysis Results</caption>
+<colgroup>
+<col width="16%" />
+<col width="27%" />
+<col width="29%" />
+<col width="26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Kappa (κ)</th>
+<th align="center">Pre-Change Reward</th>
+<th align="center">Post-Change Reward</th>
+<th align="center">Adaptation Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">0.00</td>
+<td align="center">1.257</td>
+<td align="center">1.135</td>
+<td align="center">0.903</td>
+</tr>
+<tr class="even">
+<td align="center">0.01</td>
+<td align="center">1.211</td>
+<td align="center">0.947</td>
+<td align="center">0.782</td>
+</tr>
+<tr class="odd">
+<td align="center">0.05</td>
+<td align="center">1.438</td>
+<td align="center">0.870</td>
+<td align="center">0.605</td>
+</tr>
+<tr class="even">
+<td align="center">0.10</td>
+<td align="center">1.489</td>
+<td align="center">0.538</td>
+<td align="center">0.361</td>
+</tr>
+<tr class="odd">
+<td align="center">0.20</td>
+<td align="center">1.411</td>
+<td align="center">0.998</td>
+<td align="center">0.707</td>
+</tr>
+<tr class="even">
+<td align="center">0.50</td>
+<td align="center">1.630</td>
+<td align="center">0.839</td>
+<td align="center">0.515</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb37-1" tabindex="-1"></a><span class="co"># 3. Generate the plots using the provided function</span></span>
+<span id="cb37-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb37-2" tabindex="-1"></a><span class="fu">plot_kappa_sensitivity</span>(sensitivity_data)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+</div>
+<div id="exploration-pattern-analysis" class="section level3 hasAnchor" number="10.4.3">
+<h3><span class="header-section-number">10.4.3</span> Exploration Pattern Analysis<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#exploration-pattern-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One way to understand Dyna-Q+’s behavior is to examine how exploration bonuses evolve over time:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-1" tabindex="-1"></a>analyze_exploration_patterns <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb38-2"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-2" tabindex="-1"></a>  <span class="co"># Run Dyna-Q+ and track exploration bonuses</span></span>
+<span id="cb38-3"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-3" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb38-4"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-4" tabindex="-1"></a>  </span>
+<span id="cb38-5"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-5" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb38-6"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-6" tabindex="-1"></a>  timestamps <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb38-7"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-7" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb38-8"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-8" tabindex="-1"></a>  current_time <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb38-9"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-9" tabindex="-1"></a>  kappa <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb38-10"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-10" tabindex="-1"></a>  </span>
+<span id="cb38-11"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-11" tabindex="-1"></a>  <span class="co"># Storage for bonus tracking</span></span>
+<span id="cb38-12"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-12" tabindex="-1"></a>  bonus_history <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb38-13"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-13" tabindex="-1"></a>  <span class="co"># Define time points for snapshotting bonus values</span></span>
+<span id="cb38-14"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-14" tabindex="-1"></a>  time_points <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">100</span>, <span class="dv">2000</span>, <span class="at">by=</span><span class="dv">100</span>)</span>
+<span id="cb38-15"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-15" tabindex="-1"></a></span>
+<span id="cb38-16"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-16" tabindex="-1"></a>  <span class="co"># Run for a fixed number of time steps instead of episodes</span></span>
+<span id="cb38-17"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-17" tabindex="-1"></a>  <span class="co"># to get a clearer view of bonus evolution over time.</span></span>
+<span id="cb38-18"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-18" tabindex="-1"></a>  <span class="cf">while</span>(current_time <span class="sc">&lt;</span> <span class="dv">2000</span>) {</span>
+<span id="cb38-19"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-19" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># Reset to start state for each &quot;pseudo-episode&quot;</span></span>
+<span id="cb38-20"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-20" tabindex="-1"></a>    </span>
+<span id="cb38-21"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-21" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> current_time <span class="sc">&lt;</span> <span class="dv">2000</span>) {</span>
+<span id="cb38-22"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-22" tabindex="-1"></a>      current_time <span class="ot">&lt;-</span> current_time <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb38-23"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-23" tabindex="-1"></a>      </span>
+<span id="cb38-24"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-24" tabindex="-1"></a>      <span class="co"># Simple action selection for this analysis</span></span>
+<span id="cb38-25"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-25" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb38-26"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-26" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb38-27"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-27" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb38-28"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-28" tabindex="-1"></a>      </span>
+<span id="cb38-29"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-29" tabindex="-1"></a>      <span class="co"># Update timestamps</span></span>
+<span id="cb38-30"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-30" tabindex="-1"></a>      timestamps[s, a] <span class="ot">&lt;-</span> current_time</span>
+<span id="cb38-31"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-31" tabindex="-1"></a>      </span>
+<span id="cb38-32"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-32" tabindex="-1"></a>      <span class="co"># Track bonuses at specific time points</span></span>
+<span id="cb38-33"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-33" tabindex="-1"></a>      <span class="cf">if</span> (current_time <span class="sc">%in%</span> time_points) {</span>
+<span id="cb38-34"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-34" tabindex="-1"></a>        bonuses <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb38-35"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-35" tabindex="-1"></a>        <span class="cf">for</span> (state <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb38-36"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-36" tabindex="-1"></a>          <span class="cf">for</span> (action <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
+<span id="cb38-37"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-37" tabindex="-1"></a>            <span class="cf">if</span> (timestamps[state, action] <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb38-38"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-38" tabindex="-1"></a>              time_diff <span class="ot">&lt;-</span> current_time <span class="sc">-</span> timestamps[state, action]</span>
+<span id="cb38-39"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-39" tabindex="-1"></a>              bonuses[state, action] <span class="ot">&lt;-</span> kappa <span class="sc">*</span> <span class="fu">sqrt</span>(time_diff)</span>
+<span id="cb38-40"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-40" tabindex="-1"></a>            }</span>
+<span id="cb38-41"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-41" tabindex="-1"></a>          }</span>
+<span id="cb38-42"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-42" tabindex="-1"></a>        }</span>
+<span id="cb38-43"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-43" tabindex="-1"></a>        </span>
+<span id="cb38-44"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-44" tabindex="-1"></a>        bonus_history[[<span class="fu">as.character</span>(current_time)]] <span class="ot">&lt;-</span> bonuses</span>
+<span id="cb38-45"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-45" tabindex="-1"></a>      }</span>
+<span id="cb38-46"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-46" tabindex="-1"></a>      </span>
+<span id="cb38-47"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-47" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb38-48"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-48" tabindex="-1"></a>    }</span>
+<span id="cb38-49"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-49" tabindex="-1"></a>  }</span>
+<span id="cb38-50"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-50" tabindex="-1"></a>  </span>
+<span id="cb38-51"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-51" tabindex="-1"></a>  <span class="fu">return</span>(bonus_history)</span>
+<span id="cb38-52"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-52" tabindex="-1"></a>}</span>
+<span id="cb38-53"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-53" tabindex="-1"></a></span>
+<span id="cb38-54"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-54" tabindex="-1"></a><span class="co"># Visualization of exploration bonus evolution</span></span>
+<span id="cb38-55"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-55" tabindex="-1"></a>plot_bonus_evolution <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb38-56"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-56" tabindex="-1"></a>  bonus_data <span class="ot">&lt;-</span> <span class="fu">analyze_exploration_patterns</span>()</span>
+<span id="cb38-57"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-57" tabindex="-1"></a>  </span>
+<span id="cb38-58"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-58" tabindex="-1"></a>  <span class="co"># Extract bonus magnitudes over time</span></span>
+<span id="cb38-59"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-59" tabindex="-1"></a>  time_points <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">names</span>(bonus_data))</span>
+<span id="cb38-60"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-60" tabindex="-1"></a>  max_bonuses <span class="ot">&lt;-</span> <span class="fu">sapply</span>(bonus_data, <span class="cf">function</span>(x) <span class="fu">max</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb38-61"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-61" tabindex="-1"></a>  mean_bonuses <span class="ot">&lt;-</span> <span class="fu">sapply</span>(bonus_data, <span class="cf">function</span>(x) <span class="fu">mean</span>(x[x <span class="sc">&gt;</span> <span class="dv">0</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb38-62"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-62" tabindex="-1"></a>  </span>
+<span id="cb38-63"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-63" tabindex="-1"></a>  <span class="fu">plot</span>(time_points, max_bonuses, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb38-64"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-64" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;Time Steps&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Exploration Bonus Magnitude&quot;</span>,</span>
+<span id="cb38-65"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-65" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">&quot;Evolution of Exploration Bonuses&quot;</span>,</span>
+<span id="cb38-66"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-66" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(max_bonuses, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb38-67"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-67" tabindex="-1"></a>  </span>
+<span id="cb38-68"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-68" tabindex="-1"></a>  <span class="fu">lines</span>(time_points, mean_bonuses, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb38-69"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-69" tabindex="-1"></a>  </span>
+<span id="cb38-70"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-70" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>, </span>
+<span id="cb38-71"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-71" tabindex="-1"></a>         <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Maximum Bonus&quot;</span>, <span class="st">&quot;Average Bonus&quot;</span>),</span>
+<span id="cb38-72"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-72" tabindex="-1"></a>         <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>), </span>
+<span id="cb38-73"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-73" tabindex="-1"></a>         <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), </span>
+<span id="cb38-74"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-74" tabindex="-1"></a>         <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">bty=</span><span class="st">&quot;n&quot;</span>)</span>
+<span id="cb38-75"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-75" tabindex="-1"></a>  </span>
+<span id="cb38-76"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-76" tabindex="-1"></a>  <span class="fu">grid</span>(<span class="at">lty =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;gray90&quot;</span>)</span>
+<span id="cb38-77"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb38-77" tabindex="-1"></a>}</span></code></pre></div>
+<div id="example-visualizing-exploration-bonuses" class="section level4 hasAnchor" number="10.4.3.1">
+<h4><span class="header-section-number">10.4.3.1</span> Example: Visualizing Exploration Bonuses<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#example-visualizing-exploration-bonuses" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>This plot shows how the exploration bonuses change over time. As the agent explores, timestamps are updated, and the time since the last visit (<code>t - τ</code>) for any given state-action pair can grow. The <strong>Maximum Bonus</strong> corresponds to the state-action pair that has been unvisited for the longest time, showing the agent’s growing “curiosity” about that specific part of the environment. The <strong>Average Bonus</strong> (for visited pairs) tends to stay lower, indicating that most parts of the model are kept relatively fresh through planning and exploration.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#cb39-1" tabindex="-1"></a><span class="fu">plot_bonus_evolution</span>()</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="discussion-and-implementation-considerations" class="section level2 hasAnchor" number="10.5">
+<h2><span class="header-section-number">10.5</span> Discussion and Implementation Considerations<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#discussion-and-implementation-considerations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dyna-Q+ can be understood as a form of algorithmic curiosity that parallels aspects of human learning. Just as people grow uneasy about facts they have not revisited in some time, the algorithm gradually discounts its own model’s accuracy as intervals between visits lengthen. This built-in doubt is advantageous in non-stationary settings, where relying on yesterday’s truths can be costly. The exploration bonus, scaled by a square root of elapsed time, encodes an important nuance: uncertainty should increase with neglect, but at a diminishing rate. This prevents the system from sliding into perpetual skepticism while keeping enough pressure to revisit older assumptions.</p>
+<p>The extra bookkeeping is minimal—simply a timestamp for each state–action pair—but it changes the decision-making problem. The agent now balances three forces: exploiting current knowledge, exploring new possibilities, and re-exploring known areas to keep the model current. This is more complex than the standard explore–exploit trade-off in Dyna. For large state–action spaces, the linear scaling of timestamp storage may require function approximation or selective retention, especially in continuous or high-dimensional domains.</p>
+<p>Empirically, Dyna-Q+ tends to shine in environments that evolve over time. In stable conditions, bonuses for well-visited states remain small and the algorithm behaves much like standard Dyna. But when conditions shift, the systematic revisiting of old transitions enables faster adaptation. The parameter <span class="math inline">\(\\kappa\)</span> sets the level of “model anxiety”: small values create a trusting system, large values a more suspicious one. The best setting depends on how quickly the world changes and on the relative costs of exploration and exploitation errors.</p>
+<p>The method rests on an implicit assumption—that environmental change is the main cause of model inaccuracy. When inaccuracy stems instead from intrinsic difficulty, such as noisy transitions or highly complex dynamics, the uniform bonuses may encourage needless exploration. Similarly, applying the same bonus across all state–action pairs ignores that some regions may be more volatile or strategically important than others. More refined variants might weight bonuses according to change likelihood or the expected impact of outdated information.</p>
+<p>Later research has broadened these ideas. In deep reinforcement learning, uncertainty-driven exploration often uses learned uncertainty estimates rather than timestamps. Meta-learning approaches aim to optimise exploration strategies across related environments. Curiosity-driven methods extend the spirit of Dyna-Q+ beyond temporal doubt, rewarding novelty in prediction error, information gain, or visitation patterns. The shared thread is that learning systems should actively seek information that improves their internal models.</p>
+<p>In practice, Dyna-Q+ is well suited to domains with gradual, structured change—financial markets with shifting regimes, or mobile robots navigating spaces where obstacles occasionally move. It is less effective in environments with rapid or chaotic dynamics, where maintaining a model may be futile or the bonus insufficient to trigger timely adaptation.</p>
+<p>Implementation choices often start with <span class="math inline">\(\\kappa\)</span> between 0.01 and 0.1, tuning from there. More volatile settings generally warrant larger values. Planning steps <span class="math inline">\(n\)</span> interact with <span class="math inline">\(\\kappa\)</span>: increasing <span class="math inline">\(n\)</span> amplifies bonus effects and may require reducing <span class="math inline">\(\\kappa\)</span>. Large-scale use can demand timestamp approximations—such as storing them only for a subset of pairs or grouping times into bins—to save memory while preserving adaptivity. The extra computation from bonuses is usually negligible compared to value updates, though in time-critical systems, even the square-root calculation may be replaced by lookup tables or cheaper approximations.</p>
+</div>
+<div id="conclusion-6" class="section level2 hasAnchor" number="10.6">
+<h2><span class="header-section-number">10.6</span> Conclusion<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#conclusion-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dyna-Q+ represents a elegant solution to a fundamental challenge in reinforcement learning: how to maintain confidence in learned models while remaining appropriately skeptical about their continued accuracy. By treating time as information and systematically rewarding curiosity about neglected state-action pairs, the algorithm achieves a sophisticated balance between stability and adaptability.</p>
+<p>The approach’s strength lies not just in its technical effectiveness but in its conceptual clarity. The idea that confidence should decay over time unless refreshed by recent experience resonates across many domains beyond reinforcement learning. This principle finds echoes in human psychology, scientific methodology, and even social institutions that require periodic validation of their foundational assumptions.</p>
+<p>While modern deep reinforcement learning has developed more sophisticated approaches to uncertainty and exploration, Dyna-Q+’s core insights remain relevant. The tension between trusting learned models and maintaining healthy skepticism about their accuracy continues to challenge contemporary algorithms. In an era of rapidly changing environments and non-stationary dynamics, the principle of time-decaying confidence may prove even more valuable than when originally proposed.</p>
+<p>Looking forward, the integration of Dyna-Q+’s temporal curiosity with modern uncertainty estimation techniques presents intriguing possibilities. Neural networks that maintain both predictive models and confidence estimates could incorporate exploration bonuses based on both temporal factors and model uncertainty, potentially creating more robust and adaptive learning systems.</p>
+<p>The simplicity of Dyna-Q+’s modification to standard Dyna—just adding a single term to the planning rewards—belies its conceptual sophistication. Sometimes the most profound advances in artificial intelligence come not from complex new architectures but from simple changes that embody deep insights about learning, adaptation, and the nature of knowledge itself.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="dyna-and-dynaq.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/10-Q_Dyna_Plus.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/10-Q_Dyna_Plus.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

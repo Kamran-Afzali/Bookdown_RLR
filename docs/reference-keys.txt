@@ -1,3 +1,4 @@
+tab:unnamed-chunk-7
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -110,3 +111,22 @@ experimental-analysis
 learning-efficiency-comparison
 discussion
 implementation-considerations-and-conclusion
+dyna-q-enhanced-exploration-in-integrated-learning-and-planning
+introduction-8
+theoretical-framework-1
+the-exploration-bonus-mechanism
+complete-dyna-q-algorithm
+convergence-and-stability
+implementation-in-r-1
+environment-setup-1
+dyna-q-implementation-1
+standard-dyna-for-comparison
+experimental-analysis-1
+adaptation-to-environmental-changes
+example-running-the-adaptation-experiment
+parameter-sensitivity-analysis
+example-running-the-sensitivity-analysis
+exploration-pattern-analysis
+example-visualizing-exploration-bonuses
+discussion-and-implementation-considerations
+conclusion-6
