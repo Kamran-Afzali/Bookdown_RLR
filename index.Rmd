@@ -108,7 +108,7 @@ Soft Actor-Critic (SAC), on the other hand, incorporates an entropy maximization
 
 Model-based approaches, such as MuZero or Dreamer, offer a complementary strategy: by learning a model of the environment dynamics and reward structure, they can generate synthetic experiences to improve sample efficiency. However, model inaccuracies can lead to cascading errors and suboptimal policies.
 
-## Conclusion and Further Directions
+## Further Directions
 
 Reinforcement Learning has evolved into a mature and diverse field, offering a rich set of tools for decision-making under uncertainty. From simple bandit strategies to deep policy optimization and model-based reasoning, RL provides a versatile framework for learning from interaction. The Dyna architecture exemplifies how combining different learning paradigms can yield methods that are both sample-efficient and robust, highlighting the value of hybrid approaches in RL.
 
