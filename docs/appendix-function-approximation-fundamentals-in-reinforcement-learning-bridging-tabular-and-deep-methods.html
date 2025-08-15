@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 11 Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 11 Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 11 Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 11 Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-08-15" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#further-directions"><i class="fa fa-check"></i><b>1.5</b> Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><i class="fa fa-check"></i><b>10</b> Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#introduction-8"><i class="fa fa-check"></i><b>10.1</b> Introduction</a></li>
+<li class="chapter" data-level="10.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#theoretical-framework-1"><i class="fa fa-check"></i><b>10.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#the-exploration-bonus-mechanism"><i class="fa fa-check"></i><b>10.2.1</b> The Exploration Bonus Mechanism</a></li>
+<li class="chapter" data-level="10.2.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#complete-dyna-q-algorithm"><i class="fa fa-check"></i><b>10.2.2</b> Complete Dyna-Q+ Algorithm</a></li>
+<li class="chapter" data-level="10.2.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#convergence-and-stability"><i class="fa fa-check"></i><b>10.2.3</b> Convergence and Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="10.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#implementation-in-r-1"><i class="fa fa-check"></i><b>10.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#environment-setup-1"><i class="fa fa-check"></i><b>10.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="10.3.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-implementation-1"><i class="fa fa-check"></i><b>10.3.2</b> Dyna-Q+ Implementation</a></li>
+<li class="chapter" data-level="10.3.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#standard-dyna-for-comparison"><i class="fa fa-check"></i><b>10.3.3</b> Standard Dyna for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#experimental-analysis-1"><i class="fa fa-check"></i><b>10.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="10.4.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#adaptation-to-environmental-changes"><i class="fa fa-check"></i><b>10.4.1</b> Adaptation to Environmental Changes</a></li>
+<li class="chapter" data-level="10.4.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#parameter-sensitivity-analysis"><i class="fa fa-check"></i><b>10.4.2</b> Parameter Sensitivity Analysis</a></li>
+<li class="chapter" data-level="10.4.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#exploration-pattern-analysis"><i class="fa fa-check"></i><b>10.4.3</b> Exploration Pattern Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#discussion-and-implementation-considerations"><i class="fa fa-check"></i><b>10.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="10.6" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#conclusion-6"><i class="fa fa-check"></i><b>10.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><i class="fa fa-check"></i><b>11</b> Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#introduction-9"><i class="fa fa-check"></i><b>11.1</b> Introduction</a></li>
+<li class="chapter" data-level="11.2" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>11.2</b> Feature Engineering and State Representation</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#the-discrimination-vs-generalization-tradeoff"><i class="fa fa-check"></i><b>11.2.1</b> The Discrimination vs Generalization Tradeoff</a></li>
+<li class="chapter" data-level="11.2.2" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#feature-extraction-principles"><i class="fa fa-check"></i><b>11.2.2</b> Feature Extraction Principles</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>11.3</b> Mathematical Foundations of Linear Function Approximation</a>
+<ul>
+<li class="chapter" data-level="11.3.1" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#linear-value-function-approximation"><i class="fa fa-check"></i><b>11.3.1</b> Linear Value Function Approximation</a></li>
+<li class="chapter" data-level="11.3.2" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#temporal-difference-learning-with-function-approximation"><i class="fa fa-check"></i><b>11.3.2</b> Temporal Difference Learning with Function Approximation</a></li>
+<li class="chapter" data-level="11.3.3" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#convergence-properties-and-the-deadly-triad"><i class="fa fa-check"></i><b>11.3.3</b> Convergence Properties and the Deadly Triad</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>11.4</b> Classical Basis Function Methods</a>
+<ul>
+<li class="chapter" data-level="11.4.1" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#coarse-coding"><i class="fa fa-check"></i><b>11.4.1</b> Coarse Coding</a></li>
+<li class="chapter" data-level="11.4.2" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#tile-coding"><i class="fa fa-check"></i><b>11.4.2</b> Tile Coding</a></li>
+<li class="chapter" data-level="11.4.3" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#radial-basis-functions"><i class="fa fa-check"></i><b>11.4.3</b> Radial Basis Functions</a></li>
+</ul></li>
+<li class="chapter" data-level="11.5" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#practical-considerations-and-implementation-guidelines"><i class="fa fa-check"></i><b>11.5</b> Practical Considerations and Implementation Guidelines</a></li>
+<li class="chapter" data-level="11.6" data-path="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#conclusion-7"><i class="fa fa-check"></i><b>11.6</b> Conclusion</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Chapter 11</span> Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-9" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Introduction<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#introduction-9" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The transition from tabular reinforcement learning to modern deep RL represents one of the most significant advances in the field. However, this leap often obscures a crucial intermediate stage that forms the theoretical and practical foundation for all scalable RL methods: classical function approximation. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, when it fails, and how to design effective representations for learning agents.</p>
+<p>In tabular RL, we maintain separate value estimates for each state-action pair, which becomes computationally intractable when dealing with large or continuous state spaces. Function approximation addresses this limitation by learning a parameterized function that generalizes across states. This generalization is both the strength and the challenge of function approximation—it enables learning in complex environments but introduces the fundamental tradeoff between discrimination and generalization that shapes all modern RL algorithms.</p>
+<p>This exploration begins with feature engineering and state representation, examining how raw observations transform into meaningful features for learning. We then progress through the mathematical foundations of linear function approximation and explore classical basis function methods including coarse coding, tile coding, and radial basis functions. These concepts form the essential bridge between the theoretical guarantees of tabular methods and the empirical success of deep neural networks.</p>
+</div>
+<div id="feature-engineering-and-state-representation" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Feature Engineering and State Representation<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#feature-engineering-and-state-representation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The quality of state representation fundamentally determines the success of any RL algorithm. Raw sensory data or environmental observations rarely provide the optimal basis for value function learning. Effective feature engineering transforms high-dimensional, noisy observations into compact, informative representations that facilitate learning and generalization.</p>
+<div id="the-discrimination-vs-generalization-tradeoff" class="section level3 hasAnchor" number="11.2.1">
+<h3><span class="header-section-number">11.2.1</span> The Discrimination vs Generalization Tradeoff<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#the-discrimination-vs-generalization-tradeoff" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>At the heart of feature design lies a fundamental tension: features must discriminate between states that require different actions while generalizing across states that should share similar values. This tradeoff manifests in several dimensions:</p>
+<p><strong>Discrimination</strong> requires features that can distinguish between states where the optimal policy differs significantly. Consider a navigation task where small position differences near obstacles require very different actions. Here, fine-grained spatial features are essential for safety and performance.</p>
+<p><strong>Generalization</strong> demands that similar states share feature representations, enabling learning from one experience to improve decisions in related states. In the same navigation task, distant regions of free space should share features so that collision-avoidance knowledge transfers broadly.</p>
+<p>The mathematical formalization of this tradeoff appears in the approximation error of the value function. Given a feature mapping <span class="math inline">\(\phi: S \rightarrow \mathbb{R}^d\)</span> and parameter vector <span class="math inline">\(\theta \in \mathbb{R}^d\)</span>, the approximate value function is:</p>
+<p><span class="math display">\[V_\theta(s) = \phi(s)^T \theta = \sum_{i=1}^d \phi_i(s) \theta_i\]</span></p>
+<p>The approximation error for any target function <span class="math inline">\(V^*\)</span> is:</p>
+<p><span class="math display">\[\|V^* - \Pi V^*\|^2\]</span></p>
+<p>where <span class="math inline">\(\Pi\)</span> is the projection operator onto the span of the feature space. This error depends critically on how well the features capture the structure of the optimal value function.</p>
+</div>
+<div id="feature-extraction-principles" class="section level3 hasAnchor" number="11.2.2">
+<h3><span class="header-section-number">11.2.2</span> Feature Extraction Principles<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#feature-extraction-principles" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Effective feature extraction in RL follows several key principles that distinguish it from supervised learning contexts. RL features must capture not just the current state but also the temporal and causal structure relevant to decision-making.</p>
+<p><strong>Temporal Dependencies</strong>: Unlike static pattern recognition, RL features often need to encode temporal information. Position and velocity in a physical system, or recent history in a partially observable environment, exemplify features that capture temporal structure essential for optimal control.</p>
+<p><strong>Action-Relevant Information</strong>: Features should emphasize aspects of the state that differentiate between the consequences of different actions. In a trading environment, price trends might be more relevant than absolute prices, as they better predict the outcomes of buy/sell decisions.</p>
+<p><strong>Hierarchical Structure</strong>: Many environments exhibit hierarchical structure that effective features should capture. Room-based features in navigation tasks, or game-phase indicators in strategic games, provide the appropriate level of abstraction for learning policies.</p>
+<p>The design process involves analyzing the environment dynamics to identify which aspects of the raw state space are most predictive of future rewards under different actions. This analysis guides the construction of feature mappings that balance expressiveness with computational tractability.</p>
+</div>
+</div>
+<div id="mathematical-foundations-of-linear-function-approximation" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> Mathematical Foundations of Linear Function Approximation<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#mathematical-foundations-of-linear-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Linear function approximation forms the theoretical cornerstone for understanding all parametric value function methods. The linearity assumption, while restrictive, provides crucial theoretical guarantees and computational advantages that make it an essential starting point for function approximation in RL.</p>
+<div id="linear-value-function-approximation" class="section level3 hasAnchor" number="11.3.1">
+<h3><span class="header-section-number">11.3.1</span> Linear Value Function Approximation<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#linear-value-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In linear function approximation, we represent the value function as a linear combination of basis functions:</p>
+<p><span class="math display">\[V_\theta(s) = \sum_{i=1}^d \phi_i(s) \theta_i = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol{\phi}(s) = [\phi_1(s), \phi_2(s), \ldots, \phi_d(s)]^T\)</span> is the feature vector for state <span class="math inline">\(s\)</span>, and <span class="math inline">\(\boldsymbol{\theta} = [\theta_1, \theta_2, \ldots, \theta_d]^T\)</span> contains the learnable parameters.</p>
+<p>Similarly, for action-value functions:</p>
+<p><span class="math display">\[Q_\theta(s,a) = \boldsymbol{\phi}(s,a)^T \boldsymbol{\theta}\]</span></p>
+<p>The linear structure enables efficient updates and provides convergence guarantees under certain conditions. The gradient of the value function with respect to parameters is simply:</p>
+<p><span class="math display">\[\nabla_\theta V_\theta(s) = \boldsymbol{\phi}(s)\]</span></p>
+<p>This simple gradient form underlies the computational efficiency of linear methods and explains why they remain relevant even in the era of deep learning.</p>
+</div>
+<div id="temporal-difference-learning-with-function-approximation" class="section level3 hasAnchor" number="11.3.2">
+<h3><span class="header-section-number">11.3.2</span> Temporal Difference Learning with Function Approximation<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#temporal-difference-learning-with-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When applying TD learning with linear function approximation, the update rule becomes:</p>
+<p><span class="math display">\[\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_\theta(S_{t+1}) - V_\theta(S_t)] \boldsymbol{\phi}(S_t)\]</span></p>
+<p>This update moves the parameters in the direction that reduces the temporal difference error for the current transition. The key insight is that each update affects the value function globally across all states, weighted by their feature similarity to the current state.</p>
+<p>For Q-learning with linear function approximation:</p>
+<p><span class="math display">\[\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a&#39;} Q_\theta(S_{t+1}, a&#39;) - Q_\theta(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)\]</span></p>
+</div>
+<div id="convergence-properties-and-the-deadly-triad" class="section level3 hasAnchor" number="11.3.3">
+<h3><span class="header-section-number">11.3.3</span> Convergence Properties and the Deadly Triad<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#convergence-properties-and-the-deadly-triad" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Linear TD methods enjoy strong convergence guarantees under on-policy learning. The fixed-point theorem guarantees that on-policy TD(0) with linear function approximation converges to a unique solution. However, off-policy learning introduces potential instability, particularly when combined with function approximation and bootstrapping—the so-called “deadly triad.”</p>
+<p>The projection matrix <span class="math inline">\(\mathbf{P}\)</span> onto the feature space plays a crucial role in understanding convergence. For a feature matrix <span class="math inline">\(\boldsymbol{\Phi}\)</span> with rows <span class="math inline">\(\boldsymbol{\phi}(s)^T\)</span>, the projection is:</p>
+<p><span class="math display">\[\mathbf{P} = \boldsymbol{\Phi}(\boldsymbol{\Phi}^T \mathbf{D} \boldsymbol{\Phi})^{-1}\boldsymbol{\Phi}^T \mathbf{D}\]</span></p>
+<p>where <span class="math inline">\(\mathbf{D}\)</span> is a diagonal matrix of state visitation probabilities. The TD fixed point is:</p>
+<p><span class="math display">\[\boldsymbol{\theta}^* = (\boldsymbol{\Phi}^T \mathbf{D} \boldsymbol{\Phi})^{-1} \boldsymbol{\Phi}^T \mathbf{D} \mathbf{T}^{\pi} \mathbf{v}\]</span></p>
+<p>where <span class="math inline">\(\mathbf{T}^{\pi}\)</span> is the Bellman operator for policy <span class="math inline">\(\pi\)</span>.</p>
+</div>
+</div>
+<div id="classical-basis-function-methods" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> Classical Basis Function Methods<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#classical-basis-function-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Classical basis function methods provide systematic approaches to constructing feature representations that balance computational efficiency with representational power. These methods form the bridge between tabular representations and modern deep learning approaches.</p>
+<div id="coarse-coding" class="section level3 hasAnchor" number="11.4.1">
+<h3><span class="header-section-number">11.4.1</span> Coarse Coding<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#coarse-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Coarse coding represents one of the most intuitive and widely applicable basis function methods. The core idea is to use overlapping, binary-valued features that divide the state space into coarse regions, with each feature active across multiple regions.</p>
+<p><strong>Mathematical Formulation</strong>: For a continuous state space, coarse coding defines a set of regions <span class="math inline">\(\{R_1, R_2, \ldots, R_d\}\)</span> and corresponding indicator functions:</p>
+<p><span class="math display">\[\phi_i(s) = \begin{cases}
+1 &amp; \text{if } s \in R_i \\
+0 &amp; \text{otherwise}
+\end{cases}\]</span></p>
+<p>The key insight is that regions should overlap significantly, so that nearby states activate similar sets of features, enabling generalization, while distant states activate different feature combinations, preserving discrimination.</p>
+<p><strong>Generalization Properties</strong>: The degree of overlap between regions controls the generalization properties. If two states share <span class="math inline">\(k\)</span> active features out of <span class="math inline">\(d\)</span> total features, the similarity in their value estimates is proportional to <span class="math inline">\(k/d\)</span>. This provides explicit control over the smoothness of the learned function.</p>
+<p><strong>Implementation Example</strong>: In a 2D navigation task, circular regions of radius <span class="math inline">\(r\)</span> placed on a grid with spacing <span class="math inline">\(s &lt; r\)</span> create overlapping coarse coding. The number of active features for any state is approximately constant, and the degree of overlap is controlled by the ratio <span class="math inline">\(r/s\)</span>.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-1" tabindex="-1"></a><span class="co"># Coarse Coding Implementation in R with Visualization</span></span>
+<span id="cb36-2"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-2" tabindex="-1"></a>create_coarse_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, num_features, <span class="at">overlap_factor =</span> <span class="dv">2</span>) {</span>
+<span id="cb36-3"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-3" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state_dims)</span>
+<span id="cb36-4"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-4" tabindex="-1"></a>  </span>
+<span id="cb36-5"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-5" tabindex="-1"></a>  <span class="co"># Generate random centers for coarse coding regions within [0, dim1] x [0, dim2]</span></span>
+<span id="cb36-6"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-6" tabindex="-1"></a>  centers <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb36-7"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-7" tabindex="-1"></a>    <span class="fu">c</span>(<span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
+<span id="cb36-8"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-8" tabindex="-1"></a>      <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])),</span>
+<span id="cb36-9"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-9" tabindex="-1"></a>    <span class="at">nrow =</span> num_features, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">FALSE</span></span>
+<span id="cb36-10"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-10" tabindex="-1"></a>  )</span>
+<span id="cb36-11"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-11" tabindex="-1"></a>  </span>
+<span id="cb36-12"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-12" tabindex="-1"></a>  <span class="co"># Estimate average spacing and set radius for overlap</span></span>
+<span id="cb36-13"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-13" tabindex="-1"></a>  avg_spacing <span class="ot">&lt;-</span> (<span class="fu">prod</span>(state_dims) <span class="sc">/</span> num_features)<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>)  <span class="co"># for 2D</span></span>
+<span id="cb36-14"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-14" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> overlap_factor <span class="sc">*</span> avg_spacing <span class="sc">/</span> <span class="dv">2</span>  <span class="co"># Adjusted for circle coverage</span></span>
+<span id="cb36-15"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-15" tabindex="-1"></a>  </span>
+<span id="cb36-16"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-16" tabindex="-1"></a>  <span class="co"># Feature computation function</span></span>
+<span id="cb36-17"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-17" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb36-18"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-18" tabindex="-1"></a>    distances <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">rowSums</span>((centers <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(state, num_features), </span>
+<span id="cb36-19"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-19" tabindex="-1"></a>                              <span class="at">nrow =</span> num_features, <span class="at">byrow =</span> <span class="cn">TRUE</span>))<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb36-20"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-20" tabindex="-1"></a>    <span class="fu">as.numeric</span>(distances <span class="sc">&lt;=</span> radius)</span>
+<span id="cb36-21"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-21" tabindex="-1"></a>  }</span>
+<span id="cb36-22"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-22" tabindex="-1"></a>  </span>
+<span id="cb36-23"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-23" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb36-24"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-24" tabindex="-1"></a>    <span class="at">compute_features =</span> compute_features,</span>
+<span id="cb36-25"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-25" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb36-26"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-26" tabindex="-1"></a>    <span class="at">radius =</span> radius,</span>
+<span id="cb36-27"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-27" tabindex="-1"></a>    <span class="at">state_dims =</span> state_dims</span>
+<span id="cb36-28"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-28" tabindex="-1"></a>  ))</span>
+<span id="cb36-29"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-29" tabindex="-1"></a>}</span>
+<span id="cb36-30"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-30" tabindex="-1"></a></span>
+<span id="cb36-31"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-31" tabindex="-1"></a><span class="co"># Visualization function for 2D coarse coding</span></span>
+<span id="cb36-32"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-32" tabindex="-1"></a>visualize_coarse_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(coarse_coder, <span class="at">state =</span> <span class="cn">NULL</span>, <span class="at">show_centers =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb36-33"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-33" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(coarse_coder<span class="sc">$</span>state_dims) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
+<span id="cb36-34"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-34" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;Visualization only supported for 2D state spaces.&quot;</span>)</span>
+<span id="cb36-35"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-35" tabindex="-1"></a>  }</span>
+<span id="cb36-36"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-36" tabindex="-1"></a>  </span>
+<span id="cb36-37"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-37" tabindex="-1"></a>  centers <span class="ot">&lt;-</span> coarse_coder<span class="sc">$</span>centers</span>
+<span id="cb36-38"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-38" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> coarse_coder<span class="sc">$</span>radius</span>
+<span id="cb36-39"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-39" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> coarse_coder<span class="sc">$</span>state_dims</span>
+<span id="cb36-40"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-40" tabindex="-1"></a>  num_features <span class="ot">&lt;-</span> <span class="fu">nrow</span>(centers)</span>
+<span id="cb36-41"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-41" tabindex="-1"></a>  </span>
+<span id="cb36-42"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-42" tabindex="-1"></a>  <span class="co"># Set up plot</span></span>
+<span id="cb36-43"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-43" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="cn">NA</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>]),</span>
+<span id="cb36-44"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-44" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;State Dimension 1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;State Dimension 2&quot;</span>,</span>
+<span id="cb36-45"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-45" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">&quot;Coarse Coding: Receptive Fields and Active Regions&quot;</span>)</span>
+<span id="cb36-46"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-46" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb36-47"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-47" tabindex="-1"></a>  </span>
+<span id="cb36-48"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-48" tabindex="-1"></a>  <span class="co"># Draw each receptive field (circle)</span></span>
+<span id="cb36-49"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-49" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_features) {</span>
+<span id="cb36-50"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-50" tabindex="-1"></a>    center <span class="ot">&lt;-</span> centers[i, ]</span>
+<span id="cb36-51"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-51" tabindex="-1"></a>    <span class="co"># Create circle</span></span>
+<span id="cb36-52"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-52" tabindex="-1"></a>    theta <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb36-53"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-53" tabindex="-1"></a>    x_circle <span class="ot">&lt;-</span> center[<span class="dv">1</span>] <span class="sc">+</span> radius <span class="sc">*</span> <span class="fu">cos</span>(theta)</span>
+<span id="cb36-54"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-54" tabindex="-1"></a>    y_circle <span class="ot">&lt;-</span> center[<span class="dv">2</span>] <span class="sc">+</span> radius <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
+<span id="cb36-55"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-55" tabindex="-1"></a>    <span class="fu">lines</span>(x_circle, y_circle, <span class="at">col =</span> <span class="st">&quot;gray&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb36-56"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-56" tabindex="-1"></a>  }</span>
+<span id="cb36-57"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-57" tabindex="-1"></a>  </span>
+<span id="cb36-58"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-58" tabindex="-1"></a>  <span class="cf">if</span> (show_centers) {</span>
+<span id="cb36-59"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-59" tabindex="-1"></a>    <span class="fu">points</span>(centers[, <span class="dv">1</span>], centers[, <span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">&quot;gray30&quot;</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
+<span id="cb36-60"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-60" tabindex="-1"></a>  }</span>
+<span id="cb36-61"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-61" tabindex="-1"></a>  </span>
+<span id="cb36-62"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-62" tabindex="-1"></a>  <span class="co"># If a state is provided, compute active features and highlight them</span></span>
+<span id="cb36-63"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-63" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb36-64"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-64" tabindex="-1"></a>    features <span class="ot">&lt;-</span> coarse_coder<span class="sc">$</span><span class="fu">compute_features</span>(state)</span>
+<span id="cb36-65"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-65" tabindex="-1"></a>    active_indices <span class="ot">&lt;-</span> <span class="fu">which</span>(features <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb36-66"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-66" tabindex="-1"></a>    </span>
+<span id="cb36-67"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-67" tabindex="-1"></a>    <span class="co"># Highlight active receptive fields</span></span>
+<span id="cb36-68"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-68" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> active_indices) {</span>
+<span id="cb36-69"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-69" tabindex="-1"></a>      center <span class="ot">&lt;-</span> centers[i, ]</span>
+<span id="cb36-70"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-70" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb36-71"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-71" tabindex="-1"></a>      x_circle <span class="ot">&lt;-</span> center[<span class="dv">1</span>] <span class="sc">+</span> radius <span class="sc">*</span> <span class="fu">cos</span>(theta)</span>
+<span id="cb36-72"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-72" tabindex="-1"></a>      y_circle <span class="ot">&lt;-</span> center[<span class="dv">2</span>] <span class="sc">+</span> radius <span class="sc">*</span> <span class="fu">sin</span>(theta)</span>
+<span id="cb36-73"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-73" tabindex="-1"></a>      <span class="fu">lines</span>(x_circle, y_circle, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb36-74"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-74" tabindex="-1"></a>    }</span>
+<span id="cb36-75"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-75" tabindex="-1"></a>    </span>
+<span id="cb36-76"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-76" tabindex="-1"></a>    <span class="co"># Plot the query state</span></span>
+<span id="cb36-77"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-77" tabindex="-1"></a>    <span class="fu">points</span>(state[<span class="dv">1</span>], state[<span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">17</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">cex =</span> <span class="fl">1.8</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb36-78"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-78" tabindex="-1"></a>    <span class="fu">text</span>(state[<span class="dv">1</span>], state[<span class="dv">2</span>] <span class="sc">+</span> <span class="fl">0.3</span>, <span class="at">labels =</span> <span class="st">&quot;State&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">cex =</span> <span class="fl">0.9</span>)</span>
+<span id="cb36-79"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-79" tabindex="-1"></a>    </span>
+<span id="cb36-80"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-80" tabindex="-1"></a>    <span class="co"># Add legend</span></span>
+<span id="cb36-81"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-81" tabindex="-1"></a>    <span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, </span>
+<span id="cb36-82"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-82" tabindex="-1"></a>           <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Receptive Field&quot;</span>, <span class="st">&quot;Active Field&quot;</span>, <span class="st">&quot;Center&quot;</span>, <span class="st">&quot;State&quot;</span>),</span>
+<span id="cb36-83"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-83" tabindex="-1"></a>           <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb36-84"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-84" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;gray&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;gray30&quot;</span>, <span class="st">&quot;blue&quot;</span>),</span>
+<span id="cb36-85"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-85" tabindex="-1"></a>           <span class="at">pch =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">19</span>, <span class="dv">17</span>),</span>
+<span id="cb36-86"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-86" tabindex="-1"></a>           <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb36-87"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-87" tabindex="-1"></a>           <span class="at">pt.cex =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="fl">0.8</span>,<span class="dv">1</span>),</span>
+<span id="cb36-88"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-88" tabindex="-1"></a>           <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
+<span id="cb36-89"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-89" tabindex="-1"></a>    </span>
+<span id="cb36-90"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-90" tabindex="-1"></a>    <span class="co"># Print active count on plot</span></span>
+<span id="cb36-91"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-91" tabindex="-1"></a>    <span class="fu">title</span>(<span class="at">sub =</span> <span class="fu">paste</span>(<span class="fu">sum</span>(features), <span class="st">&quot;active features out of&quot;</span>, num_features))</span>
+<span id="cb36-92"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-92" tabindex="-1"></a>  }</span>
+<span id="cb36-93"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-93" tabindex="-1"></a>}</span>
+<span id="cb36-94"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-94" tabindex="-1"></a></span>
+<span id="cb36-95"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-95" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb36-96"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-96" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)  <span class="co"># For reproducible centers</span></span>
+<span id="cb36-97"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-97" tabindex="-1"></a>coarse_coder <span class="ot">&lt;-</span> <span class="fu">create_coarse_coding</span>(<span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="dv">50</span>, <span class="at">overlap_factor =</span> <span class="fl">1.5</span>)</span>
+<span id="cb36-98"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-98" tabindex="-1"></a>features <span class="ot">&lt;-</span> coarse_coder<span class="sc">$</span><span class="fu">compute_features</span>(<span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span>
+<span id="cb36-99"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-99" tabindex="-1"></a></span>
+<span id="cb36-100"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-100" tabindex="-1"></a><span class="co"># Print summary</span></span>
+<span id="cb36-101"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb36-101" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Active features:&quot;</span>, <span class="fu">sum</span>(features), <span class="st">&quot;out of&quot;</span>, <span class="fu">length</span>(features)))</span></code></pre></div>
+<pre><code>## [1] &quot;Active features: 4 out of 50&quot;</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb38-1" tabindex="-1"></a><span class="co"># Visualize</span></span>
+<span id="cb38-2"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb38-2" tabindex="-1"></a><span class="fu">visualize_coarse_coding</span>(coarse_coder, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>), <span class="at">show_centers =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="tile-coding" class="section level3 hasAnchor" number="11.4.2">
+<h3><span class="header-section-number">11.4.2</span> Tile Coding<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#tile-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Tile coding represents a systematic refinement of coarse coding that provides more uniform coverage and predictable generalization properties. It partitions the state space using multiple overlapping grids (tilings), with each grid offset to ensure comprehensive coverage.</p>
+<p><strong>Mathematical Framework</strong>: Tile coding uses <span class="math inline">\(n\)</span> tilings, each partitioning the state space into a regular grid. For a <span class="math inline">\(d\)</span>-dimensional state space, tiling <span class="math inline">\(i\)</span> creates regions:</p>
+<p><span class="math display">\[T_{i,\mathbf{j}}(s) = \prod_{k=1}^d \mathbf{1}_{[a_{i,k,j_k}, a_{i,k,j_k+1})}(s_k)\]</span></p>
+<p>where <span class="math inline">\(\mathbf{j} = (j_1, j_2, \ldots, j_d)\)</span> indexes the tile within tiling <span class="math inline">\(i\)</span>, and <span class="math inline">\(a_{i,k,j_k}\)</span> defines the boundaries for dimension <span class="math inline">\(k\)</span>.</p>
+<p>The feature vector has exactly <span class="math inline">\(n\)</span> active features (one per tiling), providing both computational efficiency and uniform generalization. The offsets between tilings are typically chosen to be incommensurate to ensure good coverage properties.</p>
+<p><strong>Asymmetric Generalization</strong>: Unlike circular coarse coding, tile coding provides asymmetric generalization that respects the natural coordinate system of the problem. This makes it particularly suitable for control problems where state dimensions have different physical meanings.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-1" tabindex="-1"></a><span class="co"># Tile Coding Implementation with Visualization</span></span>
+<span id="cb39-2"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-2" tabindex="-1"></a>create_tile_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(state_low, state_high, num_tilings, tiles_per_dim) {</span>
+<span id="cb39-3"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-3" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> <span class="fu">length</span>(state_low)</span>
+<span id="cb39-4"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-4" tabindex="-1"></a>  state_range <span class="ot">&lt;-</span> state_high <span class="sc">-</span> state_low</span>
+<span id="cb39-5"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-5" tabindex="-1"></a>  tile_width <span class="ot">&lt;-</span> state_range <span class="sc">/</span> tiles_per_dim</span>
+<span id="cb39-6"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-6" tabindex="-1"></a>  </span>
+<span id="cb39-7"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-7" tabindex="-1"></a>  <span class="co"># Generate random offsets for each tiling</span></span>
+<span id="cb39-8"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-8" tabindex="-1"></a>  offsets <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(num_tilings <span class="sc">*</span> state_dims, <span class="dv">0</span>, tile_width), </span>
+<span id="cb39-9"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-9" tabindex="-1"></a>                    <span class="at">nrow =</span> num_tilings, <span class="at">ncol =</span> state_dims)</span>
+<span id="cb39-10"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-10" tabindex="-1"></a>  </span>
+<span id="cb39-11"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-11" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb39-12"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-12" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, num_tilings <span class="sc">*</span> <span class="fu">prod</span>(tiles_per_dim))</span>
+<span id="cb39-13"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-13" tabindex="-1"></a>    </span>
+<span id="cb39-14"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-14" tabindex="-1"></a>    <span class="cf">for</span> (tiling <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb39-15"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-15" tabindex="-1"></a>      <span class="co"># Apply offset and compute tile indices</span></span>
+<span id="cb39-16"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-16" tabindex="-1"></a>      offset_state <span class="ot">&lt;-</span> <span class="fu">pmax</span>(<span class="fu">pmin</span>(state <span class="sc">-</span> offsets[tiling, ], state_high), state_low)</span>
+<span id="cb39-17"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-17" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">pmin</span>(<span class="fu">floor</span>((offset_state <span class="sc">-</span> state_low) <span class="sc">/</span> tile_width), </span>
+<span id="cb39-18"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-18" tabindex="-1"></a>                           tiles_per_dim <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb39-19"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-19" tabindex="-1"></a>      </span>
+<span id="cb39-20"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-20" tabindex="-1"></a>      <span class="co"># Convert multi-dimensional index to linear index</span></span>
+<span id="cb39-21"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-21" tabindex="-1"></a>      linear_index <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb39-22"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-22" tabindex="-1"></a>      multiplier <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb39-23"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-23" tabindex="-1"></a>      <span class="cf">for</span> (dim <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>state_dims) {</span>
+<span id="cb39-24"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-24" tabindex="-1"></a>        linear_index <span class="ot">&lt;-</span> linear_index <span class="sc">+</span> (tile_indices[dim] <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> multiplier</span>
+<span id="cb39-25"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-25" tabindex="-1"></a>        multiplier <span class="ot">&lt;-</span> multiplier <span class="sc">*</span> tiles_per_dim[dim]</span>
+<span id="cb39-26"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-26" tabindex="-1"></a>      }</span>
+<span id="cb39-27"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-27" tabindex="-1"></a>      </span>
+<span id="cb39-28"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-28" tabindex="-1"></a>      <span class="co"># Activate corresponding feature</span></span>
+<span id="cb39-29"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-29" tabindex="-1"></a>      feature_index <span class="ot">&lt;-</span> (tiling <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">prod</span>(tiles_per_dim) <span class="sc">+</span> linear_index</span>
+<span id="cb39-30"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-30" tabindex="-1"></a>      features[feature_index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb39-31"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-31" tabindex="-1"></a>    }</span>
+<span id="cb39-32"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-32" tabindex="-1"></a>    </span>
+<span id="cb39-33"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-33" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb39-34"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-34" tabindex="-1"></a>  }</span>
+<span id="cb39-35"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-35" tabindex="-1"></a>  </span>
+<span id="cb39-36"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-36" tabindex="-1"></a>  <span class="co"># Return offsets for visualization purposes</span></span>
+<span id="cb39-37"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-37" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb39-38"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-38" tabindex="-1"></a>    <span class="at">compute_features =</span> compute_features,</span>
+<span id="cb39-39"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-39" tabindex="-1"></a>    <span class="at">num_features =</span> num_tilings <span class="sc">*</span> <span class="fu">prod</span>(tiles_per_dim),</span>
+<span id="cb39-40"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-40" tabindex="-1"></a>    <span class="at">offsets =</span> offsets,</span>
+<span id="cb39-41"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-41" tabindex="-1"></a>    <span class="at">state_low =</span> state_low,</span>
+<span id="cb39-42"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-42" tabindex="-1"></a>    <span class="at">state_high =</span> state_high,</span>
+<span id="cb39-43"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-43" tabindex="-1"></a>    <span class="at">tiles_per_dim =</span> tiles_per_dim,</span>
+<span id="cb39-44"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-44" tabindex="-1"></a>    <span class="at">tile_width =</span> tile_width</span>
+<span id="cb39-45"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-45" tabindex="-1"></a>  ))</span>
+<span id="cb39-46"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-46" tabindex="-1"></a>}</span>
+<span id="cb39-47"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-47" tabindex="-1"></a></span>
+<span id="cb39-48"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-48" tabindex="-1"></a><span class="co"># Visualization function for 2D tile codings</span></span>
+<span id="cb39-49"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-49" tabindex="-1"></a>visualize_tilings <span class="ot">&lt;-</span> <span class="cf">function</span>(tile_coder, <span class="at">state =</span> <span class="cn">NULL</span>, <span class="at">show_state =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb39-50"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-50" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(tile_coder<span class="sc">$</span>state_low) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
+<span id="cb39-51"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-51" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;Visualization only supported for 2D state spaces.&quot;</span>)</span>
+<span id="cb39-52"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-52" tabindex="-1"></a>  }</span>
+<span id="cb39-53"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-53" tabindex="-1"></a>  </span>
+<span id="cb39-54"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-54" tabindex="-1"></a>  state_low <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>state_low</span>
+<span id="cb39-55"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-55" tabindex="-1"></a>  state_high <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>state_high</span>
+<span id="cb39-56"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-56" tabindex="-1"></a>  tiles_per_dim <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>tiles_per_dim</span>
+<span id="cb39-57"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-57" tabindex="-1"></a>  tile_width <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>tile_width</span>
+<span id="cb39-58"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-58" tabindex="-1"></a>  offsets <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>offsets</span>
+<span id="cb39-59"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-59" tabindex="-1"></a>  num_tilings <span class="ot">&lt;-</span> <span class="fu">nrow</span>(offsets)</span>
+<span id="cb39-60"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-60" tabindex="-1"></a>  </span>
+<span id="cb39-61"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-61" tabindex="-1"></a>  <span class="co"># Set up plot</span></span>
+<span id="cb39-62"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-62" tabindex="-1"></a>  <span class="fu">plot</span>(state_high[<span class="dv">1</span>] <span class="sc">+</span> tile_width[<span class="dv">1</span>], state_high[<span class="dv">2</span>] <span class="sc">+</span> tile_width[<span class="dv">2</span>], </span>
+<span id="cb39-63"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-63" tabindex="-1"></a>       <span class="at">type =</span> <span class="st">&#39;n&#39;</span>, <span class="at">xlim =</span> <span class="fu">c</span>(state_low[<span class="dv">1</span>], state_high[<span class="dv">1</span>] <span class="sc">+</span> tile_width[<span class="dv">1</span>]), </span>
+<span id="cb39-64"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-64" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(state_low[<span class="dv">2</span>], state_high[<span class="dv">2</span>] <span class="sc">+</span> tile_width[<span class="dv">2</span>]),</span>
+<span id="cb39-65"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-65" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;State Dimension 1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;State Dimension 2&quot;</span>,</span>
+<span id="cb39-66"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-66" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">&quot;Tile Coding: Active Tiles per Tiling&quot;</span>)</span>
+<span id="cb39-67"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-67" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb39-68"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-68" tabindex="-1"></a>  </span>
+<span id="cb39-69"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-69" tabindex="-1"></a>  <span class="co"># Define colors for each tiling</span></span>
+<span id="cb39-70"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-70" tabindex="-1"></a>  colors <span class="ot">&lt;-</span> <span class="fu">rainbow</span>(num_tilings)</span>
+<span id="cb39-71"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-71" tabindex="-1"></a>  </span>
+<span id="cb39-72"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-72" tabindex="-1"></a>  <span class="co"># Draw each tiling&#39;s grid and highlight active tile if state is given</span></span>
+<span id="cb39-73"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-73" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb39-74"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-74" tabindex="-1"></a>    features <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span><span class="fu">compute_features</span>(state)</span>
+<span id="cb39-75"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-75" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb39-76"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-76" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb39-77"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-77" tabindex="-1"></a>  }</span>
+<span id="cb39-78"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-78" tabindex="-1"></a>  </span>
+<span id="cb39-79"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-79" tabindex="-1"></a>  <span class="cf">for</span> (tiling <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb39-80"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-80" tabindex="-1"></a>    offset <span class="ot">&lt;-</span> offsets[tiling, ]</span>
+<span id="cb39-81"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-81" tabindex="-1"></a>    color <span class="ot">&lt;-</span> colors[tiling]</span>
+<span id="cb39-82"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-82" tabindex="-1"></a>    </span>
+<span id="cb39-83"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-83" tabindex="-1"></a>    <span class="co"># Draw grid lines for this tiling</span></span>
+<span id="cb39-84"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-84" tabindex="-1"></a>    x_ticks <span class="ot">&lt;-</span> <span class="fu">seq</span>(state_low[<span class="dv">1</span>] <span class="sc">-</span> offset[<span class="dv">1</span>], state_high[<span class="dv">1</span>] <span class="sc">+</span> tile_width[<span class="dv">1</span>], </span>
+<span id="cb39-85"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-85" tabindex="-1"></a>                   <span class="at">by =</span> tile_width[<span class="dv">1</span>])</span>
+<span id="cb39-86"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-86" tabindex="-1"></a>    y_ticks <span class="ot">&lt;-</span> <span class="fu">seq</span>(state_low[<span class="dv">2</span>] <span class="sc">-</span> offset[<span class="dv">2</span>], state_high[<span class="dv">2</span>] <span class="sc">+</span> tile_width[<span class="dv">2</span>], </span>
+<span id="cb39-87"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-87" tabindex="-1"></a>                   <span class="at">by =</span> tile_width[<span class="dv">2</span>])</span>
+<span id="cb39-88"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-88" tabindex="-1"></a>    </span>
+<span id="cb39-89"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-89" tabindex="-1"></a>    <span class="co"># Draw vertical lines</span></span>
+<span id="cb39-90"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-90" tabindex="-1"></a>    <span class="cf">for</span> (x <span class="cf">in</span> x_ticks) {</span>
+<span id="cb39-91"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-91" tabindex="-1"></a>      <span class="fu">lines</span>(<span class="fu">c</span>(x, x), <span class="fu">c</span>(state_low[<span class="dv">2</span>] <span class="sc">-</span> offset[<span class="dv">2</span>], state_high[<span class="dv">2</span>] <span class="sc">+</span> tile_width[<span class="dv">2</span>]), </span>
+<span id="cb39-92"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-92" tabindex="-1"></a>            <span class="at">col =</span> color, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb39-93"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-93" tabindex="-1"></a>    }</span>
+<span id="cb39-94"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-94" tabindex="-1"></a>    <span class="co"># Draw horizontal lines</span></span>
+<span id="cb39-95"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-95" tabindex="-1"></a>    <span class="cf">for</span> (y <span class="cf">in</span> y_ticks) {</span>
+<span id="cb39-96"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-96" tabindex="-1"></a>      <span class="fu">lines</span>(<span class="fu">c</span>(state_low[<span class="dv">1</span>] <span class="sc">-</span> offset[<span class="dv">1</span>], state_high[<span class="dv">1</span>] <span class="sc">+</span> tile_width[<span class="dv">1</span>]), <span class="fu">c</span>(y, y), </span>
+<span id="cb39-97"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-97" tabindex="-1"></a>            <span class="at">col =</span> color, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb39-98"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-98" tabindex="-1"></a>    }</span>
+<span id="cb39-99"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-99" tabindex="-1"></a>    </span>
+<span id="cb39-100"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-100" tabindex="-1"></a>    <span class="co"># If state is provided, compute and highlight active tile</span></span>
+<span id="cb39-101"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-101" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb39-102"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-102" tabindex="-1"></a>      offset_state <span class="ot">&lt;-</span> <span class="fu">pmax</span>(<span class="fu">pmin</span>(state <span class="sc">-</span> offset, state_high), state_low)</span>
+<span id="cb39-103"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-103" tabindex="-1"></a>      tile_idx <span class="ot">&lt;-</span> <span class="fu">floor</span>((offset_state <span class="sc">-</span> state_low) <span class="sc">/</span> tile_width) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb39-104"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-104" tabindex="-1"></a>      tile_idx <span class="ot">&lt;-</span> <span class="fu">pmin</span>(tile_idx, tiles_per_dim)</span>
+<span id="cb39-105"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-105" tabindex="-1"></a>      </span>
+<span id="cb39-106"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-106" tabindex="-1"></a>      <span class="co"># Compute bottom-left corner of the active tile</span></span>
+<span id="cb39-107"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-107" tabindex="-1"></a>      tile_start <span class="ot">&lt;-</span> state_low <span class="sc">+</span> (tile_idx <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> tile_width</span>
+<span id="cb39-108"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-108" tabindex="-1"></a>      tile_end <span class="ot">&lt;-</span> tile_start <span class="sc">+</span> tile_width</span>
+<span id="cb39-109"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-109" tabindex="-1"></a>      </span>
+<span id="cb39-110"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-110" tabindex="-1"></a>      <span class="co"># Highlight active tile</span></span>
+<span id="cb39-111"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-111" tabindex="-1"></a>      <span class="fu">rect</span>(tile_start[<span class="dv">1</span>], tile_start[<span class="dv">2</span>], tile_end[<span class="dv">1</span>], tile_end[<span class="dv">2</span>],</span>
+<span id="cb39-112"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-112" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">adjustcolor</span>(color, <span class="at">alpha.f =</span> <span class="fl">0.3</span>), <span class="at">border =</span> color, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb39-113"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-113" tabindex="-1"></a>    }</span>
+<span id="cb39-114"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-114" tabindex="-1"></a>  }</span>
+<span id="cb39-115"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-115" tabindex="-1"></a>  </span>
+<span id="cb39-116"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-116" tabindex="-1"></a>  <span class="co"># Add legend</span></span>
+<span id="cb39-117"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-117" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">paste</span>(<span class="st">&quot;Tiling&quot;</span>, <span class="dv">1</span><span class="sc">:</span>num_tilings), </span>
+<span id="cb39-118"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-118" tabindex="-1"></a>         <span class="at">fill =</span> <span class="fu">adjustcolor</span>(colors, <span class="at">alpha.f =</span> <span class="fl">0.3</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
+<span id="cb39-119"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-119" tabindex="-1"></a>  </span>
+<span id="cb39-120"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-120" tabindex="-1"></a>  <span class="co"># Plot the state point</span></span>
+<span id="cb39-121"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-121" tabindex="-1"></a>  <span class="cf">if</span> (show_state <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb39-122"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-122" tabindex="-1"></a>    <span class="fu">points</span>(state[<span class="dv">1</span>], state[<span class="dv">2</span>], <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">cex =</span> <span class="fl">1.5</span>)</span>
+<span id="cb39-123"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-123" tabindex="-1"></a>    <span class="fu">text</span>(state[<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.02</span>, state[<span class="dv">2</span>], <span class="at">labels =</span> <span class="st">&quot;State&quot;</span>, <span class="at">pos =</span> <span class="dv">4</span>)</span>
+<span id="cb39-124"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-124" tabindex="-1"></a>  }</span>
+<span id="cb39-125"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-125" tabindex="-1"></a>}</span>
+<span id="cb39-126"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-126" tabindex="-1"></a></span>
+<span id="cb39-127"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-127" tabindex="-1"></a><span class="co"># Example: 2D state space with 4 tilings, 8x8 tiles each</span></span>
+<span id="cb39-128"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-128" tabindex="-1"></a>tile_coder <span class="ot">&lt;-</span> <span class="fu">create_tile_coding</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="dv">4</span>, <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
+<span id="cb39-129"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-129" tabindex="-1"></a>features <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span><span class="fu">compute_features</span>(<span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>))</span>
+<span id="cb39-130"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-130" tabindex="-1"></a></span>
+<span id="cb39-131"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-131" tabindex="-1"></a><span class="co"># Print summary</span></span>
+<span id="cb39-132"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb39-132" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Total features:&quot;</span>, tile_coder<span class="sc">$</span>num_features))</span></code></pre></div>
+<pre><code>## [1] &quot;Total features: 256&quot;</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb41-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Active features:&quot;</span>, <span class="fu">sum</span>(features)))</span></code></pre></div>
+<pre><code>## [1] &quot;Active features: 4&quot;</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb43-1" tabindex="-1"></a><span class="co"># Visualize</span></span>
+<span id="cb43-2"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb43-2" tabindex="-1"></a><span class="fu">visualize_tilings</span>(tile_coder, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>), <span class="at">show_state =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="radial-basis-functions" class="section level3 hasAnchor" number="11.4.3">
+<h3><span class="header-section-number">11.4.3</span> Radial Basis Functions<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#radial-basis-functions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Radial Basis Functions (RBFs) provide smooth, continuous basis functions that offer fine-grained control over local approximation properties. Unlike the binary activations of coarse coding, RBFs produce graded responses that decrease with distance from center points.</p>
+<p><strong>Mathematical Definition</strong>: An RBF network uses basis functions of the form:</p>
+<p><span class="math display">\[\phi_i(s) = \exp\left(-\frac{\|s - c_i\|^2}{2\sigma_i^2}\right)\]</span></p>
+<p>where <span class="math inline">\(c_i\)</span> is the center of the <span class="math inline">\(i\)</span>-th basis function and <span class="math inline">\(\sigma_i\)</span> controls its width. The Gaussian form ensures smooth derivatives and localized influence.</p>
+<p><strong>Approximation Properties</strong>: RBF networks are universal approximators, meaning they can approximate any continuous function to arbitrary accuracy with sufficient basis functions. The approximation quality depends on the placement of centers and the choice of widths.</p>
+<p>For optimal approximation, centers should be distributed to match the complexity of the target function, with higher density in regions of rapid change. The width parameter <span class="math inline">\(\sigma_i\)</span> controls the locality of influence—smaller values create more localized basis functions that provide finer discrimination but may require more functions for coverage.</p>
+<p><strong>Adaptive Placement</strong>: Advanced RBF methods adaptively place centers based on the data distribution or approximation error. Common strategies include:
+- K-means clustering to place centers at data centroids
+- Error-driven placement in regions of high approximation error
+- Incremental addition of basis functions during learning</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-1" tabindex="-1"></a><span class="co"># Radial Basis Function Implementation</span></span>
+<span id="cb44-2"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-2" tabindex="-1"></a>create_rbf_network <span class="ot">&lt;-</span> <span class="cf">function</span>(centers, sigmas) {</span>
+<span id="cb44-3"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-3" tabindex="-1"></a>  num_centers <span class="ot">&lt;-</span> <span class="fu">nrow</span>(centers)</span>
+<span id="cb44-4"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-4" tabindex="-1"></a>  </span>
+<span id="cb44-5"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-5" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb44-6"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-6" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">numeric</span>(num_centers)</span>
+<span id="cb44-7"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-7" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_centers) {</span>
+<span id="cb44-8"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-8" tabindex="-1"></a>      distance_sq <span class="ot">&lt;-</span> <span class="fu">sum</span>((state <span class="sc">-</span> centers[i, ])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb44-9"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-9" tabindex="-1"></a>      features[i] <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distance_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> sigmas[i]<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb44-10"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-10" tabindex="-1"></a>    }</span>
+<span id="cb44-11"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-11" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb44-12"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-12" tabindex="-1"></a>  }</span>
+<span id="cb44-13"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-13" tabindex="-1"></a>  </span>
+<span id="cb44-14"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-14" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">compute_features =</span> compute_features, <span class="at">num_features =</span> num_centers))</span>
+<span id="cb44-15"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-15" tabindex="-1"></a>}</span>
+<span id="cb44-16"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-16" tabindex="-1"></a></span>
+<span id="cb44-17"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-17" tabindex="-1"></a><span class="co"># Example: Create RBF network for 2D space</span></span>
+<span id="cb44-18"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-18" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb44-19"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-19" tabindex="-1"></a>centers <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">10</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb44-20"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-20" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fl">0.2</span>, <span class="dv">10</span>)</span>
+<span id="cb44-21"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-21" tabindex="-1"></a>rbf_network <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(centers, sigmas)</span>
+<span id="cb44-22"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-22" tabindex="-1"></a></span>
+<span id="cb44-23"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-23" tabindex="-1"></a><span class="co"># Test feature computation</span></span>
+<span id="cb44-24"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-24" tabindex="-1"></a>test_state <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>)</span>
+<span id="cb44-25"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-25" tabindex="-1"></a>features <span class="ot">&lt;-</span> rbf_network<span class="sc">$</span><span class="fu">compute_features</span>(test_state)</span>
+<span id="cb44-26"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb44-26" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Sum of RBF activations:&quot;</span>, <span class="fu">round</span>(<span class="fu">sum</span>(features), <span class="dv">3</span>)))</span></code></pre></div>
+<pre><code>## [1] &quot;Sum of RBF activations: 2.544&quot;</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-1" tabindex="-1"></a><span class="co"># Visualize RBF activation pattern</span></span>
+<span id="cb46-2"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb46-3"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-3" tabindex="-1"></a>grid_points <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.02</span>), <span class="at">y =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.02</span>))</span>
+<span id="cb46-4"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-4" tabindex="-1"></a>activations <span class="ot">&lt;-</span> <span class="fu">apply</span>(grid_points, <span class="dv">1</span>, <span class="cf">function</span>(point) <span class="fu">sum</span>(rbf_network<span class="sc">$</span><span class="fu">compute_features</span>(point)))</span>
+<span id="cb46-5"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-5" tabindex="-1"></a>grid_points<span class="sc">$</span>activation <span class="ot">&lt;-</span> activations</span>
+<span id="cb46-6"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-6" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-7" tabindex="-1"></a><span class="fu">ggplot</span>(grid_points, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
+<span id="cb46-8"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-8" tabindex="-1"></a>  <span class="fu">geom_raster</span>() <span class="sc">+</span></span>
+<span id="cb46-9"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-9" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb46-10"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;RBF Network Activation Pattern&quot;</span>) <span class="sc">+</span></span>
+<span id="cb46-11"><a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#cb46-11" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+</div>
+<div id="practical-considerations-and-implementation-guidelines" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> Practical Considerations and Implementation Guidelines<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#practical-considerations-and-implementation-guidelines" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The choice between different basis function methods depends on problem characteristics, computational constraints, and desired generalization properties. Each method offers distinct advantages for different scenarios.</p>
+<p><strong>Computational Efficiency</strong>: Tile coding provides the most computationally efficient option, with exactly <span class="math inline">\(n\)</span> active features per state evaluation. Coarse coding requires checking membership in all regions, while RBF networks require computing distances to all centers. For real-time applications, tile coding often provides the best performance trade-off.</p>
+<p><strong>Memory Requirements</strong>: The memory footprint varies significantly across methods. Tile coding with <span class="math inline">\(n\)</span> tilings and <span class="math inline">\(k\)</span> tiles per tiling requires <span class="math inline">\(n \times k\)</span> parameters. Sparse methods like coarse coding can be more memory-efficient when most regions are inactive, while dense RBF networks require storage for all basis function parameters.</p>
+<p><strong>Generalization Control</strong>: RBF networks offer the finest control over generalization properties through center placement and width selection. Tile coding provides intermediate control through tiling structure and offset choices. Coarse coding offers the least precise control but is often sufficient for many applications.</p>
+<p><strong>Problem-Specific Considerations</strong>: Navigation and control problems often benefit from tile coding’s respect for coordinate structure. Pattern recognition tasks may favor RBF networks’ smooth generalization. Problems with sparse features or irregular state spaces might benefit from adaptive coarse coding approaches.</p>
+<p>The integration of these classical methods with modern deep learning approaches represents an active area of research. Hybrid architectures that combine learned representations with structured basis functions offer promising directions for improving sample efficiency and interpretability in deep RL.</p>
+</div>
+<div id="conclusion-7" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> Conclusion<a href="appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods.html#conclusion-7" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Function approximation fundamentals provide the essential bridge between the theoretical guarantees of tabular RL and the practical power of modern deep methods. Linear function approximation, despite its limitations, offers crucial insights into convergence properties and stability that inform the design of more complex algorithms. Classical basis function methods—coarse coding, tile coding, and radial basis functions—demonstrate systematic approaches to feature construction that remain relevant for understanding and improving modern RL systems.</p>
+<p>The discrimination versus generalization tradeoff lies at the heart of all function approximation methods. Understanding this tradeoff through the lens of classical basis functions provides intuition that translates directly to neural network design and training. The mathematical frameworks developed here establish the theoretical foundation for analyzing convergence, stability, and approximation quality in any parametric value function method.</p>
+<p>As RL continues to tackle increasingly complex domains, the principles explored in this discussion remain fundamental. Whether designing neural network architectures, selecting training procedures, or debugging learning failures, the insights from linear methods and classical basis functions provide essential tools for the modern RL practitioner. The journey from tabular to deep RL passes necessarily through these foundational concepts, making their mastery crucial for anyone serious about understanding and advancing reinforcement learning.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/Appendix.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/Appendix.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
