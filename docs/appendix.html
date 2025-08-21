@@ -327,12 +327,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.5" data-path="appendix.html"><a href="appendix.html#exploration-strategies"><i class="fa fa-check"></i><b>11.5</b> Exploration Strategies</a></li>
 <li class="chapter" data-level="11.6" data-path="appendix.html"><a href="appendix.html#key-algorithms-methods"><i class="fa fa-check"></i><b>11.6</b> Key Algorithms &amp; Methods</a></li>
 <li class="chapter" data-level="11.7" data-path="appendix.html"><a href="appendix.html#advanced-concepts"><i class="fa fa-check"></i><b>11.7</b> Advanced Concepts</a></li>
-<li class="chapter" data-level="11.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>11.8</b> Fundamental Equations</a></li>
-<li class="chapter" data-level="11.9" data-path="appendix.html"><a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning"><i class="fa fa-check"></i><b>11.9</b> Function Approximation Fundamentals in Reinforcement Learning</a>
+<li class="chapter" data-level="11.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>11.8</b> Fundamental Equations</a>
 <ul>
-<li class="chapter" data-level="11.9.1" data-path="appendix.html"><a href="appendix.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>11.9.1</b> Feature Engineering and State Representation</a></li>
-<li class="chapter" data-level="11.9.2" data-path="appendix.html"><a href="appendix.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>11.9.2</b> The Discrimination vs. Generalization Tradeoff</a></li>
-<li class="chapter" data-level="11.9.3" data-path="appendix.html"><a href="appendix.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>11.9.3</b> Classical Basis Function Methods</a></li>
+<li class="chapter" data-level="11.8.1" data-path="appendix.html"><a href="appendix.html#bellman-equations"><i class="fa fa-check"></i><b>11.8.1</b> <strong>Bellman Equations</strong></a></li>
+<li class="chapter" data-level="11.8.2" data-path="appendix.html"><a href="appendix.html#policy-gradient-theorem"><i class="fa fa-check"></i><b>11.8.2</b> <strong>Policy Gradient Theorem</strong></a></li>
+<li class="chapter" data-level="11.8.3" data-path="appendix.html"><a href="appendix.html#temporal-difference-error"><i class="fa fa-check"></i><b>11.8.3</b> <strong>Temporal Difference Error</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="11.9" data-path="appendix.html"><a href="appendix.html#common-challenges-solutions"><i class="fa fa-check"></i><b>11.9</b> Common Challenges &amp; Solutions</a></li>
+<li class="chapter" data-level="11.10" data-path="appendix.html"><a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning"><i class="fa fa-check"></i><b>11.10</b> Function Approximation Fundamentals in Reinforcement Learning</a></li>
+<li class="chapter" data-level="11.11" data-path="appendix.html"><a href="appendix.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>11.11</b> Feature Engineering and State Representation</a>
+<ul>
+<li class="chapter" data-level="11.11.1" data-path="appendix.html"><a href="appendix.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>11.11.1</b> The Discrimination vs. Generalization Tradeoff</a></li>
+<li class="chapter" data-level="11.11.2" data-path="appendix.html"><a href="appendix.html#principles-of-feature-extraction"><i class="fa fa-check"></i><b>11.11.2</b> Principles of Feature Extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="11.12" data-path="appendix.html"><a href="appendix.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>11.12</b> Mathematical Foundations of Linear Function Approximation</a>
+<ul>
+<li class="chapter" data-level="11.12.1" data-path="appendix.html"><a href="appendix.html#linear-value-functions"><i class="fa fa-check"></i><b>11.12.1</b> Linear Value Functions</a></li>
+<li class="chapter" data-level="11.12.2" data-path="appendix.html"><a href="appendix.html#temporal-difference-td-learning-with-function-approximation"><i class="fa fa-check"></i><b>11.12.2</b> Temporal Difference (TD) Learning with Function Approximation</a></li>
+<li class="chapter" data-level="11.12.3" data-path="appendix.html"><a href="appendix.html#convergence-and-the-deadly-triad"><i class="fa fa-check"></i><b>11.12.3</b> Convergence and the “Deadly Triad”</a></li>
+</ul></li>
+<li class="chapter" data-level="11.13" data-path="appendix.html"><a href="appendix.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>11.13</b> Classical Basis Function Methods</a>
+<ul>
+<li class="chapter" data-level="11.13.1" data-path="appendix.html"><a href="appendix.html#coarse-coding"><i class="fa fa-check"></i><b>11.13.1</b> Coarse Coding</a></li>
+<li class="chapter" data-level="11.13.2" data-path="appendix.html"><a href="appendix.html#tile-coding"><i class="fa fa-check"></i><b>11.13.2</b> Tile Coding</a></li>
+<li class="chapter" data-level="11.13.3" data-path="appendix.html"><a href="appendix.html#radial-basis-functions-rbfs"><i class="fa fa-check"></i><b>11.13.3</b> Radial Basis Functions (RBFs)</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -764,20 +782,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="fundamental-equations" class="section level2 hasAnchor" number="11.8">
 <h2><span class="header-section-number">11.8</span> Fundamental Equations<a href="appendix.html#fundamental-equations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><strong>Bellman Equations</strong>
-- <strong>State Value</strong>: V^π(s) = Σ_a π(a|s) Σ_{s’,r} p(s’,r|s,a)[r + γV^π(s’)]
-- <strong>Action Value</strong>: Q^π(s,a) = Σ_{s’,r} p(s’,r|s,a)[r + γ Σ_{a’} π(a’|s’)Q^π(s’,a’)]
-- <strong>Optimality (State)</strong>: V<em>(s) = max_a Σ_{s’,r} p(s’,r|s,a)[r + γV*(s’)]
-- <strong>Optimality (Action)</strong>: Q</em>(s,a) = Σ_{s’,r} p(s’,r|s,a)[r + γ max_{a’} Q*(s’,a’)]</p>
-<p><strong>Policy Gradient Theorem</strong>
-∇_θ J(θ) = ∇_θ V^{π_θ}(s_0) = Σ_s μ^{π_θ}(s) Σ_a ∇_θ π_θ(a|s) Q^{π_θ}(s,a)</p>
-<p>where μ^{π_θ}(s) is the stationary distribution under policy π_θ.</p>
-<p><strong>Temporal Difference Error</strong>
-δ_t = r_{t+1} + γV(s_{t+1}) - V(s_t)</p>
-<p>This error drives learning in most RL algorithms and represents the difference between expected and actual returns.</p>
+<div id="bellman-equations" class="section level3 hasAnchor" number="11.8.1">
+<h3><span class="header-section-number">11.8.1</span> <strong>Bellman Equations</strong><a href="appendix.html#bellman-equations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <ul>
-<li><strong>Common Challenges &amp; Solutions</strong></li>
+<li><strong>State Value</strong>: V^π(s) = Σ_a π(a|s) Σ_{s’,r} p(s’,r|s,a)[r + γV^π(s’)]</li>
+<li><strong>Action Value</strong>: Q^π(s,a) = Σ_{s’,r} p(s’,r|s,a)[r + γ Σ_{a’} π(a’|s’)Q^π(s’,a’)]</li>
+<li><strong>Optimality (State)</strong>: V*(s) = max_a Σ_{s’,r} p(s’,r|s,a)[r + γV*(s’)]</li>
+<li><strong>Optimality (Action)</strong>: Q*(s,a) = Σ_{s’,r} p(s’,r|s,a)[r + γ max_{a’} Q*(s’,a’)]</li>
 </ul>
+</div>
+<div id="policy-gradient-theorem" class="section level3 hasAnchor" number="11.8.2">
+<h3><span class="header-section-number">11.8.2</span> <strong>Policy Gradient Theorem</strong><a href="appendix.html#policy-gradient-theorem" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>∇_θ J(θ) = ∇_θ V^{π_θ}(s_0) = Σ_s μ^{π_θ}(s) Σ_a ∇_θ π_θ(a|s) Q^{π_θ}(s,a)</p>
+<p>where μ^{π_θ}(s) is the stationary distribution under policy π_θ.</p>
+</div>
+<div id="temporal-difference-error" class="section level3 hasAnchor" number="11.8.3">
+<h3><span class="header-section-number">11.8.3</span> <strong>Temporal Difference Error</strong><a href="appendix.html#temporal-difference-error" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>δ_t = r_{t+1} + γV(s_{t+1}) - V(s_t)</p>
+<p>This error drives learning in most RL algorithms and represents the difference between expected and actual returns.</p>
+</div>
+</div>
+<div id="common-challenges-solutions" class="section level2 hasAnchor" number="11.9">
+<h2><span class="header-section-number">11.9</span> Common Challenges &amp; Solutions<a href="appendix.html#common-challenges-solutions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <table style="width:100%;">
 <colgroup>
 <col width="26%" />
@@ -827,17 +853,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 </div>
-<div id="function-approximation-fundamentals-in-reinforcement-learning" class="section level2 hasAnchor" number="11.9">
-<h2><span class="header-section-number">11.9</span> Function Approximation Fundamentals in Reinforcement Learning<a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="function-approximation-fundamentals-in-reinforcement-learning" class="section level2 hasAnchor" number="11.10">
+<h2><span class="header-section-number">11.10</span> Function Approximation Fundamentals in Reinforcement Learning<a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Reinforcement Learning (RL) has made remarkable progress, largely by moving from <strong>tabular methods</strong>, which store values for every state, to <strong>deep learning</strong> approaches that can handle vast, continuous environments. This leap, however, is built upon a critical intermediate step: <strong>classical function approximation</strong>. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, diagnosing its failures, and designing effective agent representations.</p>
 <p>Tabular RL is impractical for large or continuous state spaces due to the <strong>curse of dimensionality</strong>. Function approximation overcomes this by learning a parameterized function that generalizes knowledge across similar states. This generalization is both a strength and a challenge. It allows agents to learn in complex worlds but introduces a fundamental tradeoff between <strong>discrimination</strong> (distinguishing important states) and <strong>generalization</strong> (sharing knowledge) that shapes all modern RL algorithms.</p>
 <p>This appendix bridges the gap between tabular methods and deep RL. We begin with feature engineering, then cover the mathematical principles of linear function approximation, and finally explore classical basis functions like coarse coding, tile coding, and radial basis functions (RBFs).</p>
-<div id="feature-engineering-and-state-representation" class="section level3 hasAnchor" number="11.9.1">
-<h3><span class="header-section-number">11.9.1</span> Feature Engineering and State Representation<a href="appendix.html#feature-engineering-and-state-representation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The success of any RL algorithm hinges on the quality of its state representation. Raw environmental observations are rarely optimal for learning. Effective <strong>feature engineering</strong> transforms high-dimensional, noisy data into a compact, informative format that accelerates learning and improves generalization.</p>
 </div>
-<div id="the-discrimination-vs.-generalization-tradeoff" class="section level3 hasAnchor" number="11.9.2">
-<h3><span class="header-section-number">11.9.2</span> The Discrimination vs. Generalization Tradeoff<a href="appendix.html#the-discrimination-vs.-generalization-tradeoff" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="feature-engineering-and-state-representation" class="section level2 hasAnchor" number="11.11">
+<h2><span class="header-section-number">11.11</span> Feature Engineering and State Representation<a href="appendix.html#feature-engineering-and-state-representation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The success of any RL algorithm hinges on the quality of its state representation. Raw environmental observations are rarely optimal for learning. Effective <strong>feature engineering</strong> transforms high-dimensional, noisy data into a compact, informative format that accelerates learning and improves generalization.</p>
+<div id="the-discrimination-vs.-generalization-tradeoff" class="section level3 hasAnchor" number="11.11.1">
+<h3><span class="header-section-number">11.11.1</span> The Discrimination vs. Generalization Tradeoff<a href="appendix.html#the-discrimination-vs.-generalization-tradeoff" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>At the core of feature design is a fundamental tension:</p>
 <ul>
 <li><strong>Discrimination</strong> is the ability to distinguish between states that require different actions or have different values. For example, a robot navigating near a cliff must have features that are highly sensitive to small changes in its position.</li>
@@ -846,45 +872,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Mathematically, we approximate a value function <span class="math inline">\(V^\*(s)\)</span> with a parameterized function <span class="math inline">\(V\_{\\boldsymbol{\\theta}}(s)\)</span>. Using a linear model, this is expressed as:</p>
 <p><span class="math display">\[V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta} = \sum_{i=1}^d \phi_i(s) \theta_i\]</span></p>
 <p>Here, <span class="math inline">\(\\boldsymbol{\\phi}(s)\)</span> is the feature vector for state <span class="math inline">\(s\)</span>, and <span class="math inline">\(\\boldsymbol{\\theta}\)</span> is the weight vector we learn. The quality of the approximation depends on how well the features <span class="math inline">\(\\boldsymbol{\\phi}(s)\)</span> can represent the true value function <span class="math inline">\(V^*(s)\)</span>. The unavoidable error in the best possible linear approximation is given by <span class="math inline">\(|V^* - \\Pi V^\*|^2\)</span>, where <span class="math inline">\(\\Pi\)</span> is the projection operator onto the space spanned by the features. A good feature set minimizes this error.</p>
-<ul>
-<li>Principles of Feature Extraction</li>
-</ul>
+</div>
+<div id="principles-of-feature-extraction" class="section level3 hasAnchor" number="11.11.2">
+<h3><span class="header-section-number">11.11.2</span> Principles of Feature Extraction<a href="appendix.html#principles-of-feature-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Effective feature design in RL often involves:</p>
 <ul>
-<li><p><strong>Encoding Temporal Dependencies</strong>: Features should capture dynamics, such as position and velocity in a physics problem or recent price trends in a trading algorithm.</p></li>
-<li><p><strong>Focusing on Action-Relevant Information</strong>: Features should highlight aspects of the state that are critical for making a decision. The shape of a chess position is more important than the specific pieces if the underlying tactical pattern is the same.</p></li>
-<li><p><strong>Capturing Hierarchical Structure</strong>: Good features can represent abstract concepts, like “in the kitchen” for a home robot or “opening phase” in a board game, which allows for hierarchical planning and learning.</p></li>
-<li><p>Mathematical Foundations of Linear Function Approximation</p></li>
+<li><strong>Encoding Temporal Dependencies</strong>: Features should capture dynamics, such as position and velocity in a physics problem or recent price trends in a trading algorithm.</li>
+<li><strong>Focusing on Action-Relevant Information</strong>: Features should highlight aspects of the state that are critical for making a decision. The shape of a chess position is more important than the specific pieces if the underlying tactical pattern is the same.</li>
+<li><strong>Capturing Hierarchical Structure</strong>: Good features can represent abstract concepts, like “in the kitchen” for a home robot or “opening phase” in a board game, which allows for hierarchical planning and learning.</li>
 </ul>
+</div>
+</div>
+<div id="mathematical-foundations-of-linear-function-approximation" class="section level2 hasAnchor" number="11.12">
+<h2><span class="header-section-number">11.12</span> Mathematical Foundations of Linear Function Approximation<a href="appendix.html#mathematical-foundations-of-linear-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Linear function approximation is the cornerstone of parametric value function methods. Its simplicity provides theoretical guarantees and computational efficiency, making it an essential starting point.</p>
-<ul>
-<li>Linear Value Functions</li>
-</ul>
+<div id="linear-value-functions" class="section level3 hasAnchor" number="11.12.1">
+<h3><span class="header-section-number">11.12.1</span> Linear Value Functions<a href="appendix.html#linear-value-functions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We represent the state-value function <span class="math inline">\(V(s)\)</span> or action-value function <span class="math inline">\(Q(s, a)\)</span> as a linear combination of features:
 <span class="math display">\[V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}\]</span>
 <span class="math display">\[Q_{\boldsymbol{\theta}}(s, a) = \boldsymbol{\phi}(s, a)^T \boldsymbol{\theta}\]</span>
 A key advantage is that the gradient of the value function with respect to the parameters is simply the feature vector itself:
 <span class="math display">\[\nabla_{\boldsymbol{\theta}} V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)\]</span>
 This property makes learning algorithms based on gradient descent straightforward and computationally cheap.</p>
-<ul>
-<li>Temporal Difference (TD) Learning with Function Approximation</li>
-</ul>
+</div>
+<div id="temporal-difference-td-learning-with-function-approximation" class="section level3 hasAnchor" number="11.12.2">
+<h3><span class="header-section-number">11.12.2</span> Temporal Difference (TD) Learning with Function Approximation<a href="appendix.html#temporal-difference-td-learning-with-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>With linear function approximation, the <strong>TD(0)</strong> update rule for learning <span class="math inline">\(V\_{\\boldsymbol{\\theta}}(s)\)</span> becomes:
 <span class="math display">\[\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_{\boldsymbol{\theta}}(S_{t+1}) - V_{\boldsymbol{\theta}}(S_t)] \boldsymbol{\phi}(S_t)\]</span>
 This update adjusts the weights <span class="math inline">\(\\boldsymbol{\\theta}\)</span> to reduce the TD error for the observed transition. Since the value of any state depends on the shared weights <span class="math inline">\(\\boldsymbol{\\theta}\)</span>, this single update influences the value estimates across the entire state space.</p>
 <p>Similarly, the update for <strong>Q-learning</strong> is:
 <span class="math display">\[\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a&#39;} Q_{\boldsymbol{\theta}}(S_{t+1}, a&#39;) - Q_{\boldsymbol{\theta}}(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)\]</span></p>
-<ul>
-<li>Convergence and the “Deadly Triad”</li>
-</ul>
+</div>
+<div id="convergence-and-the-deadly-triad" class="section level3 hasAnchor" number="11.12.3">
+<h3><span class="header-section-number">11.12.3</span> Convergence and the “Deadly Triad”<a href="appendix.html#convergence-and-the-deadly-triad" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>While on-policy TD learning with linear function approximation is guaranteed to converge, stability is not assured under all conditions. The combination of <strong>off-policy learning</strong>, <strong>function approximation</strong>, and <strong>bootstrapping</strong> (updating estimates from other estimates) is known as the <strong>“deadly triad”</strong> and can lead to divergence, where the value estimates grow uncontrollably. This instability is a fundamental challenge that motivated much of the research leading to modern deep RL algorithms like DQN, which employ techniques like experience replay and target networks to mitigate it.</p>
 </div>
-<div id="classical-basis-function-methods" class="section level3 hasAnchor" number="11.9.3">
-<h3><span class="header-section-number">11.9.3</span> Classical Basis Function Methods<a href="appendix.html#classical-basis-function-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+<div id="classical-basis-function-methods" class="section level2 hasAnchor" number="11.13">
+<h2><span class="header-section-number">11.13</span> Classical Basis Function Methods<a href="appendix.html#classical-basis-function-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Basis functions are systematic methods for constructing features. They provide a bridge from simple linear models to the powerful, automatically-learned features of neural networks.</p>
-<ul>
-<li>Coarse Coding</li>
-</ul>
+<div id="coarse-coding" class="section level3 hasAnchor" number="11.13.1">
+<h3><span class="header-section-number">11.13.1</span> Coarse Coding<a href="appendix.html#coarse-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Coarse coding</strong> uses overlapping binary features, where each feature corresponds to a “receptive field” or region in the state space. A feature is active (value 1) if the state falls within its region and inactive (0) otherwise. The overlap between regions enables generalization: nearby states activate a similar set of features, so they receive similar value estimates.</p>
 <p>The degree of overlap controls the smoothness of the learned function. More overlap leads to broader generalization.</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="appendix.html#cb36-1" tabindex="-1"></a><span class="co"># Load necessary libraries for all visualizations</span></span>
@@ -960,9 +988,9 @@ This update adjusts the weights <span class="math inline">\(\\boldsymbol{\\theta
 <span id="cb36-71"><a href="appendix.html#cb36-71" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb36-72"><a href="appendix.html#cb36-72" tabindex="-1"></a>coarse_coder_2d <span class="ot">&lt;-</span> <span class="fu">create_coarse_coder</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="at">num_features =</span> <span class="dv">50</span>, <span class="at">overlap_factor =</span> <span class="fl">1.5</span>)</span>
 <span id="cb36-73"><a href="appendix.html#cb36-73" tabindex="-1"></a><span class="fu">visualize_coarse_coding</span>(coarse_coder_2d, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span></code></pre></div>
-<ul>
-<li>Tile Coding</li>
-</ul>
+</div>
+<div id="tile-coding" class="section level3 hasAnchor" number="11.13.2">
+<h3><span class="header-section-number">11.13.2</span> Tile Coding<a href="appendix.html#tile-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Tile coding</strong>, also known as CMAC (Cerebellar Model Articulation Controller), improves upon coarse coding by providing more structured and uniform coverage. It partitions the state space using multiple overlapping grids, called <strong>tilings</strong>. Each tiling is offset from the others. For any given state, exactly one tile in each tiling will be active. This ensures a constant number of active features, which is computationally efficient.</p>
 <p>The offsets provide fine-grained discrimination, while the tile size controls generalization. Unlike coarse coding with circular fields, tile coding’s rectangular tiles create <strong>asymmetric generalization</strong> that aligns with the coordinate axes, which is often desirable in control problems where dimensions represent different physical properties (e.g., position and velocity).</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="appendix.html#cb37-1" tabindex="-1"></a><span class="co"># --- Tile Coding Implementation ---</span></span>
@@ -1071,9 +1099,9 @@ This update adjusts the weights <span class="math inline">\(\\boldsymbol{\\theta
 <span id="cb37-104"><a href="appendix.html#cb37-104" tabindex="-1"></a>  <span class="at">tiles_per_dim =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>)</span>
 <span id="cb37-105"><a href="appendix.html#cb37-105" tabindex="-1"></a>)</span>
 <span id="cb37-106"><a href="appendix.html#cb37-106" tabindex="-1"></a><span class="fu">visualize_tile_coding</span>(tile_coder_2d, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span></code></pre></div>
-<ul>
-<li>Radial Basis Functions (RBFs)</li>
-</ul>
+</div>
+<div id="radial-basis-functions-rbfs" class="section level3 hasAnchor" number="11.13.3">
+<h3><span class="header-section-number">11.13.3</span> Radial Basis Functions (RBFs)<a href="appendix.html#radial-basis-functions-rbfs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Radial Basis Functions (RBFs)</strong> are smooth, continuous basis functions that produce a graded response based on the distance to a center point. The most common form is the Gaussian RBF:</p>
 <p><span class="math display">\[\phi_i(s) = \exp\left(-\frac{\|s - c_i\|^2}{2\sigma_i^2}\right)\]</span></p>
 <p>Here, <span class="math inline">\(c\_i\)</span> is the center of the <span class="math inline">\(i\)</span>-th RBF and <span class="math inline">\(\\sigma\_i\)</span> is its width (or bandwidth). Unlike binary features, RBFs provide a continuous measure of similarity. The width <span class="math inline">\(\\sigma\)</span> controls the locality of influence: a small <span class="math inline">\(\\sigma\)</span> creates a “spiky” function with local generalization, while a large <span class="math inline">\(\\sigma\)</span> creates a smooth function with broad generalization.</p>
