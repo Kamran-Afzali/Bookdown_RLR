@@ -172,7 +172,7 @@ Basis functions are systematic methods for constructing features. They provide a
 
 The degree of overlap controls the smoothness of the learned function. More overlap leads to broader generalization.
 
-```{r}
+```r
 # Load necessary libraries for all visualizations
 library(ggplot2)
 library(ggforce) # For drawing circles
@@ -254,7 +254,7 @@ visualize_coarse_coding(coarse_coder_2d, state = c(3.2, 7.8))
 
 The offsets provide fine-grained discrimination, while the tile size controls generalization. Unlike coarse coding with circular fields, tile coding's rectangular tiles create **asymmetric generalization** that aligns with the coordinate axes, which is often desirable in control problems where dimensions represent different physical properties (e.g., position and velocity).
 
-```{r}
+```r
 # --- Tile Coding Implementation ---
 create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim) {
   state_dims <- length(state_low)
@@ -373,7 +373,7 @@ Here, $c\_i$ is the center of the $i$-th RBF and $\\sigma\_i$ is its width (or b
 
 RBF networks are **universal approximators**, meaning they can represent any continuous function with arbitrary accuracy, given enough basis functions. The placement of centers and choice of widths are critical. Centers can be placed on a fixed grid, randomly, or adapted during learning using techniques like k-means clustering on experienced states.
 
-```{r}
+```r
 # --- Radial Basis Function (RBF) Implementation ---
 create_rbf_network <- function(centers, sigmas) {
   if (is.vector(sigmas)) {

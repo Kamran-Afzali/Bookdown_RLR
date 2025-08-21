@@ -59,7 +59,7 @@ Building on our previous Dyna implementation, we extend the framework to include
 
 We'll use the same 10-state environment as before, but we'll also create scenarios with environmental changes to demonstrate Dyna-Q+'s adaptive capabilities:
 
-```{r}
+```r
 # Environment parameters (same as before)
 n_states <- 10
 n_actions <- 2
@@ -106,7 +106,7 @@ sample_env <- function(s, a, modified = FALSE) {
 
 The key modification involves maintaining timestamps and calculating exploration bonuses during planning:
 
-```{r}
+```r
 dyna_q_plus <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1, 
                         n_planning = 5, kappa = 0.1, change_episode = NULL) {
   # Initialize Q-values, model, and timestamps
@@ -195,7 +195,7 @@ dyna_q_plus <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1,
 
 We also implement standard Dyna to highlight the differences:
 
-```{r}
+```r
 dyna_q_standard <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1, 
                             n_planning = 5, change_episode = NULL) {
   Q <- matrix(0, nrow = n_states, ncol = n_actions)
@@ -272,7 +272,7 @@ dyna_q_standard <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1,
 
 The most compelling demonstration of Dyna-Q+'s advantages comes from scenarios where the environment changes mid-learning. We'll compare how quickly both algorithms adapt:
 
-```{r}
+```r
 # Function to evaluate policy performance
 evaluate_policy_performance <- function(Q, episodes = 100, modified = FALSE) {
   total_reward <- 0
@@ -356,7 +356,7 @@ adaptation_experiment <- function() {
 
 Here we execute the experiment defined above. The resulting plot shows that both algorithms perform similarly until the environment changes at episode 500. After the change, Dyna-Q (`kappa = 0`) fails to adapt because its model is outdated, leading to a sharp drop in performance. In contrast, Dyna-Q+ uses its exploration bonus to re-evaluate old paths, quickly discovering the change and finding a new optimal policy, thus recovering its performance.
 
-```{r}
+```r
 # Setup chunk for libraries
 if (!require("ggplot2", quietly = TRUE)) install.packages("ggplot2")
 if (!require("dplyr", quietly = TRUE)) install.packages("dplyr")
@@ -403,7 +403,7 @@ ggplot(plot_data, aes(x = episode, y = performance, color = algorithm)) +
 
 The exploration parameter $\\kappa$ significantly influences Dyna-Q+'s behavior. Let's examine its effects:
 
-```{r}
+```r
 kappa_sensitivity_analysis <- function() {
   kappa_values <- c(0, 0.01, 0.05, 0.1, 0.2, 0.5)
   change_point <- 300
@@ -477,7 +477,7 @@ plot_kappa_sensitivity <- function(data) {
 
 We run the analysis for different values of $\\kappa$. A value of $\\kappa = 0$ corresponds to standard Dyna-Q. The table shows the average reward before and after the environmental change. The plots visualize how post-change performance and the adaptation ratio change with $\\kappa$. There is a sweet spot for $\\kappa$ (around 0.1-0.2 in this case) that provides the best adaptation. If $\\kappa$ is too low, adaptation is slow; if it's too high, the agent explores too much, which can also hurt performance.
 
-```{r}
+```r
 
 # 1. Generate the data
 sensitivity_data <- kappa_sensitivity_analysis()
@@ -492,7 +492,7 @@ knitr::kable(sensitivity_data,
 ```
 
 
-```{r}
+```r
 # 3. Generate the plots using the provided function
 plot_kappa_sensitivity(sensitivity_data)
 ```
@@ -503,7 +503,7 @@ plot_kappa_sensitivity(sensitivity_data)
 
 One way to understand Dyna-Q+'s behavior is to examine how exploration bonuses evolve over time:
 
-```{r}
+```r
 analyze_exploration_patterns <- function() {
   # Run Dyna-Q+ and track exploration bonuses
   set.seed(123)
@@ -587,7 +587,7 @@ plot_bonus_evolution <- function() {
 
 This plot shows how the exploration bonuses change over time. As the agent explores, timestamps are updated, and the time since the last visit (`t - τ`) for any given state-action pair can grow. The **Maximum Bonus** corresponds to the state-action pair that has been unvisited for the longest time, showing the agent's growing "curiosity" about that specific part of the environment. The **Average Bonus** (for visited pairs) tends to stay lower, indicating that most parts of the model are kept relatively fresh through planning and exploration.
 
-```{r}
+```r
 plot_bonus_evolution()
 ```
 

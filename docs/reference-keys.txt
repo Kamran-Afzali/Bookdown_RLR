@@ -1,4 +1,3 @@
-tab:unnamed-chunk-7
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -139,19 +138,7 @@ exploration-strategies
 key-algorithms-methods
 advanced-concepts
 fundamental-equations
-bellman-equations
-policy-gradient-theorem
-temporal-difference-error
-common-challenges-solutions
 function-approximation-fundamentals-in-reinforcement-learning
 feature-engineering-and-state-representation
 the-discrimination-vs.-generalization-tradeoff
-principles-of-feature-extraction
-mathematical-foundations-of-linear-function-approximation
-linear-value-functions
-temporal-difference-td-learning-with-function-approximation
-convergence-and-the-deadly-triad
 classical-basis-function-methods
-coarse-coding
-tile-coding
-radial-basis-functions-rbfs
