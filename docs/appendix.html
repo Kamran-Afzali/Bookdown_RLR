@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 11 Appendix | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 11 Appendix | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 11 Appendix | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 11 Appendix | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-08-18" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#further-directions"><i class="fa fa-check"></i><b>1.5</b> Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><i class="fa fa-check"></i><b>10</b> Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#introduction-8"><i class="fa fa-check"></i><b>10.1</b> Introduction</a></li>
+<li class="chapter" data-level="10.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#theoretical-framework-1"><i class="fa fa-check"></i><b>10.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#the-exploration-bonus-mechanism"><i class="fa fa-check"></i><b>10.2.1</b> The Exploration Bonus Mechanism</a></li>
+<li class="chapter" data-level="10.2.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#complete-dyna-q-algorithm"><i class="fa fa-check"></i><b>10.2.2</b> Complete Dyna-Q+ Algorithm</a></li>
+<li class="chapter" data-level="10.2.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#convergence-and-stability"><i class="fa fa-check"></i><b>10.2.3</b> Convergence and Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="10.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#implementation-in-r-1"><i class="fa fa-check"></i><b>10.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#environment-setup-1"><i class="fa fa-check"></i><b>10.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="10.3.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-implementation-1"><i class="fa fa-check"></i><b>10.3.2</b> Dyna-Q+ Implementation</a></li>
+<li class="chapter" data-level="10.3.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#standard-dyna-for-comparison"><i class="fa fa-check"></i><b>10.3.3</b> Standard Dyna for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#experimental-analysis-1"><i class="fa fa-check"></i><b>10.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="10.4.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#adaptation-to-environmental-changes"><i class="fa fa-check"></i><b>10.4.1</b> Adaptation to Environmental Changes</a></li>
+<li class="chapter" data-level="10.4.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#parameter-sensitivity-analysis"><i class="fa fa-check"></i><b>10.4.2</b> Parameter Sensitivity Analysis</a></li>
+<li class="chapter" data-level="10.4.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#exploration-pattern-analysis"><i class="fa fa-check"></i><b>10.4.3</b> Exploration Pattern Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#discussion-and-implementation-considerations"><i class="fa fa-check"></i><b>10.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="10.6" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#conclusion-6"><i class="fa fa-check"></i><b>10.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>11</b> Appendix</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="appendix.html"><a href="appendix.html#comprehensive-reinforcement-learning-concepts-guide"><i class="fa fa-check"></i><b>11.1</b> Comprehensive Reinforcement Learning Concepts Guide</a></li>
+<li class="chapter" data-level="11.2" data-path="appendix.html"><a href="appendix.html#learning-mechanisms"><i class="fa fa-check"></i><b>11.2</b> Learning Mechanisms</a></li>
+<li class="chapter" data-level="11.3" data-path="appendix.html"><a href="appendix.html#environment-properties"><i class="fa fa-check"></i><b>11.3</b> Environment Properties</a></li>
+<li class="chapter" data-level="11.4" data-path="appendix.html"><a href="appendix.html#learning-paradigms"><i class="fa fa-check"></i><b>11.4</b> Learning Paradigms</a></li>
+<li class="chapter" data-level="11.5" data-path="appendix.html"><a href="appendix.html#exploration-strategies"><i class="fa fa-check"></i><b>11.5</b> Exploration Strategies</a></li>
+<li class="chapter" data-level="11.6" data-path="appendix.html"><a href="appendix.html#key-algorithms-methods"><i class="fa fa-check"></i><b>11.6</b> Key Algorithms &amp; Methods</a></li>
+<li class="chapter" data-level="11.7" data-path="appendix.html"><a href="appendix.html#advanced-concepts"><i class="fa fa-check"></i><b>11.7</b> Advanced Concepts</a></li>
+<li class="chapter" data-level="11.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>11.8</b> Fundamental Equations</a>
+<ul>
+<li class="chapter" data-level="11.8.1" data-path="appendix.html"><a href="appendix.html#bellman-equations"><i class="fa fa-check"></i><b>11.8.1</b> <strong>Bellman Equations</strong></a></li>
+<li class="chapter" data-level="11.8.2" data-path="appendix.html"><a href="appendix.html#policy-gradient-theorem"><i class="fa fa-check"></i><b>11.8.2</b> <strong>Policy Gradient Theorem</strong></a></li>
+<li class="chapter" data-level="11.8.3" data-path="appendix.html"><a href="appendix.html#temporal-difference-error"><i class="fa fa-check"></i><b>11.8.3</b> <strong>Temporal Difference Error</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="11.9" data-path="appendix.html"><a href="appendix.html#common-challenges-solutions"><i class="fa fa-check"></i><b>11.9</b> Common Challenges &amp; Solutions</a></li>
+<li class="chapter" data-level="11.10" data-path="appendix.html"><a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning"><i class="fa fa-check"></i><b>11.10</b> Function Approximation Fundamentals in Reinforcement Learning</a></li>
+<li class="chapter" data-level="11.11" data-path="appendix.html"><a href="appendix.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>11.11</b> Feature Engineering and State Representation</a>
+<ul>
+<li class="chapter" data-level="11.11.1" data-path="appendix.html"><a href="appendix.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>11.11.1</b> The Discrimination vs. Generalization Tradeoff</a></li>
+<li class="chapter" data-level="11.11.2" data-path="appendix.html"><a href="appendix.html#principles-of-feature-extraction"><i class="fa fa-check"></i><b>11.11.2</b> Principles of Feature Extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="11.12" data-path="appendix.html"><a href="appendix.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>11.12</b> Mathematical Foundations of Linear Function Approximation</a>
+<ul>
+<li class="chapter" data-level="11.12.1" data-path="appendix.html"><a href="appendix.html#linear-value-functions"><i class="fa fa-check"></i><b>11.12.1</b> Linear Value Functions</a></li>
+<li class="chapter" data-level="11.12.2" data-path="appendix.html"><a href="appendix.html#temporal-difference-td-learning-with-function-approximation"><i class="fa fa-check"></i><b>11.12.2</b> Temporal Difference (TD) Learning with Function Approximation</a></li>
+<li class="chapter" data-level="11.12.3" data-path="appendix.html"><a href="appendix.html#convergence-and-the-deadly-triad"><i class="fa fa-check"></i><b>11.12.3</b> Convergence and the “Deadly Triad”</a></li>
+</ul></li>
+<li class="chapter" data-level="11.13" data-path="appendix.html"><a href="appendix.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>11.13</b> Classical Basis Function Methods</a>
+<ul>
+<li class="chapter" data-level="11.13.1" data-path="appendix.html"><a href="appendix.html#coarse-coding"><i class="fa fa-check"></i><b>11.13.1</b> Coarse Coding</a></li>
+<li class="chapter" data-level="11.13.2" data-path="appendix.html"><a href="appendix.html#tile-coding"><i class="fa fa-check"></i><b>11.13.2</b> Tile Coding</a></li>
+<li class="chapter" data-level="11.13.3" data-path="appendix.html"><a href="appendix.html#radial-basis-functions-rbfs"><i class="fa fa-check"></i><b>11.13.3</b> Radial Basis Functions (RBFs)</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="appendix" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Chapter 11</span> Appendix<a href="appendix.html#appendix" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="comprehensive-reinforcement-learning-concepts-guide" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Comprehensive Reinforcement Learning Concepts Guide<a href="appendix.html#comprehensive-reinforcement-learning-concepts-guide" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Concept</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mathematical Formalism</strong></th>
+<th><strong>Applications/Examples</strong></th>
+<th><strong>Key Properties</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Agent</strong></td>
+<td>Autonomous learner/decision-maker that perceives environment and takes actions to maximize cumulative reward</td>
+<td>Agent: (π, V, Q)</td>
+<td>Autonomous vehicles, trading bots, game AI (AlphaGo), robotic controllers, chatbots</td>
+<td>Must balance exploration vs exploitation, learns from trial and error</td>
+</tr>
+<tr class="even">
+<td><strong>Environment</strong></td>
+<td>External system that responds to agent actions with state transitions and rewards</td>
+<td>Markov Decision Process (MDP): ⟨S, A, P, R, γ⟩</td>
+<td>OpenAI Gym environments, real-world robotics, financial markets, video games</td>
+<td>Can be deterministic or stochastic, fully or partially observable</td>
+</tr>
+<tr class="odd">
+<td><strong>State (s)</strong></td>
+<td>Complete information needed to make optimal decisions at current time</td>
+<td>s ∈ S, where S is state space</td>
+<td>Chess position (64 squares), robot pose (x,y,θ), market conditions, pixel arrays</td>
+<td>Markov property: future depends only on current state, not history</td>
+</tr>
+<tr class="even">
+<td><strong>Action (a)</strong></td>
+<td>Discrete or continuous choices available to agent in given state</td>
+<td>a ∈ A(s), where A(s) ⊆ A</td>
+<td>Discrete: {up, down, left, right}, Continuous: steering angle [-30°, 30°]</td>
+<td>Action space can be finite, infinite, or parameterized</td>
+</tr>
+<tr class="odd">
+<td><strong>Reward (r)</strong></td>
+<td>Immediate scalar feedback signal indicating desirability of action</td>
+<td>r ∈ ℝ, often bounded: r ∈ [-R_max, R_max]</td>
+<td>Sparse: +1 goal, 0 elsewhere; Dense: distance-based; Shaped: intermediate milestones</td>
+<td>Defines objective, can be sparse, dense, or carefully shaped</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="learning-mechanisms" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Learning Mechanisms<a href="appendix.html#learning-mechanisms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Concept</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mathematical Formalism</strong></th>
+<th><strong>Applications/Examples</strong></th>
+<th><strong>Key Properties</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Return (G)</strong></td>
+<td>Total discounted future reward from current time step</td>
+<td>G_t = Σ_{k=0}^∞ γ^k r_{t+k+1}</td>
+<td>Episode return in games, lifetime value in finance, trajectory rewards</td>
+<td>Discount factor γ ∈ [0,1] balances immediate vs future rewards</td>
+</tr>
+<tr class="even">
+<td><strong>Discount Factor (γ)</strong></td>
+<td>Weighs importance of future vs immediate rewards</td>
+<td>γ ∈ [0,1], where γ=0 is myopic, γ=1 values all future equally</td>
+<td>γ=0.9 in games, γ=0.99 in continuous control, γ≈1 in finance</td>
+<td>Controls learning horizon and convergence properties</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy (π)</strong></td>
+<td>Strategy mapping states to action probabilities or deterministic actions</td>
+<td>Stochastic: π(a|s) ∈ [0,1], Deterministic: π(s) → a</td>
+<td>ε-greedy, Boltzmann/softmax, Gaussian policies, neural networks</td>
+<td>Can be deterministic, stochastic, parameterized, or tabular</td>
+</tr>
+<tr class="even">
+<td><strong>Value Function (V)</strong></td>
+<td>Expected return starting from state under policy π</td>
+<td>V^π(s) = 𝔼_π[G_t | S_t = s]</td>
+<td>State evaluation in chess, expected lifetime value</td>
+<td>Higher values indicate more promising states</td>
+</tr>
+<tr class="odd">
+<td><strong>Q-Function (Q)</strong></td>
+<td>Expected return from taking action a in state s, then following policy π</td>
+<td>Q^π(s,a) = 𝔼_π[G_t | S_t = s, A_t = a]</td>
+<td>Q-tables in tabular RL, neural Q-networks in DQN</td>
+<td>Enables action selection without environment model</td>
+</tr>
+<tr class="even">
+<td><strong>Advantage (A)</strong></td>
+<td>How much better action a is compared to average in state s</td>
+<td>A^π(s,a) = Q^π(s,a) - V^π(s)</td>
+<td>Policy gradient variance reduction, actor-critic methods</td>
+<td>Positive advantage → above average action, zero → average</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="environment-properties" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> Environment Properties<a href="appendix.html#environment-properties" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Concept</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mathematical Formalism</strong></th>
+<th><strong>Applications/Examples</strong></th>
+<th><strong>Key Properties</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Model</strong></td>
+<td>Agent’s internal representation of environment dynamics</td>
+<td>P(s’,r|s,a) or T(s,a,s’) and R(s,a)</td>
+<td>Forward models in planning, world models in Dyna-Q</td>
+<td>Enables planning and simulation of future trajectories</td>
+</tr>
+<tr class="even">
+<td><strong>Markov Property</strong></td>
+<td>Future state depends only on current state and action, not history</td>
+<td>P(S_{t+1}|S_t, A_t, S_{t-1}, …) = P(S_{t+1}|S_t, A_t)</td>
+<td>Most RL algorithms assume this, POMDP when violated</td>
+<td>Simplifies learning by eliminating need to track full history</td>
+</tr>
+<tr class="odd">
+<td><strong>Stationarity</strong></td>
+<td>Environment dynamics don’t change over time</td>
+<td>P_t(s’,r|s,a) = P(s’,r|s,a) ∀t</td>
+<td>Stationary games vs non-stationary financial markets</td>
+<td>Non-stationary environments require adaptation mechanisms</td>
+</tr>
+<tr class="even">
+<td><strong>Observability</strong></td>
+<td>Extent to which agent can perceive true environment state</td>
+<td>Fully: O_t = S_t, Partially: O_t = f(S_t) + noise</td>
+<td>Full: chess, Partial: poker (hidden cards), autonomous driving</td>
+<td>POMDPs require memory or state estimation techniques</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="learning-paradigms" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> Learning Paradigms<a href="appendix.html#learning-paradigms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Concept</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mathematical Formalism</strong></th>
+<th><strong>Applications/Examples</strong></th>
+<th><strong>Key Properties</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>On-Policy</strong></td>
+<td>Learning from data generated by current policy being improved</td>
+<td>π_{behavior} = π_{target}, update π using its own experience</td>
+<td>SARSA, Policy Gradient, A2C, PPO, TRPO</td>
+<td>More stable but less sample efficient, safer updates</td>
+</tr>
+<tr class="even">
+<td><strong>Off-Policy</strong></td>
+<td>Learning from data generated by different (often older) policy</td>
+<td>π_{behavior} ≠ π_{target}, importance sampling: ρ = π/μ</td>
+<td>Q-Learning, DQN, DDPG, SAC, experience replay</td>
+<td>More sample efficient but requires correction for distribution shift</td>
+</tr>
+<tr class="odd">
+<td><strong>Model-Free</strong></td>
+<td>Learn directly from experience without learning environment model</td>
+<td>Direct V/Q updates from (s,a,r,s’) tuples</td>
+<td>Q-Learning, Policy Gradient, Actor-Critic methods</td>
+<td>Simpler but may require more samples, works with unknown dynamics</td>
+</tr>
+<tr class="even">
+<td><strong>Model-Based</strong></td>
+<td>Learn environment model first, then use for planning/learning</td>
+<td>Learn P(s’|s,a), then plan using model</td>
+<td>Dyna-Q, MCTS, MuZero, world models</td>
+<td>Sample efficient but model errors can compound</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="exploration-strategies" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> Exploration Strategies<a href="appendix.html#exploration-strategies" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Concept</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mathematical Formalism</strong></th>
+<th><strong>Applications/Examples</strong></th>
+<th><strong>Key Properties</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Exploration</strong></td>
+<td>Trying suboptimal actions to discover potentially better policies</td>
+<td>Various strategies with different theoretical guarantees</td>
+<td>ε-greedy, UCB, Thompson sampling, curiosity-driven</td>
+<td>Essential for discovering optimal policies, balances with exploitation</td>
+</tr>
+<tr class="even">
+<td><strong>Exploitation</strong></td>
+<td>Using current knowledge to maximize immediate reward</td>
+<td>π_{greedy}(s) = argmax_a Q(s,a)</td>
+<td>Greedy action selection after learning</td>
+<td>Must be balanced with exploration to avoid local optima</td>
+</tr>
+<tr class="odd">
+<td><strong>ε-Greedy</strong></td>
+<td>Choose random action with probability ε, best known action otherwise</td>
+<td>π(a|s) = ε/|A| + (1-ε)δ_{a,a<em>} where a</em> = argmax Q(s,a)</td>
+<td>Simple exploration in tabular RL, decaying ε schedules</td>
+<td>Simple but may explore inefficiently in large state spaces</td>
+</tr>
+<tr class="even">
+<td><strong>Upper Confidence Bound</strong></td>
+<td>Choose actions with highest optimistic estimate</td>
+<td>a_t = argmax_a [Q_t(a) + c√(ln t / N_t(a))]</td>
+<td>Multi-armed bandits, MCTS (UCT), confidence-based exploration</td>
+<td>Theoretically principled, provides exploration guarantees</td>
+</tr>
+<tr class="odd">
+<td><strong>Thompson Sampling</strong></td>
+<td>Sample actions according to probability they are optimal</td>
+<td>Sample θ ~ posterior, choose a = argmax_a Q_θ(s,a)</td>
+<td>Bayesian bandits, Bayesian RL</td>
+<td>Naturally balances exploration/exploitation via uncertainty</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="key-algorithms-methods" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> Key Algorithms &amp; Methods<a href="appendix.html#key-algorithms-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="11%" />
+<col width="22%" />
+<col width="27%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Algorithm</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Key Innovation</strong></th>
+<th><strong>Mathematical Update</strong></th>
+<th><strong>Applications</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Q-Learning</strong></td>
+<td>Off-policy, Model-free</td>
+<td>Learns optimal Q-function without following optimal policy</td>
+<td>Q(s,a) ← Q(s,a) + α[r + γ max_{a’} Q(s’,a’) - Q(s,a)]</td>
+<td>Tabular problems, foundation for DQN</td>
+</tr>
+<tr class="even">
+<td><strong>SARSA</strong></td>
+<td>On-policy, Model-free</td>
+<td>Updates based on actual next action taken</td>
+<td>Q(s,a) ← Q(s,a) + α[r + γQ(s’,a’) - Q(s,a)]</td>
+<td>Safe exploration, tabular RL</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy Gradient</strong></td>
+<td>On-policy, Model-free</td>
+<td>Direct policy optimization using gradient ascent</td>
+<td>∇θ J(θ) = 𝔼[∇θ log π_θ(a|s) A^π(s,a)]</td>
+<td>Continuous action spaces, stochastic policies</td>
+</tr>
+<tr class="even">
+<td><strong>Actor-Critic</strong></td>
+<td>On-policy, Model-free</td>
+<td>Combines value estimation with policy optimization</td>
+<td>Actor: ∇θ π, Critic: learns V^π or Q^π</td>
+<td>Reduces variance in policy gradients</td>
+</tr>
+<tr class="odd">
+<td><strong>DQN</strong></td>
+<td>Off-policy, Model-free</td>
+<td>Neural networks + experience replay + target networks</td>
+<td>Q-learning with neural network approximation</td>
+<td>High-dimensional state spaces, Atari games</td>
+</tr>
+<tr class="even">
+<td><strong>PPO</strong></td>
+<td>On-policy, Model-free</td>
+<td>Clipped surrogate objective for stable policy updates</td>
+<td>L^{CLIP}(θ) = 𝔼[min(r_t(θ)A_t, clip(r_t(θ))A_t)]</td>
+<td>Stable policy optimization, continuous control</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="advanced-concepts" class="section level2 hasAnchor" number="11.7">
+<h2><span class="header-section-number">11.7</span> Advanced Concepts<a href="appendix.html#advanced-concepts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Concept</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Mathematical Formalism</strong></th>
+<th><strong>Applications/Examples</strong></th>
+<th><strong>Key Properties</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Function Approximation</strong></td>
+<td>Using parameterized functions to represent V, Q, or π</td>
+<td>V_θ(s), Q_θ(s,a), π_θ(a|s) where θ are parameters</td>
+<td>Neural networks, linear functions, tile coding</td>
+<td>Enables scaling to large/continuous state spaces</td>
+</tr>
+<tr class="even">
+<td><strong>Experience Replay</strong></td>
+<td>Storing and reusing past transitions to improve sample efficiency</td>
+<td>Sample (s,a,r,s’) from replay buffer D uniformly</td>
+<td>DQN, DDPG, rainbow improvements</td>
+<td>Breaks correlation in sequential data, enables off-policy learning</td>
+</tr>
+<tr class="odd">
+<td><strong>Target Networks</strong></td>
+<td>Using separate, slowly updated networks for stable learning</td>
+<td>θ^- ← τθ + (1-τ)θ^- where τ &lt;&lt; 1</td>
+<td>DQN, DDPG for reducing moving target problem</td>
+<td>Stabilizes learning by reducing correlation between Q-values and targets</td>
+</tr>
+<tr class="even">
+<td><strong>Eligibility Traces</strong></td>
+<td>Credit assignment mechanism that bridges temporal difference and Monte Carlo</td>
+<td>e_t(s) = γλe_{t-1}(s) + 1_{S_t=s}</td>
+<td>TD(λ), SARSA(λ) for faster learning</td>
+<td>Allows faster propagation of rewards to earlier states</td>
+</tr>
+<tr class="odd">
+<td><strong>Multi-Agent RL</strong></td>
+<td>Multiple agents learning simultaneously in shared environment</td>
+<td>Nash equilibria, correlated equilibria, social welfare</td>
+<td>Game theory, autonomous vehicle coordination, economics</td>
+<td>Requires handling non-stationarity from other learning agents</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="fundamental-equations" class="section level2 hasAnchor" number="11.8">
+<h2><span class="header-section-number">11.8</span> Fundamental Equations<a href="appendix.html#fundamental-equations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="bellman-equations" class="section level3 hasAnchor" number="11.8.1">
+<h3><span class="header-section-number">11.8.1</span> <strong>Bellman Equations</strong><a href="appendix.html#bellman-equations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li><strong>State Value</strong>: V^π(s) = Σ_a π(a|s) Σ_{s’,r} p(s’,r|s,a)[r + γV^π(s’)]</li>
+<li><strong>Action Value</strong>: Q^π(s,a) = Σ_{s’,r} p(s’,r|s,a)[r + γ Σ_{a’} π(a’|s’)Q^π(s’,a’)]</li>
+<li><strong>Optimality (State)</strong>: V*(s) = max_a Σ_{s’,r} p(s’,r|s,a)[r + γV*(s’)]</li>
+<li><strong>Optimality (Action)</strong>: Q*(s,a) = Σ_{s’,r} p(s’,r|s,a)[r + γ max_{a’} Q*(s’,a’)]</li>
+</ul>
+</div>
+<div id="policy-gradient-theorem" class="section level3 hasAnchor" number="11.8.2">
+<h3><span class="header-section-number">11.8.2</span> <strong>Policy Gradient Theorem</strong><a href="appendix.html#policy-gradient-theorem" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>∇_θ J(θ) = ∇_θ V^{π_θ}(s_0) = Σ_s μ^{π_θ}(s) Σ_a ∇_θ π_θ(a|s) Q^{π_θ}(s,a)</p>
+<p>where μ^{π_θ}(s) is the stationary distribution under policy π_θ.</p>
+</div>
+<div id="temporal-difference-error" class="section level3 hasAnchor" number="11.8.3">
+<h3><span class="header-section-number">11.8.3</span> <strong>Temporal Difference Error</strong><a href="appendix.html#temporal-difference-error" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>δ_t = r_{t+1} + γV(s_{t+1}) - V(s_t)</p>
+<p>This error drives learning in most RL algorithms and represents the difference between expected and actual returns.</p>
+</div>
+</div>
+<div id="common-challenges-solutions" class="section level2 hasAnchor" number="11.9">
+<h2><span class="header-section-number">11.9</span> Common Challenges &amp; Solutions<a href="appendix.html#common-challenges-solutions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table style="width:100%;">
+<colgroup>
+<col width="26%" />
+<col width="22%" />
+<col width="26%" />
+<col width="24%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Challenge</strong></th>
+<th><strong>Problem</strong></th>
+<th><strong>Solutions</strong></th>
+<th><strong>Examples</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Sample Efficiency</strong></td>
+<td>RL often requires many environment interactions</td>
+<td>Model-based methods, experience replay, transfer learning</td>
+<td>Dyna-Q, DQN replay buffer, pre-training</td>
+</tr>
+<tr class="even">
+<td><strong>Exploration</strong></td>
+<td>Discovering good policies in large state spaces</td>
+<td>Curiosity-driven exploration, count-based bonuses, UCB</td>
+<td>ICM, pseudo-counts, optimism under uncertainty</td>
+</tr>
+<tr class="odd">
+<td><strong>Stability</strong></td>
+<td>Function approximation can cause instability</td>
+<td>Target networks, experience replay, regularization</td>
+<td>DQN improvements, PPO clipping</td>
+</tr>
+<tr class="even">
+<td><strong>Sparse Rewards</strong></td>
+<td>Learning with infrequent feedback signals</td>
+<td>Reward shaping, hierarchical RL, curriculum learning</td>
+<td>HER, Options framework, progressive tasks</td>
+</tr>
+<tr class="odd">
+<td><strong>Partial Observability</strong></td>
+<td>Agent cannot fully observe environment state</td>
+<td>Recurrent policies, belief state estimation, memory</td>
+<td>LSTM policies, particle filters, attention mechanisms</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="function-approximation-fundamentals-in-reinforcement-learning" class="section level2 hasAnchor" number="11.10">
+<h2><span class="header-section-number">11.10</span> Function Approximation Fundamentals in Reinforcement Learning<a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Reinforcement Learning (RL) has made remarkable progress, largely by moving from <strong>tabular methods</strong>, which store values for every state, to <strong>deep learning</strong> approaches that can handle vast, continuous environments. This leap, however, is built upon a critical intermediate step: <strong>classical function approximation</strong>. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, diagnosing its failures, and designing effective agent representations.</p>
+<p>Tabular RL is impractical for large or continuous state spaces due to the <strong>curse of dimensionality</strong>. Function approximation overcomes this by learning a parameterized function that generalizes knowledge across similar states. This generalization is both a strength and a challenge. It allows agents to learn in complex worlds but introduces a fundamental tradeoff between <strong>discrimination</strong> (distinguishing important states) and <strong>generalization</strong> (sharing knowledge) that shapes all modern RL algorithms.</p>
+<p>This appendix bridges the gap between tabular methods and deep RL. We begin with feature engineering, then cover the mathematical principles of linear function approximation, and finally explore classical basis functions like coarse coding, tile coding, and radial basis functions (RBFs).</p>
+</div>
+<div id="feature-engineering-and-state-representation" class="section level2 hasAnchor" number="11.11">
+<h2><span class="header-section-number">11.11</span> Feature Engineering and State Representation<a href="appendix.html#feature-engineering-and-state-representation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The success of any RL algorithm hinges on the quality of its state representation. Raw environmental observations are rarely optimal for learning. Effective <strong>feature engineering</strong> transforms high-dimensional, noisy data into a compact, informative format that accelerates learning and improves generalization.</p>
+<div id="the-discrimination-vs.-generalization-tradeoff" class="section level3 hasAnchor" number="11.11.1">
+<h3><span class="header-section-number">11.11.1</span> The Discrimination vs. Generalization Tradeoff<a href="appendix.html#the-discrimination-vs.-generalization-tradeoff" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>At the core of feature design is a fundamental tension:</p>
+<ul>
+<li><strong>Discrimination</strong> is the ability to distinguish between states that require different actions or have different values. For example, a robot navigating near a cliff must have features that are highly sensitive to small changes in its position.</li>
+<li><strong>Generalization</strong> is the ability to treat similar states similarly, allowing experiences in one state to inform decisions in others. In the same navigation task, large open areas should be represented similarly so the agent doesn’t have to re-learn how to move in each one.</li>
+</ul>
+<p>Mathematically, we approximate a value function <span class="math inline">\(V^\*(s)\)</span> with a parameterized function <span class="math inline">\(V\_{\\boldsymbol{\\theta}}(s)\)</span>. Using a linear model, this is expressed as:</p>
+<p><span class="math display">\[V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta} = \sum_{i=1}^d \phi_i(s) \theta_i\]</span></p>
+<p>Here, <span class="math inline">\(\\boldsymbol{\\phi}(s)\)</span> is the feature vector for state <span class="math inline">\(s\)</span>, and <span class="math inline">\(\\boldsymbol{\\theta}\)</span> is the weight vector we learn. The quality of the approximation depends on how well the features <span class="math inline">\(\\boldsymbol{\\phi}(s)\)</span> can represent the true value function <span class="math inline">\(V^*(s)\)</span>. The unavoidable error in the best possible linear approximation is given by <span class="math inline">\(|V^* - \\Pi V^\*|^2\)</span>, where <span class="math inline">\(\\Pi\)</span> is the projection operator onto the space spanned by the features. A good feature set minimizes this error.</p>
+</div>
+<div id="principles-of-feature-extraction" class="section level3 hasAnchor" number="11.11.2">
+<h3><span class="header-section-number">11.11.2</span> Principles of Feature Extraction<a href="appendix.html#principles-of-feature-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Effective feature design in RL often involves:</p>
+<ul>
+<li><strong>Encoding Temporal Dependencies</strong>: Features should capture dynamics, such as position and velocity in a physics problem or recent price trends in a trading algorithm.</li>
+<li><strong>Focusing on Action-Relevant Information</strong>: Features should highlight aspects of the state that are critical for making a decision. The shape of a chess position is more important than the specific pieces if the underlying tactical pattern is the same.</li>
+<li><strong>Capturing Hierarchical Structure</strong>: Good features can represent abstract concepts, like “in the kitchen” for a home robot or “opening phase” in a board game, which allows for hierarchical planning and learning.</li>
+</ul>
+</div>
+</div>
+<div id="mathematical-foundations-of-linear-function-approximation" class="section level2 hasAnchor" number="11.12">
+<h2><span class="header-section-number">11.12</span> Mathematical Foundations of Linear Function Approximation<a href="appendix.html#mathematical-foundations-of-linear-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Linear function approximation is the cornerstone of parametric value function methods. Its simplicity provides theoretical guarantees and computational efficiency, making it an essential starting point.</p>
+<div id="linear-value-functions" class="section level3 hasAnchor" number="11.12.1">
+<h3><span class="header-section-number">11.12.1</span> Linear Value Functions<a href="appendix.html#linear-value-functions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We represent the state-value function <span class="math inline">\(V(s)\)</span> or action-value function <span class="math inline">\(Q(s, a)\)</span> as a linear combination of features:
+<span class="math display">\[V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}\]</span>
+<span class="math display">\[Q_{\boldsymbol{\theta}}(s, a) = \boldsymbol{\phi}(s, a)^T \boldsymbol{\theta}\]</span>
+A key advantage is that the gradient of the value function with respect to the parameters is simply the feature vector itself:
+<span class="math display">\[\nabla_{\boldsymbol{\theta}} V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)\]</span>
+This property makes learning algorithms based on gradient descent straightforward and computationally cheap.</p>
+</div>
+<div id="temporal-difference-td-learning-with-function-approximation" class="section level3 hasAnchor" number="11.12.2">
+<h3><span class="header-section-number">11.12.2</span> Temporal Difference (TD) Learning with Function Approximation<a href="appendix.html#temporal-difference-td-learning-with-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>With linear function approximation, the <strong>TD(0)</strong> update rule for learning <span class="math inline">\(V\_{\\boldsymbol{\\theta}}(s)\)</span> becomes:
+<span class="math display">\[\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_{\boldsymbol{\theta}}(S_{t+1}) - V_{\boldsymbol{\theta}}(S_t)] \boldsymbol{\phi}(S_t)\]</span>
+This update adjusts the weights <span class="math inline">\(\\boldsymbol{\\theta}\)</span> to reduce the TD error for the observed transition. Since the value of any state depends on the shared weights <span class="math inline">\(\\boldsymbol{\\theta}\)</span>, this single update influences the value estimates across the entire state space.</p>
+<p>Similarly, the update for <strong>Q-learning</strong> is:
+<span class="math display">\[\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a&#39;} Q_{\boldsymbol{\theta}}(S_{t+1}, a&#39;) - Q_{\boldsymbol{\theta}}(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)\]</span></p>
+</div>
+<div id="convergence-and-the-deadly-triad" class="section level3 hasAnchor" number="11.12.3">
+<h3><span class="header-section-number">11.12.3</span> Convergence and the “Deadly Triad”<a href="appendix.html#convergence-and-the-deadly-triad" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>While on-policy TD learning with linear function approximation is guaranteed to converge, stability is not assured under all conditions. The combination of <strong>off-policy learning</strong>, <strong>function approximation</strong>, and <strong>bootstrapping</strong> (updating estimates from other estimates) is known as the <strong>“deadly triad”</strong> and can lead to divergence, where the value estimates grow uncontrollably. This instability is a fundamental challenge that motivated much of the research leading to modern deep RL algorithms like DQN, which employ techniques like experience replay and target networks to mitigate it.</p>
+</div>
+</div>
+<div id="classical-basis-function-methods" class="section level2 hasAnchor" number="11.13">
+<h2><span class="header-section-number">11.13</span> Classical Basis Function Methods<a href="appendix.html#classical-basis-function-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Basis functions are systematic methods for constructing features. They provide a bridge from simple linear models to the powerful, automatically-learned features of neural networks.</p>
+<div id="coarse-coding" class="section level3 hasAnchor" number="11.13.1">
+<h3><span class="header-section-number">11.13.1</span> Coarse Coding<a href="appendix.html#coarse-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Coarse coding</strong> uses overlapping binary features, where each feature corresponds to a “receptive field” or region in the state space. A feature is active (value 1) if the state falls within its region and inactive (0) otherwise. The overlap between regions enables generalization: nearby states activate a similar set of features, so they receive similar value estimates.</p>
+<p>The degree of overlap controls the smoothness of the learned function. More overlap leads to broader generalization.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="appendix.html#cb40-1" tabindex="-1"></a><span class="co"># Load necessary libraries for all visualizations</span></span>
+<span id="cb40-2"><a href="appendix.html#cb40-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb40-3"><a href="appendix.html#cb40-3" tabindex="-1"></a><span class="fu">library</span>(ggforce) <span class="co"># For drawing circles</span></span>
+<span id="cb40-4"><a href="appendix.html#cb40-4" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="appendix.html#cb40-5" tabindex="-1"></a><span class="co"># --- Coarse Coding Implementation ---</span></span>
+<span id="cb40-6"><a href="appendix.html#cb40-6" tabindex="-1"></a>create_coarse_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, num_features, <span class="at">overlap_factor =</span> <span class="dv">2</span>) {</span>
+<span id="cb40-7"><a href="appendix.html#cb40-7" tabindex="-1"></a>  <span class="co"># Generate random centers for the receptive fields</span></span>
+<span id="cb40-8"><a href="appendix.html#cb40-8" tabindex="-1"></a>  centers <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb40-9"><a href="appendix.html#cb40-9" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
+<span id="cb40-10"><a href="appendix.html#cb40-10" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])</span>
+<span id="cb40-11"><a href="appendix.html#cb40-11" tabindex="-1"></a>  )</span>
+<span id="cb40-12"><a href="appendix.html#cb40-12" tabindex="-1"></a>  </span>
+<span id="cb40-13"><a href="appendix.html#cb40-13" tabindex="-1"></a>  <span class="co"># Calculate radius based on average spacing to ensure overlap</span></span>
+<span id="cb40-14"><a href="appendix.html#cb40-14" tabindex="-1"></a>  avg_spacing <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">prod</span>(state_dims) <span class="sc">/</span> num_features)</span>
+<span id="cb40-15"><a href="appendix.html#cb40-15" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> overlap_factor <span class="sc">*</span> avg_spacing <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb40-16"><a href="appendix.html#cb40-16" tabindex="-1"></a>  </span>
+<span id="cb40-17"><a href="appendix.html#cb40-17" tabindex="-1"></a>  <span class="co"># Function to compute the binary feature vector for a given state</span></span>
+<span id="cb40-18"><a href="appendix.html#cb40-18" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb40-19"><a href="appendix.html#cb40-19" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb40-20"><a href="appendix.html#cb40-20" tabindex="-1"></a>    distances <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((centers<span class="sc">$</span>x <span class="sc">-</span> state_vec[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (centers<span class="sc">$</span>y <span class="sc">-</span> state_vec[<span class="dv">2</span>])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb40-21"><a href="appendix.html#cb40-21" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(distances <span class="sc">&lt;=</span> radius)</span>
+<span id="cb40-22"><a href="appendix.html#cb40-22" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb40-23"><a href="appendix.html#cb40-23" tabindex="-1"></a>  }</span>
+<span id="cb40-24"><a href="appendix.html#cb40-24" tabindex="-1"></a>  </span>
+<span id="cb40-25"><a href="appendix.html#cb40-25" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb40-26"><a href="appendix.html#cb40-26" tabindex="-1"></a>    <span class="at">compute_features =</span> compute_features,</span>
+<span id="cb40-27"><a href="appendix.html#cb40-27" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb40-28"><a href="appendix.html#cb40-28" tabindex="-1"></a>    <span class="at">radius =</span> radius,</span>
+<span id="cb40-29"><a href="appendix.html#cb40-29" tabindex="-1"></a>    <span class="at">state_dims =</span> state_dims</span>
+<span id="cb40-30"><a href="appendix.html#cb40-30" tabindex="-1"></a>  ))</span>
+<span id="cb40-31"><a href="appendix.html#cb40-31" tabindex="-1"></a>}</span>
+<span id="cb40-32"><a href="appendix.html#cb40-32" tabindex="-1"></a></span>
+<span id="cb40-33"><a href="appendix.html#cb40-33" tabindex="-1"></a><span class="co"># --- Visualization Function for Coarse Coding ---</span></span>
+<span id="cb40-34"><a href="appendix.html#cb40-34" tabindex="-1"></a>visualize_coarse_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(coarse_coder, <span class="at">state =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb40-35"><a href="appendix.html#cb40-35" tabindex="-1"></a>  active_features <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) coarse_coder<span class="sc">$</span><span class="fu">compute_features</span>(state) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb40-36"><a href="appendix.html#cb40-36" tabindex="-1"></a>  active_indices <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(active_features)) <span class="fu">which</span>(active_features <span class="sc">==</span> <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">integer</span>(<span class="dv">0</span>)</span>
+<span id="cb40-37"><a href="appendix.html#cb40-37" tabindex="-1"></a>  </span>
+<span id="cb40-38"><a href="appendix.html#cb40-38" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb40-39"><a href="appendix.html#cb40-39" tabindex="-1"></a>    <span class="co"># Draw all receptive fields (inactive)</span></span>
+<span id="cb40-40"><a href="appendix.html#cb40-40" tabindex="-1"></a>    <span class="fu">geom_circle</span>(</span>
+<span id="cb40-41"><a href="appendix.html#cb40-41" tabindex="-1"></a>      <span class="at">data =</span> coarse_coder<span class="sc">$</span>centers,</span>
+<span id="cb40-42"><a href="appendix.html#cb40-42" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> coarse_coder<span class="sc">$</span>radius),</span>
+<span id="cb40-43"><a href="appendix.html#cb40-43" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;grey70&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
+<span id="cb40-44"><a href="appendix.html#cb40-44" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb40-45"><a href="appendix.html#cb40-45" tabindex="-1"></a>    <span class="co"># Highlight active receptive fields</span></span>
+<span id="cb40-46"><a href="appendix.html#cb40-46" tabindex="-1"></a>    <span class="fu">geom_circle</span>(</span>
+<span id="cb40-47"><a href="appendix.html#cb40-47" tabindex="-1"></a>      <span class="at">data =</span> coarse_coder<span class="sc">$</span>centers[active_indices, ],</span>
+<span id="cb40-48"><a href="appendix.html#cb40-48" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> coarse_coder<span class="sc">$</span>radius),</span>
+<span id="cb40-49"><a href="appendix.html#cb40-49" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">1</span></span>
+<span id="cb40-50"><a href="appendix.html#cb40-50" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb40-51"><a href="appendix.html#cb40-51" tabindex="-1"></a>    <span class="co"># Add center points</span></span>
+<span id="cb40-52"><a href="appendix.html#cb40-52" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> coarse_coder<span class="sc">$</span>centers, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>)</span>
+<span id="cb40-53"><a href="appendix.html#cb40-53" tabindex="-1"></a>  </span>
+<span id="cb40-54"><a href="appendix.html#cb40-54" tabindex="-1"></a>  <span class="co"># Add the query state point</span></span>
+<span id="cb40-55"><a href="appendix.html#cb40-55" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb40-56"><a href="appendix.html#cb40-56" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> state[<span class="dv">1</span>], <span class="at">y =</span> state[<span class="dv">2</span>]), <span class="at">color =</span> <span class="st">&quot;#377eb8&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">17</span>)</span>
+<span id="cb40-57"><a href="appendix.html#cb40-57" tabindex="-1"></a>  }</span>
+<span id="cb40-58"><a href="appendix.html#cb40-58" tabindex="-1"></a>  </span>
+<span id="cb40-59"><a href="appendix.html#cb40-59" tabindex="-1"></a>  p <span class="sc">+</span></span>
+<span id="cb40-60"><a href="appendix.html#cb40-60" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, coarse_coder<span class="sc">$</span>state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, coarse_coder<span class="sc">$</span>state_dims[<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb40-61"><a href="appendix.html#cb40-61" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb40-62"><a href="appendix.html#cb40-62" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Coarse Coding Receptive Fields&quot;</span>,</span>
+<span id="cb40-63"><a href="appendix.html#cb40-63" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="fu">length</span>(active_indices), <span class="st">&quot;of&quot;</span>, <span class="fu">nrow</span>(coarse_coder<span class="sc">$</span>centers), <span class="st">&quot;features active&quot;</span>),</span>
+<span id="cb40-64"><a href="appendix.html#cb40-64" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb40-65"><a href="appendix.html#cb40-65" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb40-66"><a href="appendix.html#cb40-66" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb40-67"><a href="appendix.html#cb40-67" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb40-68"><a href="appendix.html#cb40-68" tabindex="-1"></a>}</span>
+<span id="cb40-69"><a href="appendix.html#cb40-69" tabindex="-1"></a></span>
+<span id="cb40-70"><a href="appendix.html#cb40-70" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb40-71"><a href="appendix.html#cb40-71" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb40-72"><a href="appendix.html#cb40-72" tabindex="-1"></a>coarse_coder_2d <span class="ot">&lt;-</span> <span class="fu">create_coarse_coder</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="at">num_features =</span> <span class="dv">50</span>, <span class="at">overlap_factor =</span> <span class="fl">1.5</span>)</span>
+<span id="cb40-73"><a href="appendix.html#cb40-73" tabindex="-1"></a><span class="fu">visualize_coarse_coding</span>(coarse_coder_2d, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span></code></pre></div>
+</div>
+<div id="tile-coding" class="section level3 hasAnchor" number="11.13.2">
+<h3><span class="header-section-number">11.13.2</span> Tile Coding<a href="appendix.html#tile-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Tile coding</strong>, also known as CMAC (Cerebellar Model Articulation Controller), improves upon coarse coding by providing more structured and uniform coverage. It partitions the state space using multiple overlapping grids, called <strong>tilings</strong>. Each tiling is offset from the others. For any given state, exactly one tile in each tiling will be active. This ensures a constant number of active features, which is computationally efficient.</p>
+<p>The offsets provide fine-grained discrimination, while the tile size controls generalization. Unlike coarse coding with circular fields, tile coding’s rectangular tiles create <strong>asymmetric generalization</strong> that aligns with the coordinate axes, which is often desirable in control problems where dimensions represent different physical properties (e.g., position and velocity).</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="appendix.html#cb41-1" tabindex="-1"></a><span class="co"># --- Tile Coding Implementation ---</span></span>
+<span id="cb41-2"><a href="appendix.html#cb41-2" tabindex="-1"></a>create_tile_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_low, state_high, num_tilings, tiles_per_dim) {</span>
+<span id="cb41-3"><a href="appendix.html#cb41-3" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> <span class="fu">length</span>(state_low)</span>
+<span id="cb41-4"><a href="appendix.html#cb41-4" tabindex="-1"></a>  state_range <span class="ot">&lt;-</span> state_high <span class="sc">-</span> state_low</span>
+<span id="cb41-5"><a href="appendix.html#cb41-5" tabindex="-1"></a>  tile_widths <span class="ot">&lt;-</span> state_range <span class="sc">/</span> tiles_per_dim</span>
+<span id="cb41-6"><a href="appendix.html#cb41-6" tabindex="-1"></a>  </span>
+<span id="cb41-7"><a href="appendix.html#cb41-7" tabindex="-1"></a>  <span class="co"># Generate offsets for each tiling</span></span>
+<span id="cb41-8"><a href="appendix.html#cb41-8" tabindex="-1"></a>  offsets <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>state_dims, <span class="cf">function</span>(i) {</span>
+<span id="cb41-9"><a href="appendix.html#cb41-9" tabindex="-1"></a>    (<span class="dv">1</span><span class="sc">:</span>num_tilings <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> tile_widths[i] <span class="sc">/</span> num_tilings</span>
+<span id="cb41-10"><a href="appendix.html#cb41-10" tabindex="-1"></a>  })</span>
+<span id="cb41-11"><a href="appendix.html#cb41-11" tabindex="-1"></a>  </span>
+<span id="cb41-12"><a href="appendix.html#cb41-12" tabindex="-1"></a>  <span class="co"># Function to get the indices of active tiles for a given state</span></span>
+<span id="cb41-13"><a href="appendix.html#cb41-13" tabindex="-1"></a>  get_active_tiles <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb41-14"><a href="appendix.html#cb41-14" tabindex="-1"></a>    active_tiles <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb41-15"><a href="appendix.html#cb41-15" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb41-16"><a href="appendix.html#cb41-16" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">floor</span>((state <span class="sc">-</span> state_low <span class="sc">+</span> offsets[t, ]) <span class="sc">/</span> tile_widths)</span>
+<span id="cb41-17"><a href="appendix.html#cb41-17" tabindex="-1"></a>      active_tiles[[t]] <span class="ot">&lt;-</span> tile_indices</span>
+<span id="cb41-18"><a href="appendix.html#cb41-18" tabindex="-1"></a>    }</span>
+<span id="cb41-19"><a href="appendix.html#cb41-19" tabindex="-1"></a>    <span class="fu">return</span>(active_tiles)</span>
+<span id="cb41-20"><a href="appendix.html#cb41-20" tabindex="-1"></a>  }</span>
+<span id="cb41-21"><a href="appendix.html#cb41-21" tabindex="-1"></a>  </span>
+<span id="cb41-22"><a href="appendix.html#cb41-22" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb41-23"><a href="appendix.html#cb41-23" tabindex="-1"></a>    <span class="at">get_active_tiles =</span> get_active_tiles,</span>
+<span id="cb41-24"><a href="appendix.html#cb41-24" tabindex="-1"></a>    <span class="at">state_low =</span> state_low,</span>
+<span id="cb41-25"><a href="appendix.html#cb41-25" tabindex="-1"></a>    <span class="at">state_high =</span> state_high,</span>
+<span id="cb41-26"><a href="appendix.html#cb41-26" tabindex="-1"></a>    <span class="at">num_tilings =</span> num_tilings,</span>
+<span id="cb41-27"><a href="appendix.html#cb41-27" tabindex="-1"></a>    <span class="at">tiles_per_dim =</span> tiles_per_dim,</span>
+<span id="cb41-28"><a href="appendix.html#cb41-28" tabindex="-1"></a>    <span class="at">tile_widths =</span> tile_widths,</span>
+<span id="cb41-29"><a href="appendix.html#cb41-29" tabindex="-1"></a>    <span class="at">offsets =</span> offsets</span>
+<span id="cb41-30"><a href="appendix.html#cb41-30" tabindex="-1"></a>  ))</span>
+<span id="cb41-31"><a href="appendix.html#cb41-31" tabindex="-1"></a>}</span>
+<span id="cb41-32"><a href="appendix.html#cb41-32" tabindex="-1"></a></span>
+<span id="cb41-33"><a href="appendix.html#cb41-33" tabindex="-1"></a><span class="co"># --- Visualization Function for Tile Coding ---</span></span>
+<span id="cb41-34"><a href="appendix.html#cb41-34" tabindex="-1"></a>visualize_tile_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(tile_coder, <span class="at">state =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb41-35"><a href="appendix.html#cb41-35" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(tile_coder<span class="sc">$</span>state_low) <span class="sc">!=</span> <span class="dv">2</span>) <span class="fu">stop</span>(<span class="st">&quot;Visualization is for 2D state spaces only.&quot;</span>)</span>
+<span id="cb41-36"><a href="appendix.html#cb41-36" tabindex="-1"></a>  </span>
+<span id="cb41-37"><a href="appendix.html#cb41-37" tabindex="-1"></a>  <span class="co"># Create a data frame of grid lines for each tiling</span></span>
+<span id="cb41-38"><a href="appendix.html#cb41-38" tabindex="-1"></a>  grids <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb41-39"><a href="appendix.html#cb41-39" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>tile_coder<span class="sc">$</span>num_tilings) {</span>
+<span id="cb41-40"><a href="appendix.html#cb41-40" tabindex="-1"></a>    <span class="co"># Vertical lines</span></span>
+<span id="cb41-41"><a href="appendix.html#cb41-41" tabindex="-1"></a>    x_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
+<span id="cb41-42"><a href="appendix.html#cb41-42" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_low[<span class="dv">1</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">1</span>],</span>
+<span id="cb41-43"><a href="appendix.html#cb41-43" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_high[<span class="dv">1</span>],</span>
+<span id="cb41-44"><a href="appendix.html#cb41-44" tabindex="-1"></a>      <span class="at">by =</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">1</span>]</span>
+<span id="cb41-45"><a href="appendix.html#cb41-45" tabindex="-1"></a>    )</span>
+<span id="cb41-46"><a href="appendix.html#cb41-46" tabindex="-1"></a>    <span class="co"># Horizontal lines</span></span>
+<span id="cb41-47"><a href="appendix.html#cb41-47" tabindex="-1"></a>    y_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
+<span id="cb41-48"><a href="appendix.html#cb41-48" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_low[<span class="dv">2</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">2</span>],</span>
+<span id="cb41-49"><a href="appendix.html#cb41-49" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_high[<span class="dv">2</span>],</span>
+<span id="cb41-50"><a href="appendix.html#cb41-50" tabindex="-1"></a>      <span class="at">by =</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">2</span>]</span>
+<span id="cb41-51"><a href="appendix.html#cb41-51" tabindex="-1"></a>    )</span>
+<span id="cb41-52"><a href="appendix.html#cb41-52" tabindex="-1"></a>    grids[[t]] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> x_lines, <span class="at">y =</span> y_lines)</span>
+<span id="cb41-53"><a href="appendix.html#cb41-53" tabindex="-1"></a>  }</span>
+<span id="cb41-54"><a href="appendix.html#cb41-54" tabindex="-1"></a>  </span>
+<span id="cb41-55"><a href="appendix.html#cb41-55" tabindex="-1"></a>  <span class="co"># Base plot</span></span>
+<span id="cb41-56"><a href="appendix.html#cb41-56" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb41-57"><a href="appendix.html#cb41-57" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(</span>
+<span id="cb41-58"><a href="appendix.html#cb41-58" tabindex="-1"></a>      <span class="at">xlim =</span> tile_coder<span class="sc">$</span>state_low,</span>
+<span id="cb41-59"><a href="appendix.html#cb41-59" tabindex="-1"></a>      <span class="at">ylim =</span> tile_coder<span class="sc">$</span>state_high,</span>
+<span id="cb41-60"><a href="appendix.html#cb41-60" tabindex="-1"></a>      <span class="at">expand =</span> <span class="cn">FALSE</span></span>
+<span id="cb41-61"><a href="appendix.html#cb41-61" tabindex="-1"></a>    )</span>
+<span id="cb41-62"><a href="appendix.html#cb41-62" tabindex="-1"></a>  </span>
+<span id="cb41-63"><a href="appendix.html#cb41-63" tabindex="-1"></a>  <span class="co"># Add grid lines for each tiling with a unique color</span></span>
+<span id="cb41-64"><a href="appendix.html#cb41-64" tabindex="-1"></a>  colors <span class="ot">&lt;-</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(tile_coder<span class="sc">$</span>num_tilings, <span class="st">&quot;Set1&quot;</span>)</span>
+<span id="cb41-65"><a href="appendix.html#cb41-65" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>tile_coder<span class="sc">$</span>num_tilings) {</span>
+<span id="cb41-66"><a href="appendix.html#cb41-66" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
+<span id="cb41-67"><a href="appendix.html#cb41-67" tabindex="-1"></a>      <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> grids[[t]]<span class="sc">$</span>x, <span class="at">color =</span> colors[t], <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb41-68"><a href="appendix.html#cb41-68" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> grids[[t]]<span class="sc">$</span>y, <span class="at">color =</span> colors[t], <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>)</span>
+<span id="cb41-69"><a href="appendix.html#cb41-69" tabindex="-1"></a>  }</span>
+<span id="cb41-70"><a href="appendix.html#cb41-70" tabindex="-1"></a>  </span>
+<span id="cb41-71"><a href="appendix.html#cb41-71" tabindex="-1"></a>  <span class="co"># Highlight the active tile for each tiling</span></span>
+<span id="cb41-72"><a href="appendix.html#cb41-72" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb41-73"><a href="appendix.html#cb41-73" tabindex="-1"></a>    active_tiles_indices <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span><span class="fu">get_active_tiles</span>(state)</span>
+<span id="cb41-74"><a href="appendix.html#cb41-74" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>tile_coder<span class="sc">$</span>num_tilings) {</span>
+<span id="cb41-75"><a href="appendix.html#cb41-75" tabindex="-1"></a>      tile_xmin <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>state_low[<span class="dv">1</span>] <span class="sc">+</span> active_tiles_indices[[t]][<span class="dv">1</span>] <span class="sc">*</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">1</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">1</span>]</span>
+<span id="cb41-76"><a href="appendix.html#cb41-76" tabindex="-1"></a>      tile_ymin <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>state_low[<span class="dv">2</span>] <span class="sc">+</span> active_tiles_indices[[t]][<span class="dv">2</span>] <span class="sc">*</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">2</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">2</span>]</span>
+<span id="cb41-77"><a href="appendix.html#cb41-77" tabindex="-1"></a>      </span>
+<span id="cb41-78"><a href="appendix.html#cb41-78" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">annotate</span>(</span>
+<span id="cb41-79"><a href="appendix.html#cb41-79" tabindex="-1"></a>        <span class="st">&quot;rect&quot;</span>,</span>
+<span id="cb41-80"><a href="appendix.html#cb41-80" tabindex="-1"></a>        <span class="at">xmin =</span> tile_xmin,</span>
+<span id="cb41-81"><a href="appendix.html#cb41-81" tabindex="-1"></a>        <span class="at">xmax =</span> tile_xmin <span class="sc">+</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">1</span>],</span>
+<span id="cb41-82"><a href="appendix.html#cb41-82" tabindex="-1"></a>        <span class="at">ymin =</span> tile_ymin,</span>
+<span id="cb41-83"><a href="appendix.html#cb41-83" tabindex="-1"></a>        <span class="at">ymax =</span> tile_ymin <span class="sc">+</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">2</span>],</span>
+<span id="cb41-84"><a href="appendix.html#cb41-84" tabindex="-1"></a>        <span class="at">fill =</span> colors[t], <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> colors[t], <span class="at">size =</span> <span class="fl">1.2</span></span>
+<span id="cb41-85"><a href="appendix.html#cb41-85" tabindex="-1"></a>      )</span>
+<span id="cb41-86"><a href="appendix.html#cb41-86" tabindex="-1"></a>    }</span>
+<span id="cb41-87"><a href="appendix.html#cb41-87" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> state[<span class="dv">1</span>], <span class="at">y =</span> state[<span class="dv">2</span>]), <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">17</span>)</span>
+<span id="cb41-88"><a href="appendix.html#cb41-88" tabindex="-1"></a>  }</span>
+<span id="cb41-89"><a href="appendix.html#cb41-89" tabindex="-1"></a>  </span>
+<span id="cb41-90"><a href="appendix.html#cb41-90" tabindex="-1"></a>  p <span class="sc">+</span> <span class="fu">labs</span>(</span>
+<span id="cb41-91"><a href="appendix.html#cb41-91" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Tile Coding&quot;</span>,</span>
+<span id="cb41-92"><a href="appendix.html#cb41-92" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(tile_coder<span class="sc">$</span>num_tilings, <span class="st">&quot;Overlapping Tilings&quot;</span>),</span>
+<span id="cb41-93"><a href="appendix.html#cb41-93" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb41-94"><a href="appendix.html#cb41-94" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb41-95"><a href="appendix.html#cb41-95" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb41-96"><a href="appendix.html#cb41-96" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb41-97"><a href="appendix.html#cb41-97" tabindex="-1"></a>}</span>
+<span id="cb41-98"><a href="appendix.html#cb41-98" tabindex="-1"></a></span>
+<span id="cb41-99"><a href="appendix.html#cb41-99" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb41-100"><a href="appendix.html#cb41-100" tabindex="-1"></a>tile_coder_2d <span class="ot">&lt;-</span> <span class="fu">create_tile_coder</span>(</span>
+<span id="cb41-101"><a href="appendix.html#cb41-101" tabindex="-1"></a>  <span class="at">state_low =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb41-102"><a href="appendix.html#cb41-102" tabindex="-1"></a>  <span class="at">state_high =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>),</span>
+<span id="cb41-103"><a href="appendix.html#cb41-103" tabindex="-1"></a>  <span class="at">num_tilings =</span> <span class="dv">4</span>,</span>
+<span id="cb41-104"><a href="appendix.html#cb41-104" tabindex="-1"></a>  <span class="at">tiles_per_dim =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb41-105"><a href="appendix.html#cb41-105" tabindex="-1"></a>)</span>
+<span id="cb41-106"><a href="appendix.html#cb41-106" tabindex="-1"></a><span class="fu">visualize_tile_coding</span>(tile_coder_2d, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span></code></pre></div>
+</div>
+<div id="radial-basis-functions-rbfs" class="section level3 hasAnchor" number="11.13.3">
+<h3><span class="header-section-number">11.13.3</span> Radial Basis Functions (RBFs)<a href="appendix.html#radial-basis-functions-rbfs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Radial Basis Functions (RBFs)</strong> are smooth, continuous basis functions that produce a graded response based on the distance to a center point. The most common form is the Gaussian RBF:</p>
+<p><span class="math display">\[\phi_i(s) = \exp\left(-\frac{\|s - c_i\|^2}{2\sigma_i^2}\right)\]</span></p>
+<p>Here, <span class="math inline">\(c\_i\)</span> is the center of the <span class="math inline">\(i\)</span>-th RBF and <span class="math inline">\(\\sigma\_i\)</span> is its width (or bandwidth). Unlike binary features, RBFs provide a continuous measure of similarity. The width <span class="math inline">\(\\sigma\)</span> controls the locality of influence: a small <span class="math inline">\(\\sigma\)</span> creates a “spiky” function with local generalization, while a large <span class="math inline">\(\\sigma\)</span> creates a smooth function with broad generalization.</p>
+<p>RBF networks are <strong>universal approximators</strong>, meaning they can represent any continuous function with arbitrary accuracy, given enough basis functions. The placement of centers and choice of widths are critical. Centers can be placed on a fixed grid, randomly, or adapted during learning using techniques like k-means clustering on experienced states.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="appendix.html#cb42-1" tabindex="-1"></a><span class="co"># --- Radial Basis Function (RBF) Implementation ---</span></span>
+<span id="cb42-2"><a href="appendix.html#cb42-2" tabindex="-1"></a>create_rbf_network <span class="ot">&lt;-</span> <span class="cf">function</span>(centers, sigmas) {</span>
+<span id="cb42-3"><a href="appendix.html#cb42-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.vector</span>(sigmas)) {</span>
+<span id="cb42-4"><a href="appendix.html#cb42-4" tabindex="-1"></a>    sigmas <span class="ot">&lt;-</span> <span class="fu">rep</span>(sigmas[<span class="dv">1</span>], <span class="fu">nrow</span>(centers))</span>
+<span id="cb42-5"><a href="appendix.html#cb42-5" tabindex="-1"></a>  }</span>
+<span id="cb42-6"><a href="appendix.html#cb42-6" tabindex="-1"></a>  </span>
+<span id="cb42-7"><a href="appendix.html#cb42-7" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb42-8"><a href="appendix.html#cb42-8" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb42-9"><a href="appendix.html#cb42-9" tabindex="-1"></a>    distances_sq <span class="ot">&lt;-</span> <span class="fu">colSums</span>((<span class="fu">t</span>(centers) <span class="sc">-</span> state_vec)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb42-10"><a href="appendix.html#cb42-10" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distances_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> sigmas<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb42-11"><a href="appendix.html#cb42-11" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb42-12"><a href="appendix.html#cb42-12" tabindex="-1"></a>  }</span>
+<span id="cb42-13"><a href="appendix.html#cb42-13" tabindex="-1"></a>  </span>
+<span id="cb42-14"><a href="appendix.html#cb42-14" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb42-15"><a href="appendix.html#cb42-15" tabindex="-1"></a>    <span class="at">compute_features =</span> compute_features,</span>
+<span id="cb42-16"><a href="appendix.html#cb42-16" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb42-17"><a href="appendix.html#cb42-17" tabindex="-1"></a>    <span class="at">sigmas =</span> sigmas</span>
+<span id="cb42-18"><a href="appendix.html#cb42-18" tabindex="-1"></a>  ))</span>
+<span id="cb42-19"><a href="appendix.html#cb42-19" tabindex="-1"></a>}</span>
+<span id="cb42-20"><a href="appendix.html#cb42-20" tabindex="-1"></a></span>
+<span id="cb42-21"><a href="appendix.html#cb42-21" tabindex="-1"></a><span class="co"># --- Visualization Function for RBF Network Activation ---</span></span>
+<span id="cb42-22"><a href="appendix.html#cb42-22" tabindex="-1"></a>visualize_rbf_activation <span class="ot">&lt;-</span> <span class="cf">function</span>(rbf_network, state_dims) {</span>
+<span id="cb42-23"><a href="appendix.html#cb42-23" tabindex="-1"></a>  <span class="co"># Create a grid of points to evaluate the RBF network</span></span>
+<span id="cb42-24"><a href="appendix.html#cb42-24" tabindex="-1"></a>  grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb42-25"><a href="appendix.html#cb42-25" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>], <span class="at">length.out =</span> <span class="dv">100</span>),</span>
+<span id="cb42-26"><a href="appendix.html#cb42-26" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>], <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb42-27"><a href="appendix.html#cb42-27" tabindex="-1"></a>  )</span>
+<span id="cb42-28"><a href="appendix.html#cb42-28" tabindex="-1"></a>  </span>
+<span id="cb42-29"><a href="appendix.html#cb42-29" tabindex="-1"></a>  <span class="co"># Calculate the sum of all RBF activations at each grid point</span></span>
+<span id="cb42-30"><a href="appendix.html#cb42-30" tabindex="-1"></a>  activations <span class="ot">&lt;-</span> <span class="fu">apply</span>(grid_df, <span class="dv">1</span>, <span class="cf">function</span>(point) {</span>
+<span id="cb42-31"><a href="appendix.html#cb42-31" tabindex="-1"></a>    <span class="fu">sum</span>(rbf_network<span class="sc">$</span><span class="fu">compute_features</span>(point))</span>
+<span id="cb42-32"><a href="appendix.html#cb42-32" tabindex="-1"></a>  })</span>
+<span id="cb42-33"><a href="appendix.html#cb42-33" tabindex="-1"></a>  grid_df<span class="sc">$</span>activation <span class="ot">&lt;-</span> activations</span>
+<span id="cb42-34"><a href="appendix.html#cb42-34" tabindex="-1"></a>  </span>
+<span id="cb42-35"><a href="appendix.html#cb42-35" tabindex="-1"></a>  <span class="fu">ggplot</span>(grid_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
+<span id="cb42-36"><a href="appendix.html#cb42-36" tabindex="-1"></a>    <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb42-37"><a href="appendix.html#cb42-37" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">as.data.frame</span>(rbf_network<span class="sc">$</span>centers), <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2), </span>
+<span id="cb42-38"><a href="appendix.html#cb42-38" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb42-39"><a href="appendix.html#cb42-39" tabindex="-1"></a>    <span class="fu">scale_fill_viridis_c</span>(<span class="at">name =</span> <span class="st">&quot;Total</span><span class="sc">\n</span><span class="st">Activation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb42-40"><a href="appendix.html#cb42-40" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb42-41"><a href="appendix.html#cb42-41" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb42-42"><a href="appendix.html#cb42-42" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Radial Basis Function Network Activation&quot;</span>,</span>
+<span id="cb42-43"><a href="appendix.html#cb42-43" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="st">&quot;White crosses indicate RBF centers&quot;</span>,</span>
+<span id="cb42-44"><a href="appendix.html#cb42-44" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb42-45"><a href="appendix.html#cb42-45" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb42-46"><a href="appendix.html#cb42-46" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb42-47"><a href="appendix.html#cb42-47" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb42-48"><a href="appendix.html#cb42-48" tabindex="-1"></a>}</span>
+<span id="cb42-49"><a href="appendix.html#cb42-49" tabindex="-1"></a></span>
+<span id="cb42-50"><a href="appendix.html#cb42-50" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb42-51"><a href="appendix.html#cb42-51" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb42-52"><a href="appendix.html#cb42-52" tabindex="-1"></a>rbf_centers <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dv">10</span>), <span class="at">nrow =</span> <span class="dv">10</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb42-53"><a href="appendix.html#cb42-53" tabindex="-1"></a>rbf_sigmas <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fl">2.0</span>, <span class="dv">10</span>) <span class="co"># Uniform width for all RBFs</span></span>
+<span id="cb42-54"><a href="appendix.html#cb42-54" tabindex="-1"></a>rbf_net <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(<span class="at">centers =</span> rbf_centers, <span class="at">sigmas =</span> rbf_sigmas)</span>
+<span id="cb42-55"><a href="appendix.html#cb42-55" tabindex="-1"></a></span>
+<span id="cb42-56"><a href="appendix.html#cb42-56" tabindex="-1"></a><span class="fu">visualize_rbf_activation</span>(rbf_net, <span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span></code></pre></div>
+<p>The choice of basis function depends on the problem, computational budget, and desired generalization properties.</p>
+<ul>
+<li><strong>Computational Efficiency</strong>: <strong>Tile coding</strong> is often the fastest, as it involves simple arithmetic and guarantees a fixed, small number of active features. Coarse coding can be slower if it requires checking against many overlapping regions. RBFs are typically the most expensive, as they require distance calculations to all centers.</li>
+<li><strong>Memory Requirements</strong>: A tile coder with <span class="math inline">\(N\)</span> tilings and <span class="math inline">\(T\)</span> tiles per tiling has <span class="math inline">\(N \\times T\)</span> features. RBFs require storing all centers and widths. The memory footprint depends on the number of basis functions needed for the desired accuracy.</li>
+<li><strong>Generalization Control</strong>: <strong>RBFs</strong> offer the most fine-grained control over generalization through the placement of centers and tuning of widths. <strong>Tile coding</strong> provides structured, axis-aligned generalization controlled by the number and shape of tiles. <strong>Coarse coding</strong> is the most straightforward but offers the least precise control.</li>
+<li><strong>Ease of Use</strong>: Tile coding is often a strong default choice for low-to-medium dimensional control problems due to its computational efficiency and robust performance with minimal tuning.</li>
+</ul>
+<p>Linear function approximation and classical basis functions are not merely historical footnotes; they are the conceptual foundation upon which deep RL is built. They provide a clear and analyzable framework for understanding the core challenge of RL: balancing discrimination and generalization. The principles of feature design, the mathematics of TD updates, and the properties of different basis functions offer crucial insights that remain relevant when designing, training, and debugging complex neural network architectures.</p>
+<p>Mastering these fundamentals provides the intuition needed to navigate the complexities of modern RL. The journey from tabular methods to deep learning necessarily passes through this foundational territory, making it essential knowledge for any serious RL practitioner.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/Appendix.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/Appendix.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

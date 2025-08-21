@@ -1,137 +1,200 @@
-# Appendix Function Approximation Fundamentals in Reinforcement Learning: Bridging Tabular and Deep Methods
+# Appendix
 
-## Introduction
+## Comprehensive Reinforcement Learning Concepts Guide
 
-The transition from tabular reinforcement learning to modern deep RL represents one of the most significant advances in the field. However, this leap often obscures a crucial intermediate stage that forms the theoretical and practical foundation for all scalable RL methods: classical function approximation. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, when it fails, and how to design effective representations for learning agents.
+| **Concept** | **Description** | **Mathematical Formalism** | **Applications/Examples** | **Key Properties** |
+|-------------|-----------------|---------------------------|---------------------------|-------------------|
+| **Agent** | Autonomous learner/decision-maker that perceives environment and takes actions to maximize cumulative reward | Agent: (π, V, Q) | Autonomous vehicles, trading bots, game AI (AlphaGo), robotic controllers, chatbots | Must balance exploration vs exploitation, learns from trial and error |
+| **Environment** | External system that responds to agent actions with state transitions and rewards | Markov Decision Process (MDP): ⟨S, A, P, R, γ⟩ | OpenAI Gym environments, real-world robotics, financial markets, video games | Can be deterministic or stochastic, fully or partially observable |
+| **State (s)** | Complete information needed to make optimal decisions at current time | s ∈ S, where S is state space | Chess position (64 squares), robot pose (x,y,θ), market conditions, pixel arrays | Markov property: future depends only on current state, not history |
+| **Action (a)** | Discrete or continuous choices available to agent in given state | a ∈ A(s), where A(s) ⊆ A | Discrete: {up, down, left, right}, Continuous: steering angle [-30°, 30°] | Action space can be finite, infinite, or parameterized |
+| **Reward (r)** | Immediate scalar feedback signal indicating desirability of action | r ∈ ℝ, often bounded: r ∈ [-R_max, R_max] | Sparse: +1 goal, 0 elsewhere; Dense: distance-based; Shaped: intermediate milestones | Defines objective, can be sparse, dense, or carefully shaped |
 
-In tabular RL, we maintain separate value estimates for each state-action pair, which becomes computationally intractable when dealing with large or continuous state spaces. Function approximation addresses this limitation by learning a parameterized function that generalizes across states. This generalization is both the strength and the challenge of function approximation—it enables learning in complex environments but introduces the fundamental tradeoff between discrimination and generalization that shapes all modern RL algorithms.
+## Learning Mechanisms
 
-This exploration begins with feature engineering and state representation, examining how raw observations transform into meaningful features for learning. We then progress through the mathematical foundations of linear function approximation and explore classical basis function methods including coarse coding, tile coding, and radial basis functions. These concepts form the essential bridge between the theoretical guarantees of tabular methods and the empirical success of deep neural networks.
+| **Concept** | **Description** | **Mathematical Formalism** | **Applications/Examples** | **Key Properties** |
+|-------------|-----------------|---------------------------|---------------------------|-------------------|
+| **Return (G)** | Total discounted future reward from current time step | G_t = Σ_{k=0}^∞ γ^k r_{t+k+1} | Episode return in games, lifetime value in finance, trajectory rewards | Discount factor γ ∈ [0,1] balances immediate vs future rewards |
+| **Discount Factor (γ)** | Weighs importance of future vs immediate rewards | γ ∈ [0,1], where γ=0 is myopic, γ=1 values all future equally | γ=0.9 in games, γ=0.99 in continuous control, γ≈1 in finance | Controls learning horizon and convergence properties |
+| **Policy (π)** | Strategy mapping states to action probabilities or deterministic actions | Stochastic: π(a\|s) ∈ [0,1], Deterministic: π(s) → a | ε-greedy, Boltzmann/softmax, Gaussian policies, neural networks | Can be deterministic, stochastic, parameterized, or tabular |
+| **Value Function (V)** | Expected return starting from state under policy π | V^π(s) = 𝔼_π[G_t \| S_t = s] | State evaluation in chess, expected lifetime value | Higher values indicate more promising states |
+| **Q-Function (Q)** | Expected return from taking action a in state s, then following policy π | Q^π(s,a) = 𝔼_π[G_t \| S_t = s, A_t = a] | Q-tables in tabular RL, neural Q-networks in DQN | Enables action selection without environment model |
+| **Advantage (A)** | How much better action a is compared to average in state s | A^π(s,a) = Q^π(s,a) - V^π(s) | Policy gradient variance reduction, actor-critic methods | Positive advantage → above average action, zero → average |
 
-## Feature Engineering and State Representation
+## Environment Properties
 
-The quality of state representation fundamentally determines the success of any RL algorithm. Raw sensory data or environmental observations rarely provide the optimal basis for value function learning. Effective feature engineering transforms high-dimensional, noisy observations into compact, informative representations that facilitate learning and generalization.
+| **Concept** | **Description** | **Mathematical Formalism** | **Applications/Examples** | **Key Properties** |
+|-------------|-----------------|---------------------------|---------------------------|-------------------|
+| **Model** | Agent's internal representation of environment dynamics | P(s',r\|s,a) or T(s,a,s') and R(s,a) | Forward models in planning, world models in Dyna-Q | Enables planning and simulation of future trajectories |
+| **Markov Property** | Future state depends only on current state and action, not history | P(S_{t+1}\|S_t, A_t, S_{t-1}, ...) = P(S_{t+1}\|S_t, A_t) | Most RL algorithms assume this, POMDP when violated | Simplifies learning by eliminating need to track full history |
+| **Stationarity** | Environment dynamics don't change over time | P_t(s',r\|s,a) = P(s',r\|s,a) ∀t | Stationary games vs non-stationary financial markets | Non-stationary environments require adaptation mechanisms |
+| **Observability** | Extent to which agent can perceive true environment state | Fully: O_t = S_t, Partially: O_t = f(S_t) + noise | Full: chess, Partial: poker (hidden cards), autonomous driving | POMDPs require memory or state estimation techniques |
 
-### The Discrimination vs Generalization Tradeoff
+## Learning Paradigms
 
-At the heart of feature design lies a fundamental tension: features must discriminate between states that require different actions while generalizing across states that should share similar values. This tradeoff manifests in several dimensions:
+| **Concept** | **Description** | **Mathematical Formalism** | **Applications/Examples** | **Key Properties** |
+|-------------|-----------------|---------------------------|---------------------------|-------------------|
+| **On-Policy** | Learning from data generated by current policy being improved | π_{behavior} = π_{target}, update π using its own experience | SARSA, Policy Gradient, A2C, PPO, TRPO | More stable but less sample efficient, safer updates |
+| **Off-Policy** | Learning from data generated by different (often older) policy | π_{behavior} ≠ π_{target}, importance sampling: ρ = π/μ | Q-Learning, DQN, DDPG, SAC, experience replay | More sample efficient but requires correction for distribution shift |
+| **Model-Free** | Learn directly from experience without learning environment model | Direct V/Q updates from (s,a,r,s') tuples | Q-Learning, Policy Gradient, Actor-Critic methods | Simpler but may require more samples, works with unknown dynamics |
+| **Model-Based** | Learn environment model first, then use for planning/learning | Learn P(s'\|s,a), then plan using model | Dyna-Q, MCTS, MuZero, world models | Sample efficient but model errors can compound |
 
-**Discrimination** requires features that can distinguish between states where the optimal policy differs significantly. Consider a navigation task where small position differences near obstacles require very different actions. Here, fine-grained spatial features are essential for safety and performance.
+## Exploration Strategies
 
-**Generalization** demands that similar states share feature representations, enabling learning from one experience to improve decisions in related states. In the same navigation task, distant regions of free space should share features so that collision-avoidance knowledge transfers broadly.
+| **Concept** | **Description** | **Mathematical Formalism** | **Applications/Examples** | **Key Properties** |
+|-------------|-----------------|---------------------------|---------------------------|-------------------|
+| **Exploration** | Trying suboptimal actions to discover potentially better policies | Various strategies with different theoretical guarantees | ε-greedy, UCB, Thompson sampling, curiosity-driven | Essential for discovering optimal policies, balances with exploitation |
+| **Exploitation** | Using current knowledge to maximize immediate reward | π_{greedy}(s) = argmax_a Q(s,a) | Greedy action selection after learning | Must be balanced with exploration to avoid local optima |
+| **ε-Greedy** | Choose random action with probability ε, best known action otherwise | π(a\|s) = ε/\|A\| + (1-ε)δ_{a,a*} where a* = argmax Q(s,a) | Simple exploration in tabular RL, decaying ε schedules | Simple but may explore inefficiently in large state spaces |
+| **Upper Confidence Bound** | Choose actions with highest optimistic estimate | a_t = argmax_a [Q_t(a) + c√(ln t / N_t(a))] | Multi-armed bandits, MCTS (UCT), confidence-based exploration | Theoretically principled, provides exploration guarantees |
+| **Thompson Sampling** | Sample actions according to probability they are optimal | Sample θ ~ posterior, choose a = argmax_a Q_θ(s,a) | Bayesian bandits, Bayesian RL | Naturally balances exploration/exploitation via uncertainty |
 
-The mathematical formalization of this tradeoff appears in the approximation error of the value function. Given a feature mapping $\phi: S \rightarrow \mathbb{R}^d$ and parameter vector $\theta \in \mathbb{R}^d$, the approximate value function is:
+## Key Algorithms & Methods
 
-$$V_\theta(s) = \phi(s)^T \theta = \sum_{i=1}^d \phi_i(s) \theta_i$$
+| **Algorithm** | **Type** | **Key Innovation** | **Mathematical Update** | **Applications** |
+|---------------|----------|-------------------|------------------------|------------------|
+| **Q-Learning** | Off-policy, Model-free | Learns optimal Q-function without following optimal policy | Q(s,a) ← Q(s,a) + α[r + γ max_{a'} Q(s',a') - Q(s,a)] | Tabular problems, foundation for DQN |
+| **SARSA** | On-policy, Model-free | Updates based on actual next action taken | Q(s,a) ← Q(s,a) + α[r + γQ(s',a') - Q(s,a)] | Safe exploration, tabular RL |
+| **Policy Gradient** | On-policy, Model-free | Direct policy optimization using gradient ascent | ∇θ J(θ) = 𝔼[∇θ log π_θ(a\|s) A^π(s,a)] | Continuous action spaces, stochastic policies |
+| **Actor-Critic** | On-policy, Model-free | Combines value estimation with policy optimization | Actor: ∇θ π, Critic: learns V^π or Q^π | Reduces variance in policy gradients |
+| **DQN** | Off-policy, Model-free | Neural networks + experience replay + target networks | Q-learning with neural network approximation | High-dimensional state spaces, Atari games |
+| **PPO** | On-policy, Model-free | Clipped surrogate objective for stable policy updates | L^{CLIP}(θ) = 𝔼[min(r_t(θ)A_t, clip(r_t(θ))A_t)] | Stable policy optimization, continuous control |
 
-The approximation error for any target function $V^*$ is:
+## Advanced Concepts
 
-$$\|V^* - \Pi V^*\|^2$$
+| **Concept** | **Description** | **Mathematical Formalism** | **Applications/Examples** | **Key Properties** |
+|-------------|-----------------|---------------------------|---------------------------|-------------------|
+| **Function Approximation** | Using parameterized functions to represent V, Q, or π | V_θ(s), Q_θ(s,a), π_θ(a\|s) where θ are parameters | Neural networks, linear functions, tile coding | Enables scaling to large/continuous state spaces |
+| **Experience Replay** | Storing and reusing past transitions to improve sample efficiency | Sample (s,a,r,s') from replay buffer D uniformly | DQN, DDPG, rainbow improvements | Breaks correlation in sequential data, enables off-policy learning |
+| **Target Networks** | Using separate, slowly updated networks for stable learning | θ^- ← τθ + (1-τ)θ^- where τ << 1 | DQN, DDPG for reducing moving target problem | Stabilizes learning by reducing correlation between Q-values and targets |
+| **Eligibility Traces** | Credit assignment mechanism that bridges temporal difference and Monte Carlo | e_t(s) = γλe_{t-1}(s) + 1_{S_t=s} | TD(λ), SARSA(λ) for faster learning | Allows faster propagation of rewards to earlier states |
+| **Multi-Agent RL** | Multiple agents learning simultaneously in shared environment | Nash equilibria, correlated equilibria, social welfare | Game theory, autonomous vehicle coordination, economics | Requires handling non-stationarity from other learning agents |
 
-where $\Pi$ is the projection operator onto the span of the feature space. This error depends critically on how well the features capture the structure of the optimal value function.
+## Fundamental Equations
 
-### Feature Extraction Principles
+**Bellman Equations**
+- **State Value**: V^π(s) = Σ_a π(a|s) Σ_{s',r} p(s',r|s,a)[r + γV^π(s')]
+- **Action Value**: Q^π(s,a) = Σ_{s',r} p(s',r|s,a)[r + γ Σ_{a'} π(a'|s')Q^π(s',a')]
+- **Optimality (State)**: V*(s) = max_a Σ_{s',r} p(s',r|s,a)[r + γV*(s')]
+- **Optimality (Action)**: Q*(s,a) = Σ_{s',r} p(s',r|s,a)[r + γ max_{a'} Q*(s',a')]
 
-Effective feature extraction in RL follows several key principles that distinguish it from supervised learning contexts. RL features must capture not just the current state but also the temporal and causal structure relevant to decision-making.
+**Policy Gradient Theorem**
+∇_θ J(θ) = ∇_θ V^{π_θ}(s_0) = Σ_s μ^{π_θ}(s) Σ_a ∇_θ π_θ(a|s) Q^{π_θ}(s,a)
 
-**Temporal Dependencies**: Unlike static pattern recognition, RL features often need to encode temporal information. Position and velocity in a physical system, or recent history in a partially observable environment, exemplify features that capture temporal structure essential for optimal control.
+where μ^{π_θ}(s) is the stationary distribution under policy π_θ.
 
-**Action-Relevant Information**: Features should emphasize aspects of the state that differentiate between the consequences of different actions. In a trading environment, price trends might be more relevant than absolute prices, as they better predict the outcomes of buy/sell decisions.
+**Temporal Difference Error**
+δ_t = r_{t+1} + γV(s_{t+1}) - V(s_t)
 
-**Hierarchical Structure**: Many environments exhibit hierarchical structure that effective features should capture. Room-based features in navigation tasks, or game-phase indicators in strategic games, provide the appropriate level of abstraction for learning policies.
+This error drives learning in most RL algorithms and represents the difference between expected and actual returns.
 
-The design process involves analyzing the environment dynamics to identify which aspects of the raw state space are most predictive of future rewards under different actions. This analysis guides the construction of feature mappings that balance expressiveness with computational tractability.
+- **Common Challenges & Solutions**
 
-## Mathematical Foundations of Linear Function Approximation
+| **Challenge** | **Problem** | **Solutions** | **Examples** |
+|---------------|-------------|---------------|--------------|
+| **Sample Efficiency** | RL often requires many environment interactions | Model-based methods, experience replay, transfer learning | Dyna-Q, DQN replay buffer, pre-training |
+| **Exploration** | Discovering good policies in large state spaces | Curiosity-driven exploration, count-based bonuses, UCB | ICM, pseudo-counts, optimism under uncertainty |
+| **Stability** | Function approximation can cause instability | Target networks, experience replay, regularization | DQN improvements, PPO clipping |
+| **Sparse Rewards** | Learning with infrequent feedback signals | Reward shaping, hierarchical RL, curriculum learning | HER, Options framework, progressive tasks |
+| **Partial Observability** | Agent cannot fully observe environment state | Recurrent policies, belief state estimation, memory | LSTM policies, particle filters, attention mechanisms |
 
-Linear function approximation forms the theoretical cornerstone for understanding all parametric value function methods. The linearity assumption, while restrictive, provides crucial theoretical guarantees and computational advantages that make it an essential starting point for function approximation in RL.
 
-### Linear Value Function Approximation
 
-In linear function approximation, we represent the value function as a linear combination of basis functions:
+## Function Approximation Fundamentals in Reinforcement Learning
 
-$$V_\theta(s) = \sum_{i=1}^d \phi_i(s) \theta_i = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}$$
+Reinforcement Learning (RL) has made remarkable progress, largely by moving from **tabular methods**, which store values for every state, to **deep learning** approaches that can handle vast, continuous environments. This leap, however, is built upon a critical intermediate step: **classical function approximation**. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, diagnosing its failures, and designing effective agent representations.
 
-where $\boldsymbol{\phi}(s) = [\phi_1(s), \phi_2(s), \ldots, \phi_d(s)]^T$ is the feature vector for state $s$, and $\boldsymbol{\theta} = [\theta_1, \theta_2, \ldots, \theta_d]^T$ contains the learnable parameters.
+Tabular RL is impractical for large or continuous state spaces due to the **curse of dimensionality**. Function approximation overcomes this by learning a parameterized function that generalizes knowledge across similar states. This generalization is both a strength and a challenge. It allows agents to learn in complex worlds but introduces a fundamental tradeoff between **discrimination** (distinguishing important states) and **generalization** (sharing knowledge) that shapes all modern RL algorithms.
 
-Similarly, for action-value functions:
+This appendix bridges the gap between tabular methods and deep RL. We begin with feature engineering, then cover the mathematical principles of linear function approximation, and finally explore classical basis functions like coarse coding, tile coding, and radial basis functions (RBFs).
 
-$$Q_\theta(s,a) = \boldsymbol{\phi}(s,a)^T \boldsymbol{\theta}$$
 
-The linear structure enables efficient updates and provides convergence guarantees under certain conditions. The gradient of the value function with respect to parameters is simply:
+### Feature Engineering and State Representation
 
-$$\nabla_\theta V_\theta(s) = \boldsymbol{\phi}(s)$$
+The success of any RL algorithm hinges on the quality of its state representation. Raw environmental observations are rarely optimal for learning. Effective **feature engineering** transforms high-dimensional, noisy data into a compact, informative format that accelerates learning and improves generalization.
 
-This simple gradient form underlies the computational efficiency of linear methods and explains why they remain relevant even in the era of deep learning.
+### The Discrimination vs. Generalization Tradeoff
 
-### Temporal Difference Learning with Function Approximation
+At the core of feature design is a fundamental tension:
 
-When applying TD learning with linear function approximation, the update rule becomes:
+  * **Discrimination** is the ability to distinguish between states that require different actions or have different values. For example, a robot navigating near a cliff must have features that are highly sensitive to small changes in its position.
+  * **Generalization** is the ability to treat similar states similarly, allowing experiences in one state to inform decisions in others. In the same navigation task, large open areas should be represented similarly so the agent doesn't have to re-learn how to move in each one.
 
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_\theta(S_{t+1}) - V_\theta(S_t)] \boldsymbol{\phi}(S_t)$$
+Mathematically, we approximate a value function $V^\*(s)$ with a parameterized function $V\_{\\boldsymbol{\\theta}}(s)$. Using a linear model, this is expressed as:
 
-This update moves the parameters in the direction that reduces the temporal difference error for the current transition. The key insight is that each update affects the value function globally across all states, weighted by their feature similarity to the current state.
+$$V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta} = \sum_{i=1}^d \phi_i(s) \theta_i$$
 
-For Q-learning with linear function approximation:
+Here, $\\boldsymbol{\\phi}(s)$ is the feature vector for state $s$, and $\\boldsymbol{\\theta}$ is the weight vector we learn. The quality of the approximation depends on how well the features $\\boldsymbol{\\phi}(s)$ can represent the true value function $V^*(s)$. The unavoidable error in the best possible linear approximation is given by $|V^* - \\Pi V^\*|^2$, where $\\Pi$ is the projection operator onto the space spanned by the features. A good feature set minimizes this error.
 
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a'} Q_\theta(S_{t+1}, a') - Q_\theta(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)$$
+- Principles of Feature Extraction
 
-### Convergence Properties and the Deadly Triad
+Effective feature design in RL often involves:
 
-Linear TD methods enjoy strong convergence guarantees under on-policy learning. The fixed-point theorem guarantees that on-policy TD(0) with linear function approximation converges to a unique solution. However, off-policy learning introduces potential instability, particularly when combined with function approximation and bootstrapping—the so-called "deadly triad."
+  * **Encoding Temporal Dependencies**: Features should capture dynamics, such as position and velocity in a physics problem or recent price trends in a trading algorithm.
+  * **Focusing on Action-Relevant Information**: Features should highlight aspects of the state that are critical for making a decision. The shape of a chess position is more important than the specific pieces if the underlying tactical pattern is the same.
+  * **Capturing Hierarchical Structure**: Good features can represent abstract concepts, like "in the kitchen" for a home robot or "opening phase" in a board game, which allows for hierarchical planning and learning.
 
-The projection matrix $\mathbf{P}$ onto the feature space plays a crucial role in understanding convergence. For a feature matrix $\boldsymbol{\Phi}$ with rows $\boldsymbol{\phi}(s)^T$, the projection is:
 
-$$\mathbf{P} = \boldsymbol{\Phi}(\boldsymbol{\Phi}^T \mathbf{D} \boldsymbol{\Phi})^{-1}\boldsymbol{\Phi}^T \mathbf{D}$$
+- Mathematical Foundations of Linear Function Approximation
 
-where $\mathbf{D}$ is a diagonal matrix of state visitation probabilities. The TD fixed point is:
+Linear function approximation is the cornerstone of parametric value function methods. Its simplicity provides theoretical guarantees and computational efficiency, making it an essential starting point.
 
-$$\boldsymbol{\theta}^* = (\boldsymbol{\Phi}^T \mathbf{D} \boldsymbol{\Phi})^{-1} \boldsymbol{\Phi}^T \mathbf{D} \mathbf{T}^{\pi} \mathbf{v}$$
+- Linear Value Functions
 
-where $\mathbf{T}^{\pi}$ is the Bellman operator for policy $\pi$.
+We represent the state-value function $V(s)$ or action-value function $Q(s, a)$ as a linear combination of features:
+$$V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}$$
+$$Q_{\boldsymbol{\theta}}(s, a) = \boldsymbol{\phi}(s, a)^T \boldsymbol{\theta}$$
+A key advantage is that the gradient of the value function with respect to the parameters is simply the feature vector itself:
+$$\nabla_{\boldsymbol{\theta}} V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)$$
+This property makes learning algorithms based on gradient descent straightforward and computationally cheap.
 
-## Classical Basis Function Methods
+- Temporal Difference (TD) Learning with Function Approximation
 
-Classical basis function methods provide systematic approaches to constructing feature representations that balance computational efficiency with representational power. These methods form the bridge between tabular representations and modern deep learning approaches.
+With linear function approximation, the **TD(0)** update rule for learning $V\_{\\boldsymbol{\\theta}}(s)$ becomes:
+$$\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_{\boldsymbol{\theta}}(S_{t+1}) - V_{\boldsymbol{\theta}}(S_t)] \boldsymbol{\phi}(S_t)$$
+This update adjusts the weights $\\boldsymbol{\\theta}$ to reduce the TD error for the observed transition. Since the value of any state depends on the shared weights $\\boldsymbol{\\theta}$, this single update influences the value estimates across the entire state space.
 
-### Coarse Coding
+Similarly, the update for **Q-learning** is:
+$$\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a'} Q_{\boldsymbol{\theta}}(S_{t+1}, a') - Q_{\boldsymbol{\theta}}(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)$$
 
-Coarse coding represents one of the most intuitive and widely applicable basis function methods. The core idea is to use overlapping, binary-valued features that divide the state space into coarse regions, with each feature active across multiple regions.
+- Convergence and the "Deadly Triad"
 
-**Mathematical Formulation**: For a continuous state space, coarse coding defines a set of regions $\{R_1, R_2, \ldots, R_d\}$ and corresponding indicator functions:
+While on-policy TD learning with linear function approximation is guaranteed to converge, stability is not assured under all conditions. The combination of **off-policy learning**, **function approximation**, and **bootstrapping** (updating estimates from other estimates) is known as the **"deadly triad"** and can lead to divergence, where the value estimates grow uncontrollably. This instability is a fundamental challenge that motivated much of the research leading to modern deep RL algorithms like DQN, which employ techniques like experience replay and target networks to mitigate it.
 
-$$\phi_i(s) = \begin{cases} 
-1 & \text{if } s \in R_i \\
-0 & \text{otherwise}
-\end{cases}$$
 
-The key insight is that regions should overlap significantly, so that nearby states activate similar sets of features, enabling generalization, while distant states activate different feature combinations, preserving discrimination.
+### Classical Basis Function Methods
 
-**Generalization Properties**: The degree of overlap between regions controls the generalization properties. If two states share $k$ active features out of $d$ total features, the similarity in their value estimates is proportional to $k/d$. This provides explicit control over the smoothness of the learned function.
+Basis functions are systematic methods for constructing features. They provide a bridge from simple linear models to the powerful, automatically-learned features of neural networks.
 
-**Implementation Example**: In a 2D navigation task, circular regions of radius $r$ placed on a grid with spacing $s < r$ create overlapping coarse coding. The number of active features for any state is approximately constant, and the degree of overlap is controlled by the ratio $r/s$.
+- Coarse Coding
+
+**Coarse coding** uses overlapping binary features, where each feature corresponds to a "receptive field" or region in the state space. A feature is active (value 1) if the state falls within its region and inactive (0) otherwise. The overlap between regions enables generalization: nearby states activate a similar set of features, so they receive similar value estimates.
+
+The degree of overlap controls the smoothness of the learned function. More overlap leads to broader generalization.
 
 ```{r}
-# Coarse Coding Implementation in R with Visualization
-create_coarse_coding <- function(state_dims, num_features, overlap_factor = 2) {
-  state_dims <- as.numeric(state_dims)
-  
-  # Generate random centers for coarse coding regions within [0, dim1] x [0, dim2]
-  centers <- matrix(
-    c(runif(num_features, 0, state_dims[1]),
-      runif(num_features, 0, state_dims[2])),
-    nrow = num_features, ncol = 2, byrow = FALSE
+# Load necessary libraries for all visualizations
+library(ggplot2)
+library(ggforce) # For drawing circles
+
+# --- Coarse Coding Implementation ---
+create_coarse_coder <- function(state_dims, num_features, overlap_factor = 2) {
+  # Generate random centers for the receptive fields
+  centers <- data.frame(
+    x = runif(num_features, 0, state_dims[1]),
+    y = runif(num_features, 0, state_dims[2])
   )
   
-  # Estimate average spacing and set radius for overlap
-  avg_spacing <- (prod(state_dims) / num_features)^(1/2)  # for 2D
-  radius <- overlap_factor * avg_spacing / 2  # Adjusted for circle coverage
+  # Calculate radius based on average spacing to ensure overlap
+  avg_spacing <- sqrt(prod(state_dims) / num_features)
+  radius <- overlap_factor * avg_spacing / 2
   
-  # Feature computation function
+  # Function to compute the binary feature vector for a given state
   compute_features <- function(state) {
-    distances <- sqrt(rowSums((centers - matrix(rep(state, num_features), 
-                              nrow = num_features, byrow = TRUE))^2))
-    as.numeric(distances <= radius)
+    state_vec <- as.numeric(state)
+    distances <- sqrt((centers$x - state_vec[1])^2 + (centers$y - state_vec[2])^2)
+    features <- as.numeric(distances <= radius)
+    return(features)
   }
   
   return(list(
@@ -142,313 +205,240 @@ create_coarse_coding <- function(state_dims, num_features, overlap_factor = 2) {
   ))
 }
 
-# Visualization function for 2D coarse coding
-visualize_coarse_coding <- function(coarse_coder, state = NULL, show_centers = TRUE) {
-  if (length(coarse_coder$state_dims) != 2) {
-    stop("Visualization only supported for 2D state spaces.")
-  }
+# --- Visualization Function for Coarse Coding ---
+visualize_coarse_coding <- function(coarse_coder, state = NULL) {
+  active_features <- if (!is.null(state)) coarse_coder$compute_features(state) else NULL
+  active_indices <- if (!is.null(active_features)) which(active_features == 1) else integer(0)
   
-  centers <- coarse_coder$centers
-  radius <- coarse_coder$radius
-  state_dims <- coarse_coder$state_dims
-  num_features <- nrow(centers)
-  
-  # Set up plot
-  plot(NA, xlim = c(0, state_dims[1]), ylim = c(0, state_dims[2]),
-       xlab = "State Dimension 1", ylab = "State Dimension 2",
-       main = "Coarse Coding: Receptive Fields and Active Regions")
-  grid()
-  
-  # Draw each receptive field (circle)
-  for (i in 1:num_features) {
-    center <- centers[i, ]
-    # Create circle
-    theta <- seq(0, 2*pi, length.out = 50)
-    x_circle <- center[1] + radius * cos(theta)
-    y_circle <- center[2] + radius * sin(theta)
-    lines(x_circle, y_circle, col = "gray", lty = 1, lwd = 1)
-  }
-  
-  if (show_centers) {
-    points(centers[, 1], centers[, 2], pch = 19, col = "gray30", cex = 0.8)
-  }
-  
-  # If a state is provided, compute active features and highlight them
-  if (!is.null(state)) {
-    features <- coarse_coder$compute_features(state)
-    active_indices <- which(features == 1)
-    
+  p <- ggplot() +
+    # Draw all receptive fields (inactive)
+    geom_circle(
+      data = coarse_coder$centers,
+      aes(x0 = x, y0 = y, r = coarse_coder$radius),
+      color = "grey70", fill = NA, linetype = "dashed"
+    ) +
     # Highlight active receptive fields
-    for (i in active_indices) {
-      center <- centers[i, ]
-      theta <- seq(0, 2*pi, length.out = 50)
-      x_circle <- center[1] + radius * cos(theta)
-      y_circle <- center[2] + radius * sin(theta)
-      lines(x_circle, y_circle, col = "red", lwd = 2)
-    }
-    
-    # Plot the query state
-    points(state[1], state[2], pch = 17, col = "blue", cex = 1.8, lwd = 2)
-    text(state[1], state[2] + 0.3, labels = "State", col = "blue", cex = 0.9)
-    
-    # Add legend
-    legend("topright", 
-           legend = c("Receptive Field", "Active Field", "Center", "State"),
-           lty = c(1, 1, NA, NA),
-           col = c("gray", "red", "gray30", "blue"),
-           pch = c(NA, NA, 19, 17),
-           lwd = c(1, 2, 1, 1),
-           pt.cex = c(1,1,0.8,1),
-           bty = "n", cex = 0.8)
-    
-    # Print active count on plot
-    title(sub = paste(sum(features), "active features out of", num_features))
+    geom_circle(
+      data = coarse_coder$centers[active_indices, ],
+      aes(x0 = x, y0 = y, r = coarse_coder$radius),
+      color = "#e41a1c", fill = "#e41a1c", alpha = 0.2, size = 1
+    ) +
+    # Add center points
+    geom_point(data = coarse_coder$centers, aes(x = x, y = y), color = "grey50", size = 1)
+  
+  # Add the query state point
+  if (!is.null(state)) {
+    p <- p + geom_point(aes(x = state[1], y = state[2]), color = "#377eb8", size = 5, shape = 17)
   }
+  
+  p +
+    coord_fixed(xlim = c(0, coarse_coder$state_dims[1]), ylim = c(0, coarse_coder$state_dims[2])) +
+    labs(
+      title = "Coarse Coding Receptive Fields",
+      subtitle = paste(length(active_indices), "of", nrow(coarse_coder$centers), "features active"),
+      x = "State Dimension 1",
+      y = "State Dimension 2"
+    ) +
+    theme_minimal(base_size = 14)
 }
 
-# Example usage
-set.seed(123)  # For reproducible centers
-coarse_coder <- create_coarse_coding(c(10, 10), 50, overlap_factor = 1.5)
-features <- coarse_coder$compute_features(c(3.2, 7.8))
-
-# Print summary
-print(paste("Active features:", sum(features), "out of", length(features)))
-
-# Visualize
-visualize_coarse_coding(coarse_coder, state = c(3.2, 7.8), show_centers = TRUE)
+# Example Usage
+set.seed(123)
+coarse_coder_2d <- create_coarse_coder(state_dims = c(10, 10), num_features = 50, overlap_factor = 1.5)
+visualize_coarse_coding(coarse_coder_2d, state = c(3.2, 7.8))
 ```
 
-### Tile Coding
+- Tile Coding
 
-Tile coding represents a systematic refinement of coarse coding that provides more uniform coverage and predictable generalization properties. It partitions the state space using multiple overlapping grids (tilings), with each grid offset to ensure comprehensive coverage.
+**Tile coding**, also known as CMAC (Cerebellar Model Articulation Controller), improves upon coarse coding by providing more structured and uniform coverage. It partitions the state space using multiple overlapping grids, called **tilings**. Each tiling is offset from the others. For any given state, exactly one tile in each tiling will be active. This ensures a constant number of active features, which is computationally efficient.
 
-**Mathematical Framework**: Tile coding uses $n$ tilings, each partitioning the state space into a regular grid. For a $d$-dimensional state space, tiling $i$ creates regions:
-
-$$T_{i,\mathbf{j}}(s) = \prod_{k=1}^d \mathbf{1}_{[a_{i,k,j_k}, a_{i,k,j_k+1})}(s_k)$$
-
-where $\mathbf{j} = (j_1, j_2, \ldots, j_d)$ indexes the tile within tiling $i$, and $a_{i,k,j_k}$ defines the boundaries for dimension $k$.
-
-The feature vector has exactly $n$ active features (one per tiling), providing both computational efficiency and uniform generalization. The offsets between tilings are typically chosen to be incommensurate to ensure good coverage properties.
-
-**Asymmetric Generalization**: Unlike circular coarse coding, tile coding provides asymmetric generalization that respects the natural coordinate system of the problem. This makes it particularly suitable for control problems where state dimensions have different physical meanings.
+The offsets provide fine-grained discrimination, while the tile size controls generalization. Unlike coarse coding with circular fields, tile coding's rectangular tiles create **asymmetric generalization** that aligns with the coordinate axes, which is often desirable in control problems where dimensions represent different physical properties (e.g., position and velocity).
 
 ```{r}
-# Tile Coding Implementation with Visualization
-create_tile_coding <- function(state_low, state_high, num_tilings, tiles_per_dim) {
+# --- Tile Coding Implementation ---
+create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim) {
   state_dims <- length(state_low)
   state_range <- state_high - state_low
-  tile_width <- state_range / tiles_per_dim
+  tile_widths <- state_range / tiles_per_dim
   
-  # Generate random offsets for each tiling
-  offsets <- matrix(runif(num_tilings * state_dims, 0, tile_width), 
-                    nrow = num_tilings, ncol = state_dims)
+  # Generate offsets for each tiling
+  offsets <- sapply(1:state_dims, function(i) {
+    (1:num_tilings - 1) * tile_widths[i] / num_tilings
+  })
   
-  compute_features <- function(state) {
-    features <- rep(0, num_tilings * prod(tiles_per_dim))
-    
-    for (tiling in 1:num_tilings) {
-      # Apply offset and compute tile indices
-      offset_state <- pmax(pmin(state - offsets[tiling, ], state_high), state_low)
-      tile_indices <- pmin(floor((offset_state - state_low) / tile_width), 
-                           tiles_per_dim - 1) + 1
-      
-      # Convert multi-dimensional index to linear index
-      linear_index <- 1
-      multiplier <- 1
-      for (dim in 1:state_dims) {
-        linear_index <- linear_index + (tile_indices[dim] - 1) * multiplier
-        multiplier <- multiplier * tiles_per_dim[dim]
-      }
-      
-      # Activate corresponding feature
-      feature_index <- (tiling - 1) * prod(tiles_per_dim) + linear_index
-      features[feature_index] <- 1
+  # Function to get the indices of active tiles for a given state
+  get_active_tiles <- function(state) {
+    active_tiles <- list()
+    for (t in 1:num_tilings) {
+      tile_indices <- floor((state - state_low + offsets[t, ]) / tile_widths)
+      active_tiles[[t]] <- tile_indices
     }
-    
-    return(features)
+    return(active_tiles)
   }
   
-  # Return offsets for visualization purposes
   return(list(
-    compute_features = compute_features,
-    num_features = num_tilings * prod(tiles_per_dim),
-    offsets = offsets,
+    get_active_tiles = get_active_tiles,
     state_low = state_low,
     state_high = state_high,
+    num_tilings = num_tilings,
     tiles_per_dim = tiles_per_dim,
-    tile_width = tile_width
+    tile_widths = tile_widths,
+    offsets = offsets
   ))
 }
 
-# Visualization function for 2D tile codings
-visualize_tilings <- function(tile_coder, state = NULL, show_state = TRUE) {
-  if (length(tile_coder$state_low) != 2) {
-    stop("Visualization only supported for 2D state spaces.")
+# --- Visualization Function for Tile Coding ---
+visualize_tile_coding <- function(tile_coder, state = NULL) {
+  if (length(tile_coder$state_low) != 2) stop("Visualization is for 2D state spaces only.")
+  
+  # Create a data frame of grid lines for each tiling
+  grids <- list()
+  for (t in 1:tile_coder$num_tilings) {
+    # Vertical lines
+    x_lines <- seq(
+      tile_coder$state_low[1] - tile_coder$offsets[t, 1],
+      tile_coder$state_high[1],
+      by = tile_coder$tile_widths[1]
+    )
+    # Horizontal lines
+    y_lines <- seq(
+      tile_coder$state_low[2] - tile_coder$offsets[t, 2],
+      tile_coder$state_high[2],
+      by = tile_coder$tile_widths[2]
+    )
+    grids[[t]] <- list(x = x_lines, y = y_lines)
   }
   
-  state_low <- tile_coder$state_low
-  state_high <- tile_coder$state_high
-  tiles_per_dim <- tile_coder$tiles_per_dim
-  tile_width <- tile_coder$tile_width
-  offsets <- tile_coder$offsets
-  num_tilings <- nrow(offsets)
+  # Base plot
+  p <- ggplot() +
+    coord_fixed(
+      xlim = tile_coder$state_low,
+      ylim = tile_coder$state_high,
+      expand = FALSE
+    )
   
-  # Set up plot
-  plot(state_high[1] + tile_width[1], state_high[2] + tile_width[2], 
-       type = 'n', xlim = c(state_low[1], state_high[1] + tile_width[1]), 
-       ylim = c(state_low[2], state_high[2] + tile_width[2]),
-       xlab = "State Dimension 1", ylab = "State Dimension 2",
-       main = "Tile Coding: Active Tiles per Tiling")
-  grid()
+  # Add grid lines for each tiling with a unique color
+  colors <- RColorBrewer::brewer.pal(tile_coder$num_tilings, "Set1")
+  for (t in 1:tile_coder$num_tilings) {
+    p <- p +
+      geom_vline(xintercept = grids[[t]]$x, color = colors[t], linetype = "dashed", alpha = 0.8) +
+      geom_hline(yintercept = grids[[t]]$y, color = colors[t], linetype = "dashed", alpha = 0.8)
+  }
   
-  # Define colors for each tiling
-  colors <- rainbow(num_tilings)
-  
-  # Draw each tiling's grid and highlight active tile if state is given
+  # Highlight the active tile for each tiling
   if (!is.null(state)) {
-    features <- tile_coder$compute_features(state)
-  } else {
-    features <- NULL
-  }
-  
-  for (tiling in 1:num_tilings) {
-    offset <- offsets[tiling, ]
-    color <- colors[tiling]
-    
-    # Draw grid lines for this tiling
-    x_ticks <- seq(state_low[1] - offset[1], state_high[1] + tile_width[1], 
-                   by = tile_width[1])
-    y_ticks <- seq(state_low[2] - offset[2], state_high[2] + tile_width[2], 
-                   by = tile_width[2])
-    
-    # Draw vertical lines
-    for (x in x_ticks) {
-      lines(c(x, x), c(state_low[2] - offset[2], state_high[2] + tile_width[2]), 
-            col = color, lty = 2, lwd = 1)
-    }
-    # Draw horizontal lines
-    for (y in y_ticks) {
-      lines(c(state_low[1] - offset[1], state_high[1] + tile_width[1]), c(y, y), 
-            col = color, lty = 2, lwd = 1)
-    }
-    
-    # If state is provided, compute and highlight active tile
-    if (!is.null(state)) {
-      offset_state <- pmax(pmin(state - offset, state_high), state_low)
-      tile_idx <- floor((offset_state - state_low) / tile_width) + 1
-      tile_idx <- pmin(tile_idx, tiles_per_dim)
+    active_tiles_indices <- tile_coder$get_active_tiles(state)
+    for (t in 1:tile_coder$num_tilings) {
+      tile_xmin <- tile_coder$state_low[1] + active_tiles_indices[[t]][1] * tile_coder$tile_widths[1] - tile_coder$offsets[t, 1]
+      tile_ymin <- tile_coder$state_low[2] + active_tiles_indices[[t]][2] * tile_coder$tile_widths[2] - tile_coder$offsets[t, 2]
       
-      # Compute bottom-left corner of the active tile
-      tile_start <- state_low + (tile_idx - 1) * tile_width
-      tile_end <- tile_start + tile_width
-      
-      # Highlight active tile
-      rect(tile_start[1], tile_start[2], tile_end[1], tile_end[2],
-           col = adjustcolor(color, alpha.f = 0.3), border = color, lwd = 2)
+      p <- p + annotate(
+        "rect",
+        xmin = tile_xmin,
+        xmax = tile_xmin + tile_coder$tile_widths[1],
+        ymin = tile_ymin,
+        ymax = tile_ymin + tile_coder$tile_widths[2],
+        fill = colors[t], alpha = 0.3, color = colors[t], size = 1.2
+      )
     }
+    p <- p + geom_point(aes(x = state[1], y = state[2]), color = "black", size = 5, shape = 17)
   }
   
-  # Add legend
-  legend("topright", legend = paste("Tiling", 1:num_tilings), 
-         fill = adjustcolor(colors, alpha.f = 0.3), bty = "n", cex = 0.8)
-  
-  # Plot the state point
-  if (show_state && !is.null(state)) {
-    points(state[1], state[2], pch = 19, col = "black", cex = 1.5)
-    text(state[1] + 0.02, state[2], labels = "State", pos = 4)
-  }
+  p + labs(
+    title = "Tile Coding",
+    subtitle = paste(tile_coder$num_tilings, "Overlapping Tilings"),
+    x = "State Dimension 1",
+    y = "State Dimension 2"
+  ) +
+    theme_minimal(base_size = 14)
 }
 
-# Example: 2D state space with 4 tilings, 8x8 tiles each
-tile_coder <- create_tile_coding(c(0, 0), c(1, 1), 4, c(8, 8))
-features <- tile_coder$compute_features(c(0.3, 0.7))
-
-# Print summary
-print(paste("Total features:", tile_coder$num_features))
-print(paste("Active features:", sum(features)))
-
-# Visualize
-visualize_tilings(tile_coder, state = c(0.3, 0.7), show_state = TRUE)
+# Example Usage
+tile_coder_2d <- create_tile_coder(
+  state_low = c(0, 0),
+  state_high = c(10, 10),
+  num_tilings = 4,
+  tiles_per_dim = c(5, 5)
+)
+visualize_tile_coding(tile_coder_2d, state = c(3.2, 7.8))
 ```
 
-### Radial Basis Functions
+- Radial Basis Functions (RBFs)
 
-Radial Basis Functions (RBFs) provide smooth, continuous basis functions that offer fine-grained control over local approximation properties. Unlike the binary activations of coarse coding, RBFs produce graded responses that decrease with distance from center points.
-
-**Mathematical Definition**: An RBF network uses basis functions of the form:
+**Radial Basis Functions (RBFs)** are smooth, continuous basis functions that produce a graded response based on the distance to a center point. The most common form is the Gaussian RBF:
 
 $$\phi_i(s) = \exp\left(-\frac{\|s - c_i\|^2}{2\sigma_i^2}\right)$$
 
-where $c_i$ is the center of the $i$-th basis function and $\sigma_i$ controls its width. The Gaussian form ensures smooth derivatives and localized influence.
+Here, $c\_i$ is the center of the $i$-th RBF and $\\sigma\_i$ is its width (or bandwidth). Unlike binary features, RBFs provide a continuous measure of similarity. The width $\\sigma$ controls the locality of influence: a small $\\sigma$ creates a "spiky" function with local generalization, while a large $\\sigma$ creates a smooth function with broad generalization.
 
-**Approximation Properties**: RBF networks are universal approximators, meaning they can approximate any continuous function to arbitrary accuracy with sufficient basis functions. The approximation quality depends on the placement of centers and the choice of widths.
-
-For optimal approximation, centers should be distributed to match the complexity of the target function, with higher density in regions of rapid change. The width parameter $\sigma_i$ controls the locality of influence—smaller values create more localized basis functions that provide finer discrimination but may require more functions for coverage.
-
-**Adaptive Placement**: Advanced RBF methods adaptively place centers based on the data distribution or approximation error. Common strategies include:
-- K-means clustering to place centers at data centroids
-- Error-driven placement in regions of high approximation error
-- Incremental addition of basis functions during learning
+RBF networks are **universal approximators**, meaning they can represent any continuous function with arbitrary accuracy, given enough basis functions. The placement of centers and choice of widths are critical. Centers can be placed on a fixed grid, randomly, or adapted during learning using techniques like k-means clustering on experienced states.
 
 ```{r}
-# Radial Basis Function Implementation
+# --- Radial Basis Function (RBF) Implementation ---
 create_rbf_network <- function(centers, sigmas) {
-  num_centers <- nrow(centers)
+  if (is.vector(sigmas)) {
+    sigmas <- rep(sigmas[1], nrow(centers))
+  }
   
   compute_features <- function(state) {
-    features <- numeric(num_centers)
-    for (i in 1:num_centers) {
-      distance_sq <- sum((state - centers[i, ])^2)
-      features[i] <- exp(-distance_sq / (2 * sigmas[i]^2))
-    }
+    state_vec <- as.numeric(state)
+    distances_sq <- colSums((t(centers) - state_vec)^2)
+    features <- exp(-distances_sq / (2 * sigmas^2))
     return(features)
   }
   
-  return(list(compute_features = compute_features, num_features = num_centers))
+  return(list(
+    compute_features = compute_features,
+    centers = centers,
+    sigmas = sigmas
+  ))
 }
 
-# Example: Create RBF network for 2D space
+# --- Visualization Function for RBF Network Activation ---
+visualize_rbf_activation <- function(rbf_network, state_dims) {
+  # Create a grid of points to evaluate the RBF network
+  grid_df <- expand.grid(
+    x = seq(0, state_dims[1], length.out = 100),
+    y = seq(0, state_dims[2], length.out = 100)
+  )
+  
+  # Calculate the sum of all RBF activations at each grid point
+  activations <- apply(grid_df, 1, function(point) {
+    sum(rbf_network$compute_features(point))
+  })
+  grid_df$activation <- activations
+  
+  ggplot(grid_df, aes(x = x, y = y, fill = activation)) +
+    geom_raster(interpolate = TRUE) +
+    geom_point(data = as.data.frame(rbf_network$centers), aes(x = V1, y = V2), 
+               color = "white", shape = 3, size = 2, alpha = 0.8) +
+    scale_fill_viridis_c(name = "Total\nActivation") +
+    coord_fixed(expand = FALSE) +
+    labs(
+      title = "Radial Basis Function Network Activation",
+      subtitle = "White crosses indicate RBF centers",
+      x = "State Dimension 1",
+      y = "State Dimension 2"
+    ) +
+    theme_minimal(base_size = 14)
+}
+
+# Example Usage
 set.seed(42)
-centers <- matrix(runif(20, 0, 1), nrow = 10, ncol = 2)
-sigmas <- rep(0.2, 10)
-rbf_network <- create_rbf_network(centers, sigmas)
+rbf_centers <- matrix(runif(20, 0, 10), nrow = 10, ncol = 2)
+rbf_sigmas <- rep(2.0, 10) # Uniform width for all RBFs
+rbf_net <- create_rbf_network(centers = rbf_centers, sigmas = rbf_sigmas)
 
-# Test feature computation
-test_state <- c(0.5, 0.5)
-features <- rbf_network$compute_features(test_state)
-print(paste("Sum of RBF activations:", round(sum(features), 3)))
-
-# Visualize RBF activation pattern
-library(ggplot2)
-grid_points <- expand.grid(x = seq(0, 1, 0.02), y = seq(0, 1, 0.02))
-activations <- apply(grid_points, 1, function(point) sum(rbf_network$compute_features(point)))
-grid_points$activation <- activations
-
-ggplot(grid_points, aes(x = x, y = y, fill = activation)) +
-  geom_raster() +
-  scale_fill_viridis_c() +
-  labs(title = "RBF Network Activation Pattern") +
-  theme_minimal()
+visualize_rbf_activation(rbf_net, state_dims = c(10, 10))
 ```
 
-## Practical Considerations and Implementation Guidelines
+The choice of basis function depends on the problem, computational budget, and desired generalization properties.
 
-The choice between different basis function methods depends on problem characteristics, computational constraints, and desired generalization properties. Each method offers distinct advantages for different scenarios.
+  * **Computational Efficiency**: **Tile coding** is often the fastest, as it involves simple arithmetic and guarantees a fixed, small number of active features. Coarse coding can be slower if it requires checking against many overlapping regions. RBFs are typically the most expensive, as they require distance calculations to all centers.
+  * **Memory Requirements**: A tile coder with $N$ tilings and $T$ tiles per tiling has $N \\times T$ features. RBFs require storing all centers and widths. The memory footprint depends on the number of basis functions needed for the desired accuracy.
+  * **Generalization Control**: **RBFs** offer the most fine-grained control over generalization through the placement of centers and tuning of widths. **Tile coding** provides structured, axis-aligned generalization controlled by the number and shape of tiles. **Coarse coding** is the most straightforward but offers the least precise control.
+  * **Ease of Use**: Tile coding is often a strong default choice for low-to-medium dimensional control problems due to its computational efficiency and robust performance with minimal tuning.
 
-**Computational Efficiency**: Tile coding provides the most computationally efficient option, with exactly $n$ active features per state evaluation. Coarse coding requires checking membership in all regions, while RBF networks require computing distances to all centers. For real-time applications, tile coding often provides the best performance trade-off.
+Linear function approximation and classical basis functions are not merely historical footnotes; they are the conceptual foundation upon which deep RL is built. They provide a clear and analyzable framework for understanding the core challenge of RL: balancing discrimination and generalization. The principles of feature design, the mathematics of TD updates, and the properties of different basis functions offer crucial insights that remain relevant when designing, training, and debugging complex neural network architectures.
 
-**Memory Requirements**: The memory footprint varies significantly across methods. Tile coding with $n$ tilings and $k$ tiles per tiling requires $n \times k$ parameters. Sparse methods like coarse coding can be more memory-efficient when most regions are inactive, while dense RBF networks require storage for all basis function parameters.
-
-**Generalization Control**: RBF networks offer the finest control over generalization properties through center placement and width selection. Tile coding provides intermediate control through tiling structure and offset choices. Coarse coding offers the least precise control but is often sufficient for many applications.
-
-**Problem-Specific Considerations**: Navigation and control problems often benefit from tile coding's respect for coordinate structure. Pattern recognition tasks may favor RBF networks' smooth generalization. Problems with sparse features or irregular state spaces might benefit from adaptive coarse coding approaches.
-
-The integration of these classical methods with modern deep learning approaches represents an active area of research. Hybrid architectures that combine learned representations with structured basis functions offer promising directions for improving sample efficiency and interpretability in deep RL.
-
-## Conclusion
-
-Function approximation fundamentals provide the essential bridge between the theoretical guarantees of tabular RL and the practical power of modern deep methods. Linear function approximation, despite its limitations, offers crucial insights into convergence properties and stability that inform the design of more complex algorithms. Classical basis function methods—coarse coding, tile coding, and radial basis functions—demonstrate systematic approaches to feature construction that remain relevant for understanding and improving modern RL systems.
-
-The discrimination versus generalization tradeoff lies at the heart of all function approximation methods. Understanding this tradeoff through the lens of classical basis functions provides intuition that translates directly to neural network design and training. The mathematical frameworks developed here establish the theoretical foundation for analyzing convergence, stability, and approximation quality in any parametric value function method.
-
-As RL continues to tackle increasingly complex domains, the principles explored in this discussion remain fundamental. Whether designing neural network architectures, selecting training procedures, or debugging learning failures, the insights from linear methods and classical basis functions provide essential tools for the modern RL practitioner. The journey from tabular to deep RL passes necessarily through these foundational concepts, making their mastery crucial for anyone serious about understanding and advancing reinforcement learning.
+Mastering these fundamentals provides the intuition needed to navigate the complexities of modern RL. The journey from tabular methods to deep learning necessarily passes through this foundational territory, making it essential knowledge for any serious RL practitioner.
