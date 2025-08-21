@@ -129,6 +129,7 @@ exploration-pattern-analysis
 example-visualizing-exploration-bonuses
 discussion-and-implementation-considerations
 conclusion-6
+<<<<<<< HEAD
 appendix
 comprehensive-reinforcement-learning-concepts-guide
 learning-mechanisms
@@ -142,3 +143,21 @@ function-approximation-fundamentals-in-reinforcement-learning
 feature-engineering-and-state-representation
 the-discrimination-vs.-generalization-tradeoff
 classical-basis-function-methods
+=======
+function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods
+introduction-9
+feature-engineering-and-state-representation
+the-discrimination-vs-generalization-tradeoff
+feature-extraction-principles
+mathematical-foundations-of-linear-function-approximation
+linear-value-function-approximation
+temporal-difference-learning-with-function-approximation
+convergence-properties-and-the-deadly-triad
+classical-basis-function-methods
+coarse-coding
+tile-coding
+radial-basis-functions
+practical-considerations-and-implementation-guidelines
+conclusion-7
+appendix-function-approximation-fundamentals-in-reinforcement-learning-bridging-tabular-and-deep-methods
+>>>>>>> bc15c6f6b9a6b49246744c6e0c296232b6dc2f9f
