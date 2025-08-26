@@ -36,7 +36,7 @@ This ensures logarithmic regret in expectation.
 
 ### R Code for UCB1
 
-```r
+```{r}
 set.seed(42)
 K <- 3
 T <- 1000
@@ -86,7 +86,7 @@ The Thompson Sampling algorithm draws a sample $\tilde{\mu}_k \sim \text{Beta}(\
 
 ### R Code for Thompson Sampling
 
-```r
+```{r}
 set.seed(42)
 alpha <- rep(1, K)
 beta <- rep(1, K)
@@ -102,6 +102,8 @@ for (t in 1:T) {
 }
 
 cum_regret_ts <- cumsum(regret)
+plot(cum_regret_ucb, type = "l", col = "blue", lwd = 2, 
+     ylab = "Cumulative Regret", xlab = "Time", main = "UCB1 Regret")
 lines(cum_regret_ts, col = "red", lwd = 2)
 legend("topright", legend = c("UCB1", "Thompson Sampling"), 
        col = c("blue", "red"), lwd = 2)
@@ -139,7 +141,7 @@ Regret under a fixed $\epsilon$ is linear in $T$, i.e., $\mathcal{R}(T) = O(T)$,
 
 ### R Code for Epsilon-Greedy
 
-```r
+```{r}
 set.seed(42)
 epsilon <- 0.1
 counts <- rep(0, K)
@@ -159,6 +161,8 @@ for (t in 1:T) {
 }
 
 cum_regret_eps <- cumsum(regret)
+plot(cum_regret_ucb, type = "l", col = "blue", lwd = 2, 
+     ylab = "Cumulative Regret", xlab = "Time", main = "UCB1 Regret")
 lines(cum_regret_eps, col = "darkgreen", lwd = 2)
 legend("topright", legend = c("UCB1", "Thompson Sampling", "Epsilon-Greedy"), 
        col = c("blue", "red", "darkgreen"), lwd = 2)
