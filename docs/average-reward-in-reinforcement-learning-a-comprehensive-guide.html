@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R</title>
-  <meta name="description" content="Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R" />
+  <title>Chapter 12 Average Reward in Reinforcement Learning: A Comprehensive Guide | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 12 Average Reward in Reinforcement Learning: A Comprehensive Guide | Reinforcement Learning in R" />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R" />
+  <meta property="og:title" content="Chapter 12 Average Reward in Reinforcement Learning: A Comprehensive Guide | Reinforcement Learning in R" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R | Reinforcement Learning in R" />
+  <meta name="twitter:title" content="Chapter 12 Average Reward in Reinforcement Learning: A Comprehensive Guide | Reinforcement Learning in R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="markov-decision-processes-and-dynamic-programming.html"/>
-<link rel="next" href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"/>
+<link rel="prev" href="learning-policies-versus-learning-values.html"/>
+<link rel="next" href="appendix.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -397,251 +397,264 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r" class="section level1 hasAnchor" number="4">
-<h1><span class="header-section-number">Chapter 4</span> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="introduction-2" class="section level2 hasAnchor" number="4.1">
-<h2><span class="header-section-number">4.1</span> Introduction<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In many real-world decision-making problems, the environment model—comprising transition probabilities and reward functions—is unknown or too complex to specify explicitly. Model-free reinforcement learning (RL) methods address this by learning optimal policies directly from experience or sample trajectories, without requiring full knowledge of the underlying Markov Decision Process (MDP).</p>
-<p>Two foundational model-free methods are <strong>Temporal Difference (TD) learning</strong> and <strong>Monte Carlo (MC) methods</strong>. TD learning updates value estimates online based on one-step lookahead and bootstrapping, while MC methods learn from complete episodes by averaging returns. This post presents these approaches with mathematical intuition, R implementations, and an illustrative environment. We also compare how learned policies adapt—or fail to adapt—when rewards are changed after training, illuminating the distinction between goal-directed and habitual learning.</p>
+<div id="average-reward-in-reinforcement-learning-a-comprehensive-guide" class="section level1 hasAnchor" number="12">
+<h1><span class="header-section-number">Chapter 12</span> Average Reward in Reinforcement Learning: A Comprehensive Guide<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#average-reward-in-reinforcement-learning-a-comprehensive-guide" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The overwhelming majority of reinforcement learning (RL) literature centers on maximizing discounted cumulative rewards. This approach, while mathematically elegant and computationally convenient, represents just one way to formalize sequential decision-making problems. For many real-world applications—particularly those involving continuous operation without natural episode boundaries—an alternative formulation based on average reward per time step offers both theoretical advantages and practical benefits that deserve serious consideration.</p>
+<div id="the-limitations-of-discounted-reward-formulations" class="section level2 hasAnchor" number="12.1">
+<h2><span class="header-section-number">12.1</span> The Limitations of Discounted Reward Formulations<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#the-limitations-of-discounted-reward-formulations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Traditional RL formulates the control problem around maximizing the expected discounted return:</p>
+<p><span class="math display">\[G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}\]</span></p>
+<p>where <span class="math inline">\(0 \leq \gamma &lt; 1\)</span> is the discount factor. The policy evaluation objective becomes:</p>
+<p><span class="math display">\[J(\pi) = \mathbb{E}_\pi [G_t] = \mathbb{E}_\pi \left[ \sum_{k=0}^\infty \gamma^k R_{t+k+1} \right]\]</span></p>
+<p>This formulation dominates the field for compelling mathematical reasons: it ensures convergence of infinite sums, provides contraction properties for Bellman operators, and offers computational tractability. However, these advantages come with conceptual costs that become apparent when we examine real-world applications.</p>
+<p>Consider a server load balancing system that must operate continuously for months or years. In such systems, the choice of discount factor becomes arbitrary and potentially misleading. A discount factor of 0.9 implies that a reward received 22 steps in the future is worth only 10% of an immediate reward—a perspective that may not align with the true operational objectives. Similarly, in medical treatment scheduling, financial portfolio management, or industrial control systems, the fundamental goal is often to maximize long-term average performance rather than to optimize a present-value calculation with an artificially imposed time preference.</p>
+<p>The prevalence of discounted formulations partly stems from RL’s historical focus on episodic tasks with clear terminal states. Games, navigation problems, and many benchmark environments naturally decompose into episodes with definite endings. However, this episodic perspective may be the exception rather than the rule in real-world applications. Manufacturing systems, recommendation engines, traffic control networks, and autonomous vehicles operate in continuing environments where the notion of “episodes” is artificial.</p>
 </div>
-<div id="theoretical-background" class="section level2 hasAnchor" number="4.2">
-<h2><span class="header-section-number">4.2</span> Theoretical Background<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Suppose an agent interacts with an environment defined by states <span class="math inline">\(S\)</span>, actions <span class="math inline">\(A\)</span>, a discount factor <span class="math inline">\(\gamma \in [0,1]\)</span>, and an unknown MDP dynamics. The goal is to learn the action-value function <span class="math inline">\(Q^\pi(s,a)\)</span>, the expected discounted return starting from state <span class="math inline">\(s\)</span>, taking action <span class="math inline">\(a\)</span>, and following policy <span class="math inline">\(\pi\)</span> thereafter:</p>
-<p><span class="math display">\[
-Q^\pi(s,a) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty \gamma^t R_{t+1} \mid S_0 = s, A_0 = a \right]
-\]</span></p>
-<div id="temporal-difference-learning-q-learning" class="section level3 hasAnchor" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Temporal Difference Learning (Q-Learning)<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Q-Learning is an off-policy TD control method that updates the estimate <span class="math inline">\(Q(s,a)\)</span> incrementally after each transition:</p>
-<p><span class="math display">\[
-Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right)
-\]</span></p>
-<p>where <span class="math inline">\(\alpha\)</span> is the learning rate, <span class="math inline">\(r\)</span> the reward received, and <span class="math inline">\(s&#39;\)</span> the next state. This update uses the current estimate of <span class="math inline">\(Q\)</span> at <span class="math inline">\(s&#39;\)</span> (bootstrapping).</p>
+<div id="the-average-reward-alternative-theoretical-foundations" class="section level2 hasAnchor" number="12.2">
+<h2><span class="header-section-number">12.2</span> The Average Reward Alternative: Theoretical Foundations<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#the-average-reward-alternative-theoretical-foundations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The average reward formulation abandons discounting entirely, focusing instead on the long-run average payoff:</p>
+<p><span class="math display">\[\rho(\pi) = \lim_{T \to \infty} \frac{1}{T} \; \mathbb{E}_\pi \left[ \sum_{t=1}^T R_t \right]\]</span></p>
+<p>This quantity represents the steady-state reward rate under policy <span class="math inline">\(\pi\)</span>—the expected reward per time step in the long run. The control problem becomes:</p>
+<p><span class="math display">\[\pi^* = \arg\max_\pi \rho(\pi)\]</span></p>
+<p>Unlike discounted formulations, this objective requires no arbitrary parameters and treats all time steps equally. The interpretation is straightforward: find the policy that maximizes long-term throughput.</p>
+<p>The average reward formulation relies on ergodic theory for its theoretical foundation. Under standard assumptions—primarily that the Markov chains induced by policies are finite, irreducible, and aperiodic—several important properties hold. The well-definedness property ensures the limit defining <span class="math inline">\(\rho(\pi)\)</span> exists and is finite. Initial state independence means the average reward is independent of the starting state. Finally, uniqueness of stationary distribution guarantees each policy induces a unique long-run state distribution.</p>
+<p>These conditions are satisfied by most practical MDPs, making the average reward criterion broadly applicable. However, care must be taken with absorbing states or poorly connected state spaces, where ergodicity assumptions may fail.</p>
+<p>A key insight is that average reward directly relates to the stationary distribution induced by a policy. If <span class="math inline">\(d^\pi(s)\)</span> denotes the long-run probability of being in state <span class="math inline">\(s\)</span> under policy <span class="math inline">\(\pi\)</span>, then:</p>
+<p><span class="math display">\[\rho(\pi) = \sum_s d^\pi(s) \sum_a \pi(a|s) \sum_{s&#39;} P(s&#39;|s,a) R(s,a,s&#39;)\]</span></p>
+<p>This expression reveals that optimizing average reward requires finding policies that induce favorable stationary distributions—those that concentrate probability mass on high-reward regions of the state space.</p>
 </div>
-<div id="monte-carlo-methods" class="section level3 hasAnchor" number="4.2.2">
-<h3><span class="header-section-number">4.2.2</span> Monte Carlo Methods<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Monte Carlo methods learn <span class="math inline">\(Q\)</span> by averaging returns observed after visiting <span class="math inline">\((s,a)\)</span>. Every-visit MC estimates <span class="math inline">\(Q\)</span> by averaging the total discounted return <span class="math inline">\(G_t\)</span> following each occurrence of <span class="math inline">\((s,a)\)</span> within complete episodes:</p>
-<p><span class="math display">\[
-Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}
-\]</span></p>
-<p>where <span class="math inline">\(N(s,a)\)</span> is the count of visits to <span class="math inline">\((s,a)\)</span> and <span class="math inline">\(G_t^{(i)}\)</span> is the return following the <span class="math inline">\(i\)</span>-th visit.</p>
+<div id="value-functions-in-the-average-reward-setting" class="section level2 hasAnchor" number="12.3">
+<h2><span class="header-section-number">12.3</span> Value Functions in the Average Reward Setting<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#value-functions-in-the-average-reward-setting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Without discounting, the traditional notion of value function becomes problematic. The infinite sum <span class="math inline">\(\sum_{k=0}^\infty R_{t+k+1}\)</span> generally diverges, making it impossible to define meaningful state values in the conventional sense.</p>
+<p>The solution is to work with relative values rather than absolute ones. The <strong>differential value function</strong> captures the relative advantage of starting in each state:</p>
+<p><span class="math display">\[h_\pi(s) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty (R_{t+1} - \rho(\pi)) \;\big|\; S_0 = s \right]\]</span></p>
+<p>This quantity measures how much better (or worse) it is to start in state <span class="math inline">\(s\)</span> compared to the long-run average. Crucially, this sum converges under ergodic assumptions because the centered rewards <span class="math inline">\((R_{t+1} - \rho(\pi))\)</span> have zero mean in the long run.</p>
+<p>The differential value function satisfies a modified Bellman equation:</p>
+<p><span class="math display">\[h_\pi(s) = \sum_a \pi(a|s) \sum_{s&#39;} P(s&#39;|s,a) \left[ R(s,a,s&#39;) - \rho(\pi) + h_\pi(s&#39;) \right]\]</span></p>
+<p>This equation is structurally similar to the discounted case but with two key differences: the immediate reward is adjusted by subtracting the average reward, and no discount factor appears before the future differential value.</p>
+<p>We can similarly define differential action-value functions:</p>
+<p><span class="math display">\[q_\pi(s,a) = \sum_{s&#39;} P(s&#39;|s,a) \left[ R(s,a,s&#39;) - \rho(\pi) + h_\pi(s&#39;) \right]\]</span></p>
+<p>These satisfy the consistency relation: <span class="math inline">\(h_\pi(s) = \sum_a \pi(a|s) q_\pi(s,a)\)</span>.</p>
 </div>
-<div id="step-1-defining-the-environment-in-r" class="section level3 hasAnchor" number="4.2.3">
-<h3><span class="header-section-number">4.2.3</span> Step 1: Defining the Environment in R<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>We use a 10-state, 2-action environment with stochastic transitions and rewards, as in previous work:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
-<span id="cb9-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb9-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb9-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb9-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
-<span id="cb9-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-6" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-7" tabindex="-1"></a><span class="co"># Environment: transition + reward models</span></span>
-<span id="cb9-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb9-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb9-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb9-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-11" tabindex="-1"></a></span>
-<span id="cb9-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb9-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb9-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb9-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-15" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb9-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-17" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb9-18"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-18" tabindex="-1"></a></span>
-<span id="cb9-19"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-19" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb9-20"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-20" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb9-21"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-21" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb9-22"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-22" tabindex="-1"></a>  }</span>
-<span id="cb9-23"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-23" tabindex="-1"></a>}</span>
-<span id="cb9-24"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-24" tabindex="-1"></a></span>
-<span id="cb9-25"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-25" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb9-26"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-26" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb9-27"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-27" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-28" tabindex="-1"></a><span class="co"># Sampling function</span></span>
-<span id="cb9-29"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-29" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
-<span id="cb9-30"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-30" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
-<span id="cb9-31"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-31" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
-<span id="cb9-32"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-32" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
-<span id="cb9-33"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-33" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
-<span id="cb9-34"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb9-34" tabindex="-1"></a>}</span></code></pre></div>
+<div id="optimality-theory-for-average-reward" class="section level2 hasAnchor" number="12.4">
+<h2><span class="header-section-number">12.4</span> Optimality Theory for Average Reward<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-theory-for-average-reward" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Optimal policies satisfy the <strong>average reward optimality equations</strong>:</p>
+<p><span class="math display">\[\rho^* + h^*(s) = \max_a \sum_{s&#39;} P(s&#39;|s,a) \left[ R(s,a,s&#39;) + h^*(s&#39;) \right]\]</span></p>
+<p>Here, <span class="math inline">\(\rho^*\)</span> is the optimal average reward (achieved by any optimal policy), and <span class="math inline">\(h^*\)</span> is the optimal differential value function. Unlike the discounted case, all optimal policies achieve the same average reward, though they may differ in their differential values.</p>
+<p>The policy improvement theorem extends naturally to the average reward setting. Given the differential action-values under the current policy, improvement is achieved by acting greedily:</p>
+<p><span class="math display">\[\pi&#39;(s) = \arg\max_a q_\pi(s,a)\]</span></p>
+<p>This greedy policy is guaranteed to achieve average reward <span class="math inline">\(\rho(\pi&#39;) \geq \rho(\pi)\)</span>, with equality only when <span class="math inline">\(\pi\)</span> is already optimal.</p>
 </div>
-<div id="step-2-q-learning-implementation-in-r" class="section level3 hasAnchor" number="4.2.4">
-<h3><span class="header-section-number">4.2.4</span> Step 2: Q-Learning Implementation in R<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The Q-Learning function runs episodes, selects actions using <span class="math inline">\(\epsilon\)</span>-greedy policy, updates Q-values using the TD rule, and outputs a policy by greedy action selection:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-1" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
-<span id="cb10-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-2" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
-<span id="cb10-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-3" tabindex="-1"></a>  </span>
-<span id="cb10-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-4" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb10-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-5" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb10-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-6" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
-<span id="cb10-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-7" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
-<span id="cb10-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-8" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb10-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-9" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
-<span id="cb10-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-10" tabindex="-1"></a>      reward <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
-<span id="cb10-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-11" tabindex="-1"></a>      </span>
-<span id="cb10-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-12" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
-<span id="cb10-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-13" tabindex="-1"></a>      </span>
-<span id="cb10-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-14" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> n_states) <span class="cf">break</span></span>
-<span id="cb10-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-15" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb10-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-16" tabindex="-1"></a>    }</span>
-<span id="cb10-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-17" tabindex="-1"></a>  }</span>
-<span id="cb10-18"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-18" tabindex="-1"></a>  <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max)</span>
-<span id="cb10-19"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb10-19" tabindex="-1"></a>}</span></code></pre></div>
-<p>Running this yields the learned policy:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb11-1" tabindex="-1"></a>ql_policy_before <span class="ot">&lt;-</span> <span class="fu">q_learning</span>()</span></code></pre></div>
-</div>
-<div id="step-3-monte-carlo-every-visit-implementation" class="section level3 hasAnchor" number="4.2.5">
-<h3><span class="header-section-number">4.2.5</span> Step 3: Monte Carlo Every-Visit Implementation<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>This MC method generates episodes, stores the full sequence of state-action-reward tuples, and updates <span class="math inline">\(Q\)</span> by averaging discounted returns for every visit of <span class="math inline">\((s,a)\)</span>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-1" tabindex="-1"></a>monte_carlo <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
-<span id="cb12-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-2" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
-<span id="cb12-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-3" tabindex="-1"></a>  returns <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">&quot;list&quot;</span>, n_states <span class="sc">*</span> n_actions)</span>
-<span id="cb12-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-4" tabindex="-1"></a>  <span class="fu">names</span>(returns) <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="at">each =</span> n_actions), <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, n_states), <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb12-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-5" tabindex="-1"></a>  </span>
-<span id="cb12-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-6" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb12-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-7" tabindex="-1"></a>    episode <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb12-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-8" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb12-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-9" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
-<span id="cb12-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-10" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
-<span id="cb12-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-11" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb12-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-12" tabindex="-1"></a>      episode[[<span class="fu">length</span>(episode) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">state =</span> s, <span class="at">action =</span> a, <span class="at">reward =</span> out<span class="sc">$</span>reward)</span>
-<span id="cb12-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-13" tabindex="-1"></a>      <span class="cf">if</span> (out<span class="sc">$</span>s_prime <span class="sc">==</span> n_states) <span class="cf">break</span></span>
-<span id="cb12-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-14" tabindex="-1"></a>      s <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
-<span id="cb12-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-15" tabindex="-1"></a>    }</span>
-<span id="cb12-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-16" tabindex="-1"></a>    </span>
-<span id="cb12-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-17" tabindex="-1"></a>    G <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb12-18"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-18" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="fu">length</span>(episode)<span class="sc">:</span><span class="dv">1</span>) {</span>
-<span id="cb12-19"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-19" tabindex="-1"></a>      s <span class="ot">&lt;-</span> episode[[t]]<span class="sc">$</span>state</span>
-<span id="cb12-20"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-20" tabindex="-1"></a>      a <span class="ot">&lt;-</span> episode[[t]]<span class="sc">$</span>action</span>
-<span id="cb12-21"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-21" tabindex="-1"></a>      r <span class="ot">&lt;-</span> episode[[t]]<span class="sc">$</span>reward</span>
-<span id="cb12-22"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-22" tabindex="-1"></a>      G <span class="ot">&lt;-</span> gamma <span class="sc">*</span> G <span class="sc">+</span> r</span>
-<span id="cb12-23"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-23" tabindex="-1"></a>      key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb12-24"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-24" tabindex="-1"></a>      returns[[key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(returns[[key]], G)</span>
-<span id="cb12-25"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-25" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> <span class="fu">mean</span>(returns[[key]])</span>
-<span id="cb12-26"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-26" tabindex="-1"></a>    }</span>
-<span id="cb12-27"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-27" tabindex="-1"></a>  }</span>
-<span id="cb12-28"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-28" tabindex="-1"></a>  <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max)</span>
-<span id="cb12-29"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb12-29" tabindex="-1"></a>}</span></code></pre></div>
-<p>The resulting policy is computed by:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb13-1" tabindex="-1"></a>mc_policy_before <span class="ot">&lt;-</span> <span class="fu">monte_carlo</span>()</span></code></pre></div>
-</div>
-<div id="step-4-simulating-outcome-devaluation" class="section level3 hasAnchor" number="4.2.6">
-<h3><span class="header-section-number">4.2.6</span> Step 4: Simulating Outcome Devaluation<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>We now alter the environment by removing the reward for reaching the terminal state, simulating a devaluation:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-1" tabindex="-1"></a><span class="co"># Devalue terminal reward</span></span>
-<span id="cb14-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-2" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb14-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-3" tabindex="-1"></a>  reward_model[s, <span class="dv">1</span>, n_states] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb14-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-4" tabindex="-1"></a>  reward_model[s, <span class="dv">2</span>, n_states] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb14-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb14-5" tabindex="-1"></a>}</span></code></pre></div>
-</div>
-<div id="step-5-comparing-policies-before-and-after-devaluation" class="section level3 hasAnchor" number="4.2.7">
-<h3><span class="header-section-number">4.2.7</span> Step 5: Comparing Policies Before and After Devaluation<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>We compare policies derived via:</p>
+<div id="learning-algorithms-for-average-reward" class="section level2 hasAnchor" number="12.5">
+<h2><span class="header-section-number">12.5</span> Learning Algorithms for Average Reward<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#learning-algorithms-for-average-reward" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The most direct extension of TD learning to average reward settings involves updating both the differential value function and an estimate of the average reward. The <strong>average reward TD(0)</strong> algorithm proceeds as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Initialize: <span class="math inline">\(h(s) = 0\)</span> for all <span class="math inline">\(s\)</span>, <span class="math inline">\(\hat{\rho} = 0\)</span></li>
+<li>For each time step <span class="math inline">\(t\)</span>:
 <ul>
-<li><strong>Dynamic Programming (DP)</strong> which has full model knowledge and updates instantly after reward changes,</li>
-<li><strong>Q-Learning</strong> and <strong>Monte Carlo</strong> which keep their previously learned policies (habitual behavior without retraining).</li>
-</ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-1" tabindex="-1"></a><span class="co"># DP recomputes policy based on updated reward model</span></span>
-<span id="cb15-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-2" tabindex="-1"></a>dp_policy_after <span class="ot">&lt;-</span> <span class="fu">value_iteration</span>()<span class="sc">$</span>policy</span>
-<span id="cb15-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-3" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-4" tabindex="-1"></a><span class="co"># Q-learning and MC keep previous policy (habitual)</span></span>
-<span id="cb15-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-5" tabindex="-1"></a>ql_policy_after <span class="ot">&lt;-</span> ql_policy_before</span>
-<span id="cb15-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb15-6" tabindex="-1"></a>mc_policy_after <span class="ot">&lt;-</span> mc_policy_before</span></code></pre></div>
-</div>
-<div id="step-6-visualizing-the-policies" class="section level3 hasAnchor" number="4.2.8">
-<h3><span class="header-section-number">4.2.8</span> Step 6: Visualizing the Policies<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-1" tabindex="-1"></a>plot_policy <span class="ot">&lt;-</span> <span class="cf">function</span>(policy, label, <span class="at">col =</span> <span class="st">&quot;skyblue&quot;</span>) {</span>
-<span id="cb16-2"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-2" tabindex="-1"></a>  <span class="fu">barplot</span>(policy, <span class="at">names.arg =</span> <span class="dv">1</span><span class="sc">:</span>n_states, <span class="at">col =</span> col,</span>
-<span id="cb16-3"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-3" tabindex="-1"></a>          <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>), <span class="at">ylab =</span> <span class="st">&quot;Action (1=A1, 2=A2)&quot;</span>,</span>
-<span id="cb16-4"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-4" tabindex="-1"></a>          <span class="at">main =</span> label)</span>
-<span id="cb16-5"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-5" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h =</span> <span class="fl">1.5</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;gray&quot;</span>)</span>
-<span id="cb16-6"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-6" tabindex="-1"></a>}</span>
-<span id="cb16-7"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-7" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-8" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>))</span>
-<span id="cb16-9"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-9" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-10" tabindex="-1"></a><span class="fu">plot_policy</span>(dp_policy_before, <span class="st">&quot;DP Policy Before&quot;</span>)</span>
-<span id="cb16-11"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-11" tabindex="-1"></a><span class="fu">plot_policy</span>(dp_policy_after,  <span class="st">&quot;DP Policy After&quot;</span>, <span class="st">&quot;lightgreen&quot;</span>)</span>
-<span id="cb16-12"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-12" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-13" tabindex="-1"></a><span class="fu">plot_policy</span>(ql_policy_before, <span class="st">&quot;Q-Learning Policy Before&quot;</span>)</span>
-<span id="cb16-14"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-14" tabindex="-1"></a><span class="fu">plot_policy</span>(ql_policy_after,  <span class="st">&quot;Q-Learning Policy After&quot;</span>, <span class="st">&quot;orange&quot;</span>)</span>
-<span id="cb16-15"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-15" tabindex="-1"></a></span>
-<span id="cb16-16"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-16" tabindex="-1"></a><span class="fu">plot_policy</span>(mc_policy_before, <span class="st">&quot;MC Policy Before&quot;</span>)</span>
-<span id="cb16-17"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#cb16-17" tabindex="-1"></a><span class="fu">plot_policy</span>(mc_policy_after,  <span class="st">&quot;MC Policy After&quot;</span>, <span class="st">&quot;orchid&quot;</span>)</span></code></pre></div>
-</div>
-</div>
-<div id="interpretation-and-discussion" class="section level2 hasAnchor" number="4.3">
-<h2><span class="header-section-number">4.3</span> Interpretation and Discussion<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Dynamic Programming adapts immediately after devaluation because it recalculates the policy using the updated reward model. In contrast, Q-Learning and Monte Carlo methods, which are model-free and learn from past experience, maintain their prior policies unless explicitly retrained. This reflects <strong>habitual behavior</strong> — a policy learned from experience that does not flexibly adjust to changed outcomes without further learning.</p>
-<p>This illustrates a core difference:</p>
+<li>Observe <span class="math inline">\(S_t\)</span>, take action <span class="math inline">\(A_t\)</span>, observe <span class="math inline">\(R_{t+1}\)</span> and <span class="math inline">\(S_{t+1}\)</span></li>
+<li>Compute TD error: <span class="math inline">\(\delta_t = R_{t+1} - \hat{\rho} + h(S_{t+1}) - h(S_t)\)</span></li>
+<li>Update differential value: <span class="math inline">\(h(S_t) \leftarrow h(S_t) + \alpha \delta_t\)</span></li>
+<li>Update average reward estimate: <span class="math inline">\(\hat{\rho} \leftarrow \hat{\rho} + \beta \delta_t\)</span></li>
+</ul></li>
+</ol>
+<p>The step sizes <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> control the learning rates for differential values and average reward, respectively. Typical choices satisfy <span class="math inline">\(\beta \ll \alpha\)</span> to ensure the average reward estimate changes more slowly than differential values.</p>
+<p>Convergence of average reward TD methods requires more delicate analysis than their discounted counterparts. The key challenge is that both <span class="math inline">\(h\)</span> and <span class="math inline">\(\rho\)</span> are being estimated simultaneously, creating a coupled system of stochastic approximations. Under standard assumptions (diminishing step sizes, sufficient exploration, ergodic Markov chains), convergence can be established using two-timescale analysis. The intuition is that <span class="math inline">\(\rho\)</span> is estimated on a slower timescale (smaller step size), allowing the differential values to track the instantaneous policy while the average reward estimate provides a stable reference point.</p>
+<p>Q-learning extends to average reward settings through the <strong>average reward Q-learning</strong> algorithm:</p>
+<ol style="list-style-type: decimal">
+<li>Initialize: <span class="math inline">\(q(s,a) = 0\)</span> for all <span class="math inline">\((s,a)\)</span>, <span class="math inline">\(\hat{\rho} = 0\)</span></li>
+<li>For each time step <span class="math inline">\(t\)</span>:
 <ul>
-<li><p><strong>Model-based methods</strong> (like DP) support goal-directed behavior, recomputing optimal decisions as the environment changes.</p></li>
-<li><p><strong>Model-free methods</strong> (like Q-Learning and MC) support habitual behavior, relying on cached values learned from past rewards.</p></li>
-</ul>
+<li>Observe <span class="math inline">\(S_t\)</span>, choose <span class="math inline">\(A_t\)</span> (e.g., <span class="math inline">\(\epsilon\)</span>-greedily)</li>
+<li>Observe <span class="math inline">\(R_{t+1}\)</span> and <span class="math inline">\(S_{t+1}\)</span></li>
+<li>Compute TD error: <span class="math inline">\(\delta_t = R_{t+1} - \hat{\rho} + \max_a q(S_{t+1}, a) - q(S_t, A_t)\)</span></li>
+<li>Update: <span class="math inline">\(q(S_t, A_t) \leftarrow q(S_t, A_t) + \alpha \delta_t\)</span></li>
+<li>Update: <span class="math inline">\(\hat{\rho} \leftarrow \hat{\rho} + \beta \delta_t\)</span></li>
+</ul></li>
+</ol>
+<p>This algorithm learns differential action-values directly, avoiding the need to maintain a separate state value function.</p>
 </div>
-<div id="conclusion-2" class="section level2 hasAnchor" number="4.4">
-<h2><span class="header-section-number">4.4</span> Conclusion<a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Temporal Difference and Monte Carlo methods provide powerful approaches to reinforcement learning when the environment is unknown. TD learning’s bootstrapping allows online updates after each transition, while Monte Carlo averages full returns after complete episodes. Both learn policies from experience rather than models. Future posts will explore extensions including function approximation and policy gradient methods.</p>
-<table>
-<colgroup>
-<col width="15%" />
-<col width="42%" />
-<col width="41%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Aspect</strong></th>
-<th><strong>Monte Carlo (MC)</strong></th>
-<th><strong>Temporal Difference (Q-Learning)</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Learning Approach</strong></td>
-<td>Learns from complete episodes by averaging returns after each episode.</td>
-<td>Learns incrementally after each state-action transition using bootstrapping.</td>
-</tr>
-<tr class="even">
-<td><strong>Update Rule</strong></td>
-<td>Updates Q-value as the mean of observed returns: <br> <span class="math inline">\(Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}\)</span></td>
-<td>Updates Q-value using TD error: <br> <span class="math inline">\(Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right)\)</span></td>
-</tr>
-<tr class="odd">
-<td><strong>Episode Requirement</strong></td>
-<td>Requires complete episodes to compute returns (<span class="math inline">\(G_t\)</span>).</td>
-<td>Does not require complete episodes; updates online after each step.</td>
-</tr>
-<tr class="even">
-<td><strong>Bias and Variance</strong></td>
-<td>Unbiased estimate of Q-value, but high variance due to full episode returns.</td>
-<td>Biased due to bootstrapping (relies on current Q estimates), but lower variance.</td>
-</tr>
-<tr class="odd">
-<td><strong>Policy Type</strong></td>
-<td>Typically on-policy (e.g., with ε-greedy exploration), but can be adapted for off-policy.</td>
-<td>Off-policy; learns optimal policy regardless of exploration policy.</td>
-</tr>
-<tr class="even">
-<td><strong>Computational Efficiency</strong></td>
-<td>Less efficient; must wait for episode completion before updating.</td>
-<td>More efficient; updates Q-values immediately after each transition.</td>
-</tr>
-<tr class="odd">
-<td><strong>Adaptation to Change</strong></td>
-<td>Slow to adapt to environment changes without retraining, as it relies on past episode returns.</td>
-<td>Slow to adapt without retraining, but incremental updates allow faster response to changes.</td>
-</tr>
-<tr class="even">
-<td><strong>Implementation in Code</strong></td>
-<td>Stores state-action-reward sequences, computes discounted returns backward.</td>
-<td>Updates Q-values online using immediate reward and next state’s Q-value.</td>
-</tr>
-<tr class="odd">
-<td><strong>Example in Provided Code</strong></td>
-<td>Every-visit MC: averages returns for each <span class="math inline">\((s,a)\)</span> visit in an episode.</td>
-<td>Q-Learning: updates Q-values after each transition using TD rule.</td>
-</tr>
-</tbody>
-</table>
+<div id="practical-implementation-server-load-balancing" class="section level2 hasAnchor" number="12.6">
+<h2><span class="header-section-number">12.6</span> Practical Implementation: Server Load Balancing<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#practical-implementation-server-load-balancing" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Consider a web server load balancing system with three servers. Requests arrive continuously and must be routed to minimize average response time. This is naturally a continuing task where episodes don’t exist, making it ideal for average reward formulation.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-1" tabindex="-1"></a><span class="co"># Server Load Balancing with Average Reward Q-Learning</span></span>
+<span id="cb36-2"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb36-3"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-3" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-4" tabindex="-1"></a><span class="co"># Environment setup</span></span>
+<span id="cb36-5"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb36-6"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-6" tabindex="-1"></a>n_servers <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb36-7"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-7" tabindex="-1"></a>max_load <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb36-8"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-8" tabindex="-1"></a>n_steps <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
+<span id="cb36-9"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-9" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-10" tabindex="-1"></a><span class="co"># State encoding and reward function</span></span>
+<span id="cb36-11"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-11" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(loads) {</span>
+<span id="cb36-12"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-12" tabindex="-1"></a>  <span class="fu">sum</span>(loads <span class="sc">*</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>(<span class="dv">0</span><span class="sc">:</span>(<span class="fu">length</span>(loads)<span class="sc">-</span><span class="dv">1</span>))) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb36-13"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-13" tabindex="-1"></a>}</span>
+<span id="cb36-14"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-14" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-15" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
+<span id="cb36-16"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-16" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> state_id <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb36-17"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-17" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_servers)</span>
+<span id="cb36-18"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-18" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
+<span id="cb36-19"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-19" tabindex="-1"></a>    loads[i] <span class="ot">&lt;-</span> state_id <span class="sc">%%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb36-20"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-20" tabindex="-1"></a>    state_id <span class="ot">&lt;-</span> state_id <span class="sc">%/%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb36-21"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-21" tabindex="-1"></a>  }</span>
+<span id="cb36-22"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-22" tabindex="-1"></a>  loads</span>
+<span id="cb36-23"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-23" tabindex="-1"></a>}</span>
+<span id="cb36-24"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-24" tabindex="-1"></a></span>
+<span id="cb36-25"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-25" tabindex="-1"></a>get_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(loads, server_choice) {</span>
+<span id="cb36-26"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-26" tabindex="-1"></a>  new_loads <span class="ot">&lt;-</span> loads</span>
+<span id="cb36-27"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-27" tabindex="-1"></a>  new_loads[server_choice] <span class="ot">&lt;-</span> <span class="fu">min</span>(new_loads[server_choice] <span class="sc">+</span> <span class="dv">1</span>, max_load)</span>
+<span id="cb36-28"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-28" tabindex="-1"></a>  </span>
+<span id="cb36-29"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-29" tabindex="-1"></a>  <span class="co"># Response time model: linear in load</span></span>
+<span id="cb36-30"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-30" tabindex="-1"></a>  avg_load <span class="ot">&lt;-</span> <span class="fu">mean</span>(new_loads)</span>
+<span id="cb36-31"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-31" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="sc">-</span>avg_load</span>
+<span id="cb36-32"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-32" tabindex="-1"></a>  </span>
+<span id="cb36-33"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-33" tabindex="-1"></a>  <span class="co"># Simulate request completion</span></span>
+<span id="cb36-34"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-34" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
+<span id="cb36-35"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-35" tabindex="-1"></a>    <span class="cf">if</span> (new_loads[i] <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
+<span id="cb36-36"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-36" tabindex="-1"></a>      new_loads[i] <span class="ot">&lt;-</span> new_loads[i] <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb36-37"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-37" tabindex="-1"></a>    }</span>
+<span id="cb36-38"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-38" tabindex="-1"></a>  }</span>
+<span id="cb36-39"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-39" tabindex="-1"></a>  </span>
+<span id="cb36-40"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-40" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">reward =</span> reward, <span class="at">new_loads =</span> new_loads)</span>
+<span id="cb36-41"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-41" tabindex="-1"></a>}</span>
+<span id="cb36-42"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-42" tabindex="-1"></a></span>
+<span id="cb36-43"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-43" tabindex="-1"></a><span class="co"># Initialize parameters</span></span>
+<span id="cb36-44"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-44" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>n_servers</span>
+<span id="cb36-45"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-45" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers))</span>
+<span id="cb36-46"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-46" tabindex="-1"></a>rho_hat <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb36-47"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-47" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb36-48"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-48" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fl">0.001</span></span>
+<span id="cb36-49"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-49" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb36-50"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-50" tabindex="-1"></a></span>
+<span id="cb36-51"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-51" tabindex="-1"></a><span class="co"># Training loop</span></span>
+<span id="cb36-52"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-52" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_servers)</span>
+<span id="cb36-53"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-53" tabindex="-1"></a>state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb36-54"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-54" tabindex="-1"></a>rewards_history <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_steps)</span>
+<span id="cb36-55"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-55" tabindex="-1"></a>rho_history <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_steps)</span>
+<span id="cb36-56"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-56" tabindex="-1"></a></span>
+<span id="cb36-57"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-57" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training average reward Q-learning agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb36-58"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-58" tabindex="-1"></a></span>
+<span id="cb36-59"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-59" tabindex="-1"></a><span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_steps) {</span>
+<span id="cb36-60"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-60" tabindex="-1"></a>  <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb36-61"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-61" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb36-62"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-62" tabindex="-1"></a>    action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_servers, <span class="dv">1</span>)</span>
+<span id="cb36-63"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-63" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb36-64"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-64" tabindex="-1"></a>    action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state_id, ])</span>
+<span id="cb36-65"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-65" tabindex="-1"></a>  }</span>
+<span id="cb36-66"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-66" tabindex="-1"></a>  </span>
+<span id="cb36-67"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-67" tabindex="-1"></a>  <span class="co"># Take action and observe reward</span></span>
+<span id="cb36-68"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-68" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">get_reward</span>(loads, action)</span>
+<span id="cb36-69"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-69" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> result<span class="sc">$</span>reward</span>
+<span id="cb36-70"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-70" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> result<span class="sc">$</span>new_loads</span>
+<span id="cb36-71"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-71" tabindex="-1"></a>  next_state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb36-72"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-72" tabindex="-1"></a>  </span>
+<span id="cb36-73"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-73" tabindex="-1"></a>  <span class="co"># Q-learning update</span></span>
+<span id="cb36-74"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-74" tabindex="-1"></a>  td_error <span class="ot">&lt;-</span> reward <span class="sc">-</span> rho_hat <span class="sc">+</span> <span class="fu">max</span>(Q[next_state_id, ]) <span class="sc">-</span> Q[state_id, action]</span>
+<span id="cb36-75"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-75" tabindex="-1"></a>  Q[state_id, action] <span class="ot">&lt;-</span> Q[state_id, action] <span class="sc">+</span> alpha <span class="sc">*</span> td_error</span>
+<span id="cb36-76"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-76" tabindex="-1"></a>  rho_hat <span class="ot">&lt;-</span> rho_hat <span class="sc">+</span> beta <span class="sc">*</span> td_error</span>
+<span id="cb36-77"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-77" tabindex="-1"></a>  </span>
+<span id="cb36-78"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-78" tabindex="-1"></a>  <span class="co"># Record progress</span></span>
+<span id="cb36-79"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-79" tabindex="-1"></a>  rewards_history[step] <span class="ot">&lt;-</span> reward</span>
+<span id="cb36-80"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-80" tabindex="-1"></a>  rho_history[step] <span class="ot">&lt;-</span> rho_hat</span>
+<span id="cb36-81"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-81" tabindex="-1"></a>  </span>
+<span id="cb36-82"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-82" tabindex="-1"></a>  <span class="co"># Update state</span></span>
+<span id="cb36-83"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-83" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> next_state_id</span>
+<span id="cb36-84"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-84" tabindex="-1"></a>  </span>
+<span id="cb36-85"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-85" tabindex="-1"></a>  <span class="co"># Decay exploration</span></span>
+<span id="cb36-86"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-86" tabindex="-1"></a>  <span class="cf">if</span> (step <span class="sc">%%</span> <span class="dv">1000</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb36-87"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-87" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.01</span>, epsilon <span class="sc">*</span> <span class="fl">0.995</span>)</span>
+<span id="cb36-88"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-88" tabindex="-1"></a>    <span class="cf">if</span> (step <span class="sc">%%</span> <span class="dv">10000</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb36-89"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-89" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Step %d: Average reward estimate = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, step, rho_hat))</span>
+<span id="cb36-90"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-90" tabindex="-1"></a>    }</span>
+<span id="cb36-91"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-91" tabindex="-1"></a>  }</span>
+<span id="cb36-92"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-92" tabindex="-1"></a>}</span>
+<span id="cb36-93"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-93" tabindex="-1"></a></span>
+<span id="cb36-94"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-94" tabindex="-1"></a><span class="co"># Evaluate learned policy</span></span>
+<span id="cb36-95"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-95" tabindex="-1"></a>eval_steps <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb36-96"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-96" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_servers)</span>
+<span id="cb36-97"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-97" tabindex="-1"></a>state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb36-98"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-98" tabindex="-1"></a>eval_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(eval_steps)</span>
+<span id="cb36-99"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-99" tabindex="-1"></a></span>
+<span id="cb36-100"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-100" tabindex="-1"></a><span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>eval_steps) {</span>
+<span id="cb36-101"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-101" tabindex="-1"></a>  action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state_id, ])</span>
+<span id="cb36-102"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-102" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">get_reward</span>(loads, action)</span>
+<span id="cb36-103"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-103" tabindex="-1"></a>  eval_rewards[step] <span class="ot">&lt;-</span> result<span class="sc">$</span>reward</span>
+<span id="cb36-104"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-104" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> result<span class="sc">$</span>new_loads</span>
+<span id="cb36-105"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-105" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb36-106"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-106" tabindex="-1"></a>}</span>
+<span id="cb36-107"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-107" tabindex="-1"></a></span>
+<span id="cb36-108"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-108" tabindex="-1"></a>final_avg_reward <span class="ot">&lt;-</span> <span class="fu">mean</span>(eval_rewards)</span>
+<span id="cb36-109"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-109" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final average reward: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, final_avg_reward))</span>
+<span id="cb36-110"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-110" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Training estimate: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, rho_hat))</span>
+<span id="cb36-111"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-111" tabindex="-1"></a></span>
+<span id="cb36-112"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-112" tabindex="-1"></a><span class="co"># Policy analysis</span></span>
+<span id="cb36-113"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-113" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Learned policy examples:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb36-114"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-114" tabindex="-1"></a>example_states <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb36-115"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-115" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),  <span class="co"># All servers idle</span></span>
+<span id="cb36-116"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-116" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>),  <span class="co"># Server 1 heavily loaded</span></span>
+<span id="cb36-117"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-117" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),  <span class="co"># Balanced load</span></span>
+<span id="cb36-118"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-118" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">0</span>),  <span class="co"># Server 1 at capacity</span></span>
+<span id="cb36-119"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-119" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>)   <span class="co"># High overall load</span></span>
+<span id="cb36-120"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-120" tabindex="-1"></a>)</span>
+<span id="cb36-121"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-121" tabindex="-1"></a></span>
+<span id="cb36-122"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-122" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(example_states)) {</span>
+<span id="cb36-123"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-123" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> example_states[[i]]</span>
+<span id="cb36-124"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-124" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb36-125"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-125" tabindex="-1"></a>  q_values <span class="ot">&lt;-</span> Q[state_id, ]</span>
+<span id="cb36-126"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-126" tabindex="-1"></a>  best_action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(q_values)</span>
+<span id="cb36-127"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-127" tabindex="-1"></a>  </span>
+<span id="cb36-128"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-128" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Loads %s -&gt; Route to server %d (Q-values: %.3f, %.3f, %.3f)</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb36-129"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-129" tabindex="-1"></a>              <span class="fu">paste</span>(loads, <span class="at">collapse=</span><span class="st">&quot;, &quot;</span>), best_action,</span>
+<span id="cb36-130"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-130" tabindex="-1"></a>              q_values[<span class="dv">1</span>], q_values[<span class="dv">2</span>], q_values[<span class="dv">3</span>]))</span>
+<span id="cb36-131"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#cb36-131" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="implementation-considerations" class="section level2 hasAnchor" number="12.7">
+<h2><span class="header-section-number">12.7</span> Implementation Considerations<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#implementation-considerations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The choice of step sizes <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> is crucial for average reward algorithms. The general principle is to use different timescales: a fast timescale (<span class="math inline">\(\alpha\)</span>) for updates to value functions or policy parameters, and a slow timescale (<span class="math inline">\(\beta\)</span>) for updates to the average reward estimate. A common choice is <span class="math inline">\(\beta = c \cdot \alpha\)</span> where <span class="math inline">\(c \in [0.01, 0.1]\)</span>. This ensures the average reward estimate stabilizes while allowing value functions to adapt to policy changes.</p>
+<p>Unlike discounted RL, where initialization typically has limited impact on final performance, average reward methods can be sensitive to initial conditions. Poor initialization of <span class="math inline">\(\hat{\rho}\)</span> can lead to slow convergence or temporary instability. Effective strategies include running a random policy for some steps to get an initial estimate of <span class="math inline">\(\hat{\rho}\)</span>, starting with a conservative estimate based on domain knowledge, or using adaptive step sizes that are larger initially and then decay as estimates stabilize.</p>
+<p>Exploration-exploitation trade-offs require special consideration in average reward settings. Since there’s no discounting to naturally prioritize immediate rewards, exploration strategies must be designed to maintain long-term effectiveness. Optimistic initialization works particularly well: initializing value functions optimistically encourages exploration while the agent discovers the true reward structure.</p>
+</div>
+<div id="when-to-choose-average-reward-over-discounting" class="section level2 hasAnchor" number="12.8">
+<h2><span class="header-section-number">12.8</span> When to Choose Average Reward Over Discounting<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#when-to-choose-average-reward-over-discounting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The choice between discounted and average reward formulations should be based on problem characteristics rather than mathematical convenience. Consider average reward when the task is genuinely continuing with no natural episodes, long-term steady-state performance is the primary concern, the discount factor feels arbitrary or its choice significantly affects learned behavior, or fairness across time steps is important.</p>
+<p>Moderate indicators include when the environment is relatively stable over long horizons, exploration can be maintained without artificial urgency from discounting, or the system will operate for extended periods without reset. However, choose against average reward when the task has clear episodes or terminal states, short-term performance is crucial (e.g., real-time systems), the environment is highly non-stationary, or mathematical tractability is paramount.</p>
+<p>Based on empirical studies and practical applications, server systems and manufacturing typically find average reward superior, while games with clear episodes often find discounting more natural. Financial trading uses average reward for long-term strategies and discounting for short-term tactics. In robotics, the choice depends on task duration and safety requirements, while recommendation systems use average reward for user satisfaction and discounting for engagement.</p>
+</div>
+<div id="appendix-a-mathematical-proofs-and-derivations" class="section level2 hasAnchor" number="12.9">
+<h2><span class="header-section-number">12.9</span> Appendix A: Mathematical Proofs and Derivations<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#appendix-a-mathematical-proofs-and-derivations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="convergence-of-average-reward-td-learning" class="section level3 hasAnchor" number="12.9.1">
+<h3><span class="header-section-number">12.9.1</span> Convergence of Average Reward TD Learning<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#convergence-of-average-reward-td-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Theorem</strong>: Under standard assumptions (finite state space, ergodic Markov chains, diminishing step sizes satisfying <span class="math inline">\(\sum_t \alpha_t = \infty\)</span>, <span class="math inline">\(\sum_t \alpha_t^2 &lt; \infty\)</span>, and <span class="math inline">\(\beta_t = o(\alpha_t)\)</span>), the average reward TD(0) algorithm converges almost surely to the true differential value function and average reward.</p>
+<p><strong>Proof sketch</strong>: The proof uses two-timescale stochastic approximation theory. The key insight is that the average reward estimate evolves on a slower timescale (smaller step size), allowing it to track the average while the differential values adapt to the current estimate.</p>
+<p>Let <span class="math inline">\(\{\alpha_t\}\)</span> and <span class="math inline">\(\{\beta_t\}\)</span> be the step size sequences for differential values and average reward, respectively, satisfying <span class="math inline">\(\beta_t = o(\alpha_t)\)</span>.</p>
+<p>The updates can be written as:
+<span class="math display">\[h_{t+1}(s) = h_t(s) + \alpha_t \mathbf{1}_{S_t = s} [R_{t+1} - \rho_t + h_t(S_{t+1}) - h_t(S_t)]\]</span>
+<span class="math display">\[\rho_{t+1} = \rho_t + \beta_t [R_{t+1} - \rho_t + h_t(S_{t+1}) - h_t(S_t)]\]</span></p>
+<p>Using the two-timescale framework, we first analyze the faster timescale (differential values) assuming the average reward estimate is fixed. This leads to the standard convergence analysis for policy evaluation. Then, we analyze the slower timescale (average reward) and show it tracks the true average reward under the converged policy.</p>
+</div>
+<div id="policy-gradient-theorem-for-average-reward" class="section level3 hasAnchor" number="12.9.2">
+<h3><span class="header-section-number">12.9.2</span> Policy Gradient Theorem for Average Reward<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#policy-gradient-theorem-for-average-reward" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Theorem (Average Reward Policy Gradient)</strong>: For a parameterized policy <span class="math inline">\(\pi_\theta\)</span>, the gradient of the average reward with respect to parameters is:</p>
+<p><span class="math display">\[\nabla_\theta \rho(\pi_\theta) = \sum_s d^{\pi_\theta}(s) \sum_a \nabla_\theta \pi_\theta(a|s) q^{\pi_\theta}(s,a)\]</span></p>
+<p>where <span class="math inline">\(d^{\pi_\theta}(s)\)</span> is the stationary distribution under policy <span class="math inline">\(\pi_\theta\)</span> and <span class="math inline">\(q^{\pi_\theta}(s,a)\)</span> is the differential action-value function.</p>
+<p><strong>Proof</strong>: The proof parallels the discounted case but requires careful handling of the limit defining average reward. The key steps involve expressing average reward in terms of stationary distribution, differentiating with respect to <span class="math inline">\(\theta\)</span>, applying the chain rule noting that both the stationary distribution and immediate rewards depend on the policy, using the fundamental matrix approach to handle the derivative of the stationary distribution, and simplifying using the relationship between immediate rewards and differential action-values.</p>
+</div>
+<div id="optimality-equations-derivation" class="section level3 hasAnchor" number="12.9.3">
+<h3><span class="header-section-number">12.9.3</span> Optimality Equations Derivation<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-equations-derivation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Starting from the definition of differential value function:
+<span class="math display">\[h^*(s) = \max_\pi h^\pi(s)\]</span></p>
+<p>where
+<span class="math display">\[h^\pi(s) = \mathbb{E}^\pi \left[ \sum_{t=0}^\infty (R_{t+1} - \rho(\pi)) \mid S_0 = s \right]\]</span></p>
+<p>For the optimal policy <span class="math inline">\(\pi^*\)</span>, we have:
+<span class="math display">\[h^*(s) = \mathbb{E}^{\pi^*} \left[ \sum_{t=0}^\infty (R_{t+1} - \rho^*) \mid S_0 = s \right]\]</span></p>
+<p>Expanding the first term and using the Markov property, since <span class="math inline">\(\pi^*\)</span> is optimal, it must choose actions to maximize:
+<span class="math display">\[\sum_{s&#39;} P(s&#39;|s,a) [R(s,a,s&#39;) - \rho^* + h^*(s&#39;)]\]</span></p>
+<p>This gives us the optimality equation:
+<span class="math display">\[\rho^* + h^*(s) = \max_a \sum_{s&#39;} P(s&#39;|s,a) [R(s,a,s&#39;) + h^*(s&#39;)]\]</span></p>
+<p>The average reward formulation of reinforcement learning provides a principled alternative to discounted approaches that better captures the objectives of many real-world applications. While mathematically more challenging than discounted methods, the conceptual clarity and practical benefits make it worthy of broader adoption. The choice between formulations should reflect true problem objectives rather than mathematical convenience, and for many continuing tasks, average reward optimization represents the most appropriate objective for creating systems that serve genuine long-term value.</p>
 
+</div>
 </div>
 </div>
             </section>
@@ -649,8 +662,8 @@ Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}
           </div>
         </div>
       </div>
-<a href="markov-decision-processes-and-dynamic-programming.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="learning-policies-versus-learning-values.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="appendix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -681,7 +694,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/04-MCTD.Rmd",
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/12-Average_Reward.Rmd",
     "text": "Edit"
   },
   "history": {
@@ -689,7 +702,7 @@ gitbook.start({
     "text": null
   },
   "view": {
-    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/04-MCTD.Rmd",
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/12-Average_Reward.Rmd",
     "text": null
   },
   "download": null,
