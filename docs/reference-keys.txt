@@ -149,6 +149,17 @@ appendix-a-mathematical-proofs-and-derivations
 convergence-of-average-reward-td-learning
 policy-gradient-theorem-for-average-reward
 optimality-equations-derivation
+intrinsic-rewards
+the-sparse-reward-problem-and-its-implications
+mathematical-foundations-of-intrinsic-motivation
+curiosity-driven-learning
+count-based-exploration
+practical-implementation-curiosity-driven-grid-world-navigation
+advanced-intrinsic-motivation-mechanisms
+implementation-considerations-and-practical-guidelines
+theoretical-analysis-and-convergence-properties
+applications-and-empirical-results
+limitations-and-future-directions
 appendix
 comprehensive-reinforcement-learning-concepts-guide
 learning-mechanisms

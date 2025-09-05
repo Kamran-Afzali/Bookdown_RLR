@@ -107,7 +107,7 @@ This algorithm learns differential action-values directly, avoiding the need to 
 
 Consider a web server load balancing system with three servers. Requests arrive continuously and must be routed to minimize average response time. This is naturally a continuing task where episodes don't exist, making it ideal for average reward formulation.
 
-```r
+```{r}
 # Server Load Balancing with Average Reward Q-Learning
 library(ggplot2)
 

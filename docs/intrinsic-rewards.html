@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 13 Intrinsic Rewards | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 13 Intrinsic Rewards | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 13 Intrinsic Rewards | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 13 Intrinsic Rewards | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-09-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"/>
+<link rel="next" href="appendix.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#further-directions"><i class="fa fa-check"></i><b>1.5</b> Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><i class="fa fa-check"></i><b>10</b> Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#introduction-8"><i class="fa fa-check"></i><b>10.1</b> Introduction</a></li>
+<li class="chapter" data-level="10.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#theoretical-framework-1"><i class="fa fa-check"></i><b>10.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#the-exploration-bonus-mechanism"><i class="fa fa-check"></i><b>10.2.1</b> The Exploration Bonus Mechanism</a></li>
+<li class="chapter" data-level="10.2.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#complete-dyna-q-algorithm"><i class="fa fa-check"></i><b>10.2.2</b> Complete Dyna-Q+ Algorithm</a></li>
+<li class="chapter" data-level="10.2.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#convergence-and-stability"><i class="fa fa-check"></i><b>10.2.3</b> Convergence and Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="10.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#implementation-in-r-1"><i class="fa fa-check"></i><b>10.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#environment-setup-1"><i class="fa fa-check"></i><b>10.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="10.3.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-implementation-1"><i class="fa fa-check"></i><b>10.3.2</b> Dyna-Q+ Implementation</a></li>
+<li class="chapter" data-level="10.3.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#standard-dyna-for-comparison"><i class="fa fa-check"></i><b>10.3.3</b> Standard Dyna for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#experimental-analysis-1"><i class="fa fa-check"></i><b>10.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="10.4.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#adaptation-to-environmental-changes"><i class="fa fa-check"></i><b>10.4.1</b> Adaptation to Environmental Changes</a></li>
+<li class="chapter" data-level="10.4.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#parameter-sensitivity-analysis"><i class="fa fa-check"></i><b>10.4.2</b> Parameter Sensitivity Analysis</a></li>
+<li class="chapter" data-level="10.4.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#exploration-pattern-analysis"><i class="fa fa-check"></i><b>10.4.3</b> Exploration Pattern Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#discussion-and-implementation-considerations"><i class="fa fa-check"></i><b>10.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="10.6" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#conclusion-6"><i class="fa fa-check"></i><b>10.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html"><i class="fa fa-check"></i><b>11</b> Learning Policies versus Learning Values:</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html#the-two-paradigms-of-reinforcement-learning"><i class="fa fa-check"></i><b>11.1</b> The Two Paradigms of Reinforcement Learning</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html#value-based-methods-learning-worth-before-action"><i class="fa fa-check"></i><b>11.1.1</b> Value-Based Methods: Learning Worth Before Action</a></li>
+<li class="chapter" data-level="11.1.2" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html#policy-based-methods-direct-optimization-of-behavior"><i class="fa fa-check"></i><b>11.1.2</b> Policy-Based Methods: Direct Optimization of Behavior</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><i class="fa fa-check"></i><b>12</b> Average Reward in Reinforcement Learning: A Comprehensive Guide</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#the-limitations-of-discounted-reward-formulations"><i class="fa fa-check"></i><b>12.1</b> The Limitations of Discounted Reward Formulations</a></li>
+<li class="chapter" data-level="12.2" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#the-average-reward-alternative-theoretical-foundations"><i class="fa fa-check"></i><b>12.2</b> The Average Reward Alternative: Theoretical Foundations</a></li>
+<li class="chapter" data-level="12.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#value-functions-in-the-average-reward-setting"><i class="fa fa-check"></i><b>12.3</b> Value Functions in the Average Reward Setting</a></li>
+<li class="chapter" data-level="12.4" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-theory-for-average-reward"><i class="fa fa-check"></i><b>12.4</b> Optimality Theory for Average Reward</a></li>
+<li class="chapter" data-level="12.5" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#learning-algorithms-for-average-reward"><i class="fa fa-check"></i><b>12.5</b> Learning Algorithms for Average Reward</a></li>
+<li class="chapter" data-level="12.6" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#practical-implementation-server-load-balancing"><i class="fa fa-check"></i><b>12.6</b> Practical Implementation: Server Load Balancing</a></li>
+<li class="chapter" data-level="12.7" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#implementation-considerations"><i class="fa fa-check"></i><b>12.7</b> Implementation Considerations</a></li>
+<li class="chapter" data-level="12.8" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#when-to-choose-average-reward-over-discounting"><i class="fa fa-check"></i><b>12.8</b> When to Choose Average Reward Over Discounting</a></li>
+<li class="chapter" data-level="12.9" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#appendix-a-mathematical-proofs-and-derivations"><i class="fa fa-check"></i><b>12.9</b> Appendix A: Mathematical Proofs and Derivations</a>
+<ul>
+<li class="chapter" data-level="12.9.1" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#convergence-of-average-reward-td-learning"><i class="fa fa-check"></i><b>12.9.1</b> Convergence of Average Reward TD Learning</a></li>
+<li class="chapter" data-level="12.9.2" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#policy-gradient-theorem-for-average-reward"><i class="fa fa-check"></i><b>12.9.2</b> Policy Gradient Theorem for Average Reward</a></li>
+<li class="chapter" data-level="12.9.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-equations-derivation"><i class="fa fa-check"></i><b>12.9.3</b> Optimality Equations Derivation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html"><i class="fa fa-check"></i><b>13</b> Intrinsic Rewards</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#the-sparse-reward-problem-and-its-implications"><i class="fa fa-check"></i><b>13.1</b> The Sparse Reward Problem and Its Implications</a></li>
+<li class="chapter" data-level="13.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#mathematical-foundations-of-intrinsic-motivation"><i class="fa fa-check"></i><b>13.2</b> Mathematical Foundations of Intrinsic Motivation</a>
+<ul>
+<li class="chapter" data-level="13.2.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#curiosity-driven-learning"><i class="fa fa-check"></i><b>13.2.1</b> Curiosity-Driven Learning</a></li>
+<li class="chapter" data-level="13.2.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#count-based-exploration"><i class="fa fa-check"></i><b>13.2.2</b> Count-Based Exploration</a></li>
+</ul></li>
+<li class="chapter" data-level="13.3" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#practical-implementation-curiosity-driven-grid-world-navigation"><i class="fa fa-check"></i><b>13.3</b> Practical Implementation: Curiosity-Driven Grid World Navigation</a></li>
+<li class="chapter" data-level="13.4" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#advanced-intrinsic-motivation-mechanisms"><i class="fa fa-check"></i><b>13.4</b> Advanced Intrinsic Motivation Mechanisms</a></li>
+<li class="chapter" data-level="13.5" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#implementation-considerations-and-practical-guidelines"><i class="fa fa-check"></i><b>13.5</b> Implementation Considerations and Practical Guidelines</a></li>
+<li class="chapter" data-level="13.6" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#theoretical-analysis-and-convergence-properties"><i class="fa fa-check"></i><b>13.6</b> Theoretical Analysis and Convergence Properties</a></li>
+<li class="chapter" data-level="13.7" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#applications-and-empirical-results"><i class="fa fa-check"></i><b>13.7</b> Applications and Empirical Results</a></li>
+<li class="chapter" data-level="13.8" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#limitations-and-future-directions"><i class="fa fa-check"></i><b>13.8</b> Limitations and Future Directions</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>14</b> Appendix</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="appendix.html"><a href="appendix.html#comprehensive-reinforcement-learning-concepts-guide"><i class="fa fa-check"></i><b>14.1</b> Comprehensive Reinforcement Learning Concepts Guide</a></li>
+<li class="chapter" data-level="14.2" data-path="appendix.html"><a href="appendix.html#learning-mechanisms"><i class="fa fa-check"></i><b>14.2</b> Learning Mechanisms</a></li>
+<li class="chapter" data-level="14.3" data-path="appendix.html"><a href="appendix.html#environment-properties"><i class="fa fa-check"></i><b>14.3</b> Environment Properties</a></li>
+<li class="chapter" data-level="14.4" data-path="appendix.html"><a href="appendix.html#learning-paradigms"><i class="fa fa-check"></i><b>14.4</b> Learning Paradigms</a></li>
+<li class="chapter" data-level="14.5" data-path="appendix.html"><a href="appendix.html#exploration-strategies"><i class="fa fa-check"></i><b>14.5</b> Exploration Strategies</a></li>
+<li class="chapter" data-level="14.6" data-path="appendix.html"><a href="appendix.html#key-algorithms-methods"><i class="fa fa-check"></i><b>14.6</b> Key Algorithms &amp; Methods</a></li>
+<li class="chapter" data-level="14.7" data-path="appendix.html"><a href="appendix.html#advanced-concepts"><i class="fa fa-check"></i><b>14.7</b> Advanced Concepts</a></li>
+<li class="chapter" data-level="14.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>14.8</b> Fundamental Equations</a>
+<ul>
+<li class="chapter" data-level="14.8.1" data-path="appendix.html"><a href="appendix.html#bellman-equations"><i class="fa fa-check"></i><b>14.8.1</b> <strong>Bellman Equations</strong></a></li>
+<li class="chapter" data-level="14.8.2" data-path="appendix.html"><a href="appendix.html#policy-gradient-theorem"><i class="fa fa-check"></i><b>14.8.2</b> <strong>Policy Gradient Theorem</strong></a></li>
+<li class="chapter" data-level="14.8.3" data-path="appendix.html"><a href="appendix.html#temporal-difference-error"><i class="fa fa-check"></i><b>14.8.3</b> <strong>Temporal Difference Error</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="14.9" data-path="appendix.html"><a href="appendix.html#common-challenges-solutions"><i class="fa fa-check"></i><b>14.9</b> Common Challenges &amp; Solutions</a></li>
+<li class="chapter" data-level="14.10" data-path="appendix.html"><a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning"><i class="fa fa-check"></i><b>14.10</b> Function Approximation Fundamentals in Reinforcement Learning</a></li>
+<li class="chapter" data-level="14.11" data-path="appendix.html"><a href="appendix.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>14.11</b> Feature Engineering and State Representation</a>
+<ul>
+<li class="chapter" data-level="14.11.1" data-path="appendix.html"><a href="appendix.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>14.11.1</b> The Discrimination vs. Generalization Tradeoff</a></li>
+<li class="chapter" data-level="14.11.2" data-path="appendix.html"><a href="appendix.html#principles-of-feature-extraction"><i class="fa fa-check"></i><b>14.11.2</b> Principles of Feature Extraction</a></li>
+</ul></li>
+<li class="chapter" data-level="14.12" data-path="appendix.html"><a href="appendix.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>14.12</b> Mathematical Foundations of Linear Function Approximation</a>
+<ul>
+<li class="chapter" data-level="14.12.1" data-path="appendix.html"><a href="appendix.html#linear-value-functions"><i class="fa fa-check"></i><b>14.12.1</b> Linear Value Functions</a></li>
+<li class="chapter" data-level="14.12.2" data-path="appendix.html"><a href="appendix.html#temporal-difference-td-learning-with-function-approximation"><i class="fa fa-check"></i><b>14.12.2</b> Temporal Difference (TD) Learning with Function Approximation</a></li>
+<li class="chapter" data-level="14.12.3" data-path="appendix.html"><a href="appendix.html#convergence-and-the-deadly-triad"><i class="fa fa-check"></i><b>14.12.3</b> Convergence and the “Deadly Triad”</a></li>
+</ul></li>
+<li class="chapter" data-level="14.13" data-path="appendix.html"><a href="appendix.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>14.13</b> Classical Basis Function Methods</a>
+<ul>
+<li class="chapter" data-level="14.13.1" data-path="appendix.html"><a href="appendix.html#coarse-coding"><i class="fa fa-check"></i><b>14.13.1</b> Coarse Coding</a></li>
+<li class="chapter" data-level="14.13.2" data-path="appendix.html"><a href="appendix.html#tile-coding"><i class="fa fa-check"></i><b>14.13.2</b> Tile Coding</a></li>
+<li class="chapter" data-level="14.13.3" data-path="appendix.html"><a href="appendix.html#radial-basis-functions-rbfs"><i class="fa fa-check"></i><b>14.13.3</b> Radial Basis Functions (RBFs)</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="intrinsic-rewards" class="section level1 hasAnchor" number="13">
+<h1><span class="header-section-number">Chapter 13</span> Intrinsic Rewards<a href="intrinsic-rewards.html#intrinsic-rewards" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The standard reinforcement learning paradigm assumes agents learn solely from extrinsic rewards provided by the environment. While this approach has achieved remarkable successes in game-playing and robotics, it fundamentally relies on carefully engineered reward functions that capture all aspects of desired behavior. For many real-world applications, designing such reward functions proves either impractical or impossible. Sparse reward environments, where meaningful feedback occurs infrequently, present particular challenges that have motivated the development of intrinsic reward mechanisms.</p>
+<p>Intrinsic motivation addresses these limitations by endowing agents with internal reward signals that supplement or replace environmental rewards. These mechanisms draw inspiration from biological systems, where curiosity, novelty-seeking, and information-gathering behaviors emerge without explicit external reinforcement. The mathematical formalization of these concepts has led to practical algorithms that demonstrate superior exploration capabilities and learning efficiency across diverse domains.</p>
+<div id="the-sparse-reward-problem-and-its-implications" class="section level2 hasAnchor" number="13.1">
+<h2><span class="header-section-number">13.1</span> The Sparse Reward Problem and Its Implications<a href="intrinsic-rewards.html#the-sparse-reward-problem-and-its-implications" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Traditional RL assumes the existence of informative reward signals that guide learning toward desired behaviors. The agent’s objective is to maximize expected cumulative reward:</p>
+<p><span class="math display">\[J(\pi) = \mathbb{E}_{\tau \sim \pi} \left[ \sum_{t=0}^T \gamma^t R_t \right]\]</span></p>
+<p>where <span class="math inline">\(\tau\)</span> represents trajectories sampled under policy <span class="math inline">\(\pi\)</span>. This formulation works well when rewards are dense and informative, providing frequent feedback about action quality.</p>
+<p>However, many environments provide only sparse, delayed, or uninformative rewards. Consider a robot learning to navigate to a goal location in a large maze. The environment provides reward only upon reaching the target, offering no guidance during exploration. Random exploration becomes inefficient as state space size grows, leading to sample complexity that scales exponentially with problem dimension.</p>
+<p>The fundamental issue lies in the exploration-exploitation dilemma. Without intermediate rewards, agents have no basis for preferring one action over another until accidentally discovering successful strategies. This creates a bootstrapping problem where learning cannot begin until rare rewarding events occur through random chance.</p>
+<p>Intrinsic motivation mechanisms address this challenge by providing internal reward signals that encourage systematic exploration, information gathering, and skill development. These signals augment the learning process by rewarding potentially useful behaviors even in the absence of extrinsic feedback.</p>
+</div>
+<div id="mathematical-foundations-of-intrinsic-motivation" class="section level2 hasAnchor" number="13.2">
+<h2><span class="header-section-number">13.2</span> Mathematical Foundations of Intrinsic Motivation<a href="intrinsic-rewards.html#mathematical-foundations-of-intrinsic-motivation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Intrinsic reward mechanisms can be formalized as functions that map agent experiences to internal reward signals. The general framework augments the standard RL objective with intrinsic terms:</p>
+<p><span class="math display">\[J_{\text{total}}(\pi) = J_{\text{extrinsic}}(\pi) + \lambda J_{\text{intrinsic}}(\pi)\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> controls the relative importance of intrinsic versus extrinsic motivation. The intrinsic component takes the form:</p>
+<p><span class="math display">\[J_{\text{intrinsic}}(\pi) = \mathbb{E}_{\tau \sim \pi} \left[ \sum_{t=0}^T \gamma^t R_t^{\text{int}} \right]\]</span></p>
+<p>The key challenge lies in designing intrinsic reward functions <span class="math inline">\(R_t^{\text{int}}\)</span> that promote beneficial exploration without overwhelming or conflicting with task objectives.</p>
+<div id="curiosity-driven-learning" class="section level3 hasAnchor" number="13.2.1">
+<h3><span class="header-section-number">13.2.1</span> Curiosity-Driven Learning<a href="intrinsic-rewards.html#curiosity-driven-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One prominent approach bases intrinsic rewards on prediction errors. The intuition is that agents should be curious about aspects of the environment they cannot predict well, as these regions likely contain novel or important information.</p>
+<p>The <strong>prediction error curiosity</strong> model maintains a forward dynamics model <span class="math inline">\(\hat{f}\)</span> that attempts to predict next states given current states and actions:</p>
+<p><span class="math display">\[\hat{s}_{t+1} = \hat{f}(s_t, a_t)\]</span></p>
+<p>The intrinsic reward is proportional to the prediction error:</p>
+<p><span class="math display">\[R_t^{\text{int}} = \frac{1}{2} \|\hat{f}(s_t, a_t) - s_{t+1}\|^2\]</span></p>
+<p>This approach encourages agents to explore regions where their world model is inaccurate, gradually improving understanding of environment dynamics.</p>
+<p>However, raw prediction error can be misleading in stochastic environments or those with irrelevant but unpredictable elements. A more sophisticated approach uses the <strong>Intrinsic Curiosity Module (ICM)</strong> framework, which combines forward and inverse dynamics models.</p>
+<p>The ICM learns a feature representation <span class="math inline">\(\phi(s)\)</span> that captures task-relevant aspects of states while filtering out irrelevant details. The inverse dynamics model predicts actions from state transitions:</p>
+<p><span class="math display">\[\hat{a}_t = g(\phi(s_t), \phi(s_{t+1}))\]</span></p>
+<p>The forward model predicts feature representations rather than raw states:</p>
+<p><span class="math display">\[\hat{\phi}(s_{t+1}) = f(\phi(s_t), a_t)\]</span></p>
+<p>The intrinsic reward combines prediction errors from both models:</p>
+<p><span class="math display">\[R_t^{\text{int}} = \frac{\eta}{2} \|\hat{\phi}(s_{t+1}) - \phi(s_{t+1})\|^2\]</span></p>
+<p>where <span class="math inline">\(\eta\)</span> is a scaling factor. This formulation focuses curiosity on aspects of the environment that are both unpredictable and controllable by the agent’s actions.</p>
+</div>
+<div id="count-based-exploration" class="section level3 hasAnchor" number="13.2.2">
+<h3><span class="header-section-number">13.2.2</span> Count-Based Exploration<a href="intrinsic-rewards.html#count-based-exploration" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>An alternative approach grounds intrinsic motivation in visitation statistics. States that have been visited infrequently receive higher intrinsic rewards, encouraging systematic exploration of the state space.</p>
+<p>The classical approach uses pseudo-counts based on density models. For a generative model <span class="math inline">\(\rho\)</span> that assigns probabilities to states, the pseudo-count for state <span class="math inline">\(s\)</span> after <span class="math inline">\(n\)</span> observations is:</p>
+<p><span class="math display">\[N(s) = \frac{\rho(s)}{1 - \rho(s)} \cdot n\]</span></p>
+<p>The intrinsic reward follows the form:</p>
+<p><span class="math display">\[R_t^{\text{int}} = \frac{\beta}{\sqrt{N(s_t)}}\]</span></p>
+<p>where <span class="math inline">\(\beta\)</span> controls the exploration bonus magnitude. This creates larger rewards for rarely visited states and smaller rewards for familiar regions.</p>
+<p>For high-dimensional state spaces, exact counting becomes impractical. The <strong>Random Network Distillation (RND)</strong> approach addresses this by training a neural network to predict the outputs of a fixed random network. The prediction error serves as a novelty measure:</p>
+<p><span class="math display">\[R_t^{\text{int}} = \|f_{\theta}(s_t) - \hat{f}_{\phi}(s_t)\|^2\]</span></p>
+<p>where <span class="math inline">\(f_{\theta}\)</span> is a randomly initialized fixed network and <span class="math inline">\(\hat{f}_{\phi}\)</span> is a trainable predictor. States that are visited frequently will have smaller prediction errors as the predictor network learns to match the random network’s outputs.</p>
+</div>
+</div>
+<div id="practical-implementation-curiosity-driven-grid-world-navigation" class="section level2 hasAnchor" number="13.3">
+<h2><span class="header-section-number">13.3</span> Practical Implementation: Curiosity-Driven Grid World Navigation<a href="intrinsic-rewards.html#practical-implementation-curiosity-driven-grid-world-navigation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Consider a grid world environment where an agent must learn to navigate to a goal location. The environment provides rewards only upon reaching the goal, making exploration crucial for learning.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="intrinsic-rewards.html#cb48-1" tabindex="-1"></a><span class="co"># Curiosity-Driven Grid World Navigation</span></span>
+<span id="cb48-2"><a href="intrinsic-rewards.html#cb48-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb48-3"><a href="intrinsic-rewards.html#cb48-3" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
+<span id="cb48-4"><a href="intrinsic-rewards.html#cb48-4" tabindex="-1"></a></span>
+<span id="cb48-5"><a href="intrinsic-rewards.html#cb48-5" tabindex="-1"></a><span class="co"># Environment setup</span></span>
+<span id="cb48-6"><a href="intrinsic-rewards.html#cb48-6" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb48-7"><a href="intrinsic-rewards.html#cb48-7" tabindex="-1"></a>grid_size <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb48-8"><a href="intrinsic-rewards.html#cb48-8" tabindex="-1"></a>goal_state <span class="ot">&lt;-</span> <span class="fu">c</span>(grid_size, grid_size)</span>
+<span id="cb48-9"><a href="intrinsic-rewards.html#cb48-9" tabindex="-1"></a>n_episodes <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb48-10"><a href="intrinsic-rewards.html#cb48-10" tabindex="-1"></a>max_steps <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb48-11"><a href="intrinsic-rewards.html#cb48-11" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="intrinsic-rewards.html#cb48-12" tabindex="-1"></a><span class="co"># State encoding and action space</span></span>
+<span id="cb48-13"><a href="intrinsic-rewards.html#cb48-13" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(row, col) {</span>
+<span id="cb48-14"><a href="intrinsic-rewards.html#cb48-14" tabindex="-1"></a>  (row <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> grid_size <span class="sc">+</span> col</span>
+<span id="cb48-15"><a href="intrinsic-rewards.html#cb48-15" tabindex="-1"></a>}</span>
+<span id="cb48-16"><a href="intrinsic-rewards.html#cb48-16" tabindex="-1"></a></span>
+<span id="cb48-17"><a href="intrinsic-rewards.html#cb48-17" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
+<span id="cb48-18"><a href="intrinsic-rewards.html#cb48-18" tabindex="-1"></a>  row <span class="ot">&lt;-</span> <span class="fu">floor</span>((state_id <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> grid_size) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb48-19"><a href="intrinsic-rewards.html#cb48-19" tabindex="-1"></a>  col <span class="ot">&lt;-</span> (state_id <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> grid_size <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb48-20"><a href="intrinsic-rewards.html#cb48-20" tabindex="-1"></a>  <span class="fu">c</span>(row, col)</span>
+<span id="cb48-21"><a href="intrinsic-rewards.html#cb48-21" tabindex="-1"></a>}</span>
+<span id="cb48-22"><a href="intrinsic-rewards.html#cb48-22" tabindex="-1"></a></span>
+<span id="cb48-23"><a href="intrinsic-rewards.html#cb48-23" tabindex="-1"></a><span class="co"># Actions: 1=up, 2=right, 3=down, 4=left</span></span>
+<span id="cb48-24"><a href="intrinsic-rewards.html#cb48-24" tabindex="-1"></a>get_next_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action) {</span>
+<span id="cb48-25"><a href="intrinsic-rewards.html#cb48-25" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
+<span id="cb48-26"><a href="intrinsic-rewards.html#cb48-26" tabindex="-1"></a>  row <span class="ot">&lt;-</span> pos[<span class="dv">1</span>]</span>
+<span id="cb48-27"><a href="intrinsic-rewards.html#cb48-27" tabindex="-1"></a>  col <span class="ot">&lt;-</span> pos[<span class="dv">2</span>]</span>
+<span id="cb48-28"><a href="intrinsic-rewards.html#cb48-28" tabindex="-1"></a>  </span>
+<span id="cb48-29"><a href="intrinsic-rewards.html#cb48-29" tabindex="-1"></a>  <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">1</span>) row <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, row <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># up</span></span>
+<span id="cb48-30"><a href="intrinsic-rewards.html#cb48-30" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">2</span>) col <span class="ot">&lt;-</span> <span class="fu">min</span>(grid_size, col <span class="sc">+</span> <span class="dv">1</span>)  <span class="co"># right</span></span>
+<span id="cb48-31"><a href="intrinsic-rewards.html#cb48-31" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">3</span>) row <span class="ot">&lt;-</span> <span class="fu">min</span>(grid_size, row <span class="sc">+</span> <span class="dv">1</span>)  <span class="co"># down</span></span>
+<span id="cb48-32"><a href="intrinsic-rewards.html#cb48-32" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">4</span>) col <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, col <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># left</span></span>
+<span id="cb48-33"><a href="intrinsic-rewards.html#cb48-33" tabindex="-1"></a>  </span>
+<span id="cb48-34"><a href="intrinsic-rewards.html#cb48-34" tabindex="-1"></a>  <span class="fu">encode_state</span>(row, col)</span>
+<span id="cb48-35"><a href="intrinsic-rewards.html#cb48-35" tabindex="-1"></a>}</span>
+<span id="cb48-36"><a href="intrinsic-rewards.html#cb48-36" tabindex="-1"></a></span>
+<span id="cb48-37"><a href="intrinsic-rewards.html#cb48-37" tabindex="-1"></a><span class="co"># Extrinsic reward function</span></span>
+<span id="cb48-38"><a href="intrinsic-rewards.html#cb48-38" tabindex="-1"></a>get_extrinsic_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb48-39"><a href="intrinsic-rewards.html#cb48-39" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
+<span id="cb48-40"><a href="intrinsic-rewards.html#cb48-40" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">all</span>(pos <span class="sc">==</span> goal_state)) <span class="fu">return</span>(<span class="dv">10</span>)</span>
+<span id="cb48-41"><a href="intrinsic-rewards.html#cb48-41" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">0</span>)</span>
+<span id="cb48-42"><a href="intrinsic-rewards.html#cb48-42" tabindex="-1"></a>}</span>
+<span id="cb48-43"><a href="intrinsic-rewards.html#cb48-43" tabindex="-1"></a></span>
+<span id="cb48-44"><a href="intrinsic-rewards.html#cb48-44" tabindex="-1"></a><span class="co"># Intrinsic Curiosity Module implementation</span></span>
+<span id="cb48-45"><a href="intrinsic-rewards.html#cb48-45" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> grid_size<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb48-46"><a href="intrinsic-rewards.html#cb48-46" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb48-47"><a href="intrinsic-rewards.html#cb48-47" tabindex="-1"></a>feature_dim <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb48-48"><a href="intrinsic-rewards.html#cb48-48" tabindex="-1"></a></span>
+<span id="cb48-49"><a href="intrinsic-rewards.html#cb48-49" tabindex="-1"></a><span class="co"># Initialize networks (simplified linear models for demonstration)</span></span>
+<span id="cb48-50"><a href="intrinsic-rewards.html#cb48-50" tabindex="-1"></a><span class="co"># Forward model: predicts next state features from current features and action</span></span>
+<span id="cb48-51"><a href="intrinsic-rewards.html#cb48-51" tabindex="-1"></a>forward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(feature_dim <span class="sc">*</span> (feature_dim <span class="sc">+</span> n_actions), <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb48-52"><a href="intrinsic-rewards.html#cb48-52" tabindex="-1"></a>                      <span class="at">dim =</span> <span class="fu">c</span>(feature_dim, feature_dim <span class="sc">+</span> n_actions))</span>
+<span id="cb48-53"><a href="intrinsic-rewards.html#cb48-53" tabindex="-1"></a></span>
+<span id="cb48-54"><a href="intrinsic-rewards.html#cb48-54" tabindex="-1"></a><span class="co"># Inverse model: predicts action from state transition</span></span>
+<span id="cb48-55"><a href="intrinsic-rewards.html#cb48-55" tabindex="-1"></a>inverse_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(n_actions <span class="sc">*</span> (<span class="dv">2</span> <span class="sc">*</span> feature_dim), <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb48-56"><a href="intrinsic-rewards.html#cb48-56" tabindex="-1"></a>                      <span class="at">dim =</span> <span class="fu">c</span>(n_actions, <span class="dv">2</span> <span class="sc">*</span> feature_dim))</span>
+<span id="cb48-57"><a href="intrinsic-rewards.html#cb48-57" tabindex="-1"></a></span>
+<span id="cb48-58"><a href="intrinsic-rewards.html#cb48-58" tabindex="-1"></a><span class="co"># Feature encoder: maps states to feature representations</span></span>
+<span id="cb48-59"><a href="intrinsic-rewards.html#cb48-59" tabindex="-1"></a>feature_encoder <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(feature_dim <span class="sc">*</span> <span class="dv">2</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb48-60"><a href="intrinsic-rewards.html#cb48-60" tabindex="-1"></a>                        <span class="at">dim =</span> <span class="fu">c</span>(feature_dim, <span class="dv">2</span>))</span>
+<span id="cb48-61"><a href="intrinsic-rewards.html#cb48-61" tabindex="-1"></a></span>
+<span id="cb48-62"><a href="intrinsic-rewards.html#cb48-62" tabindex="-1"></a><span class="co"># Helper functions for neural network operations</span></span>
+<span id="cb48-63"><a href="intrinsic-rewards.html#cb48-63" tabindex="-1"></a>get_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb48-64"><a href="intrinsic-rewards.html#cb48-64" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
+<span id="cb48-65"><a href="intrinsic-rewards.html#cb48-65" tabindex="-1"></a>  normalized_pos <span class="ot">&lt;-</span> (pos <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> (grid_size <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># normalize to [0,1]</span></span>
+<span id="cb48-66"><a href="intrinsic-rewards.html#cb48-66" tabindex="-1"></a>  features <span class="ot">&lt;-</span> feature_encoder <span class="sc">%*%</span> normalized_pos</span>
+<span id="cb48-67"><a href="intrinsic-rewards.html#cb48-67" tabindex="-1"></a>  <span class="fu">tanh</span>(features)  <span class="co"># activation function</span></span>
+<span id="cb48-68"><a href="intrinsic-rewards.html#cb48-68" tabindex="-1"></a>}</span>
+<span id="cb48-69"><a href="intrinsic-rewards.html#cb48-69" tabindex="-1"></a></span>
+<span id="cb48-70"><a href="intrinsic-rewards.html#cb48-70" tabindex="-1"></a>action_to_onehot <span class="ot">&lt;-</span> <span class="cf">function</span>(action) {</span>
+<span id="cb48-71"><a href="intrinsic-rewards.html#cb48-71" tabindex="-1"></a>  onehot <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_actions)</span>
+<span id="cb48-72"><a href="intrinsic-rewards.html#cb48-72" tabindex="-1"></a>  onehot[action] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb48-73"><a href="intrinsic-rewards.html#cb48-73" tabindex="-1"></a>  onehot</span>
+<span id="cb48-74"><a href="intrinsic-rewards.html#cb48-74" tabindex="-1"></a>}</span>
+<span id="cb48-75"><a href="intrinsic-rewards.html#cb48-75" tabindex="-1"></a></span>
+<span id="cb48-76"><a href="intrinsic-rewards.html#cb48-76" tabindex="-1"></a><span class="co"># Compute intrinsic reward using ICM</span></span>
+<span id="cb48-77"><a href="intrinsic-rewards.html#cb48-77" tabindex="-1"></a>get_intrinsic_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action, next_state, <span class="at">alpha =</span> <span class="fl">0.01</span>) {</span>
+<span id="cb48-78"><a href="intrinsic-rewards.html#cb48-78" tabindex="-1"></a>  features_t <span class="ot">&lt;-</span> <span class="fu">get_features</span>(state)</span>
+<span id="cb48-79"><a href="intrinsic-rewards.html#cb48-79" tabindex="-1"></a>  features_t1 <span class="ot">&lt;-</span> <span class="fu">get_features</span>(next_state)</span>
+<span id="cb48-80"><a href="intrinsic-rewards.html#cb48-80" tabindex="-1"></a>  action_onehot <span class="ot">&lt;-</span> <span class="fu">action_to_onehot</span>(action)</span>
+<span id="cb48-81"><a href="intrinsic-rewards.html#cb48-81" tabindex="-1"></a>  </span>
+<span id="cb48-82"><a href="intrinsic-rewards.html#cb48-82" tabindex="-1"></a>  <span class="co"># Forward model prediction</span></span>
+<span id="cb48-83"><a href="intrinsic-rewards.html#cb48-83" tabindex="-1"></a>  forward_input <span class="ot">&lt;-</span> <span class="fu">c</span>(features_t, action_onehot)</span>
+<span id="cb48-84"><a href="intrinsic-rewards.html#cb48-84" tabindex="-1"></a>  predicted_features <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(forward_model <span class="sc">%*%</span> forward_input)</span>
+<span id="cb48-85"><a href="intrinsic-rewards.html#cb48-85" tabindex="-1"></a>  </span>
+<span id="cb48-86"><a href="intrinsic-rewards.html#cb48-86" tabindex="-1"></a>  <span class="co"># Prediction error as intrinsic reward</span></span>
+<span id="cb48-87"><a href="intrinsic-rewards.html#cb48-87" tabindex="-1"></a>  prediction_error <span class="ot">&lt;-</span> <span class="fu">sum</span>((predicted_features <span class="sc">-</span> features_t1)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb48-88"><a href="intrinsic-rewards.html#cb48-88" tabindex="-1"></a>  intrinsic_reward <span class="ot">&lt;-</span> alpha <span class="sc">*</span> prediction_error</span>
+<span id="cb48-89"><a href="intrinsic-rewards.html#cb48-89" tabindex="-1"></a>  </span>
+<span id="cb48-90"><a href="intrinsic-rewards.html#cb48-90" tabindex="-1"></a>  <span class="co"># Update forward model (simple gradient descent)</span></span>
+<span id="cb48-91"><a href="intrinsic-rewards.html#cb48-91" tabindex="-1"></a>  <span class="co"># Gradient of loss w.r.t. weights: error * input</span></span>
+<span id="cb48-92"><a href="intrinsic-rewards.html#cb48-92" tabindex="-1"></a>  error_gradient <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (predicted_features <span class="sc">-</span> features_t1)</span>
+<span id="cb48-93"><a href="intrinsic-rewards.html#cb48-93" tabindex="-1"></a>  </span>
+<span id="cb48-94"><a href="intrinsic-rewards.html#cb48-94" tabindex="-1"></a>  <span class="co"># Update each row of the forward model</span></span>
+<span id="cb48-95"><a href="intrinsic-rewards.html#cb48-95" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>feature_dim) {</span>
+<span id="cb48-96"><a href="intrinsic-rewards.html#cb48-96" tabindex="-1"></a>    forward_model[i, ] <span class="ot">&lt;&lt;-</span> forward_model[i, ] <span class="sc">-</span> <span class="fl">0.001</span> <span class="sc">*</span> error_gradient[i] <span class="sc">*</span> forward_input</span>
+<span id="cb48-97"><a href="intrinsic-rewards.html#cb48-97" tabindex="-1"></a>  }</span>
+<span id="cb48-98"><a href="intrinsic-rewards.html#cb48-98" tabindex="-1"></a>  </span>
+<span id="cb48-99"><a href="intrinsic-rewards.html#cb48-99" tabindex="-1"></a>  intrinsic_reward</span>
+<span id="cb48-100"><a href="intrinsic-rewards.html#cb48-100" tabindex="-1"></a>}</span>
+<span id="cb48-101"><a href="intrinsic-rewards.html#cb48-101" tabindex="-1"></a></span>
+<span id="cb48-102"><a href="intrinsic-rewards.html#cb48-102" tabindex="-1"></a><span class="co"># Q-learning with intrinsic motivation</span></span>
+<span id="cb48-103"><a href="intrinsic-rewards.html#cb48-103" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb48-104"><a href="intrinsic-rewards.html#cb48-104" tabindex="-1"></a>visit_counts <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states))</span>
+<span id="cb48-105"><a href="intrinsic-rewards.html#cb48-105" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb48-106"><a href="intrinsic-rewards.html#cb48-106" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.99</span></span>
+<span id="cb48-107"><a href="intrinsic-rewards.html#cb48-107" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
+<span id="cb48-108"><a href="intrinsic-rewards.html#cb48-108" tabindex="-1"></a>intrinsic_weight <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb48-109"><a href="intrinsic-rewards.html#cb48-109" tabindex="-1"></a></span>
+<span id="cb48-110"><a href="intrinsic-rewards.html#cb48-110" tabindex="-1"></a><span class="co"># Training metrics</span></span>
+<span id="cb48-111"><a href="intrinsic-rewards.html#cb48-111" tabindex="-1"></a>episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb48-112"><a href="intrinsic-rewards.html#cb48-112" tabindex="-1"></a>episode_lengths <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb48-113"><a href="intrinsic-rewards.html#cb48-113" tabindex="-1"></a>intrinsic_rewards_history <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb48-114"><a href="intrinsic-rewards.html#cb48-114" tabindex="-1"></a></span>
+<span id="cb48-115"><a href="intrinsic-rewards.html#cb48-115" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training curiosity-driven agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Training curiosity-driven agent...</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="intrinsic-rewards.html#cb50-1" tabindex="-1"></a><span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb50-2"><a href="intrinsic-rewards.html#cb50-2" tabindex="-1"></a>  state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(<span class="dv">1</span>, <span class="dv">1</span>)  <span class="co"># start at top-left</span></span>
+<span id="cb50-3"><a href="intrinsic-rewards.html#cb50-3" tabindex="-1"></a>  episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb50-4"><a href="intrinsic-rewards.html#cb50-4" tabindex="-1"></a>  episode_intrinsic <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb50-5"><a href="intrinsic-rewards.html#cb50-5" tabindex="-1"></a>  </span>
+<span id="cb50-6"><a href="intrinsic-rewards.html#cb50-6" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>max_steps) {</span>
+<span id="cb50-7"><a href="intrinsic-rewards.html#cb50-7" tabindex="-1"></a>    visit_counts[state] <span class="ot">&lt;-</span> visit_counts[state] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb50-8"><a href="intrinsic-rewards.html#cb50-8" tabindex="-1"></a>    </span>
+<span id="cb50-9"><a href="intrinsic-rewards.html#cb50-9" tabindex="-1"></a>    <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb50-10"><a href="intrinsic-rewards.html#cb50-10" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb50-11"><a href="intrinsic-rewards.html#cb50-11" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb50-12"><a href="intrinsic-rewards.html#cb50-12" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb50-13"><a href="intrinsic-rewards.html#cb50-13" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
+<span id="cb50-14"><a href="intrinsic-rewards.html#cb50-14" tabindex="-1"></a>    }</span>
+<span id="cb50-15"><a href="intrinsic-rewards.html#cb50-15" tabindex="-1"></a>    </span>
+<span id="cb50-16"><a href="intrinsic-rewards.html#cb50-16" tabindex="-1"></a>    <span class="co"># Take action</span></span>
+<span id="cb50-17"><a href="intrinsic-rewards.html#cb50-17" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">get_next_state</span>(state, action)</span>
+<span id="cb50-18"><a href="intrinsic-rewards.html#cb50-18" tabindex="-1"></a>    </span>
+<span id="cb50-19"><a href="intrinsic-rewards.html#cb50-19" tabindex="-1"></a>    <span class="co"># Compute rewards</span></span>
+<span id="cb50-20"><a href="intrinsic-rewards.html#cb50-20" tabindex="-1"></a>    extrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_extrinsic_reward</span>(next_state)</span>
+<span id="cb50-21"><a href="intrinsic-rewards.html#cb50-21" tabindex="-1"></a>    intrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_intrinsic_reward</span>(state, action, next_state)</span>
+<span id="cb50-22"><a href="intrinsic-rewards.html#cb50-22" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> extrinsic_reward <span class="sc">+</span> intrinsic_weight <span class="sc">*</span> intrinsic_reward</span>
+<span id="cb50-23"><a href="intrinsic-rewards.html#cb50-23" tabindex="-1"></a>    </span>
+<span id="cb50-24"><a href="intrinsic-rewards.html#cb50-24" tabindex="-1"></a>    episode_intrinsic <span class="ot">&lt;-</span> <span class="fu">c</span>(episode_intrinsic, intrinsic_reward)</span>
+<span id="cb50-25"><a href="intrinsic-rewards.html#cb50-25" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> extrinsic_reward</span>
+<span id="cb50-26"><a href="intrinsic-rewards.html#cb50-26" tabindex="-1"></a>    </span>
+<span id="cb50-27"><a href="intrinsic-rewards.html#cb50-27" tabindex="-1"></a>    <span class="co"># Q-learning update</span></span>
+<span id="cb50-28"><a href="intrinsic-rewards.html#cb50-28" tabindex="-1"></a>    td_target <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[next_state, ])</span>
+<span id="cb50-29"><a href="intrinsic-rewards.html#cb50-29" tabindex="-1"></a>    td_error <span class="ot">&lt;-</span> td_target <span class="sc">-</span> Q[state, action]</span>
+<span id="cb50-30"><a href="intrinsic-rewards.html#cb50-30" tabindex="-1"></a>    Q[state, action] <span class="ot">&lt;-</span> Q[state, action] <span class="sc">+</span> learning_rate <span class="sc">*</span> td_error</span>
+<span id="cb50-31"><a href="intrinsic-rewards.html#cb50-31" tabindex="-1"></a>    </span>
+<span id="cb50-32"><a href="intrinsic-rewards.html#cb50-32" tabindex="-1"></a>    <span class="co"># Check for goal</span></span>
+<span id="cb50-33"><a href="intrinsic-rewards.html#cb50-33" tabindex="-1"></a>    <span class="cf">if</span> (extrinsic_reward <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb50-34"><a href="intrinsic-rewards.html#cb50-34" tabindex="-1"></a>      episode_lengths[episode] <span class="ot">&lt;-</span> step</span>
+<span id="cb50-35"><a href="intrinsic-rewards.html#cb50-35" tabindex="-1"></a>      <span class="cf">break</span></span>
+<span id="cb50-36"><a href="intrinsic-rewards.html#cb50-36" tabindex="-1"></a>    }</span>
+<span id="cb50-37"><a href="intrinsic-rewards.html#cb50-37" tabindex="-1"></a>    </span>
+<span id="cb50-38"><a href="intrinsic-rewards.html#cb50-38" tabindex="-1"></a>    state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb50-39"><a href="intrinsic-rewards.html#cb50-39" tabindex="-1"></a>  }</span>
+<span id="cb50-40"><a href="intrinsic-rewards.html#cb50-40" tabindex="-1"></a>  </span>
+<span id="cb50-41"><a href="intrinsic-rewards.html#cb50-41" tabindex="-1"></a>  <span class="cf">if</span> (episode_reward <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb50-42"><a href="intrinsic-rewards.html#cb50-42" tabindex="-1"></a>    episode_lengths[episode] <span class="ot">&lt;-</span> max_steps</span>
+<span id="cb50-43"><a href="intrinsic-rewards.html#cb50-43" tabindex="-1"></a>  }</span>
+<span id="cb50-44"><a href="intrinsic-rewards.html#cb50-44" tabindex="-1"></a>  </span>
+<span id="cb50-45"><a href="intrinsic-rewards.html#cb50-45" tabindex="-1"></a>  episode_rewards[episode] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb50-46"><a href="intrinsic-rewards.html#cb50-46" tabindex="-1"></a>  intrinsic_rewards_history[[episode]] <span class="ot">&lt;-</span> episode_intrinsic</span>
+<span id="cb50-47"><a href="intrinsic-rewards.html#cb50-47" tabindex="-1"></a>  </span>
+<span id="cb50-48"><a href="intrinsic-rewards.html#cb50-48" tabindex="-1"></a>  <span class="co"># Decay exploration</span></span>
+<span id="cb50-49"><a href="intrinsic-rewards.html#cb50-49" tabindex="-1"></a>  <span class="cf">if</span> (episode <span class="sc">%%</span> <span class="dv">50</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb50-50"><a href="intrinsic-rewards.html#cb50-50" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.05</span>, epsilon <span class="sc">*</span> <span class="fl">0.95</span>)</span>
+<span id="cb50-51"><a href="intrinsic-rewards.html#cb50-51" tabindex="-1"></a>    avg_length <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_lengths[<span class="fu">max</span>(<span class="dv">1</span>, episode<span class="dv">-49</span>)<span class="sc">:</span>episode])</span>
+<span id="cb50-52"><a href="intrinsic-rewards.html#cb50-52" tabindex="-1"></a>    success_rate <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_rewards[<span class="fu">max</span>(<span class="dv">1</span>, episode<span class="dv">-49</span>)<span class="sc">:</span>episode] <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb50-53"><a href="intrinsic-rewards.html#cb50-53" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Episode %d: Success rate %.2f, Avg length %.1f</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb50-54"><a href="intrinsic-rewards.html#cb50-54" tabindex="-1"></a>                episode, success_rate, avg_length))</span>
+<span id="cb50-55"><a href="intrinsic-rewards.html#cb50-55" tabindex="-1"></a>  }</span>
+<span id="cb50-56"><a href="intrinsic-rewards.html#cb50-56" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Episode 50: Success rate 0.00, Avg length 100.0
+## Episode 100: Success rate 0.00, Avg length 100.0
+## Episode 150: Success rate 0.00, Avg length 100.0
+## Episode 200: Success rate 0.00, Avg length 100.0
+## Episode 250: Success rate 0.00, Avg length 100.0
+## Episode 300: Success rate 0.00, Avg length 100.0
+## Episode 350: Success rate 0.00, Avg length 100.0
+## Episode 400: Success rate 0.00, Avg length 100.0
+## Episode 450: Success rate 0.00, Avg length 100.0
+## Episode 500: Success rate 0.00, Avg length 100.0</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="intrinsic-rewards.html#cb52-1" tabindex="-1"></a><span class="co"># Analyze learning progress</span></span>
+<span id="cb52-2"><a href="intrinsic-rewards.html#cb52-2" tabindex="-1"></a>success_episodes <span class="ot">&lt;-</span> <span class="fu">which</span>(episode_rewards <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb52-3"><a href="intrinsic-rewards.html#cb52-3" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(success_episodes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb52-4"><a href="intrinsic-rewards.html#cb52-4" tabindex="-1"></a>  first_success <span class="ot">&lt;-</span> <span class="fu">min</span>(success_episodes)</span>
+<span id="cb52-5"><a href="intrinsic-rewards.html#cb52-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;First successful episode: %d</span><span class="sc">\n</span><span class="st">&quot;</span>, first_success))</span>
+<span id="cb52-6"><a href="intrinsic-rewards.html#cb52-6" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final success rate (last 100 episodes): %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb52-7"><a href="intrinsic-rewards.html#cb52-7" tabindex="-1"></a>              <span class="fu">mean</span>(episode_rewards[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes] <span class="sc">&gt;</span> <span class="dv">0</span>)))</span>
+<span id="cb52-8"><a href="intrinsic-rewards.html#cb52-8" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb52-9"><a href="intrinsic-rewards.html#cb52-9" tabindex="-1"></a>  first_success <span class="ot">&lt;-</span> n_episodes</span>
+<span id="cb52-10"><a href="intrinsic-rewards.html#cb52-10" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;No successful episodes found</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb52-11"><a href="intrinsic-rewards.html#cb52-11" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## No successful episodes found</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="intrinsic-rewards.html#cb54-1" tabindex="-1"></a><span class="co"># Visualize learned policy</span></span>
+<span id="cb54-2"><a href="intrinsic-rewards.html#cb54-2" tabindex="-1"></a>learned_policy <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(grid_size, grid_size))</span>
+<span id="cb54-3"><a href="intrinsic-rewards.html#cb54-3" tabindex="-1"></a><span class="cf">for</span> (row <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
+<span id="cb54-4"><a href="intrinsic-rewards.html#cb54-4" tabindex="-1"></a>  <span class="cf">for</span> (col <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
+<span id="cb54-5"><a href="intrinsic-rewards.html#cb54-5" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(row, col)</span>
+<span id="cb54-6"><a href="intrinsic-rewards.html#cb54-6" tabindex="-1"></a>    learned_policy[row, col] <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
+<span id="cb54-7"><a href="intrinsic-rewards.html#cb54-7" tabindex="-1"></a>  }</span>
+<span id="cb54-8"><a href="intrinsic-rewards.html#cb54-8" tabindex="-1"></a>}</span>
+<span id="cb54-9"><a href="intrinsic-rewards.html#cb54-9" tabindex="-1"></a></span>
+<span id="cb54-10"><a href="intrinsic-rewards.html#cb54-10" tabindex="-1"></a><span class="co"># Create visualization data frame</span></span>
+<span id="cb54-11"><a href="intrinsic-rewards.html#cb54-11" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span>grid_size, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span>grid_size)</span>
+<span id="cb54-12"><a href="intrinsic-rewards.html#cb54-12" tabindex="-1"></a>policy_df<span class="sc">$</span>action <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(learned_policy)</span>
+<span id="cb54-13"><a href="intrinsic-rewards.html#cb54-13" tabindex="-1"></a>policy_df<span class="sc">$</span>action_char <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;↑&quot;</span>, <span class="st">&quot;→&quot;</span>, <span class="st">&quot;↓&quot;</span>, <span class="st">&quot;←&quot;</span>)[policy_df<span class="sc">$</span>action]</span>
+<span id="cb54-14"><a href="intrinsic-rewards.html#cb54-14" tabindex="-1"></a></span>
+<span id="cb54-15"><a href="intrinsic-rewards.html#cb54-15" tabindex="-1"></a><span class="co"># Create heatmap of visit counts</span></span>
+<span id="cb54-16"><a href="intrinsic-rewards.html#cb54-16" tabindex="-1"></a>visit_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(visit_counts, <span class="at">nrow =</span> grid_size, <span class="at">ncol =</span> grid_size, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-17"><a href="intrinsic-rewards.html#cb54-17" tabindex="-1"></a>visit_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span>grid_size, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span>grid_size)</span>
+<span id="cb54-18"><a href="intrinsic-rewards.html#cb54-18" tabindex="-1"></a>visit_df<span class="sc">$</span>visits <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(visit_matrix)</span>
+<span id="cb54-19"><a href="intrinsic-rewards.html#cb54-19" tabindex="-1"></a></span>
+<span id="cb54-20"><a href="intrinsic-rewards.html#cb54-20" tabindex="-1"></a><span class="co"># Plot learning curves</span></span>
+<span id="cb54-21"><a href="intrinsic-rewards.html#cb54-21" tabindex="-1"></a>learning_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb54-22"><a href="intrinsic-rewards.html#cb54-22" tabindex="-1"></a>  <span class="at">episode =</span> <span class="dv">1</span><span class="sc">:</span>n_episodes,</span>
+<span id="cb54-23"><a href="intrinsic-rewards.html#cb54-23" tabindex="-1"></a>  <span class="at">success =</span> <span class="fu">as.numeric</span>(episode_rewards <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb54-24"><a href="intrinsic-rewards.html#cb54-24" tabindex="-1"></a>  <span class="at">length =</span> episode_lengths</span>
+<span id="cb54-25"><a href="intrinsic-rewards.html#cb54-25" tabindex="-1"></a>)</span>
+<span id="cb54-26"><a href="intrinsic-rewards.html#cb54-26" tabindex="-1"></a></span>
+<span id="cb54-27"><a href="intrinsic-rewards.html#cb54-27" tabindex="-1"></a><span class="co"># Moving average for smoothing (handle edge cases)</span></span>
+<span id="cb54-28"><a href="intrinsic-rewards.html#cb54-28" tabindex="-1"></a>window_size <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb54-29"><a href="intrinsic-rewards.html#cb54-29" tabindex="-1"></a><span class="cf">if</span> (n_episodes <span class="sc">&gt;=</span> window_size) {</span>
+<span id="cb54-30"><a href="intrinsic-rewards.html#cb54-30" tabindex="-1"></a>  success_smooth <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, n_episodes)</span>
+<span id="cb54-31"><a href="intrinsic-rewards.html#cb54-31" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> window_size<span class="sc">:</span>n_episodes) {</span>
+<span id="cb54-32"><a href="intrinsic-rewards.html#cb54-32" tabindex="-1"></a>    success_smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(learning_data<span class="sc">$</span>success[(i<span class="sc">-</span>window_size<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>i])</span>
+<span id="cb54-33"><a href="intrinsic-rewards.html#cb54-33" tabindex="-1"></a>  }</span>
+<span id="cb54-34"><a href="intrinsic-rewards.html#cb54-34" tabindex="-1"></a>  learning_data<span class="sc">$</span>success_ma <span class="ot">&lt;-</span> success_smooth</span>
+<span id="cb54-35"><a href="intrinsic-rewards.html#cb54-35" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb54-36"><a href="intrinsic-rewards.html#cb54-36" tabindex="-1"></a>  learning_data<span class="sc">$</span>success_ma <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(learning_data<span class="sc">$</span>success) <span class="sc">/</span> <span class="fu">seq_along</span>(learning_data<span class="sc">$</span>success)</span>
+<span id="cb54-37"><a href="intrinsic-rewards.html#cb54-37" tabindex="-1"></a>}</span>
+<span id="cb54-38"><a href="intrinsic-rewards.html#cb54-38" tabindex="-1"></a></span>
+<span id="cb54-39"><a href="intrinsic-rewards.html#cb54-39" tabindex="-1"></a><span class="co"># Create learning curve plot</span></span>
+<span id="cb54-40"><a href="intrinsic-rewards.html#cb54-40" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(learning_data, <span class="fu">aes</span>(<span class="at">x =</span> episode)) <span class="sc">+</span></span>
+<span id="cb54-41"><a href="intrinsic-rewards.html#cb54-41" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> success_ma), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb54-42"><a href="intrinsic-rewards.html#cb54-42" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> success), <span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">span =</span> <span class="fl">0.3</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-43"><a href="intrinsic-rewards.html#cb54-43" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Progress&quot;</span>,</span>
+<span id="cb54-44"><a href="intrinsic-rewards.html#cb54-44" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
+<span id="cb54-45"><a href="intrinsic-rewards.html#cb54-45" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Success Rate&quot;</span>,</span>
+<span id="cb54-46"><a href="intrinsic-rewards.html#cb54-46" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Blue: Moving average, Red: Smoothed trend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-47"><a href="intrinsic-rewards.html#cb54-47" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb54-48"><a href="intrinsic-rewards.html#cb54-48" tabindex="-1"></a></span>
+<span id="cb54-49"><a href="intrinsic-rewards.html#cb54-49" tabindex="-1"></a><span class="co"># Create policy visualization</span></span>
+<span id="cb54-50"><a href="intrinsic-rewards.html#cb54-50" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> grid_size <span class="sc">+</span> <span class="dv">1</span> <span class="sc">-</span> row)) <span class="sc">+</span></span>
+<span id="cb54-51"><a href="intrinsic-rewards.html#cb54-51" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-52"><a href="intrinsic-rewards.html#cb54-52" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> action_char), <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb54-53"><a href="intrinsic-rewards.html#cb54-53" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">col =</span> grid_size, <span class="at">row =</span> <span class="dv">1</span>), </span>
+<span id="cb54-54"><a href="intrinsic-rewards.html#cb54-54" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> row), <span class="at">fill =</span> <span class="st">&quot;gold&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb54-55"><a href="intrinsic-rewards.html#cb54-55" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learned Policy&quot;</span>, </span>
+<span id="cb54-56"><a href="intrinsic-rewards.html#cb54-56" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Arrows show best action, Gold = Goal&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-57"><a href="intrinsic-rewards.html#cb54-57" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb54-58"><a href="intrinsic-rewards.html#cb54-58" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb54-59"><a href="intrinsic-rewards.html#cb54-59" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb54-60"><a href="intrinsic-rewards.html#cb54-60" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span>
+<span id="cb54-61"><a href="intrinsic-rewards.html#cb54-61" tabindex="-1"></a></span>
+<span id="cb54-62"><a href="intrinsic-rewards.html#cb54-62" tabindex="-1"></a><span class="co"># Create visit count heatmap</span></span>
+<span id="cb54-63"><a href="intrinsic-rewards.html#cb54-63" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(visit_df, <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> grid_size <span class="sc">+</span> <span class="dv">1</span> <span class="sc">-</span> row, <span class="at">fill =</span> visits)) <span class="sc">+</span></span>
+<span id="cb54-64"><a href="intrinsic-rewards.html#cb54-64" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb54-65"><a href="intrinsic-rewards.html#cb54-65" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;white&quot;</span>, <span class="at">high =</span> <span class="st">&quot;darkblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-66"><a href="intrinsic-rewards.html#cb54-66" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;State Visitation Frequency&quot;</span>,</span>
+<span id="cb54-67"><a href="intrinsic-rewards.html#cb54-67" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Visit Count&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-68"><a href="intrinsic-rewards.html#cb54-68" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb54-69"><a href="intrinsic-rewards.html#cb54-69" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb54-70"><a href="intrinsic-rewards.html#cb54-70" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb54-71"><a href="intrinsic-rewards.html#cb54-71" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span>
+<span id="cb54-72"><a href="intrinsic-rewards.html#cb54-72" tabindex="-1"></a></span>
+<span id="cb54-73"><a href="intrinsic-rewards.html#cb54-73" tabindex="-1"></a><span class="fu">print</span>(p1)</span></code></pre></div>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 49 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="intrinsic-rewards.html#cb57-1" tabindex="-1"></a><span class="fu">print</span>(p2)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="intrinsic-rewards.html#cb58-1" tabindex="-1"></a><span class="fu">print</span>(p3)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="intrinsic-rewards.html#cb59-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Learned policy (arrows show best action):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Learned policy (arrows show best action):</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="intrinsic-rewards.html#cb61-1" tabindex="-1"></a><span class="cf">for</span> (row <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
+<span id="cb61-2"><a href="intrinsic-rewards.html#cb61-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Row %d: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, row, </span>
+<span id="cb61-3"><a href="intrinsic-rewards.html#cb61-3" tabindex="-1"></a>              <span class="fu">paste</span>(<span class="fu">c</span>(<span class="st">&quot;↑&quot;</span>, <span class="st">&quot;→&quot;</span>, <span class="st">&quot;↓&quot;</span>, <span class="st">&quot;←&quot;</span>)[learned_policy[row, ]], <span class="at">collapse =</span> <span class="st">&quot; &quot;</span>)))</span>
+<span id="cb61-4"><a href="intrinsic-rewards.html#cb61-4" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Row 1: → → → → → → → ←
+## Row 2: ↑ ← ↑ ↑ ↑ ↑ ↑ ←
+## Row 3: ↑ ↑ ↑ ↑ ↑ ← → ←
+## Row 4: ↑ ↑ ↑ ↑ ← ← ← ↑
+## Row 5: ↑ ↑ ↑ ↑ ↑ ↑ ← ↑
+## Row 6: ↑ ↑ → ↑ ↑ ↑ ↑ ↑
+## Row 7: ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑
+## Row 8: ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑</code></pre>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="intrinsic-rewards.html#cb63-1" tabindex="-1"></a><span class="co"># Compare with baseline (random exploration)</span></span>
+<span id="cb63-2"><a href="intrinsic-rewards.html#cb63-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Comparing with random baseline...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## Comparing with random baseline...</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="intrinsic-rewards.html#cb65-1" tabindex="-1"></a>Q_random <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb65-2"><a href="intrinsic-rewards.html#cb65-2" tabindex="-1"></a>random_success <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb65-3"><a href="intrinsic-rewards.html#cb65-3" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="intrinsic-rewards.html#cb65-4" tabindex="-1"></a><span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb65-5"><a href="intrinsic-rewards.html#cb65-5" tabindex="-1"></a>  state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb65-6"><a href="intrinsic-rewards.html#cb65-6" tabindex="-1"></a>  </span>
+<span id="cb65-7"><a href="intrinsic-rewards.html#cb65-7" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>max_steps) {</span>
+<span id="cb65-8"><a href="intrinsic-rewards.html#cb65-8" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
+<span id="cb65-9"><a href="intrinsic-rewards.html#cb65-9" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb65-10"><a href="intrinsic-rewards.html#cb65-10" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb65-11"><a href="intrinsic-rewards.html#cb65-11" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q_random[state, ])</span>
+<span id="cb65-12"><a href="intrinsic-rewards.html#cb65-12" tabindex="-1"></a>    }</span>
+<span id="cb65-13"><a href="intrinsic-rewards.html#cb65-13" tabindex="-1"></a>    </span>
+<span id="cb65-14"><a href="intrinsic-rewards.html#cb65-14" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">get_next_state</span>(state, action)</span>
+<span id="cb65-15"><a href="intrinsic-rewards.html#cb65-15" tabindex="-1"></a>    extrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_extrinsic_reward</span>(next_state)</span>
+<span id="cb65-16"><a href="intrinsic-rewards.html#cb65-16" tabindex="-1"></a>    </span>
+<span id="cb65-17"><a href="intrinsic-rewards.html#cb65-17" tabindex="-1"></a>    <span class="co"># Standard Q-learning (no intrinsic reward)</span></span>
+<span id="cb65-18"><a href="intrinsic-rewards.html#cb65-18" tabindex="-1"></a>    td_target <span class="ot">&lt;-</span> extrinsic_reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q_random[next_state, ])</span>
+<span id="cb65-19"><a href="intrinsic-rewards.html#cb65-19" tabindex="-1"></a>    td_error <span class="ot">&lt;-</span> td_target <span class="sc">-</span> Q_random[state, action]</span>
+<span id="cb65-20"><a href="intrinsic-rewards.html#cb65-20" tabindex="-1"></a>    Q_random[state, action] <span class="ot">&lt;-</span> Q_random[state, action] <span class="sc">+</span> learning_rate <span class="sc">*</span> td_error</span>
+<span id="cb65-21"><a href="intrinsic-rewards.html#cb65-21" tabindex="-1"></a>    </span>
+<span id="cb65-22"><a href="intrinsic-rewards.html#cb65-22" tabindex="-1"></a>    <span class="cf">if</span> (extrinsic_reward <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb65-23"><a href="intrinsic-rewards.html#cb65-23" tabindex="-1"></a>      random_success[episode] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb65-24"><a href="intrinsic-rewards.html#cb65-24" tabindex="-1"></a>      <span class="cf">break</span></span>
+<span id="cb65-25"><a href="intrinsic-rewards.html#cb65-25" tabindex="-1"></a>    }</span>
+<span id="cb65-26"><a href="intrinsic-rewards.html#cb65-26" tabindex="-1"></a>    </span>
+<span id="cb65-27"><a href="intrinsic-rewards.html#cb65-27" tabindex="-1"></a>    state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb65-28"><a href="intrinsic-rewards.html#cb65-28" tabindex="-1"></a>  }</span>
+<span id="cb65-29"><a href="intrinsic-rewards.html#cb65-29" tabindex="-1"></a>}</span>
+<span id="cb65-30"><a href="intrinsic-rewards.html#cb65-30" tabindex="-1"></a></span>
+<span id="cb65-31"><a href="intrinsic-rewards.html#cb65-31" tabindex="-1"></a>random_first_success <span class="ot">&lt;-</span> <span class="fu">which</span>(random_success <span class="sc">&gt;</span> <span class="dv">0</span>)[<span class="dv">1</span>]</span>
+<span id="cb65-32"><a href="intrinsic-rewards.html#cb65-32" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(random_first_success)) random_first_success <span class="ot">&lt;-</span> n_episodes</span>
+<span id="cb65-33"><a href="intrinsic-rewards.html#cb65-33" tabindex="-1"></a></span>
+<span id="cb65-34"><a href="intrinsic-rewards.html#cb65-34" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Curiosity agent first success: episode %d</span><span class="sc">\n</span><span class="st">&quot;</span>, first_success))</span></code></pre></div>
+<pre><code>## Curiosity agent first success: episode 500</code></pre>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="intrinsic-rewards.html#cb67-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Random agent first success: episode %d</span><span class="sc">\n</span><span class="st">&quot;</span>, random_first_success))</span></code></pre></div>
+<pre><code>## Random agent first success: episode 500</code></pre>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="intrinsic-rewards.html#cb69-1" tabindex="-1"></a><span class="cf">if</span> (first_success <span class="sc">&lt;</span> n_episodes <span class="sc">&amp;&amp;</span> random_first_success <span class="sc">&lt;</span> n_episodes) {</span>
+<span id="cb69-2"><a href="intrinsic-rewards.html#cb69-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Improvement: %.1fx faster learning</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb69-3"><a href="intrinsic-rewards.html#cb69-3" tabindex="-1"></a>              random_first_success <span class="sc">/</span> first_success))</span>
+<span id="cb69-4"><a href="intrinsic-rewards.html#cb69-4" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (first_success <span class="sc">&lt;</span> random_first_success) {</span>
+<span id="cb69-5"><a href="intrinsic-rewards.html#cb69-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Curiosity agent learned faster</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb69-6"><a href="intrinsic-rewards.html#cb69-6" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb69-7"><a href="intrinsic-rewards.html#cb69-7" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Both agents had similar performance</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb69-8"><a href="intrinsic-rewards.html#cb69-8" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Both agents had similar performance</code></pre>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="intrinsic-rewards.html#cb71-1" tabindex="-1"></a><span class="co"># Final performance comparison</span></span>
+<span id="cb71-2"><a href="intrinsic-rewards.html#cb71-2" tabindex="-1"></a>curiosity_final_success <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_rewards[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes] <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb71-3"><a href="intrinsic-rewards.html#cb71-3" tabindex="-1"></a>random_final_success <span class="ot">&lt;-</span> <span class="fu">mean</span>(random_success[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes])</span>
+<span id="cb71-4"><a href="intrinsic-rewards.html#cb71-4" tabindex="-1"></a></span>
+<span id="cb71-5"><a href="intrinsic-rewards.html#cb71-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final 100 episodes success rate:</span><span class="sc">\n</span><span class="st">&quot;</span>))</span></code></pre></div>
+<pre><code>## Final 100 episodes success rate:</code></pre>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="intrinsic-rewards.html#cb73-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Curiosity agent: %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, curiosity_final_success))</span></code></pre></div>
+<pre><code>## Curiosity agent: 0.00</code></pre>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="intrinsic-rewards.html#cb75-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Random agent: %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, random_final_success))</span></code></pre></div>
+<pre><code>## Random agent: 0.00</code></pre>
+</div>
+<div id="advanced-intrinsic-motivation-mechanisms" class="section level2 hasAnchor" number="13.4">
+<h2><span class="header-section-number">13.4</span> Advanced Intrinsic Motivation Mechanisms<a href="intrinsic-rewards.html#advanced-intrinsic-motivation-mechanisms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Beyond basic curiosity and count-based approaches, several sophisticated mechanisms have emerged to address specific challenges in intrinsic motivation.</p>
+<p>The <strong>Go-Explore</strong> algorithm addresses the problem of detachment, where agents may discover promising regions but fail to return to them reliably. The method maintains an archive of interesting states and uses goal-conditioned policies to return to promising regions for further exploration.</p>
+<p><strong>Empowerment</strong> provides another perspective on intrinsic motivation, formalizing the intuition that agents should seek states where they have maximal influence over future outcomes. Mathematically, empowerment is defined as the mutual information between actions and future states:</p>
+<p><span class="math display">\[\text{Empowerment}(s) = I(A_{t:t+n}; S_{t+n+1} | S_t = s)\]</span></p>
+<p>This quantity measures how much an agent’s action choices affect future state distributions, providing intrinsic motivation toward states with high controllability.</p>
+<p><strong>Information Gain</strong> approaches reward agents for reducing uncertainty about environment parameters or dynamics. If the agent maintains a belief distribution <span class="math inline">\(p(\theta)\)</span> over environment parameters, the intrinsic reward for a transition <span class="math inline">\((s, a, s&#39;)\)</span> becomes:</p>
+<p><span class="math display">\[R_t^{\text{int}} = H[p(\theta | h_t)] - H[p(\theta | h_t, s_t, a_t, s_{t+1})]\]</span></p>
+<p>where <span class="math inline">\(H[\cdot]\)</span> denotes entropy and <span class="math inline">\(h_t\)</span> represents the agent’s history up to time <span class="math inline">\(t\)</span>.</p>
+</div>
+<div id="implementation-considerations-and-practical-guidelines" class="section level2 hasAnchor" number="13.5">
+<h2><span class="header-section-number">13.5</span> Implementation Considerations and Practical Guidelines<a href="intrinsic-rewards.html#implementation-considerations-and-practical-guidelines" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Successful deployment of intrinsic motivation requires careful attention to several design choices. The balance between intrinsic and extrinsic motivation proves crucial, as excessive intrinsic rewards can prevent agents from focusing on task objectives. The weighting parameter <span class="math inline">\(\lambda\)</span> typically requires tuning for each domain, with common values ranging from 0.1 to 1.0.</p>
+<p>The choice of intrinsic mechanism depends on problem characteristics. Curiosity-driven approaches work well in deterministic environments with learnable dynamics, while count-based methods suit stochastic environments where prediction-based curiosity might be misled by irreducant randomness. Information gain approaches excel when the environment has hidden parameters that can be discovered through exploration.</p>
+<p>Computational overhead represents another important consideration. Some intrinsic motivation mechanisms require training additional neural networks or maintaining complex data structures, potentially doubling computational requirements. Efficient implementations often approximate theoretical ideals to maintain practical feasibility.</p>
+</div>
+<div id="theoretical-analysis-and-convergence-properties" class="section level2 hasAnchor" number="13.6">
+<h2><span class="header-section-number">13.6</span> Theoretical Analysis and Convergence Properties<a href="intrinsic-rewards.html#theoretical-analysis-and-convergence-properties" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The theoretical foundations of intrinsic motivation remain an active area of research. Unlike standard RL, where convergence guarantees are well-established, intrinsic motivation introduces additional complexity through time-varying reward functions that depend on the agent’s learning progress.</p>
+<p>For count-based approaches, theoretical analysis shows that under certain regularity conditions, the induced exploration behavior leads to polynomial sample complexity for discovering rewarding states. The key insight is that intrinsic rewards create a curriculum that guides agents toward systematic exploration rather than random wandering.</p>
+<p>Curiosity-driven approaches present greater theoretical challenges due to their adaptive nature. The forward model’s learning progress affects the intrinsic reward signal, creating a non-stationary optimization landscape. Recent work has established convergence guarantees under assumptions of bounded prediction error and sufficient exploration, but practical algorithms often deviate from theoretical requirements.</p>
+</div>
+<div id="applications-and-empirical-results" class="section level2 hasAnchor" number="13.7">
+<h2><span class="header-section-number">13.7</span> Applications and Empirical Results<a href="intrinsic-rewards.html#applications-and-empirical-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Intrinsic motivation has demonstrated significant improvements across diverse domains. In robotics, curiosity-driven learning enables robots to acquire motion skills without hand-crafted rewards, learning to manipulate objects through self-supervised exploration. The key advantage lies in avoiding the reward engineering bottleneck while still acquiring useful behaviors.</p>
+<p>Game-playing environments have provided compelling demonstrations of intrinsic motivation’s effectiveness. In exploration-heavy games like Montezuma’s Revenge, curiosity-driven agents achieve superhuman performance while baseline methods fail to make meaningful progress. The sparse reward structure of these games closely mirrors real-world challenges where feedback is delayed or infrequent.</p>
+<p>Scientific discovery represents an emerging application area where intrinsic motivation shows particular promise. Agents can learn to conduct experiments and form hypotheses about unknown systems purely through curiosity, potentially accelerating research in domains where human intuition provides limited guidance.</p>
+</div>
+<div id="limitations-and-future-directions" class="section level2 hasAnchor" number="13.8">
+<h2><span class="header-section-number">13.8</span> Limitations and Future Directions<a href="intrinsic-rewards.html#limitations-and-future-directions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Despite significant advances, intrinsic motivation faces several fundamental limitations. The reward hacking problem occurs when agents discover ways to maximize intrinsic rewards without learning useful behaviors, such as finding screen regions with unpredictable visual noise in video games.</p>
+<p>The noisy TV problem illustrates how stochastic elements can mislead curiosity-based agents. If the environment contains sources of unpredictable but irrelevant variation, agents may focus excessive attention on these regions rather than exploring meaningful state space regions.</p>
+<p>Scale and transfer represent ongoing challenges. Most intrinsic motivation work has focused on relatively simple environments, and scaling to complex real-world domains remains difficult. Additionally, skills acquired through intrinsic motivation don’t always transfer effectively to new tasks or domains.</p>
+<p>Future research directions include developing more robust intrinsic reward functions that resist exploitation, creating hierarchical approaches that operate across multiple temporal scales, and establishing better theoretical foundations for understanding when and why intrinsic motivation succeeds or fails.</p>
+<p>The integration of intrinsic motivation with other RL advances, such as meta-learning and multi-task learning, offers promising avenues for creating more capable and autonomous agents. As environments become more complex and reward engineering becomes more challenging, intrinsic motivation mechanisms will likely play increasingly important roles in developing intelligent systems that can learn and adapt independently.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="appendix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/13-Intrinsic_Reward.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/13-Intrinsic_Reward.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
