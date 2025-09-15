@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-09-12" />
+<meta name="date" content="2025-09-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="learning-policies-versus-learning-values.html"/>
-<link rel="next" href="intrinsic-rewards.html"/>
+<link rel="next" href="eligibility-traces.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -343,80 +343,90 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="12.9.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-equations-derivation"><i class="fa fa-check"></i><b>12.9.3</b> Optimality Equations Derivation</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="13" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html"><i class="fa fa-check"></i><b>13</b> Intrinsic Rewards</a>
+<li class="chapter" data-level="13" data-path="eligibility-traces.html"><a href="eligibility-traces.html"><i class="fa fa-check"></i><b>13</b> Eligibility Traces</a>
 <ul>
-<li class="chapter" data-level="13.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#the-sparse-reward-problem-and-its-implications"><i class="fa fa-check"></i><b>13.1</b> The Sparse Reward Problem and Its Implications</a></li>
-<li class="chapter" data-level="13.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#mathematical-foundations-of-intrinsic-motivation"><i class="fa fa-check"></i><b>13.2</b> Mathematical Foundations of Intrinsic Motivation</a>
-<ul>
-<li class="chapter" data-level="13.2.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#curiosity-driven-learning"><i class="fa fa-check"></i><b>13.2.1</b> Curiosity-Driven Learning</a></li>
-<li class="chapter" data-level="13.2.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#count-based-exploration"><i class="fa fa-check"></i><b>13.2.2</b> Count-Based Exploration</a></li>
+<li class="chapter" data-level="13.1" data-path="eligibility-traces.html"><a href="eligibility-traces.html#from-one-step-to-multi-step-learning"><i class="fa fa-check"></i><b>13.1</b> From One-Step to Multi-Step Learning</a></li>
+<li class="chapter" data-level="13.2" data-path="eligibility-traces.html"><a href="eligibility-traces.html#the-mechanics-of-eligibility-traces-a-backward-view"><i class="fa fa-check"></i><b>13.2</b> The Mechanics of Eligibility Traces: A Backward View</a></li>
+<li class="chapter" data-level="13.3" data-path="eligibility-traces.html"><a href="eligibility-traces.html#the-tdlambda-algorithm-for-prediction"><i class="fa fa-check"></i><b>13.3</b> The TD(<span class="math inline">\(\\lambda\)</span>) Algorithm for Prediction</a></li>
+<li class="chapter" data-level="13.4" data-path="eligibility-traces.html"><a href="eligibility-traces.html#control-with-eligibility-traces-average-reward-sarsalambda"><i class="fa fa-check"></i><b>13.4</b> Control with Eligibility Traces: Average Reward Sarsa(<span class="math inline">\(\\lambda\)</span>)</a></li>
+<li class="chapter" data-level="13.5" data-path="eligibility-traces.html"><a href="eligibility-traces.html#practical-implementation-server-load-balancing-with-sarsalambda"><i class="fa fa-check"></i><b>13.5</b> Practical Implementation: Server Load Balancing with Sarsa(<span class="math inline">\(\\lambda\)</span>)</a></li>
+<li class="chapter" data-level="13.6" data-path="eligibility-traces.html"><a href="eligibility-traces.html#computational-and-performance-considerations"><i class="fa fa-check"></i><b>13.6</b> Computational and Performance Considerations</a></li>
+<li class="chapter" data-level="13.7" data-path="eligibility-traces.html"><a href="eligibility-traces.html#conclusion-8"><i class="fa fa-check"></i><b>13.7</b> Conclusion</a></li>
 </ul></li>
-<li class="chapter" data-level="13.3" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#practical-implementation-curiosity-driven-grid-world-navigation"><i class="fa fa-check"></i><b>13.3</b> Practical Implementation: Curiosity-Driven Grid World Navigation</a></li>
-<li class="chapter" data-level="13.4" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#advanced-intrinsic-motivation-mechanisms"><i class="fa fa-check"></i><b>13.4</b> Advanced Intrinsic Motivation Mechanisms</a></li>
-<li class="chapter" data-level="13.5" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#implementation-considerations-and-practical-guidelines"><i class="fa fa-check"></i><b>13.5</b> Implementation Considerations and Practical Guidelines</a></li>
-<li class="chapter" data-level="13.6" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#theoretical-analysis-and-convergence-properties"><i class="fa fa-check"></i><b>13.6</b> Theoretical Analysis and Convergence Properties</a></li>
-<li class="chapter" data-level="13.7" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#applications-and-empirical-results"><i class="fa fa-check"></i><b>13.7</b> Applications and Empirical Results</a></li>
-<li class="chapter" data-level="13.8" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#limitations-and-future-directions"><i class="fa fa-check"></i><b>13.8</b> Limitations and Future Directions</a></li>
+<li class="chapter" data-level="14" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html"><i class="fa fa-check"></i><b>14</b> Intrinsic Rewards</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#the-sparse-reward-problem-and-its-implications"><i class="fa fa-check"></i><b>14.1</b> The Sparse Reward Problem and Its Implications</a></li>
+<li class="chapter" data-level="14.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#mathematical-foundations-of-intrinsic-motivation"><i class="fa fa-check"></i><b>14.2</b> Mathematical Foundations of Intrinsic Motivation</a>
+<ul>
+<li class="chapter" data-level="14.2.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#curiosity-driven-learning"><i class="fa fa-check"></i><b>14.2.1</b> Curiosity-Driven Learning</a></li>
+<li class="chapter" data-level="14.2.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#count-based-exploration"><i class="fa fa-check"></i><b>14.2.2</b> Count-Based Exploration</a></li>
 </ul></li>
-<li class="chapter" data-level="14" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><i class="fa fa-check"></i><b>14</b> Policy Gradients: Direct Optimization of Action Selection in Reinforcement Learning</a>
-<ul>
-<li class="chapter" data-level="14.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#introduction-9"><i class="fa fa-check"></i><b>14.1</b> Introduction</a></li>
-<li class="chapter" data-level="14.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#theoretical-framework-2"><i class="fa fa-check"></i><b>14.2</b> Theoretical Framework</a>
-<ul>
-<li class="chapter" data-level="14.2.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#the-policy-gradient-theorem-1"><i class="fa fa-check"></i><b>14.2.1</b> The Policy Gradient Theorem</a></li>
-<li class="chapter" data-level="14.2.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#reinforce-algorithm"><i class="fa fa-check"></i><b>14.2.2</b> REINFORCE Algorithm</a></li>
-<li class="chapter" data-level="14.2.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#baseline-subtraction-and-variance-reduction"><i class="fa fa-check"></i><b>14.2.3</b> Baseline Subtraction and Variance Reduction</a></li>
-<li class="chapter" data-level="14.2.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#softmax-policy-parameterization"><i class="fa fa-check"></i><b>14.2.4</b> Softmax Policy Parameterization</a></li>
+<li class="chapter" data-level="14.3" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#practical-implementation-curiosity-driven-grid-world-navigation"><i class="fa fa-check"></i><b>14.3</b> Practical Implementation: Curiosity-Driven Grid World Navigation</a></li>
+<li class="chapter" data-level="14.4" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#advanced-intrinsic-motivation-mechanisms"><i class="fa fa-check"></i><b>14.4</b> Advanced Intrinsic Motivation Mechanisms</a></li>
+<li class="chapter" data-level="14.5" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#implementation-considerations-and-practical-guidelines"><i class="fa fa-check"></i><b>14.5</b> Implementation Considerations and Practical Guidelines</a></li>
+<li class="chapter" data-level="14.6" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#theoretical-analysis-and-convergence-properties"><i class="fa fa-check"></i><b>14.6</b> Theoretical Analysis and Convergence Properties</a></li>
+<li class="chapter" data-level="14.7" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#applications-and-empirical-results"><i class="fa fa-check"></i><b>14.7</b> Applications and Empirical Results</a></li>
+<li class="chapter" data-level="14.8" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#limitations-and-future-directions"><i class="fa fa-check"></i><b>14.8</b> Limitations and Future Directions</a></li>
 </ul></li>
-<li class="chapter" data-level="14.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#implementation-in-r-2"><i class="fa fa-check"></i><b>14.3</b> Implementation in R</a>
+<li class="chapter" data-level="15" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><i class="fa fa-check"></i><b>15</b> Policy Gradients: Direct Optimization of Action Selection in Reinforcement Learning</a>
 <ul>
-<li class="chapter" data-level="14.3.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#environment-and-feature-representation"><i class="fa fa-check"></i><b>14.3.1</b> Environment and Feature Representation</a></li>
-<li class="chapter" data-level="14.3.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#softmax-policy-implementation"><i class="fa fa-check"></i><b>14.3.2</b> Softmax Policy Implementation</a></li>
-<li class="chapter" data-level="14.3.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#reinforce-implementation"><i class="fa fa-check"></i><b>14.3.3</b> REINFORCE Implementation</a></li>
-<li class="chapter" data-level="14.3.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#actor-critic-implementation"><i class="fa fa-check"></i><b>14.3.4</b> Actor-Critic Implementation</a></li>
+<li class="chapter" data-level="15.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#introduction-9"><i class="fa fa-check"></i><b>15.1</b> Introduction</a></li>
+<li class="chapter" data-level="15.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#theoretical-framework-2"><i class="fa fa-check"></i><b>15.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="15.2.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#the-policy-gradient-theorem-1"><i class="fa fa-check"></i><b>15.2.1</b> The Policy Gradient Theorem</a></li>
+<li class="chapter" data-level="15.2.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#reinforce-algorithm"><i class="fa fa-check"></i><b>15.2.2</b> REINFORCE Algorithm</a></li>
+<li class="chapter" data-level="15.2.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#baseline-subtraction-and-variance-reduction"><i class="fa fa-check"></i><b>15.2.3</b> Baseline Subtraction and Variance Reduction</a></li>
+<li class="chapter" data-level="15.2.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#softmax-policy-parameterization"><i class="fa fa-check"></i><b>15.2.4</b> Softmax Policy Parameterization</a></li>
 </ul></li>
-<li class="chapter" data-level="14.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#experimental-analysis-2"><i class="fa fa-check"></i><b>14.4</b> Experimental Analysis</a>
+<li class="chapter" data-level="15.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#implementation-in-r-2"><i class="fa fa-check"></i><b>15.3</b> Implementation in R</a>
 <ul>
-<li class="chapter" data-level="14.4.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#comparison-of-policy-gradient-variants"><i class="fa fa-check"></i><b>14.4.1</b> Comparison of Policy Gradient Variants</a></li>
-<li class="chapter" data-level="14.4.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#learning-rate-sensitivity-analysis"><i class="fa fa-check"></i><b>14.4.2</b> Learning Rate Sensitivity Analysis</a></li>
-<li class="chapter" data-level="14.4.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#variance-analysis-of-gradient-estimates"><i class="fa fa-check"></i><b>14.4.3</b> Variance Analysis of Gradient Estimates</a></li>
+<li class="chapter" data-level="15.3.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#environment-and-feature-representation"><i class="fa fa-check"></i><b>15.3.1</b> Environment and Feature Representation</a></li>
+<li class="chapter" data-level="15.3.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#softmax-policy-implementation"><i class="fa fa-check"></i><b>15.3.2</b> Softmax Policy Implementation</a></li>
+<li class="chapter" data-level="15.3.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#reinforce-implementation"><i class="fa fa-check"></i><b>15.3.3</b> REINFORCE Implementation</a></li>
+<li class="chapter" data-level="15.3.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#actor-critic-implementation"><i class="fa fa-check"></i><b>15.3.4</b> Actor-Critic Implementation</a></li>
 </ul></li>
-<li class="chapter" data-level="14.5" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#discussion-and-implementation-considerations-1"><i class="fa fa-check"></i><b>14.5</b> Discussion and Implementation Considerations</a></li>
-<li class="chapter" data-level="14.6" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#conclusion-8"><i class="fa fa-check"></i><b>14.6</b> Conclusion</a></li>
+<li class="chapter" data-level="15.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#experimental-analysis-2"><i class="fa fa-check"></i><b>15.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="15.4.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#comparison-of-policy-gradient-variants"><i class="fa fa-check"></i><b>15.4.1</b> Comparison of Policy Gradient Variants</a></li>
+<li class="chapter" data-level="15.4.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#learning-rate-sensitivity-analysis"><i class="fa fa-check"></i><b>15.4.2</b> Learning Rate Sensitivity Analysis</a></li>
+<li class="chapter" data-level="15.4.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#variance-analysis-of-gradient-estimates"><i class="fa fa-check"></i><b>15.4.3</b> Variance Analysis of Gradient Estimates</a></li>
 </ul></li>
-<li class="chapter" data-level="15" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>15</b> Appendix</a>
-<ul>
-<li class="chapter" data-level="15.1" data-path="appendix.html"><a href="appendix.html#comprehensive-reinforcement-learning-concepts-guide"><i class="fa fa-check"></i><b>15.1</b> Comprehensive Reinforcement Learning Concepts Guide</a></li>
-<li class="chapter" data-level="15.2" data-path="appendix.html"><a href="appendix.html#learning-mechanisms"><i class="fa fa-check"></i><b>15.2</b> Learning Mechanisms</a></li>
-<li class="chapter" data-level="15.3" data-path="appendix.html"><a href="appendix.html#environment-properties"><i class="fa fa-check"></i><b>15.3</b> Environment Properties</a></li>
-<li class="chapter" data-level="15.4" data-path="appendix.html"><a href="appendix.html#learning-paradigms"><i class="fa fa-check"></i><b>15.4</b> Learning Paradigms</a></li>
-<li class="chapter" data-level="15.5" data-path="appendix.html"><a href="appendix.html#exploration-strategies"><i class="fa fa-check"></i><b>15.5</b> Exploration Strategies</a></li>
-<li class="chapter" data-level="15.6" data-path="appendix.html"><a href="appendix.html#key-algorithms-methods"><i class="fa fa-check"></i><b>15.6</b> Key Algorithms &amp; Methods</a></li>
-<li class="chapter" data-level="15.7" data-path="appendix.html"><a href="appendix.html#advanced-concepts"><i class="fa fa-check"></i><b>15.7</b> Advanced Concepts</a></li>
-<li class="chapter" data-level="15.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>15.8</b> Fundamental Equations</a>
-<ul>
-<li class="chapter" data-level="15.8.1" data-path="appendix.html"><a href="appendix.html#bellman-equations"><i class="fa fa-check"></i><b>15.8.1</b> <strong>Bellman Equations</strong></a></li>
-<li class="chapter" data-level="15.8.2" data-path="appendix.html"><a href="appendix.html#policy-gradient-theorem"><i class="fa fa-check"></i><b>15.8.2</b> <strong>Policy Gradient Theorem</strong></a></li>
-<li class="chapter" data-level="15.8.3" data-path="appendix.html"><a href="appendix.html#temporal-difference-error"><i class="fa fa-check"></i><b>15.8.3</b> <strong>Temporal Difference Error</strong></a></li>
+<li class="chapter" data-level="15.5" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#discussion-and-implementation-considerations-1"><i class="fa fa-check"></i><b>15.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="15.6" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#conclusion-9"><i class="fa fa-check"></i><b>15.6</b> Conclusion</a></li>
 </ul></li>
-<li class="chapter" data-level="15.9" data-path="appendix.html"><a href="appendix.html#common-challenges-solutions"><i class="fa fa-check"></i><b>15.9</b> Common Challenges &amp; Solutions</a></li>
-<li class="chapter" data-level="15.10" data-path="appendix.html"><a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning"><i class="fa fa-check"></i><b>15.10</b> Function Approximation Fundamentals in Reinforcement Learning</a></li>
-<li class="chapter" data-level="15.11" data-path="appendix.html"><a href="appendix.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>15.11</b> Feature Engineering and State Representation</a>
+<li class="chapter" data-level="16" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>16</b> Appendix</a>
 <ul>
-<li class="chapter" data-level="15.11.1" data-path="appendix.html"><a href="appendix.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>15.11.1</b> The Discrimination vs. Generalization Tradeoff</a></li>
-<li class="chapter" data-level="15.11.2" data-path="appendix.html"><a href="appendix.html#principles-of-feature-extraction"><i class="fa fa-check"></i><b>15.11.2</b> Principles of Feature Extraction</a></li>
+<li class="chapter" data-level="16.1" data-path="appendix.html"><a href="appendix.html#comprehensive-reinforcement-learning-concepts-guide"><i class="fa fa-check"></i><b>16.1</b> Comprehensive Reinforcement Learning Concepts Guide</a></li>
+<li class="chapter" data-level="16.2" data-path="appendix.html"><a href="appendix.html#learning-mechanisms"><i class="fa fa-check"></i><b>16.2</b> Learning Mechanisms</a></li>
+<li class="chapter" data-level="16.3" data-path="appendix.html"><a href="appendix.html#environment-properties"><i class="fa fa-check"></i><b>16.3</b> Environment Properties</a></li>
+<li class="chapter" data-level="16.4" data-path="appendix.html"><a href="appendix.html#learning-paradigms"><i class="fa fa-check"></i><b>16.4</b> Learning Paradigms</a></li>
+<li class="chapter" data-level="16.5" data-path="appendix.html"><a href="appendix.html#exploration-strategies"><i class="fa fa-check"></i><b>16.5</b> Exploration Strategies</a></li>
+<li class="chapter" data-level="16.6" data-path="appendix.html"><a href="appendix.html#key-algorithms-methods"><i class="fa fa-check"></i><b>16.6</b> Key Algorithms &amp; Methods</a></li>
+<li class="chapter" data-level="16.7" data-path="appendix.html"><a href="appendix.html#advanced-concepts"><i class="fa fa-check"></i><b>16.7</b> Advanced Concepts</a></li>
+<li class="chapter" data-level="16.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>16.8</b> Fundamental Equations</a>
+<ul>
+<li class="chapter" data-level="16.8.1" data-path="appendix.html"><a href="appendix.html#bellman-equations"><i class="fa fa-check"></i><b>16.8.1</b> <strong>Bellman Equations</strong></a></li>
+<li class="chapter" data-level="16.8.2" data-path="appendix.html"><a href="appendix.html#policy-gradient-theorem"><i class="fa fa-check"></i><b>16.8.2</b> <strong>Policy Gradient Theorem</strong></a></li>
+<li class="chapter" data-level="16.8.3" data-path="appendix.html"><a href="appendix.html#temporal-difference-error"><i class="fa fa-check"></i><b>16.8.3</b> <strong>Temporal Difference Error</strong></a></li>
 </ul></li>
-<li class="chapter" data-level="15.12" data-path="appendix.html"><a href="appendix.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>15.12</b> Mathematical Foundations of Linear Function Approximation</a>
+<li class="chapter" data-level="16.9" data-path="appendix.html"><a href="appendix.html#common-challenges-solutions"><i class="fa fa-check"></i><b>16.9</b> Common Challenges &amp; Solutions</a></li>
+<li class="chapter" data-level="16.10" data-path="appendix.html"><a href="appendix.html#function-approximation-fundamentals-in-reinforcement-learning"><i class="fa fa-check"></i><b>16.10</b> Function Approximation Fundamentals in Reinforcement Learning</a></li>
+<li class="chapter" data-level="16.11" data-path="appendix.html"><a href="appendix.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>16.11</b> Feature Engineering and State Representation</a>
 <ul>
-<li class="chapter" data-level="15.12.1" data-path="appendix.html"><a href="appendix.html#linear-value-functions"><i class="fa fa-check"></i><b>15.12.1</b> Linear Value Functions</a></li>
-<li class="chapter" data-level="15.12.2" data-path="appendix.html"><a href="appendix.html#temporal-difference-td-learning-with-function-approximation"><i class="fa fa-check"></i><b>15.12.2</b> Temporal Difference (TD) Learning with Function Approximation</a></li>
-<li class="chapter" data-level="15.12.3" data-path="appendix.html"><a href="appendix.html#convergence-and-the-deadly-triad"><i class="fa fa-check"></i><b>15.12.3</b> Convergence and the “Deadly Triad”</a></li>
+<li class="chapter" data-level="16.11.1" data-path="appendix.html"><a href="appendix.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>16.11.1</b> The Discrimination vs. Generalization Tradeoff</a></li>
+<li class="chapter" data-level="16.11.2" data-path="appendix.html"><a href="appendix.html#principles-of-feature-extraction"><i class="fa fa-check"></i><b>16.11.2</b> Principles of Feature Extraction</a></li>
 </ul></li>
-<li class="chapter" data-level="15.13" data-path="appendix.html"><a href="appendix.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>15.13</b> Classical Basis Function Methods</a>
+<li class="chapter" data-level="16.12" data-path="appendix.html"><a href="appendix.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>16.12</b> Mathematical Foundations of Linear Function Approximation</a>
 <ul>
-<li class="chapter" data-level="15.13.1" data-path="appendix.html"><a href="appendix.html#coarse-coding"><i class="fa fa-check"></i><b>15.13.1</b> Coarse Coding</a></li>
-<li class="chapter" data-level="15.13.2" data-path="appendix.html"><a href="appendix.html#tile-coding"><i class="fa fa-check"></i><b>15.13.2</b> Tile Coding</a></li>
-<li class="chapter" data-level="15.13.3" data-path="appendix.html"><a href="appendix.html#radial-basis-functions-rbfs"><i class="fa fa-check"></i><b>15.13.3</b> Radial Basis Functions (RBFs)</a></li>
+<li class="chapter" data-level="16.12.1" data-path="appendix.html"><a href="appendix.html#linear-value-functions"><i class="fa fa-check"></i><b>16.12.1</b> Linear Value Functions</a></li>
+<li class="chapter" data-level="16.12.2" data-path="appendix.html"><a href="appendix.html#temporal-difference-td-learning-with-function-approximation"><i class="fa fa-check"></i><b>16.12.2</b> Temporal Difference (TD) Learning with Function Approximation</a></li>
+<li class="chapter" data-level="16.12.3" data-path="appendix.html"><a href="appendix.html#convergence-and-the-deadly-triad"><i class="fa fa-check"></i><b>16.12.3</b> Convergence and the “Deadly Triad”</a></li>
+</ul></li>
+<li class="chapter" data-level="16.13" data-path="appendix.html"><a href="appendix.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>16.13</b> Classical Basis Function Methods</a>
+<ul>
+<li class="chapter" data-level="16.13.1" data-path="appendix.html"><a href="appendix.html#coarse-coding"><i class="fa fa-check"></i><b>16.13.1</b> Coarse Coding</a></li>
+<li class="chapter" data-level="16.13.2" data-path="appendix.html"><a href="appendix.html#tile-coding"><i class="fa fa-check"></i><b>16.13.2</b> Tile Coding</a></li>
+<li class="chapter" data-level="16.13.3" data-path="appendix.html"><a href="appendix.html#radial-basis-functions-rbfs"><i class="fa fa-check"></i><b>16.13.3</b> Radial Basis Functions (RBFs)</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -716,7 +726,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="learning-policies-versus-learning-values.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="intrinsic-rewards.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="eligibility-traces.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

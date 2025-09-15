@@ -1,4 +1,4 @@
-tab:unnamed-chunk-30
+tab:unnamed-chunk-14
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -150,6 +150,14 @@ appendix-a-mathematical-proofs-and-derivations
 convergence-of-average-reward-td-learning
 policy-gradient-theorem-for-average-reward
 optimality-equations-derivation
+eligibility-traces
+from-one-step-to-multi-step-learning
+the-mechanics-of-eligibility-traces-a-backward-view
+the-tdlambda-algorithm-for-prediction
+control-with-eligibility-traces-average-reward-sarsalambda
+practical-implementation-server-load-balancing-with-sarsalambda
+computational-and-performance-considerations
+conclusion-8
 intrinsic-rewards
 the-sparse-reward-problem-and-its-implications
 mathematical-foundations-of-intrinsic-motivation
@@ -181,7 +189,7 @@ running-the-learning-rate-analysis
 variance-analysis-of-gradient-estimates
 example-analyzing-gradient-variance
 discussion-and-implementation-considerations-1
-conclusion-8
+conclusion-9
 appendix
 comprehensive-reinforcement-learning-concepts-guide
 learning-mechanisms

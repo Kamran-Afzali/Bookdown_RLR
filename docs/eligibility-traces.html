@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 The Multi-Armed Bandit Problem | Reinforcement Learning in R</title>
-  <meta name="description" content="Chapter 2 The Multi-Armed Bandit Problem | Reinforcement Learning in R" />
+  <title>Chapter 13 Eligibility Traces | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 13 Eligibility Traces | Reinforcement Learning in R" />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 The Multi-Armed Bandit Problem | Reinforcement Learning in R" />
+  <meta property="og:title" content="Chapter 13 Eligibility Traces | Reinforcement Learning in R" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 The Multi-Armed Bandit Problem | Reinforcement Learning in R" />
+  <meta name="twitter:title" content="Chapter 13 Eligibility Traces | Reinforcement Learning in R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="markov-decision-processes-and-dynamic-programming.html"/>
+<link rel="prev" href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"/>
+<link rel="next" href="intrinsic-rewards.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -448,219 +448,190 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="the-multi-armed-bandit-problem" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Chapter 2</span> The Multi-Armed Bandit Problem<a href="the-multi-armed-bandit-problem.html#the-multi-armed-bandit-problem" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="introduction" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Introduction<a href="the-multi-armed-bandit-problem.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The multi-armed bandit (MAB) problem is a foundational model in the study of sequential decision-making under uncertainty. Representing the trade-off between exploration (gathering information) and exploitation (maximizing known rewards), MAB problems are central to reinforcement learning, online optimization, and adaptive experimental design. An agent is faced with a choice among multiple options—arms—each producing stochastic rewards with unknown distributions. The objective is to maximize cumulative reward, or equivalently, to minimize the regret incurred by not always choosing the best arm.</p>
-<p>This post presents a rigorous treatment of the MAB problem, comparing frequentist and Bayesian approaches. We offer formal mathematical foundations, develop regret bounds, and implement both Upper Confidence Bound (UCB) and Thompson Sampling algorithms in R. A summary table is provided at the end.</p>
+<div id="eligibility-traces" class="section level1 hasAnchor" number="13">
+<h1><span class="header-section-number">Chapter 13</span> Eligibility Traces<a href="eligibility-traces.html#eligibility-traces" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="from-one-step-to-multi-step-learning" class="section level2 hasAnchor" number="13.1">
+<h2><span class="header-section-number">13.1</span> From One-Step to Multi-Step Learning<a href="eligibility-traces.html#from-one-step-to-multi-step-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The preceding discussion on average reward reinforcement learning focused on algorithms like TD(0) and Q-learning, which update value estimates based on a one-step lookahead. These methods, known as one-step temporal-difference (TD) methods, perform a “bootstrap” from the value of the very next state. While computationally efficient, this approach can be slow to propagate information through the state space. An error discovered in one state only trickles back to its predecessor on the next visit. For tasks with long causal chains between actions and significant rewards, this one-step credit assignment process becomes a bottleneck, leading to slow convergence.</p>
+<p>Eligibility traces offer a powerful and elegant mechanism to address this limitation. They provide a bridge between one-step TD methods and computationally expensive Monte Carlo (MC) methods, which update state values only at the end of an episode based on the full sequence of rewards. By maintaining a memory of recently visited states, eligibility traces allow a single TD error to be used to update the values of multiple preceding states simultaneously, dramatically accelerating the learning process. This follow-up explores the theory and application of eligibility traces, with a particular focus on their integration into the average reward framework.</p>
 </div>
-<div id="mathematical-formalism" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> Mathematical Formalism<a href="the-multi-armed-bandit-problem.html#mathematical-formalism" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Let <span class="math inline">\(K\)</span> denote the number of arms, and each arm <span class="math inline">\(k \in \{1, \dots, K\}\)</span> has an unknown reward distribution <span class="math inline">\(P_k\)</span>, with mean <span class="math inline">\(\mu_k\)</span>. Define the optimal arm:</p>
-<p><span class="math display">\[
-k^* = \arg\max_{k} \mu_k.
-\]</span></p>
-<p>At each time <span class="math inline">\(t \in \{1, \dots, T\}\)</span>, the agent chooses arm <span class="math inline">\(A_t \in \{1, \dots, K\}\)</span> and receives a stochastic reward <span class="math inline">\(R_t \sim P_{A_t}\)</span>. The cumulative expected regret is:</p>
-<p><span class="math display">\[
-\mathcal{R}(T) = T\mu^* - \mathbb{E}\left[ \sum_{t=1}^T R_t \right] = \sum_{k=1}^K \Delta_k \, \mathbb{E}[N_k(T)],
-\]</span></p>
-<p>where <span class="math inline">\(\Delta_k = \mu^* - \mu_k\)</span> and <span class="math inline">\(N_k(T)\)</span> is the number of times arm <span class="math inline">\(k\)</span> was played.</p>
+<div id="the-mechanics-of-eligibility-traces-a-backward-view" class="section level2 hasAnchor" number="13.2">
+<h2><span class="header-section-number">13.2</span> The Mechanics of Eligibility Traces: A Backward View<a href="eligibility-traces.html#the-mechanics-of-eligibility-traces-a-backward-view" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>At its core, an eligibility trace is a short-term memory vector, denoted <span class="math inline">\(e\_t \\in \\mathbb{R}^{|\\mathcal{S}|}\)</span> for state-value functions or <span class="math inline">\(e\_t \\in \\mathbb{R}^{|\\mathcal{S}| \\times |\\mathcal{A}|}\)</span> for action-value functions. Each component of this vector corresponds to a state (or state-action pair) and records a measure of its “eligibility” for learning from the current TD error. A state’s eligibility is highest immediately after it is visited and then decays exponentially over time.</p>
+<p>The most common form of trace is the <strong>accumulating trace</strong>. At each time step <span class="math inline">\(t\)</span>, the trace for the current state <span class="math inline">\(S\_t\)</span> is incremented, while the traces for all other states decay. The update rule is given by:</p>
+<p><span class="math display">\[e_t(s) = \begin{cases} \lambda e_{t-1}(s) + 1 &amp; \text{if } s = S_t \\ \lambda e_{t-1}(s) &amp; \text{if } s \neq S_t \end{cases}\]</span></p>
+<p>for all <span class="math inline">\(s \\in \\mathcal{S}\)</span>. The parameter <span class="math inline">\(\\lambda \\in [0, 1]\)</span> is the <strong>trace-decay parameter</strong>. It controls the rate at which the trace fades. When <span class="math inline">\(\\lambda = 0\)</span>, the trace vector is non-zero only for the current state, <span class="math inline">\(e\_t(S\_t)=1\)</span>, which reduces the algorithm to a one-step TD method. As <span class="math inline">\(\\lambda\)</span> approaches 1, the traces of past states decay more slowly, and credit from a TD error is assigned more broadly to states visited further in the past. When <span class="math inline">\(\\lambda=1\)</span>, the update becomes closely related to Monte Carlo methods, where credit is distributed across all prior states in an episode.</p>
+<p>This formulation is known as the <strong>backward view</strong> of learning with eligibility traces. The term “backward” refers to the mechanism: at time <span class="math inline">\(t+1\)</span>, the TD error <span class="math inline">\(\\delta\_t\)</span> is computed and then used to update the value estimates of states visited <em>before</em> time <span class="math inline">\(t\)</span>, with the magnitude of the update for each state weighted by its current trace value.</p>
 </div>
-<div id="frequentist-approach-ucb1-algorithm" class="section level2 hasAnchor" number="2.3">
-<h2><span class="header-section-number">2.3</span> Frequentist Approach: UCB1 Algorithm<a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Frequentist methods estimate expected rewards using empirical means. The UCB1 algorithm, based on Hoeffding’s inequality, constructs an upper confidence bound:</p>
-<p><span class="math display">\[
-A_t = \arg\max_{k} \left[ \hat{\mu}_{k,t} + \sqrt{ \frac{2 \log t}{N_k(t)} } \right].
-\]</span></p>
-<p>This ensures logarithmic regret in expectation.</p>
-<div id="r-code-for-ucb1" class="section level3 hasAnchor" number="2.3.1">
-<h3><span class="header-section-number">2.3.1</span> R Code for UCB1<a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="the-multi-armed-bandit-problem.html#cb1-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb1-2"><a href="the-multi-armed-bandit-problem.html#cb1-2" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb1-3"><a href="the-multi-armed-bandit-problem.html#cb1-3" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb1-4"><a href="the-multi-armed-bandit-problem.html#cb1-4" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span>)  <span class="co"># true means</span></span>
-<span id="cb1-5"><a href="the-multi-armed-bandit-problem.html#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="the-multi-armed-bandit-problem.html#cb1-6" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, K)</span>
-<span id="cb1-7"><a href="the-multi-armed-bandit-problem.html#cb1-7" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, K)</span>
-<span id="cb1-8"><a href="the-multi-armed-bandit-problem.html#cb1-8" tabindex="-1"></a>regret <span class="ot">&lt;-</span> <span class="fu">numeric</span>(T)</span>
-<span id="cb1-9"><a href="the-multi-armed-bandit-problem.html#cb1-9" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="the-multi-armed-bandit-problem.html#cb1-10" tabindex="-1"></a><span class="co"># Play each arm once</span></span>
-<span id="cb1-11"><a href="the-multi-armed-bandit-problem.html#cb1-11" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>K) {</span>
-<span id="cb1-12"><a href="the-multi-armed-bandit-problem.html#cb1-12" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, mu[k])</span>
-<span id="cb1-13"><a href="the-multi-armed-bandit-problem.html#cb1-13" tabindex="-1"></a>  counts[k] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb1-14"><a href="the-multi-armed-bandit-problem.html#cb1-14" tabindex="-1"></a>  values[k] <span class="ot">&lt;-</span> reward</span>
-<span id="cb1-15"><a href="the-multi-armed-bandit-problem.html#cb1-15" tabindex="-1"></a>  regret[k] <span class="ot">&lt;-</span> <span class="fu">max</span>(mu) <span class="sc">-</span> mu[k]</span>
-<span id="cb1-16"><a href="the-multi-armed-bandit-problem.html#cb1-16" tabindex="-1"></a>}</span>
-<span id="cb1-17"><a href="the-multi-armed-bandit-problem.html#cb1-17" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="the-multi-armed-bandit-problem.html#cb1-18" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> (K<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>T) {</span>
-<span id="cb1-19"><a href="the-multi-armed-bandit-problem.html#cb1-19" tabindex="-1"></a>  ucb <span class="ot">&lt;-</span> values <span class="sc">+</span> <span class="fu">sqrt</span>(<span class="dv">2</span> <span class="sc">*</span> <span class="fu">log</span>(t) <span class="sc">/</span> counts)</span>
-<span id="cb1-20"><a href="the-multi-armed-bandit-problem.html#cb1-20" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(ucb)</span>
-<span id="cb1-21"><a href="the-multi-armed-bandit-problem.html#cb1-21" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, mu[a])</span>
-<span id="cb1-22"><a href="the-multi-armed-bandit-problem.html#cb1-22" tabindex="-1"></a>  counts[a] <span class="ot">&lt;-</span> counts[a] <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb1-23"><a href="the-multi-armed-bandit-problem.html#cb1-23" tabindex="-1"></a>  values[a] <span class="ot">&lt;-</span> values[a] <span class="sc">+</span> (reward <span class="sc">-</span> values[a]) <span class="sc">/</span> counts[a]</span>
-<span id="cb1-24"><a href="the-multi-armed-bandit-problem.html#cb1-24" tabindex="-1"></a>  regret[t] <span class="ot">&lt;-</span> <span class="fu">max</span>(mu) <span class="sc">-</span> mu[a]</span>
-<span id="cb1-25"><a href="the-multi-armed-bandit-problem.html#cb1-25" tabindex="-1"></a>}</span>
-<span id="cb1-26"><a href="the-multi-armed-bandit-problem.html#cb1-26" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="the-multi-armed-bandit-problem.html#cb1-27" tabindex="-1"></a>cum_regret_ucb <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(regret)</span>
-<span id="cb1-28"><a href="the-multi-armed-bandit-problem.html#cb1-28" tabindex="-1"></a><span class="fu">plot</span>(cum_regret_ucb, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb1-29"><a href="the-multi-armed-bandit-problem.html#cb1-29" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Cumulative Regret&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">main =</span> <span class="st">&quot;UCB1 Regret&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div id="the-tdlambda-algorithm-for-prediction" class="section level2 hasAnchor" number="13.3">
+<h2><span class="header-section-number">13.3</span> The TD(<span class="math inline">\(\\lambda\)</span>) Algorithm for Prediction<a href="eligibility-traces.html#the-tdlambda-algorithm-for-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The canonical prediction algorithm using eligibility traces is TD(<span class="math inline">\(\\lambda\)</span>). It combines the trace mechanism with the standard TD update. For policy evaluation in the average reward setting, the goal is to learn the differential value function <span class="math inline">\(h\_\\pi(s)\)</span>. The algorithm proceeds as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Initialize <span class="math inline">\(h(s)\)</span> for all <span class="math inline">\(s \\in \\mathcal{S}\)</span>, and the average reward estimate <span class="math inline">\(\\hat{\\rho}\)</span>.</li>
+<li>Initialize the eligibility trace vector <span class="math inline">\(e(s) = 0\)</span> for all <span class="math inline">\(s\)</span>.</li>
+<li>For each time step <span class="math inline">\(t\)</span>:
+<ol style="list-style-type: lower-alpha">
+<li>Observe state <span class="math inline">\(S\_t\)</span>, take action <span class="math inline">\(A\_t\)</span> (according to policy <span class="math inline">\(\\pi\)</span>), and observe reward <span class="math inline">\(R\_{t+1}\)</span> and next state <span class="math inline">\(S\_{t+1}\)</span>.</li>
+<li>Compute the differential TD error:
+<span class="math display">\[\delta_t = R_{t+1} - \hat{\rho} + h(S_{t+1}) - h(S_t)\]</span></li>
+<li>Decay all traces and increment the trace for the current state:
+<span class="math display">\[e(s) \leftarrow \lambda e(s) \text{ for all } s \in \mathcal{S}\]</span>
+<span class="math display">\[e(S_t) \leftarrow e(S_t) + 1\]</span></li>
+<li>Update the value function and average reward estimate for all states:
+<span class="math display">\[h(s) \leftarrow h(s) + \alpha \delta_t e(s) \text{ for all } s \in \mathcal{S}\]</span>
+<span class="math display">\[\hat{\rho} \leftarrow \hat{\rho} + \beta \delta_t\]</span></li>
+</ol></li>
+</ol>
+<p>The crucial difference from the one-step TD(0) algorithm lies in step 3d. Instead of updating only the value of the current state <span class="math inline">\(S\_t\)</span>, TD(<span class="math inline">\(\\lambda\)</span>) updates the value of <em>every</em> state in proportion to its eligibility trace. A state visited many time steps ago, but whose trace has not fully decayed, will still receive a portion of the learning update from the current TD error. This allows a single surprising outcome (a large <span class="math inline">\(\\delta\_t\)</span>) to immediately inform the values of all states in the causal chain leading up to it.</p>
+<p>The theoretical justification for this backward mechanism comes from the <strong>forward view</strong>, which defines a compound target called the <strong><span class="math inline">\(\\lambda\)</span>-return</strong>. The <span class="math inline">\(\\lambda\)</span>-return <span class="math inline">\(G\_t^\\lambda\)</span> is an exponentially weighted average of n-step returns. In the average reward setting, the n-step differential return is:</p>
+<p><span class="math display">\[G_{t:t+n} = \sum_{k=0}^{n-1} (R_{t+k+1} - \hat{\rho}) + h(S_{t+n})\]</span></p>
+<p>The TD(<span class="math inline">\(\\lambda\)</span>) update, as implemented via the backward view with eligibility traces, has been shown to be an efficient and unbiased way to approximate an update toward the <span class="math inline">\(\\lambda\)</span>-return, making it a sound and powerful learning rule.</p>
 </div>
+<div id="control-with-eligibility-traces-average-reward-sarsalambda" class="section level2 hasAnchor" number="13.4">
+<h2><span class="header-section-number">13.4</span> Control with Eligibility Traces: Average Reward Sarsa(<span class="math inline">\(\\lambda\)</span>)<a href="eligibility-traces.html#control-with-eligibility-traces-average-reward-sarsalambda" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Extending eligibility traces from prediction to control requires applying them to action-value functions. The most direct on-policy control algorithm is <strong>Sarsa(<span class="math inline">\(\\lambda\)</span>)</strong>. It follows the same principles as TD(<span class="math inline">\(\\lambda\)</span>) but learns a differential action-value function <span class="math inline">\(q(s,a)\)</span> instead of a state-value function <span class="math inline">\(h(s)\)</span>. The name Sarsa derives from the quintuple of events that form the basis of its update: <span class="math inline">\((S\_t, A\_t, R\_{t+1}, S\_{t+1}, A\_{t+1})\)</span>.</p>
+<p>In the average reward context, the Sarsa(<span class="math inline">\(\\lambda\)</span>) algorithm maintains an eligibility trace for each state-action pair, <span class="math inline">\(e(s,a)\)</span>. The update proceeds as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Initialize <span class="math inline">\(q(s,a)\)</span> for all <span class="math inline">\((s,a)\)</span>, and the average reward estimate <span class="math inline">\(\\hat{\\rho}\)</span>.</li>
+<li>Initialize the eligibility trace vector <span class="math inline">\(e(s,a) = 0\)</span> for all <span class="math inline">\((s,a)\)</span>.</li>
+<li>Choose an initial state <span class="math inline">\(S\_0\)</span> and an initial action <span class="math inline">\(A\_0\)</span> (e.g., <span class="math inline">\(\\epsilon\)</span>-greedily from <span class="math inline">\(q(S\_0, \\cdot)\)</span>).</li>
+<li>For each time step <span class="math inline">\(t\)</span>:
+<ol style="list-style-type: lower-alpha">
+<li>Take action <span class="math inline">\(A\_t\)</span>, observe reward <span class="math inline">\(R\_{t+1}\)</span> and next state <span class="math inline">\(S\_{t+1}\)</span>.</li>
+<li>Choose the next action <span class="math inline">\(A\_{t+1}\)</span> from <span class="math inline">\(S\_{t+1}\)</span> using the policy derived from <span class="math inline">\(q\)</span> (e.g., <span class="math inline">\(\\epsilon\)</span>-greedy).</li>
+<li>Compute the differential TD error:
+<span class="math display">\[\delta_t = R_{t+1} - \hat{\rho} + q(S_{t+1}, A_{t+1}) - q(S_t, A_t)\]</span></li>
+<li>Decay all traces and increment the trace for the current state-action pair:
+<span class="math display">\[e(s,a) \leftarrow \lambda e(s,a) \text{ for all } (s,a)\]</span>
+<span class="math display">\[e(S_t, A_t) \leftarrow e(S_t, A_t) + 1\]</span></li>
+<li>Update the action-value function and average reward estimate for all pairs:
+<span class="math display">\[q(s,a) \leftarrow q(s,a) + \alpha \delta_t e(s,a) \text{ for all } (s,a)\]</span>
+<span class="math display">\[\hat{\rho} \leftarrow \hat{\rho} + \beta \delta_t\]</span></li>
+</ol></li>
+</ol>
+<p>It is important to note the distinction from Q-learning. Sarsa(<span class="math inline">\(\\lambda\)</span>) is an <strong>on-policy</strong> algorithm because the action <span class="math inline">\(A\_{t+1}\)</span> used to form the TD error is the same action the agent actually takes in the next step. This makes the integration with eligibility traces straightforward. Off-policy algorithms like Q-learning are more complex to combine with traces (e.g., Watkins’s Q(<span class="math inline">\(\\lambda\)</span>)) because the greedy action used in the update (<span class="math inline">\(\\max\_a q(S\_{t+1}, a)\)</span>) may not be the one taken by the behavior policy, requiring the trace to be cut or managed differently.</p>
 </div>
-<div id="bayesian-approach-thompson-sampling" class="section level2 hasAnchor" number="2.4">
-<h2><span class="header-section-number">2.4</span> Bayesian Approach: Thompson Sampling<a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Bayesian bandits model reward distributions probabilistically, updating beliefs via Bayes’ rule. For Bernoulli rewards, we assume Beta priors:</p>
-<p><span class="math display">\[
-\mu_k \sim \text{Beta}(\alpha_k, \beta_k).
-\]</span></p>
-<p>After observing a reward <span class="math inline">\(r \in \{0, 1\}\)</span>, the posterior update is:</p>
-<p><span class="math display">\[
-\alpha_k \leftarrow \alpha_k + r, \quad \beta_k \leftarrow \beta_k + 1 - r.
-\]</span></p>
-<p>The Thompson Sampling algorithm draws a sample <span class="math inline">\(\tilde{\mu}_k \sim \text{Beta}(\alpha_k, \beta_k)\)</span> and selects the arm with the highest sample.</p>
-<div id="r-code-for-thompson-sampling" class="section level3 hasAnchor" number="2.4.1">
-<h3><span class="header-section-number">2.4.1</span> R Code for Thompson Sampling<a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="the-multi-armed-bandit-problem.html#cb2-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb2-2"><a href="the-multi-armed-bandit-problem.html#cb2-2" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, K)</span>
-<span id="cb2-3"><a href="the-multi-armed-bandit-problem.html#cb2-3" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, K)</span>
-<span id="cb2-4"><a href="the-multi-armed-bandit-problem.html#cb2-4" tabindex="-1"></a>regret <span class="ot">&lt;-</span> <span class="fu">numeric</span>(T)</span>
-<span id="cb2-5"><a href="the-multi-armed-bandit-problem.html#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="the-multi-armed-bandit-problem.html#cb2-6" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T) {</span>
-<span id="cb2-7"><a href="the-multi-armed-bandit-problem.html#cb2-7" tabindex="-1"></a>  sampled_means <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(K, alpha, beta)</span>
-<span id="cb2-8"><a href="the-multi-armed-bandit-problem.html#cb2-8" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(sampled_means)</span>
-<span id="cb2-9"><a href="the-multi-armed-bandit-problem.html#cb2-9" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, mu[a])</span>
-<span id="cb2-10"><a href="the-multi-armed-bandit-problem.html#cb2-10" tabindex="-1"></a>  alpha[a] <span class="ot">&lt;-</span> alpha[a] <span class="sc">+</span> reward</span>
-<span id="cb2-11"><a href="the-multi-armed-bandit-problem.html#cb2-11" tabindex="-1"></a>  beta[a] <span class="ot">&lt;-</span> beta[a] <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">-</span> reward)</span>
-<span id="cb2-12"><a href="the-multi-armed-bandit-problem.html#cb2-12" tabindex="-1"></a>  regret[t] <span class="ot">&lt;-</span> <span class="fu">max</span>(mu) <span class="sc">-</span> mu[a]</span>
-<span id="cb2-13"><a href="the-multi-armed-bandit-problem.html#cb2-13" tabindex="-1"></a>}</span>
-<span id="cb2-14"><a href="the-multi-armed-bandit-problem.html#cb2-14" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="the-multi-armed-bandit-problem.html#cb2-15" tabindex="-1"></a>cum_regret_ts <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(regret)</span>
-<span id="cb2-16"><a href="the-multi-armed-bandit-problem.html#cb2-16" tabindex="-1"></a><span class="fu">plot</span>(cum_regret_ucb, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb2-17"><a href="the-multi-armed-bandit-problem.html#cb2-17" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Cumulative Regret&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">main =</span> <span class="st">&quot;UCB1 Regret&quot;</span>)</span>
-<span id="cb2-18"><a href="the-multi-armed-bandit-problem.html#cb2-18" tabindex="-1"></a><span class="fu">lines</span>(cum_regret_ts, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb2-19"><a href="the-multi-armed-bandit-problem.html#cb2-19" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;UCB1&quot;</span>, <span class="st">&quot;Thompson Sampling&quot;</span>), </span>
-<span id="cb2-20"><a href="the-multi-armed-bandit-problem.html#cb2-20" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<p>The UCB1 algorithm guarantees a regret bound of:</p>
-<p><span class="math display">\[
-\mathcal{R}(T) \leq \sum_{k: \Delta_k &gt; 0} \left( \frac{8 \log T}{\Delta_k} + C_k \right),
-\]</span></p>
-<p>where <span class="math inline">\(C_k\)</span> is a problem-dependent constant. Thompson Sampling achieves comparable performance. Under certain regularity conditions, its Bayesian regret is bounded by:</p>
-<p><span class="math display">\[
-\mathbb{E}[\mathcal{R}(T)] = O\left( \sqrt{KT \log T} \right),
-\]</span></p>
-<p>and often outperforms UCB1 in practice due to its adaptive exploration.</p>
+<div id="practical-implementation-server-load-balancing-with-sarsalambda" class="section level2 hasAnchor" number="13.5">
+<h2><span class="header-section-number">13.5</span> Practical Implementation: Server Load Balancing with Sarsa(<span class="math inline">\(\\lambda\)</span>)<a href="eligibility-traces.html#practical-implementation-server-load-balancing-with-sarsalambda" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We can adapt the previous server load balancing example to use Average Reward Sarsa(<span class="math inline">\(\\lambda\)</span>). This modification should demonstrate faster convergence to an optimal policy due to the more efficient credit assignment enabled by eligibility traces.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="eligibility-traces.html#cb48-1" tabindex="-1"></a><span class="co"># Server Load Balancing with Average Reward Sarsa(lambda)</span></span>
+<span id="cb48-2"><a href="eligibility-traces.html#cb48-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb48-3"><a href="eligibility-traces.html#cb48-3" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="eligibility-traces.html#cb48-4" tabindex="-1"></a><span class="co"># Environment setup (identical to previous example)</span></span>
+<span id="cb48-5"><a href="eligibility-traces.html#cb48-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb48-6"><a href="eligibility-traces.html#cb48-6" tabindex="-1"></a>n_servers <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb48-7"><a href="eligibility-traces.html#cb48-7" tabindex="-1"></a>max_load <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb48-8"><a href="eligibility-traces.html#cb48-8" tabindex="-1"></a>n_steps <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
+<span id="cb48-9"><a href="eligibility-traces.html#cb48-9" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="eligibility-traces.html#cb48-10" tabindex="-1"></a><span class="co"># State encoding and reward function</span></span>
+<span id="cb48-11"><a href="eligibility-traces.html#cb48-11" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(loads) {</span>
+<span id="cb48-12"><a href="eligibility-traces.html#cb48-12" tabindex="-1"></a>  <span class="fu">sum</span>(loads <span class="sc">*</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>(<span class="dv">0</span><span class="sc">:</span>(<span class="fu">length</span>(loads)<span class="sc">-</span><span class="dv">1</span>))) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb48-13"><a href="eligibility-traces.html#cb48-13" tabindex="-1"></a>}</span>
+<span id="cb48-14"><a href="eligibility-traces.html#cb48-14" tabindex="-1"></a></span>
+<span id="cb48-15"><a href="eligibility-traces.html#cb48-15" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
+<span id="cb48-16"><a href="eligibility-traces.html#cb48-16" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> state_id <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb48-17"><a href="eligibility-traces.html#cb48-17" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_servers)</span>
+<span id="cb48-18"><a href="eligibility-traces.html#cb48-18" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
+<span id="cb48-19"><a href="eligibility-traces.html#cb48-19" tabindex="-1"></a>    loads[i] <span class="ot">&lt;-</span> state_id <span class="sc">%%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb48-20"><a href="eligibility-traces.html#cb48-20" tabindex="-1"></a>    state_id <span class="ot">&lt;-</span> state_id <span class="sc">%/%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb48-21"><a href="eligibility-traces.html#cb48-21" tabindex="-1"></a>  }</span>
+<span id="cb48-22"><a href="eligibility-traces.html#cb48-22" tabindex="-1"></a>  loads</span>
+<span id="cb48-23"><a href="eligibility-traces.html#cb48-23" tabindex="-1"></a>}</span>
+<span id="cb48-24"><a href="eligibility-traces.html#cb48-24" tabindex="-1"></a></span>
+<span id="cb48-25"><a href="eligibility-traces.html#cb48-25" tabindex="-1"></a>get_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(loads, server_choice) {</span>
+<span id="cb48-26"><a href="eligibility-traces.html#cb48-26" tabindex="-1"></a>  new_loads <span class="ot">&lt;-</span> loads</span>
+<span id="cb48-27"><a href="eligibility-traces.html#cb48-27" tabindex="-1"></a>  new_loads[server_choice] <span class="ot">&lt;-</span> <span class="fu">min</span>(new_loads[server_choice] <span class="sc">+</span> <span class="dv">1</span>, max_load)</span>
+<span id="cb48-28"><a href="eligibility-traces.html#cb48-28" tabindex="-1"></a>  avg_load <span class="ot">&lt;-</span> <span class="fu">mean</span>(new_loads)</span>
+<span id="cb48-29"><a href="eligibility-traces.html#cb48-29" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="sc">-</span>avg_load</span>
+<span id="cb48-30"><a href="eligibility-traces.html#cb48-30" tabindex="-1"></a>  </span>
+<span id="cb48-31"><a href="eligibility-traces.html#cb48-31" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
+<span id="cb48-32"><a href="eligibility-traces.html#cb48-32" tabindex="-1"></a>    <span class="cf">if</span> (new_loads[i] <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
+<span id="cb48-33"><a href="eligibility-traces.html#cb48-33" tabindex="-1"></a>      new_loads[i] <span class="ot">&lt;-</span> new_loads[i] <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb48-34"><a href="eligibility-traces.html#cb48-34" tabindex="-1"></a>    }</span>
+<span id="cb48-35"><a href="eligibility-traces.html#cb48-35" tabindex="-1"></a>  }</span>
+<span id="cb48-36"><a href="eligibility-traces.html#cb48-36" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">reward =</span> reward, <span class="at">new_loads =</span> new_loads)</span>
+<span id="cb48-37"><a href="eligibility-traces.html#cb48-37" tabindex="-1"></a>}</span>
+<span id="cb48-38"><a href="eligibility-traces.html#cb48-38" tabindex="-1"></a></span>
+<span id="cb48-39"><a href="eligibility-traces.html#cb48-39" tabindex="-1"></a><span class="co"># Initialize parameters</span></span>
+<span id="cb48-40"><a href="eligibility-traces.html#cb48-40" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>n_servers</span>
+<span id="cb48-41"><a href="eligibility-traces.html#cb48-41" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers))</span>
+<span id="cb48-42"><a href="eligibility-traces.html#cb48-42" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers)) <span class="co"># Eligibility traces</span></span>
+<span id="cb48-43"><a href="eligibility-traces.html#cb48-43" tabindex="-1"></a>rho_hat <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb48-44"><a href="eligibility-traces.html#cb48-44" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb48-45"><a href="eligibility-traces.html#cb48-45" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fl">0.001</span></span>
+<span id="cb48-46"><a href="eligibility-traces.html#cb48-46" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb48-47"><a href="eligibility-traces.html#cb48-47" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fl">0.9</span> <span class="co"># Trace decay parameter</span></span>
+<span id="cb48-48"><a href="eligibility-traces.html#cb48-48" tabindex="-1"></a></span>
+<span id="cb48-49"><a href="eligibility-traces.html#cb48-49" tabindex="-1"></a><span class="co"># --- Helper function for epsilon-greedy action selection ---</span></span>
+<span id="cb48-50"><a href="eligibility-traces.html#cb48-50" tabindex="-1"></a>choose_action <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id, q_table, eps) {</span>
+<span id="cb48-51"><a href="eligibility-traces.html#cb48-51" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> eps) {</span>
+<span id="cb48-52"><a href="eligibility-traces.html#cb48-52" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_servers, <span class="dv">1</span>))</span>
+<span id="cb48-53"><a href="eligibility-traces.html#cb48-53" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb48-54"><a href="eligibility-traces.html#cb48-54" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">which.max</span>(q_table[state_id, ]))</span>
+<span id="cb48-55"><a href="eligibility-traces.html#cb48-55" tabindex="-1"></a>  }</span>
+<span id="cb48-56"><a href="eligibility-traces.html#cb48-56" tabindex="-1"></a>}</span>
+<span id="cb48-57"><a href="eligibility-traces.html#cb48-57" tabindex="-1"></a></span>
+<span id="cb48-58"><a href="eligibility-traces.html#cb48-58" tabindex="-1"></a><span class="co"># Training loop</span></span>
+<span id="cb48-59"><a href="eligibility-traces.html#cb48-59" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_servers)</span>
+<span id="cb48-60"><a href="eligibility-traces.html#cb48-60" tabindex="-1"></a>state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb48-61"><a href="eligibility-traces.html#cb48-61" tabindex="-1"></a>action <span class="ot">&lt;-</span> <span class="fu">choose_action</span>(state_id, Q, epsilon)</span>
+<span id="cb48-62"><a href="eligibility-traces.html#cb48-62" tabindex="-1"></a>rho_history_sarsa_lambda <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_steps)</span>
+<span id="cb48-63"><a href="eligibility-traces.html#cb48-63" tabindex="-1"></a></span>
+<span id="cb48-64"><a href="eligibility-traces.html#cb48-64" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training average reward Sarsa(lambda) agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Training average reward Sarsa(lambda) agent...</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="eligibility-traces.html#cb50-1" tabindex="-1"></a><span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_steps) {</span>
+<span id="cb50-2"><a href="eligibility-traces.html#cb50-2" tabindex="-1"></a>  <span class="co"># Take action and observe outcome</span></span>
+<span id="cb50-3"><a href="eligibility-traces.html#cb50-3" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">get_reward</span>(loads, action)</span>
+<span id="cb50-4"><a href="eligibility-traces.html#cb50-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> result<span class="sc">$</span>reward</span>
+<span id="cb50-5"><a href="eligibility-traces.html#cb50-5" tabindex="-1"></a>  next_loads <span class="ot">&lt;-</span> result<span class="sc">$</span>new_loads</span>
+<span id="cb50-6"><a href="eligibility-traces.html#cb50-6" tabindex="-1"></a>  next_state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(next_loads)</span>
+<span id="cb50-7"><a href="eligibility-traces.html#cb50-7" tabindex="-1"></a>  </span>
+<span id="cb50-8"><a href="eligibility-traces.html#cb50-8" tabindex="-1"></a>  <span class="co"># Choose next action (A_{t+1}) for the Sarsa update</span></span>
+<span id="cb50-9"><a href="eligibility-traces.html#cb50-9" tabindex="-1"></a>  next_action <span class="ot">&lt;-</span> <span class="fu">choose_action</span>(next_state_id, Q, epsilon)</span>
+<span id="cb50-10"><a href="eligibility-traces.html#cb50-10" tabindex="-1"></a>  </span>
+<span id="cb50-11"><a href="eligibility-traces.html#cb50-11" tabindex="-1"></a>  <span class="co"># Sarsa(lambda) update</span></span>
+<span id="cb50-12"><a href="eligibility-traces.html#cb50-12" tabindex="-1"></a>  td_error <span class="ot">&lt;-</span> reward <span class="sc">-</span> rho_hat <span class="sc">+</span> Q[next_state_id, next_action] <span class="sc">-</span> Q[state_id, action]</span>
+<span id="cb50-13"><a href="eligibility-traces.html#cb50-13" tabindex="-1"></a>  </span>
+<span id="cb50-14"><a href="eligibility-traces.html#cb50-14" tabindex="-1"></a>  <span class="co"># Increment trace for the current state-action pair</span></span>
+<span id="cb50-15"><a href="eligibility-traces.html#cb50-15" tabindex="-1"></a>  E[state_id, action] <span class="ot">&lt;-</span> E[state_id, action] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb50-16"><a href="eligibility-traces.html#cb50-16" tabindex="-1"></a>  </span>
+<span id="cb50-17"><a href="eligibility-traces.html#cb50-17" tabindex="-1"></a>  <span class="co"># Update Q-values and rho using the trace</span></span>
+<span id="cb50-18"><a href="eligibility-traces.html#cb50-18" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> Q <span class="sc">+</span> alpha <span class="sc">*</span> td_error <span class="sc">*</span> E</span>
+<span id="cb50-19"><a href="eligibility-traces.html#cb50-19" tabindex="-1"></a>  rho_hat <span class="ot">&lt;-</span> rho_hat <span class="sc">+</span> beta <span class="sc">*</span> td_error</span>
+<span id="cb50-20"><a href="eligibility-traces.html#cb50-20" tabindex="-1"></a>  </span>
+<span id="cb50-21"><a href="eligibility-traces.html#cb50-21" tabindex="-1"></a>  <span class="co"># Decay eligibility traces</span></span>
+<span id="cb50-22"><a href="eligibility-traces.html#cb50-22" tabindex="-1"></a>  E <span class="ot">&lt;-</span> lambda <span class="sc">*</span> E</span>
+<span id="cb50-23"><a href="eligibility-traces.html#cb50-23" tabindex="-1"></a>  </span>
+<span id="cb50-24"><a href="eligibility-traces.html#cb50-24" tabindex="-1"></a>  <span class="co"># Record progress and update state/action for next iteration</span></span>
+<span id="cb50-25"><a href="eligibility-traces.html#cb50-25" tabindex="-1"></a>  rho_history_sarsa_lambda[step] <span class="ot">&lt;-</span> rho_hat</span>
+<span id="cb50-26"><a href="eligibility-traces.html#cb50-26" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> next_state_id</span>
+<span id="cb50-27"><a href="eligibility-traces.html#cb50-27" tabindex="-1"></a>  action <span class="ot">&lt;-</span> next_action</span>
+<span id="cb50-28"><a href="eligibility-traces.html#cb50-28" tabindex="-1"></a>  </span>
+<span id="cb50-29"><a href="eligibility-traces.html#cb50-29" tabindex="-1"></a>  <span class="cf">if</span> (step <span class="sc">%%</span> <span class="dv">10000</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb50-30"><a href="eligibility-traces.html#cb50-30" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Step %d: Average reward estimate = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, step, rho_hat))</span>
+<span id="cb50-31"><a href="eligibility-traces.html#cb50-31" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.01</span>, epsilon <span class="sc">*</span> <span class="fl">0.95</span>) <span class="co"># Faster decay for demonstration</span></span>
+<span id="cb50-32"><a href="eligibility-traces.html#cb50-32" tabindex="-1"></a>  }</span>
+<span id="cb50-33"><a href="eligibility-traces.html#cb50-33" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Step 10000: Average reward estimate = -0.3333
+## Step 20000: Average reward estimate = -0.3333
+## Step 30000: Average reward estimate = -0.3333
+## Step 40000: Average reward estimate = -0.3333
+## Step 50000: Average reward estimate = -0.3333</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="eligibility-traces.html#cb52-1" tabindex="-1"></a><span class="co"># Final evaluation and policy analysis (similar to before)</span></span>
+<span id="cb52-2"><a href="eligibility-traces.html#cb52-2" tabindex="-1"></a><span class="co"># ... [code for evaluation and printing policy examples] ...</span></span>
+<span id="cb52-3"><a href="eligibility-traces.html#cb52-3" tabindex="-1"></a>final_avg_reward_sarsa_lambda <span class="ot">&lt;-</span> <span class="fu">tail</span>(<span class="fu">cumsum</span>(rho_history_sarsa_lambda), <span class="dv">1</span>) <span class="sc">/</span> n_steps</span>
+<span id="cb52-4"><a href="eligibility-traces.html#cb52-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final average reward estimate from training: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, rho_hat))</span></code></pre></div>
+<pre><code>## Final average reward estimate from training: -0.3333</code></pre>
 </div>
+<div id="computational-and-performance-considerations" class="section level2 hasAnchor" number="13.6">
+<h2><span class="header-section-number">13.6</span> Computational and Performance Considerations<a href="eligibility-traces.html#computational-and-performance-considerations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The primary advantage of using eligibility traces is <strong>improved data efficiency</strong>. By propagating information from a single experience to multiple preceding states, TD(<span class="math inline">\(\\lambda\)</span>) and Sarsa(<span class="math inline">\(\\lambda\)</span>) often converge significantly faster than their one-step counterparts, especially in problems with sparse rewards or long-delayed consequences. This can be critical in real-world applications where data collection is expensive or time-consuming.</p>
+<p>However, this benefit comes at a computational cost. The one-step update only modifies a single entry in the value table. In contrast, the eligibility trace update requires iterating through and modifying <em>every</em> entry in the value table at each time step. For problems with very large state-action spaces, this can be prohibitively expensive. In practice, this is often mitigated by only updating traces that are above a small threshold, as very old traces contribute negligibly to the update. With the advent of deep reinforcement learning, more sophisticated methods inspired by eligibility traces are used to propagate credit through neural network weights.</p>
+<p>Furthermore, eligibility traces introduce a new hyperparameter, <span class="math inline">\(\\lambda\)</span>. The optimal value of <span class="math inline">\(\\lambda\)</span> is problem-dependent and often requires tuning. A high <span class="math inline">\(\\lambda\)</span> can speed up learning but may also introduce higher variance in the updates, as they become more like Monte Carlo updates. A low <span class="math inline">\(\\lambda\)</span> provides more stable but potentially slower learning. The choice of <span class="math inline">\(\\lambda\)</span> reflects a bias-variance trade-off, where higher values reduce the bias of bootstrapping but increase the variance from relying on longer reward sequences.</p>
 </div>
-<div id="epsilon-greedy-strategy" class="section level2 hasAnchor" number="2.5">
-<h2><span class="header-section-number">2.5</span> Epsilon-Greedy Strategy<a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The epsilon-greedy algorithm is a simple and intuitive approach to balancing exploration and exploitation. At each time step, with probability <span class="math inline">\(\epsilon\)</span>, the agent chooses a random arm (exploration), and with probability <span class="math inline">\(1 - \epsilon\)</span>, it selects the arm with the highest empirical mean (exploitation). Let <span class="math inline">\(\hat{\mu}_{k,t}\)</span> denote the empirical mean reward for arm <span class="math inline">\(k\)</span> at time <span class="math inline">\(t\)</span>. Then:</p>
-<p><span class="math display">\[
-A_t =
-\begin{cases}
-\text{random choice} &amp; \text{with probability } \epsilon, \\
-\arg\max_k \hat{\mu}_{k,t} &amp; \text{with probability } 1 - \epsilon.
-\end{cases}
-\]</span></p>
-<p>While this algorithm is not optimal in the theoretical sense, it often performs well in practice for problems with stationary reward distributions when the exploration rate <span class="math inline">\(\epsilon\)</span> is properly tuned.</p>
-<p>Regret under a fixed <span class="math inline">\(\epsilon\)</span> is linear in <span class="math inline">\(T\)</span>, i.e., <span class="math inline">\(\mathcal{R}(T) = O(T)\)</span>, unless <span class="math inline">\(\epsilon\)</span> is decayed over time (e.g., <span class="math inline">\(\epsilon_t = 1/t\)</span>), which introduces a trade-off between convergence speed and variance.</p>
-<div id="r-code-for-epsilon-greedy" class="section level3 hasAnchor" number="2.5.1">
-<h3><span class="header-section-number">2.5.1</span> R Code for Epsilon-Greedy<a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="the-multi-armed-bandit-problem.html#cb3-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-2"><a href="the-multi-armed-bandit-problem.html#cb3-2" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb3-3"><a href="the-multi-armed-bandit-problem.html#cb3-3" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, K)</span>
-<span id="cb3-4"><a href="the-multi-armed-bandit-problem.html#cb3-4" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, K)</span>
-<span id="cb3-5"><a href="the-multi-armed-bandit-problem.html#cb3-5" tabindex="-1"></a>regret <span class="ot">&lt;-</span> <span class="fu">numeric</span>(T)</span>
-<span id="cb3-6"><a href="the-multi-armed-bandit-problem.html#cb3-6" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="the-multi-armed-bandit-problem.html#cb3-7" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T) {</span>
-<span id="cb3-8"><a href="the-multi-armed-bandit-problem.html#cb3-8" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
-<span id="cb3-9"><a href="the-multi-armed-bandit-problem.html#cb3-9" tabindex="-1"></a>    a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>K, <span class="dv">1</span>)  <span class="co"># Exploration</span></span>
-<span id="cb3-10"><a href="the-multi-armed-bandit-problem.html#cb3-10" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb3-11"><a href="the-multi-armed-bandit-problem.html#cb3-11" tabindex="-1"></a>    a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(values)  <span class="co"># Exploitation</span></span>
-<span id="cb3-12"><a href="the-multi-armed-bandit-problem.html#cb3-12" tabindex="-1"></a>  }</span>
-<span id="cb3-13"><a href="the-multi-armed-bandit-problem.html#cb3-13" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1</span>, <span class="dv">1</span>, mu[a])</span>
-<span id="cb3-14"><a href="the-multi-armed-bandit-problem.html#cb3-14" tabindex="-1"></a>  counts[a] <span class="ot">&lt;-</span> counts[a] <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb3-15"><a href="the-multi-armed-bandit-problem.html#cb3-15" tabindex="-1"></a>  values[a] <span class="ot">&lt;-</span> values[a] <span class="sc">+</span> (reward <span class="sc">-</span> values[a]) <span class="sc">/</span> counts[a]</span>
-<span id="cb3-16"><a href="the-multi-armed-bandit-problem.html#cb3-16" tabindex="-1"></a>  regret[t] <span class="ot">&lt;-</span> <span class="fu">max</span>(mu) <span class="sc">-</span> mu[a]</span>
-<span id="cb3-17"><a href="the-multi-armed-bandit-problem.html#cb3-17" tabindex="-1"></a>}</span>
-<span id="cb3-18"><a href="the-multi-armed-bandit-problem.html#cb3-18" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="the-multi-armed-bandit-problem.html#cb3-19" tabindex="-1"></a>cum_regret_eps <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(regret)</span>
-<span id="cb3-20"><a href="the-multi-armed-bandit-problem.html#cb3-20" tabindex="-1"></a><span class="fu">plot</span>(cum_regret_ucb, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb3-21"><a href="the-multi-armed-bandit-problem.html#cb3-21" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Cumulative Regret&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">main =</span> <span class="st">&quot;UCB1 Regret&quot;</span>)</span>
-<span id="cb3-22"><a href="the-multi-armed-bandit-problem.html#cb3-22" tabindex="-1"></a><span class="fu">lines</span>(cum_regret_eps, <span class="at">col =</span> <span class="st">&quot;darkgreen&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb3-23"><a href="the-multi-armed-bandit-problem.html#cb3-23" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;UCB1&quot;</span>, <span class="st">&quot;Thompson Sampling&quot;</span>, <span class="st">&quot;Epsilon-Greedy&quot;</span>), </span>
-<span id="cb3-24"><a href="the-multi-armed-bandit-problem.html#cb3-24" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;darkgreen&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-</div>
-</div>
-<div id="summary-table" class="section level2 hasAnchor" number="2.6">
-<h2><span class="header-section-number">2.6</span> Summary Table<a href="the-multi-armed-bandit-problem.html#summary-table" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<table style="width:100%;">
-<colgroup>
-<col width="8%" />
-<col width="6%" />
-<col width="16%" />
-<col width="13%" />
-<col width="17%" />
-<col width="18%" />
-<col width="18%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Method</strong></th>
-<th><strong>Paradigm</strong></th>
-<th><strong>Assumptions</strong></th>
-<th><strong>Exploration Mechanism</strong></th>
-<th><strong>Regret Bound</strong></th>
-<th><strong>Strengths</strong></th>
-<th><strong>Weaknesses</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>UCB1</td>
-<td>Frequentist</td>
-<td>Stationary, bounded rewards</td>
-<td>Upper Confidence Bound</td>
-<td><span class="math inline">\(O(\log T)\)</span></td>
-<td>Simple, provable guarantees</td>
-<td>Conservative, suboptimal in practice</td>
-</tr>
-<tr class="even">
-<td>Thompson Sampling</td>
-<td>Bayesian</td>
-<td>Prior over reward distributions</td>
-<td>Posterior sampling</td>
-<td><span class="math inline">\(O(\sqrt{KT})\)</span>, empirically better</td>
-<td>Adaptive, efficient with good priors</td>
-<td>Sensitive to prior misspecification</td>
-</tr>
-<tr class="odd">
-<td>KL-UCB</td>
-<td>Frequentist</td>
-<td>Known reward distributions</td>
-<td>KL-divergence bounds</td>
-<td><span class="math inline">\(O(\log T)\)</span> (tighter)</td>
-<td>Distribution-aware</td>
-<td>More complex implementation</td>
-</tr>
-<tr class="even">
-<td>Epsilon-Greedy</td>
-<td>Heuristic</td>
-<td>None</td>
-<td>Random exploration</td>
-<td><span class="math inline">\(O(T)\)</span> if <span class="math inline">\(\epsilon\)</span> fixed</td>
-<td>Very simple</td>
-<td>Inefficient long-term</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="conclusion" class="section level2 hasAnchor" number="2.7">
-<h2><span class="header-section-number">2.7</span> Conclusion<a href="the-multi-armed-bandit-problem.html#conclusion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The multi-armed bandit problem remains an essential model for studying decision-making under uncertainty. While frequentist methods like UCB1 provide rigorous guarantees and conceptual clarity, Bayesian approaches like Thompson Sampling offer greater flexibility and empirical performance. The choice between them hinges on the trade-offs between interpretability, adaptivity, and prior knowledge.</p>
-<p>The R implementations provided here allow for practical experimentation and benchmarking. In real-world applications, such as clinical trial design, online recommendations, and adaptive A/B testing, these algorithms offer principled foundations for learning and acting in uncertain environments.</p>
+<div id="conclusion-8" class="section level2 hasAnchor" number="13.7">
+<h2><span class="header-section-number">13.7</span> Conclusion<a href="eligibility-traces.html#conclusion-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Eligibility traces represent a fundamental and powerful concept in reinforcement learning, elevating simple one-step TD methods into more sophisticated algorithms capable of multi-step credit assignment. By maintaining a decaying record of past states, they enable a single TD error to update a whole chain of preceding value estimates, effectively accelerating the propagation of learned information. As demonstrated, this mechanism is not limited to the traditional discounted setting; it integrates seamlessly with the average reward formulation by using the differential TD error as its learning signal. Algorithms like Average Reward Sarsa(<span class="math inline">\(\\lambda\)</span>) are therefore highly effective tools for solving continuing tasks where long-term performance is paramount. While they introduce additional computational complexity and a new hyperparameter, the resulting improvements in data efficiency and convergence speed make eligibility traces an indispensable component of the modern reinforcement learning toolkit.</p>
 
 </div>
 </div>
@@ -669,8 +640,8 @@ A_t =
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="markov-decision-processes-and-dynamic-programming.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="intrinsic-rewards.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -701,7 +672,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/02-MAB.Rmd",
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/13-Elig_Traces.Rmd",
     "text": "Edit"
   },
   "history": {
@@ -709,7 +680,7 @@ gitbook.start({
     "text": null
   },
   "view": {
-    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/02-MAB.Rmd",
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/13-Elig_Traces.Rmd",
     "text": null
   },
   "download": null,
