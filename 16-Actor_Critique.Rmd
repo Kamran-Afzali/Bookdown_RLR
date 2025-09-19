@@ -1,0 +1,516 @@
+# Actor-Critic Methods: Bridging Policy and Value Learning in Reinforcement Learning
+
+The trajectory from pure policy gradient methods to Actor-Critic algorithms represents one of the most elegant theoretical developments in reinforcement learning. While REINFORCE provides a direct path to policy optimization, its high variance and sample inefficiency reveal fundamental limitations that Actor-Critic methods address through a sophisticated marriage of policy and value learning. This synthesis creates algorithms that retain the policy optimization benefits of gradient methods while leveraging the sample efficiency advantages of temporal difference learning.
+
+The conceptual leap from REINFORCE to Actor-Critic emerges from a deeper understanding of variance sources in policy gradients. When REINFORCE uses entire episode returns to weight policy updates, it conflates the value of individual actions with the accumulated randomness of complete trajectories. Actor-Critic methods resolve this by decomposing the learning problem into two interacting components: an actor that learns the policy and a critic that estimates state or action values to provide more immediate feedback. This decomposition transforms the high-variance Monte Carlo returns of REINFORCE into lower-variance temporal difference estimates, dramatically improving learning stability and speed.
+
+The mathematical foundation underlying this transformation rests on the policy gradient theorem, but with a crucial insight about baseline subtraction. Recall that we can subtract any state-dependent baseline from policy gradient returns without introducing bias. The optimal baseline, in terms of variance minimization, turns out to be the state value function itself. This observation naturally leads to using advantage functions $A(s,a) = Q(s,a) - V(s)$ as the weighting terms in policy updates. Since we typically don't have access to the true advantage function, Actor-Critic methods learn approximations to both the policy and the value function simultaneously, creating a feedback loop where each component improves the other.
+
+The elegance of this approach extends beyond variance reduction. While REINFORCE must wait until episode completion to update its policy, Actor-Critic methods can learn from individual transitions, enabling continuous adaptation throughout each episode. This online learning capability proves particularly valuable in continuing tasks or environments with very long episodes, where the delay inherent in Monte Carlo methods becomes prohibitive. The critic provides immediate feedback about action quality, allowing the actor to adjust its behavior based on short-term consequences rather than distant, noisy episode outcomes.
+
+## Theoretical Framework
+
+The Actor-Critic architecture decomposes the policy optimization problem into two parallel learning tasks. The actor maintains a parameterized policy $\pi(a|s, \theta)$ and updates its parameters $\theta$ to maximize expected rewards. The critic maintains a value function approximation, typically the state value function $V(s, w)$ parameterized by weights $w$, though some variants use action-value functions or advantage functions directly.
+
+The critic's role extends beyond simple value estimation. By learning to predict returns from each state, it provides the actor with a baseline for evaluating action quality. When the critic estimates that a state has high value, actions leading to rewards in that state receive less credit than they would under the raw return. Conversely, actions that generate rewards from states the critic considers poor receive amplified credit. This relative weighting scheme helps the actor focus on genuinely surprising outcomes rather than expected rewards.
+
+The temporal difference error forms the bridge between actor and critic updates. For each transition $(s_t, a_t, r_{t+1}, s_{t+1})$, we compute the TD error:
+
+$$\delta_t = r_{t+1} + \gamma V(s_{t+1}, w) - V(s_t, w)$$
+
+This error serves dual purposes: it provides the critic with a learning signal for updating its value estimates, and it gives the actor an estimate of the advantage of action $a_t$ in state $s_t$. The TD error represents how much better or worse the immediate outcome was compared to the critic's expectation, making it a natural measure of action quality.
+
+The actor update follows the standard policy gradient form but uses the TD error as the advantage estimate:
+
+$$\theta \leftarrow \theta + \alpha_\theta \nabla_\theta \log \pi(a_t|s_t, \theta) \cdot \delta_t$$
+
+The critic update uses the same TD error to improve its value predictions:
+
+$$w \leftarrow w + \alpha_w \delta_t \nabla_w V(s_t, w)$$
+
+The learning rates $\alpha_\theta$ and $\alpha_w$ are typically set independently, allowing fine-tuned control over the relative adaptation speeds of the two components. This separation proves crucial because the actor and critic operate on different timescales and have different convergence properties.
+
+The theoretical guarantees for Actor-Critic methods require careful analysis because the algorithm involves two coupled learning processes. The critic's value function estimates change as the policy evolves, while the policy updates depend on the critic's current estimates. This interdependence creates a non-stationary learning problem where standard convergence proofs don't immediately apply. However, under appropriate conditions on learning rates and function approximation, convergence results exist that guarantee both components will improve over time.
+
+## Implementation and Comparative Analysis
+
+Building upon our previous policy gradient implementations, we can construct a comprehensive Actor-Critic framework that demonstrates both the theoretical elegance and practical advantages of this approach. The implementation reveals subtle aspects of the algorithm that theory alone cannot capture, particularly regarding the interaction between actor and critic learning dynamics.
+
+```r
+# Enhanced Actor-Critic implementation with detailed analysis
+actor_critic_enhanced <- function(episodes = 1000, alpha_actor = 0.01, alpha_critic = 0.1,
+                                gamma = 0.95, lambda = 0.9) {
+  
+  # Initialize policy parameters (actor)
+  n_states <- 10
+  n_actions <- 2
+  n_params <- n_states * n_actions
+  theta <- rnorm(n_params, 0, 0.1)
+  
+  # Initialize value function parameters (critic) 
+  v_weights <- rnorm(n_states, 0, 0.1)
+  
+  # Eligibility traces for both actor and critic
+  theta_eligibility <- rep(0, n_params)
+  v_eligibility <- rep(0, n_states)
+  
+  # Tracking variables for analysis
+  td_errors_history <- list()
+  value_estimates_history <- list()
+  policy_entropy_history <- numeric(episodes)
+  gradient_magnitudes <- numeric(episodes)
+  
+  for (ep in 1:episodes) {
+    # Reset eligibility traces for new episode
+    theta_eligibility <- rep(0, n_params)
+    v_eligibility <- rep(0, n_states)
+    
+    s <- 1
+    step <- 0
+    episode_td_errors <- numeric()
+    episode_values <- numeric()
+    
+    while (s != terminal_state && step < 100) {
+      step <- step + 1
+      
+      # Store current value estimate
+      v_current <- sum(v_weights * extract_features(s))
+      episode_values <- c(episode_values, v_current)
+      
+      # Sample action from current policy
+      action_probs <- softmax_policy(s, theta)
+      action <- sample(1:n_actions, 1, prob = action_probs)
+      
+      # Take action and observe outcome
+      outcome <- sample_env(s, action)
+      s_prime <- outcome$s_prime
+      reward <- outcome$reward
+      
+      # Compute TD error
+      if (s_prime == terminal_state) {
+        td_error <- reward - v_current
+      } else {
+        v_next <- sum(v_weights * extract_features(s_prime))
+        td_error <- reward + gamma * v_next - v_current
+      }
+      
+      episode_td_errors <- c(episode_td_errors, td_error)
+      
+      # Update eligibility traces
+      grad_log_pi <- grad_log_prob(s, action, theta)
+      theta_eligibility <- gamma * lambda * theta_eligibility + grad_log_pi
+      
+      state_features <- extract_features(s)
+      v_eligibility <- gamma * lambda * v_eligibility + state_features
+      
+      # Update actor and critic using eligibility traces
+      theta <- theta + alpha_actor * td_error * theta_eligibility
+      v_weights <- v_weights + alpha_critic * td_error * v_eligibility
+      
+      s <- s_prime
+    }
+    
+    # Calculate policy entropy for this episode
+    entropy <- 0
+    for (state in 1:(n_states-1)) {
+      probs <- softmax_policy(state, theta)
+      entropy <- entropy - sum(probs * log(probs + 1e-8))
+    }
+    policy_entropy_history[ep] <- entropy / (n_states - 1)
+    
+    # Store episode statistics
+    td_errors_history[[ep]] <- episode_td_errors
+    value_estimates_history[[ep]] <- episode_values
+    
+    # Compute gradient magnitude for analysis
+    if (length(episode_td_errors) > 0) {
+      avg_td_error <- mean(episode_td_errors)
+      gradient_mag <- sqrt(sum((alpha_actor * avg_td_error * theta_eligibility)^2))
+      gradient_magnitudes[ep] <- gradient_mag
+    }
+  }
+  
+  return(list(
+    theta = theta,
+    v_weights = v_weights,
+    td_errors_history = td_errors_history,
+    value_estimates_history = value_estimates_history,
+    policy_entropy_history = policy_entropy_history,
+    gradient_magnitudes = gradient_magnitudes
+  ))
+}
+
+# Comparative evaluation function
+compare_methods <- function(episodes = 800) {
+  set.seed(42)
+  
+  # Run REINFORCE with baseline
+  reinforce_result <- reinforce(episodes = episodes, alpha = 0.005, baseline = TRUE)
+  
+  # Run basic Actor-Critic
+  ac_basic <- actor_critic(episodes = episodes, alpha_actor = 0.005, alpha_critic = 0.02)
+  
+  # Run enhanced Actor-Critic with eligibility traces
+  ac_enhanced <- actor_critic_enhanced(episodes = episodes, alpha_actor = 0.005, 
+                                     alpha_critic = 0.02, lambda = 0.9)
+  
+  # Evaluate final policies
+  evaluation_episodes <- 20
+  
+  reinforce_performance <- evaluate_policy(reinforce_result$theta, evaluation_episodes)
+  ac_basic_performance <- evaluate_policy(ac_basic$theta, evaluation_episodes)
+  ac_enhanced_performance <- evaluate_policy(ac_enhanced$theta, evaluation_episodes)
+  
+  return(list(
+    reinforce = list(result = reinforce_result, performance = reinforce_performance),
+    ac_basic = list(result = ac_basic, performance = ac_basic_performance),
+    ac_enhanced = list(result = ac_enhanced, performance = ac_enhanced_performance)
+  ))
+}
+```
+
+The enhanced implementation incorporates eligibility traces, which extend the credit assignment mechanism of Actor-Critic methods. Rather than updating parameters based only on the current transition, eligibility traces create a decaying memory of recent state-action pairs, allowing TD errors to update multiple previous estimates simultaneously. This mechanism addresses the temporal credit assignment problem more effectively than basic one-step updates, particularly in environments where the consequences of actions unfold over multiple time steps.
+
+The inclusion of policy entropy tracking provides insights into the exploration-exploitation dynamics of Actor-Critic learning. As the algorithm progresses, we expect the policy entropy to decrease as the policy becomes more deterministic around optimal actions. However, premature entropy collapse can indicate insufficient exploration, while persistently high entropy might suggest convergence problems. Monitoring this quantity helps diagnose learning difficulties and guide hyperparameter selection.
+
+### Variance Analysis and Learning Dynamics
+
+The fundamental advantage of Actor-Critic methods lies in their variance reduction compared to pure policy gradient approaches. To understand this improvement quantitatively, we need to examine how the different components contribute to gradient estimate variance and how the critic's learning affects overall stability.
+
+```r
+# Detailed variance analysis function
+analyze_learning_dynamics <- function() {
+  comparison_results <- compare_methods(episodes = 600)
+  
+  # Extract TD errors from Actor-Critic results
+  ac_td_errors <- comparison_results$ac_enhanced$result$td_errors_history
+  
+  # Compute variance statistics
+  episode_td_variances <- sapply(ac_td_errors, function(errors) {
+    if (length(errors) > 1) var(errors) else 0
+  })
+  
+  episode_td_means <- sapply(ac_td_errors, function(errors) {
+    if (length(errors) > 0) mean(errors) else 0
+  })
+  
+  # Analyze value function learning
+  value_histories <- comparison_results$ac_enhanced$result$value_estimates_history
+  
+  # Compute how value estimates change over time for each state
+  value_evolution <- matrix(0, nrow = 600, ncol = 9)  # Excluding terminal state
+  
+  for (ep in 1:min(600, length(value_histories))) {
+    if (length(value_histories[[ep]]) > 0) {
+      # Take first value estimate of episode (from starting state)
+      value_evolution[ep, 1] <- value_histories[[ep]][1]
+    }
+  }
+  
+  return(list(
+    td_variances = episode_td_variances,
+    td_means = episode_td_means,
+    value_evolution = value_evolution,
+    policy_entropy = comparison_results$ac_enhanced$result$policy_entropy_history,
+    gradient_magnitudes = comparison_results$ac_enhanced$result$gradient_magnitudes
+  ))
+}
+
+# Visualization function for learning dynamics
+plot_learning_dynamics <- function() {
+  dynamics_data <- analyze_learning_dynamics()
+  
+  par(mfrow = c(2, 2), mar = c(4, 4, 3, 2))
+  
+  # Plot 1: TD error variance over episodes
+  episodes <- 1:length(dynamics_data$td_variances)
+  plot(episodes, dynamics_data$td_variances, type = "l", 
+       col = "blue", lwd = 2,
+       xlab = "Episode", ylab = "TD Error Variance",
+       main = "TD Error Variance Evolution")
+  
+  # Add smoothed trend line
+  if (length(dynamics_data$td_variances) > 10) {
+    smoothed_var <- zoo::rollmean(dynamics_data$td_variances, k = 20, fill = NA)
+    lines(episodes, smoothed_var, col = "red", lwd = 2, lty = 2)
+  }
+  grid(col = "gray90")
+  
+  # Plot 2: Policy entropy evolution
+  plot(episodes, dynamics_data$policy_entropy[1:length(episodes)], 
+       type = "l", col = "darkgreen", lwd = 2,
+       xlab = "Episode", ylab = "Policy Entropy",
+       main = "Policy Entropy Evolution")
+  grid(col = "gray90")
+  
+  # Plot 3: Value function learning for starting state
+  plot(episodes, dynamics_data$value_evolution[1:length(episodes), 1], 
+       type = "l", col = "purple", lwd = 2,
+       xlab = "Episode", ylab = "Value Estimate",
+       main = "Value Function Learning (Start State)")
+  grid(col = "gray90")
+  
+  # Plot 4: Gradient magnitude evolution
+  plot(episodes, dynamics_data$gradient_magnitudes[1:length(episodes)], 
+       type = "l", col = "orange", lwd = 2,
+       xlab = "Episode", ylab = "Gradient Magnitude",
+       main = "Policy Gradient Magnitudes")
+  grid(col = "gray90")
+  
+  par(mfrow = c(1, 1))
+}
+```
+
+The variance analysis reveals several key insights about Actor-Critic learning dynamics. Initially, TD errors exhibit high variance as both the policy and value function are poorly calibrated. As learning progresses, we typically observe a reduction in TD error variance, indicating that the critic is becoming better at predicting returns and providing more stable feedback to the actor. However, this trend isn't monotonic—periods of increased variance often correspond to significant policy changes as the actor explores new behaviors.
+
+The relationship between policy entropy and learning progress provides another window into algorithm behavior. Healthy Actor-Critic learning typically shows a gradual decline in entropy as the policy concentrates probability mass on better actions. Sudden entropy drops might indicate premature convergence to suboptimal policies, while persistently high entropy could suggest learning difficulties or inappropriate hyperparameters. The entropy evolution also reveals the exploration-exploitation balance inherent in the algorithm's design.
+
+```r
+# Execute the analysis
+plot_learning_dynamics()
+```
+
+### Algorithmic Variants and Extensions
+
+The basic Actor-Critic framework admits numerous variations, each addressing specific limitations or targeting particular problem domains. These variants illustrate the flexibility of the core concept while revealing the subtle design choices that affect algorithm behavior.
+
+One significant variant involves the choice of critic architecture. While our implementation uses state value functions, action-value critics that learn $Q(s,a,w)$ provide richer information about individual action values. The advantage estimation becomes more direct since $A(s,a) = Q(s,a) - \max_{a'} Q(s,a')$, but the learning problem becomes more complex as the critic must learn values for all state-action pairs rather than just states.
+
+Advantage Actor-Critic (A2C) methods represent another important direction, explicitly learning advantage functions rather than deriving them from value estimates. This approach can reduce bias in advantage estimates but requires careful handling of the advantage function's inherent constraints—advantages must sum to zero across actions for any given state.
+
+The temporal scope of updates offers another dimension for algorithmic variation. Our implementation uses one-step TD errors, but n-step returns provide a natural interpolation between the low-variance, high-bias one-step estimates and the high-variance, low-bias Monte Carlo returns of REINFORCE. The parameter $\lambda$ in TD($\lambda$) methods controls this interpolation, with $\lambda = 0$ corresponding to pure TD learning and $\lambda = 1$ approximating Monte Carlo methods.
+
+```r
+# N-step Actor-Critic implementation
+n_step_actor_critic <- function(episodes = 500, n_steps = 5, 
+                               alpha_actor = 0.01, alpha_critic = 0.1) {
+  
+  # Initialize parameters
+  n_states <- 10
+  n_actions <- 2
+  n_params <- n_states * n_actions
+  theta <- rnorm(n_params, 0, 0.1)
+  v_weights <- rnorm(n_states, 0, 0.1)
+  
+  episode_returns <- numeric(episodes)
+  
+  for (ep in 1:episodes) {
+    # Store trajectory for n-step updates
+    trajectory <- list()
+    s <- 1
+    step <- 0
+    
+    while (s != terminal_state && step < 100) {
+      step <- step + 1
+      
+      # Store current state and value
+      current_value <- sum(v_weights * extract_features(s))
+      
+      # Sample action
+      action_probs <- softmax_policy(s, theta)
+      action <- sample(1:n_actions, 1, prob = action_probs)
+      
+      # Take action
+      outcome <- sample_env(s, action)
+      
+      # Store experience
+      trajectory[[step]] <- list(
+        state = s,
+        action = action,
+        reward = outcome$reward,
+        value = current_value
+      )
+      
+      s <- outcome$s_prime
+      
+      # Perform n-step update if we have enough steps
+      if (length(trajectory) >= n_steps) {
+        update_idx <- length(trajectory) - n_steps + 1
+        
+        # Compute n-step return
+        n_step_return <- 0
+        for (i in 0:(n_steps-1)) {
+          if (update_idx + i <= length(trajectory)) {
+            n_step_return <- n_step_return + 
+              (gamma^i) * trajectory[[update_idx + i]]$reward
+          }
+        }
+        
+        # Add bootstrapped value if not terminal
+        if (s != terminal_state) {
+          bootstrap_value <- sum(v_weights * extract_features(s))
+          n_step_return <- n_step_return + (gamma^n_steps) * bootstrap_value
+        }
+        
+        # Compute advantage
+        advantage <- n_step_return - trajectory[[update_idx]]$value
+        
+        # Update actor
+        update_state <- trajectory[[update_idx]]$state
+        update_action <- trajectory[[update_idx]]$action
+        grad_log_pi <- grad_log_prob(update_state, update_action, theta)
+        theta <- theta + alpha_actor * advantage * grad_log_pi
+        
+        # Update critic
+        state_features <- extract_features(update_state)
+        v_weights <- v_weights + alpha_critic * advantage * state_features
+      }
+    }
+    
+    # Final updates for remaining trajectory
+    while (length(trajectory) > 0) {
+      update_idx <- 1
+      remaining_steps <- min(n_steps, length(trajectory))
+      
+      # Compute return for remaining steps
+      remaining_return <- 0
+      for (i in 0:(remaining_steps-1)) {
+        remaining_return <- remaining_return + 
+          (gamma^i) * trajectory[[update_idx + i]]$reward
+      }
+      
+      advantage <- remaining_return - trajectory[[update_idx]]$value
+      
+      # Update parameters
+      update_state <- trajectory[[update_idx]]$state
+      update_action <- trajectory[[update_idx]]$action
+      grad_log_pi <- grad_log_prob(update_state, update_action, theta)
+      theta <- theta + alpha_actor * advantage * grad_log_pi
+      
+      state_features <- extract_features(update_state)
+      v_weights <- v_weights + alpha_critic * advantage * state_features
+      
+      trajectory <- trajectory[-1]  # Remove processed step
+    }
+    
+    # Evaluate episode performance periodically
+    if (ep %% 50 == 0) {
+      episode_returns[ep] <- evaluate_policy(theta, n_episodes = 5)
+    }
+  }
+  
+  return(list(
+    theta = theta,
+    v_weights = v_weights,
+    episode_returns = episode_returns
+  ))
+}
+```
+
+The n-step variant demonstrates how Actor-Critic methods can be positioned along the bias-variance spectrum. Larger values of n reduce bias by incorporating more actual rewards before bootstrapping with value estimates, but they increase variance by accumulating more stochastic transitions. The optimal choice depends on the environment's characteristics and the quality of value function approximation.
+
+## Computational and Convergence Considerations
+
+The practical success of Actor-Critic methods depends critically on the relative learning rates of actor and critic components. This relationship affects both convergence speed and final solution quality in ways that theory alone cannot fully predict. The critic must learn accurate value estimates to provide useful feedback to the actor, but the actor's changing policy continuously shifts the target that the critic is trying to learn. This creates a non-stationary learning problem that requires careful balancing.
+
+Empirically, critics typically require faster learning rates than actors because value function learning resembles supervised learning with clear targets, while policy learning must navigate a more complex optimization landscape. However, if the critic learns too quickly relative to the actor, it may overfit to the current policy's behavior and provide misleading advantage estimates. Conversely, a critic that learns too slowly provides noisy, outdated feedback that can destabilize actor learning.
+
+The choice of function approximation architecture significantly influences both components' behavior. Linear function approximation provides theoretical guarantees but limits representational capacity, while neural network approximation enables complex policies and value functions but introduces optimization challenges. The interaction between actor and critic function approximation creates additional complexity—errors in one component can compound in the other, leading to divergent behavior even when individual components would converge in isolation.
+
+Memory and computational requirements offer another practical consideration. Actor-Critic methods require maintaining and updating two sets of parameters, roughly doubling the memory overhead compared to pure policy gradient approaches. However, this cost is often offset by improved sample efficiency, as Actor-Critic methods typically require fewer environment interactions to achieve good performance.
+
+The online nature of Actor-Critic learning provides both advantages and challenges for practical implementation. The ability to learn from individual transitions enables continuous adaptation and makes these methods suitable for online learning scenarios. However, this same characteristic makes them sensitive to the sequence of experiences encountered during learning. Unlike batch methods that can smooth over bad experiences, Actor-Critic algorithms must cope with whatever sequence the current policy generates.
+
+### Comparative Performance Analysis
+
+To fully appreciate the strengths and limitations of Actor-Critic methods, we need systematic comparison with alternative approaches across multiple performance dimensions. Raw sample efficiency tells only part of the story—we must also consider learning stability, final performance quality, and computational efficiency.
+
+```r
+# Comprehensive comparison function
+comprehensive_comparison <- function() {
+  set.seed(123)
+  episodes <- 600
+  
+  # Methods to compare
+  methods <- list(
+    reinforce_basic = function() reinforce(episodes, alpha = 0.003, baseline = FALSE),
+    reinforce_baseline = function() reinforce(episodes, alpha = 0.003, baseline = TRUE),
+    actor_critic_basic = function() actor_critic(episodes, alpha_actor = 0.003, alpha_critic = 0.015),
+    actor_critic_enhanced = function() actor_critic_enhanced(episodes, alpha_actor = 0.003, 
+                                                           alpha_critic = 0.015, lambda = 0.8),
+    n_step_ac = function() n_step_actor_critic(episodes, n_steps = 3, 
+                                              alpha_actor = 0.003, alpha_critic = 0.015)
+  )
+  
+  results <- list()
+  performance_metrics <- data.frame(
+    method = names(methods),
+    final_performance = numeric(length(methods)),
+    convergence_speed = numeric(length(methods)),
+    learning_stability = numeric(length(methods)),
+    stringsAsFactors = FALSE
+  )
+  
+  for (i in seq_along(methods)) {
+    method_name <- names(methods)[i]
+    cat("Running", method_name, "...\n")
+    
+    result <- methods[[i]]()
+    results[[method_name]] <- result
+    
+    # Evaluate final performance
+    final_perf <- evaluate_policy(result$theta, n_episodes = 20)
+    performance_metrics$final_performance[i] <- final_perf
+    
+    # Estimate convergence speed (episodes to reach 80% of final performance)
+    if ("episode_returns" %in% names(result)) {
+      returns <- result$episode_returns[result$episode_returns > 0]
+      if (length(returns) > 10) {
+        target_perf <- 0.8 * final_perf
+        convergence_ep <- which(returns >= target_perf)[1]
+        performance_metrics$convergence_speed[i] <- 
+          ifelse(is.na(convergence_ep), episodes, convergence_ep)
+      }
+    }
+    
+    # Measure learning stability (coefficient of variation in later episodes)
+    if ("episode_returns" %in% names(result)) {
+      returns <- result$episode_returns[result$episode_returns > 0]
+      if (length(returns) > 50) {
+        later_returns <- tail(returns, 50)
+        cv <- sd(later_returns) / mean(later_returns)
+        performance_metrics$learning_stability[i] <- cv
+      }
+    }
+  }
+  
+  return(list(
+    results = results,
+    metrics = performance_metrics
+  ))
+}
+
+# Run comprehensive comparison
+comparison_results <- comprehensive_comparison()
+print(comparison_results$metrics)
+```
+
+The comprehensive comparison reveals that Actor-Critic methods generally achieve better sample efficiency than pure policy gradient approaches, typically converging faster and with greater stability. The enhanced Actor-Critic with eligibility traces often shows the best overall performance, combining rapid initial learning with stable convergence. However, the relative performance depends significantly on hyperparameter tuning, and the added complexity of Actor-Critic methods can make them more sensitive to parameter choices.
+
+The n-step variant demonstrates an interesting trade-off between the extremes of one-step TD and full Monte Carlo methods. With appropriate step sizes, it often achieves faster initial learning than basic Actor-Critic while maintaining better stability than REINFORCE. This flexibility makes n-step methods particularly attractive for practitioners who need to balance learning speed with stability requirements.
+
+Learning stability metrics reveal another advantage of Actor-Critic methods. The continuous value function updates provide a stabilizing influence on policy learning, reducing the wild oscillations that can plague pure policy gradient methods. This stability proves especially valuable in environments with sparse rewards, where the immediate feedback provided by the critic helps maintain learning progress even when episodes rarely reach rewarding states.
+
+## Conclusion
+
+The successful implementation of Actor-Critic methods requires attention to numerous subtle details that can dramatically affect performance. The initialization of both actor and critic parameters influences early learning dynamics, with poor initialization potentially leading to unstable or slow convergence. The critic should typically be initialized to provide reasonable value estimates for early policy evaluation, while the actor initialization should promote adequate exploration during initial learning.
+
+The coupling between actor and critic learning rates creates a multi-dimensional optimization problem for hyperparameter selection. Traditional grid search becomes prohibitively expensive, and the optimal ratio often depends on problem-specific characteristics. Adaptive learning rate methods can help, but they must account for the non-stationary nature of the optimization landscape as both components evolve.
+
+Numerical stability considerations become more complex in Actor-Critic methods because errors can propagate between components. Gradient clipping proves essential for both actor and critic updates, but the appropriate clipping thresholds may differ between components. The critic's value predictions should be monitored for explosive growth, which can destabilize the entire algorithm.
+
+The choice of advantage estimation method significantly affects practical performance. While we've focused on TD error-based advantages, other approaches like Generalized Advantage Estimation (GAE) provide additional control over the bias-variance trade-off. These methods use exponentially-weighted combinations of n-step advantages, offering fine-grained control over temporal credit assignment.
+
+Actor-Critic methods represent a sophisticated synthesis of the two major paradigms in reinforcement learning: policy optimization and value function learning. By combining these approaches, they address key limitations of pure methods while introducing new complexities that require careful management. The theoretical elegance of using learned value functions as variance-reducing baselines translates into practical algorithms that often outperform their constituent components.
+
+The journey from REINFORCE to Actor-Critic illustrates how algorithmic development in reinforcement learning often involves identifying and addressing specific failure modes through principled extensions. The high variance problem of policy gradients finds its solution not through abandoning the core approach but through augmenting it with complementary techniques. This pattern of incremental improvement built on solid theoretical foundations characterizes much of the progress in modern reinforcement learning.
+
+The flexibility of the Actor-Critic framework enables numerous variants, each targeting specific aspects of the learning problem. From eligibility traces to n-step returns to different critic architectures, these variations demonstrate how a strong conceptual foundation can support diverse practical implementations. The ability to tune the bias-variance trade-off through algorithmic choices rather than just hyperparameters provides practitioners with powerful tools for adapting methods to specific problem domains.
+
+The comparative analysis reveals that Actor-Critic methods generally provide superior sample efficiency and stability compared to pure policy gradient approaches, though at the cost of increased implementation complexity and hyperparameter sensitivity. This trade-off reflects a broader principle in machine learning: more sophisticated methods often achieve better performance but require more careful application.
+
+Looking forward, the Actor-Critic framework continues to influence modern reinforcement learning research. Advanced methods like PPO, A3C, and SAC all build upon the core insight that simultaneous policy and value learning can be more effective than either approach alone. The principles underlying Actor-Critic methods—variance reduction through baseline subtraction, temporal difference learning for immediate feedback, and the separation of exploration from exploitation—remain relevant as the field tackles increasingly complex problems.
+
+The implementation insights and practical considerations discussed here highlight the gap between theoretical understanding and successful application. While the mathematical foundations of Actor-Critic methods are well-established, achieving reliable performance requires careful attention to initialization, learning rates, numerical stability, and architectural choices. These practical aspects often determine success or failure in real applications, emphasizing the importance of implementation expertise alongside theoretical knowledge.
+
+Actor-Critic methods ultimately demonstrate that the most effective algorithmic approaches often involve combining complementary techniques rather than perfecting individual components. The synergy between policy optimization and value function learning creates capabilities that neither approach achieves alone, providing a template for algorithm development that continues to yield insights in contemporary reinforcement learning research.

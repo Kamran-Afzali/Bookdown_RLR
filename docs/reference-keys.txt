@@ -190,6 +190,14 @@ variance-analysis-of-gradient-estimates
 example-analyzing-gradient-variance
 discussion-and-implementation-considerations-1
 conclusion-9
+actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning
+theoretical-framework-3
+implementation-and-comparative-analysis
+variance-analysis-and-learning-dynamics
+algorithmic-variants-and-extensions
+computational-and-convergence-considerations
+comparative-performance-analysis
+conclusion-10
 appendix
 comprehensive-reinforcement-learning-concepts-guide
 learning-mechanisms
