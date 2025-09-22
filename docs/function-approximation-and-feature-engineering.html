@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 9 Dyna and DynaQ | Reinforcement Learning in R</title>
-  <meta name="description" content="Chapter 9 Dyna and DynaQ | Reinforcement Learning in R" />
+  <title>Chapter 11 Function Approximation And Feature Engineering | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 11 Function Approximation And Feature Engineering | Reinforcement Learning in R" />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 9 Dyna and DynaQ | Reinforcement Learning in R" />
+  <meta property="og:title" content="Chapter 11 Function Approximation And Feature Engineering | Reinforcement Learning in R" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 9 Dyna and DynaQ | Reinforcement Learning in R" />
+  <meta name="twitter:title" content="Chapter 11 Function Approximation And Feature Engineering | Reinforcement Learning in R" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"/>
-<link rel="next" href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"/>
+<link rel="prev" href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"/>
+<link rel="next" href="learning-policies-versus-learning-values.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -464,309 +464,325 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="dyna-and-dynaq" class="section level1 hasAnchor" number="9">
-<h1><span class="header-section-number">Chapter 9</span> Dyna and DynaQ<a href="dyna-and-dynaq.html#dyna-and-dynaq" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="introduction-7" class="section level2 hasAnchor" number="9.1">
-<h2><span class="header-section-number">9.1</span> Introduction<a href="dyna-and-dynaq.html#introduction-7" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Traditional reinforcement learning methods fall into two categories: model-free approaches like SARSA and Q-Learning that learn directly from experience, and model-based methods that first learn environment dynamics then use planning algorithms. Dyna, introduced by Sutton (1990), bridges this gap by combining direct reinforcement learning with indirect learning through an internal model of the environment.</p>
-<p>The key insight behind Dyna is that real experience can serve dual purposes: updating value functions directly and improving an internal model that generates simulated experience for additional learning. This architecture allows agents to benefit from both the sample efficiency of planning and the robustness of direct learning, making it particularly effective in environments where experience is costly or limited.</p>
+<div id="function-approximation-and-feature-engineering" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Chapter 11</span> Function Approximation And Feature Engineering<a href="function-approximation-and-feature-engineering.html#function-approximation-and-feature-engineering" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Reinforcement Learning (RL) has made remarkable progress, largely by moving from <strong>tabular methods</strong>, which store values for every state, to <strong>deep learning</strong> approaches that can handle vast, continuous environments. This leap, however, is built upon a critical intermediate step: <strong>classical function approximation</strong>. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, diagnosing its failures, and designing effective agent representations.</p>
+<p>Tabular RL is impractical for large or continuous state spaces due to the <strong>curse of dimensionality</strong>. Function approximation overcomes this by learning a parameterized function that generalizes knowledge across similar states. This generalization is both a strength and a challenge. It allows agents to learn in complex worlds but introduces a fundamental tradeoff between <strong>discrimination</strong> (distinguishing important states) and <strong>generalization</strong> (sharing knowledge) that shapes all modern RL algorithms.</p>
+<p>This appendix bridges the gap between tabular methods and deep RL. We begin with feature engineering, then cover the mathematical principles of linear function approximation, and finally explore classical basis functions like coarse coding, tile coding, and radial basis functions (RBFs).</p>
+<div id="feature-engineering-and-state-representation" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Feature Engineering and State Representation<a href="function-approximation-and-feature-engineering.html#feature-engineering-and-state-representation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The success of any RL algorithm hinges on the quality of its state representation. Raw environmental observations are rarely optimal for learning. Effective <strong>feature engineering</strong> transforms high-dimensional, noisy data into a compact, informative format that accelerates learning and improves generalization.</p>
+<div id="the-discrimination-vs.-generalization-tradeoff" class="section level3 hasAnchor" number="11.1.1">
+<h3><span class="header-section-number">11.1.1</span> The Discrimination vs. Generalization Tradeoff<a href="function-approximation-and-feature-engineering.html#the-discrimination-vs.-generalization-tradeoff" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>At the core of feature design is a fundamental tension:</p>
+<ul>
+<li><strong>Discrimination</strong> is the ability to distinguish between states that require different actions or have different values. For example, a robot navigating near a cliff must have features that are highly sensitive to small changes in its position.</li>
+<li><strong>Generalization</strong> is the ability to treat similar states similarly, allowing experiences in one state to inform decisions in others. In the same navigation task, large open areas should be represented similarly so the agent doesn’t have to re-learn how to move in each one.</li>
+</ul>
+<p>Mathematically, we approximate a value function <span class="math inline">\(V^\*(s)\)</span> with a parameterized function <span class="math inline">\(V\_{\\boldsymbol{\\theta}}(s)\)</span>. Using a linear model, this is expressed as:</p>
+<p><span class="math display">\[V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta} = \sum_{i=1}^d \phi_i(s) \theta_i\]</span></p>
+<p>Here, <span class="math inline">\(\\boldsymbol{\\phi}(s)\)</span> is the feature vector for state <span class="math inline">\(s\)</span>, and <span class="math inline">\(\\boldsymbol{\\theta}\)</span> is the weight vector we learn. The quality of the approximation depends on how well the features <span class="math inline">\(\\boldsymbol{\\phi}(s)\)</span> can represent the true value function <span class="math inline">\(V^*(s)\)</span>. The unavoidable error in the best possible linear approximation is given by <span class="math inline">\(|V^* - \\Pi V^\*|^2\)</span>, where <span class="math inline">\(\\Pi\)</span> is the projection operator onto the space spanned by the features. A good feature set minimizes this error.</p>
 </div>
-<div id="theoretical-framework" class="section level2 hasAnchor" number="9.2">
-<h2><span class="header-section-number">9.2</span> Theoretical Framework<a href="dyna-and-dynaq.html#theoretical-framework" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="the-dyna-architecture" class="section level3 hasAnchor" number="9.2.1">
-<h3><span class="header-section-number">9.2.1</span> The Dyna Architecture<a href="dyna-and-dynaq.html#the-dyna-architecture" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Dyna integrates three key components within a unified learning system:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Direct RL</strong>: Learning from real experience using standard temporal difference methods</li>
-<li><strong>Model Learning</strong>: Building an internal model of environment dynamics from experience<br />
-</li>
-<li><strong>Planning</strong>: Using the learned model to generate simulated experience for additional value function updates</li>
-</ol>
-<p>The complete Dyna update cycle can be formalized as follows. For each real experience tuple <span class="math inline">\((s, a, r, s&#39;)\)</span>:</p>
-<p><strong>Direct Learning (Q-Learning)</strong>:
-<span class="math display">\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right]\]</span></p>
-<p><strong>Model Update</strong>:
-<span class="math display">\[\hat{T}(s,a) \leftarrow s&#39;\]</span>
-<span class="math display">\[\hat{R}(s,a) \leftarrow r\]</span></p>
-<p><strong>Planning Phase</strong> (repeat <span class="math inline">\(n\)</span> times):
-<span class="math display">\[s \leftarrow \text{random previously visited state}\]</span>
-<span class="math display">\[a \leftarrow \text{random action previously taken in } s\]</span>
-<span class="math display">\[r \leftarrow \hat{R}(s,a)\]</span>
-<span class="math display">\[s&#39; \leftarrow \hat{T}(s,a)\]</span>
-<span class="math display">\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s,a) \right]\]</span></p>
-<p>The parameter <span class="math inline">\(n\)</span> controls the number of planning steps per real experience, representing the computational budget available for internal simulation.</p>
-</div>
-<div id="model-representation" class="section level3 hasAnchor" number="9.2.2">
-<h3><span class="header-section-number">9.2.2</span> Model Representation<a href="dyna-and-dynaq.html#model-representation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>In its simplest form, Dyna uses a deterministic table-based model where <span class="math inline">\(\hat{T}(s,a)\)</span> stores the last observed next state for state-action pair <span class="math inline">\((s,a)\)</span>, and <span class="math inline">\(\hat{R}(s,a)\)</span> stores the last observed reward. This approach works well for deterministic environments but can be extended to handle stochastic dynamics through sampling-based representations.</p>
-</div>
-<div id="convergence-properties" class="section level3 hasAnchor" number="9.2.3">
-<h3><span class="header-section-number">9.2.3</span> Convergence Properties<a href="dyna-and-dynaq.html#convergence-properties" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Under standard assumptions (all state-action pairs visited infinitely often, appropriate learning rates), Dyna inherits the convergence guarantees of its underlying RL algorithm. The addition of planning typically accelerates convergence by allowing each real experience to propagate information more widely through the value function.</p>
+<div id="principles-of-feature-extraction" class="section level3 hasAnchor" number="11.1.2">
+<h3><span class="header-section-number">11.1.2</span> Principles of Feature Extraction<a href="function-approximation-and-feature-engineering.html#principles-of-feature-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Effective feature design in RL often involves:</p>
+<ul>
+<li><strong>Encoding Temporal Dependencies</strong>: Features should capture dynamics, such as position and velocity in a physics problem or recent price trends in a trading algorithm.</li>
+<li><strong>Focusing on Action-Relevant Information</strong>: Features should highlight aspects of the state that are critical for making a decision. The shape of a chess position is more important than the specific pieces if the underlying tactical pattern is the same.</li>
+<li><strong>Capturing Hierarchical Structure</strong>: Good features can represent abstract concepts, like “in the kitchen” for a home robot or “opening phase” in a board game, which allows for hierarchical planning and learning.</li>
+</ul>
 </div>
 </div>
-<div id="implementation-in-r" class="section level2 hasAnchor" number="9.3">
-<h2><span class="header-section-number">9.3</span> Implementation in R<a href="dyna-and-dynaq.html#implementation-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We implement Dyna-Q using the same 10-state environment from previous posts, allowing direct comparison with pure Q-Learning and SARSA approaches.</p>
-<div id="environment-setup" class="section level3 hasAnchor" number="9.3.1">
-<h3><span class="header-section-number">9.3.1</span> Environment Setup<a href="dyna-and-dynaq.html#environment-setup" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="dyna-and-dynaq.html#cb21-1" tabindex="-1"></a><span class="co"># Environment parameters</span></span>
-<span id="cb21-2"><a href="dyna-and-dynaq.html#cb21-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb21-3"><a href="dyna-and-dynaq.html#cb21-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb21-4"><a href="dyna-and-dynaq.html#cb21-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb21-5"><a href="dyna-and-dynaq.html#cb21-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
-<span id="cb21-6"><a href="dyna-and-dynaq.html#cb21-6" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="dyna-and-dynaq.html#cb21-7" tabindex="-1"></a><span class="co"># Transition and reward models (same as previous posts)</span></span>
-<span id="cb21-8"><a href="dyna-and-dynaq.html#cb21-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb21-9"><a href="dyna-and-dynaq.html#cb21-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb21-10"><a href="dyna-and-dynaq.html#cb21-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb21-11"><a href="dyna-and-dynaq.html#cb21-11" tabindex="-1"></a></span>
-<span id="cb21-12"><a href="dyna-and-dynaq.html#cb21-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb21-13"><a href="dyna-and-dynaq.html#cb21-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb21-14"><a href="dyna-and-dynaq.html#cb21-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb21-15"><a href="dyna-and-dynaq.html#cb21-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb21-16"><a href="dyna-and-dynaq.html#cb21-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb21-17"><a href="dyna-and-dynaq.html#cb21-17" tabindex="-1"></a>  </span>
-<span id="cb21-18"><a href="dyna-and-dynaq.html#cb21-18" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb21-19"><a href="dyna-and-dynaq.html#cb21-19" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb21-20"><a href="dyna-and-dynaq.html#cb21-20" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb21-21"><a href="dyna-and-dynaq.html#cb21-21" tabindex="-1"></a>  }</span>
-<span id="cb21-22"><a href="dyna-and-dynaq.html#cb21-22" tabindex="-1"></a>}</span>
-<span id="cb21-23"><a href="dyna-and-dynaq.html#cb21-23" tabindex="-1"></a></span>
-<span id="cb21-24"><a href="dyna-and-dynaq.html#cb21-24" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb21-25"><a href="dyna-and-dynaq.html#cb21-25" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb21-26"><a href="dyna-and-dynaq.html#cb21-26" tabindex="-1"></a></span>
-<span id="cb21-27"><a href="dyna-and-dynaq.html#cb21-27" tabindex="-1"></a><span class="co"># Environment interaction function</span></span>
-<span id="cb21-28"><a href="dyna-and-dynaq.html#cb21-28" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
-<span id="cb21-29"><a href="dyna-and-dynaq.html#cb21-29" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
-<span id="cb21-30"><a href="dyna-and-dynaq.html#cb21-30" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
-<span id="cb21-31"><a href="dyna-and-dynaq.html#cb21-31" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
-<span id="cb21-32"><a href="dyna-and-dynaq.html#cb21-32" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
-<span id="cb21-33"><a href="dyna-and-dynaq.html#cb21-33" tabindex="-1"></a>}</span></code></pre></div>
+<div id="mathematical-foundations-of-linear-function-approximation" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Mathematical Foundations of Linear Function Approximation<a href="function-approximation-and-feature-engineering.html#mathematical-foundations-of-linear-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Linear function approximation is the cornerstone of parametric value function methods. Its simplicity provides theoretical guarantees and computational efficiency, making it an essential starting point.</p>
+<div id="linear-value-functions" class="section level3 hasAnchor" number="11.2.1">
+<h3><span class="header-section-number">11.2.1</span> Linear Value Functions<a href="function-approximation-and-feature-engineering.html#linear-value-functions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We represent the state-value function <span class="math inline">\(V(s)\)</span> or action-value function <span class="math inline">\(Q(s, a)\)</span> as a linear combination of features:
+<span class="math display">\[V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}\]</span>
+<span class="math display">\[Q_{\boldsymbol{\theta}}(s, a) = \boldsymbol{\phi}(s, a)^T \boldsymbol{\theta}\]</span>
+A key advantage is that the gradient of the value function with respect to the parameters is simply the feature vector itself:
+<span class="math display">\[\nabla_{\boldsymbol{\theta}} V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)\]</span>
+This property makes learning algorithms based on gradient descent straightforward and computationally cheap.</p>
 </div>
-<div id="dyna-q-implementation" class="section level3 hasAnchor" number="9.3.2">
-<h3><span class="header-section-number">9.3.2</span> Dyna-Q Implementation<a href="dyna-and-dynaq.html#dyna-q-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="dyna-and-dynaq.html#cb22-1" tabindex="-1"></a><span class="co"># Dyna-Q algorithm with episode-wise performance tracking</span></span>
-<span id="cb22-2"><a href="dyna-and-dynaq.html#cb22-2" tabindex="-1"></a>dyna_q <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, <span class="at">n_planning =</span> <span class="dv">5</span>) {</span>
-<span id="cb22-3"><a href="dyna-and-dynaq.html#cb22-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
-<span id="cb22-4"><a href="dyna-and-dynaq.html#cb22-4" tabindex="-1"></a>  model_T <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
-<span id="cb22-5"><a href="dyna-and-dynaq.html#cb22-5" tabindex="-1"></a>  model_R <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
-<span id="cb22-6"><a href="dyna-and-dynaq.html#cb22-6" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb22-7"><a href="dyna-and-dynaq.html#cb22-7" tabindex="-1"></a>  </span>
-<span id="cb22-8"><a href="dyna-and-dynaq.html#cb22-8" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb22-9"><a href="dyna-and-dynaq.html#cb22-9" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb22-10"><a href="dyna-and-dynaq.html#cb22-10" tabindex="-1"></a>  </span>
-<span id="cb22-11"><a href="dyna-and-dynaq.html#cb22-11" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb22-12"><a href="dyna-and-dynaq.html#cb22-12" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb22-13"><a href="dyna-and-dynaq.html#cb22-13" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb22-14"><a href="dyna-and-dynaq.html#cb22-14" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb22-15"><a href="dyna-and-dynaq.html#cb22-15" tabindex="-1"></a>    </span>
-<span id="cb22-16"><a href="dyna-and-dynaq.html#cb22-16" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {  <span class="co"># Add max steps to prevent infinite loops</span></span>
-<span id="cb22-17"><a href="dyna-and-dynaq.html#cb22-17" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
-<span id="cb22-18"><a href="dyna-and-dynaq.html#cb22-18" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
-<span id="cb22-19"><a href="dyna-and-dynaq.html#cb22-19" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb22-20"><a href="dyna-and-dynaq.html#cb22-20" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[s, ])</span>
-<span id="cb22-21"><a href="dyna-and-dynaq.html#cb22-21" tabindex="-1"></a>      }</span>
-<span id="cb22-22"><a href="dyna-and-dynaq.html#cb22-22" tabindex="-1"></a>      </span>
-<span id="cb22-23"><a href="dyna-and-dynaq.html#cb22-23" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb22-24"><a href="dyna-and-dynaq.html#cb22-24" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
-<span id="cb22-25"><a href="dyna-and-dynaq.html#cb22-25" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
-<span id="cb22-26"><a href="dyna-and-dynaq.html#cb22-26" tabindex="-1"></a>      </span>
-<span id="cb22-27"><a href="dyna-and-dynaq.html#cb22-27" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
-<span id="cb22-28"><a href="dyna-and-dynaq.html#cb22-28" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb22-29"><a href="dyna-and-dynaq.html#cb22-29" tabindex="-1"></a>      </span>
-<span id="cb22-30"><a href="dyna-and-dynaq.html#cb22-30" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
-<span id="cb22-31"><a href="dyna-and-dynaq.html#cb22-31" tabindex="-1"></a>      </span>
-<span id="cb22-32"><a href="dyna-and-dynaq.html#cb22-32" tabindex="-1"></a>      model_T[s, a] <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb22-33"><a href="dyna-and-dynaq.html#cb22-33" tabindex="-1"></a>      model_R[s, a] <span class="ot">&lt;-</span> r</span>
-<span id="cb22-34"><a href="dyna-and-dynaq.html#cb22-34" tabindex="-1"></a>      </span>
-<span id="cb22-35"><a href="dyna-and-dynaq.html#cb22-35" tabindex="-1"></a>      sa_key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb22-36"><a href="dyna-and-dynaq.html#cb22-36" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>(sa_key <span class="sc">%in%</span> <span class="fu">names</span>(visited_sa))) {</span>
-<span id="cb22-37"><a href="dyna-and-dynaq.html#cb22-37" tabindex="-1"></a>        visited_sa[[sa_key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(s, a)</span>
-<span id="cb22-38"><a href="dyna-and-dynaq.html#cb22-38" tabindex="-1"></a>      }</span>
-<span id="cb22-39"><a href="dyna-and-dynaq.html#cb22-39" tabindex="-1"></a>      </span>
-<span id="cb22-40"><a href="dyna-and-dynaq.html#cb22-40" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(visited_sa) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb22-41"><a href="dyna-and-dynaq.html#cb22-41" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_planning) {</span>
-<span id="cb22-42"><a href="dyna-and-dynaq.html#cb22-42" tabindex="-1"></a>          sa_sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(visited_sa, <span class="dv">1</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb22-43"><a href="dyna-and-dynaq.html#cb22-43" tabindex="-1"></a>          s_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">1</span>]</span>
-<span id="cb22-44"><a href="dyna-and-dynaq.html#cb22-44" tabindex="-1"></a>          a_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">2</span>]</span>
-<span id="cb22-45"><a href="dyna-and-dynaq.html#cb22-45" tabindex="-1"></a>          </span>
-<span id="cb22-46"><a href="dyna-and-dynaq.html#cb22-46" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(model_T[s_plan, a_plan])) {</span>
-<span id="cb22-47"><a href="dyna-and-dynaq.html#cb22-47" tabindex="-1"></a>            s_prime_plan <span class="ot">&lt;-</span> model_T[s_plan, a_plan]</span>
-<span id="cb22-48"><a href="dyna-and-dynaq.html#cb22-48" tabindex="-1"></a>            r_plan <span class="ot">&lt;-</span> model_R[s_plan, a_plan]</span>
-<span id="cb22-49"><a href="dyna-and-dynaq.html#cb22-49" tabindex="-1"></a>            </span>
-<span id="cb22-50"><a href="dyna-and-dynaq.html#cb22-50" tabindex="-1"></a>            Q[s_plan, a_plan] <span class="ot">&lt;-</span> Q[s_plan, a_plan] <span class="sc">+</span> </span>
-<span id="cb22-51"><a href="dyna-and-dynaq.html#cb22-51" tabindex="-1"></a>              alpha <span class="sc">*</span> (r_plan <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime_plan, ]) <span class="sc">-</span> Q[s_plan, a_plan])</span>
-<span id="cb22-52"><a href="dyna-and-dynaq.html#cb22-52" tabindex="-1"></a>          }</span>
-<span id="cb22-53"><a href="dyna-and-dynaq.html#cb22-53" tabindex="-1"></a>        }</span>
-<span id="cb22-54"><a href="dyna-and-dynaq.html#cb22-54" tabindex="-1"></a>      }</span>
-<span id="cb22-55"><a href="dyna-and-dynaq.html#cb22-55" tabindex="-1"></a>      </span>
-<span id="cb22-56"><a href="dyna-and-dynaq.html#cb22-56" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb22-57"><a href="dyna-and-dynaq.html#cb22-57" tabindex="-1"></a>    }</span>
-<span id="cb22-58"><a href="dyna-and-dynaq.html#cb22-58" tabindex="-1"></a>    </span>
-<span id="cb22-59"><a href="dyna-and-dynaq.html#cb22-59" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
-<span id="cb22-60"><a href="dyna-and-dynaq.html#cb22-60" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
-<span id="cb22-61"><a href="dyna-and-dynaq.html#cb22-61" tabindex="-1"></a>  }</span>
-<span id="cb22-62"><a href="dyna-and-dynaq.html#cb22-62" tabindex="-1"></a>  </span>
-<span id="cb22-63"><a href="dyna-and-dynaq.html#cb22-63" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
-<span id="cb22-64"><a href="dyna-and-dynaq.html#cb22-64" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
-<span id="cb22-65"><a href="dyna-and-dynaq.html#cb22-65" tabindex="-1"></a>}</span></code></pre></div>
+<div id="temporal-difference-td-learning-with-function-approximation" class="section level3 hasAnchor" number="11.2.2">
+<h3><span class="header-section-number">11.2.2</span> Temporal Difference (TD) Learning with Function Approximation<a href="function-approximation-and-feature-engineering.html#temporal-difference-td-learning-with-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>With linear function approximation, the <strong>TD(0)</strong> update rule for learning <span class="math inline">\(V\_{\\boldsymbol{\\theta}}(s)\)</span> becomes:
+<span class="math display">\[\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_{\boldsymbol{\theta}}(S_{t+1}) - V_{\boldsymbol{\theta}}(S_t)] \boldsymbol{\phi}(S_t)\]</span>
+This update adjusts the weights <span class="math inline">\(\\boldsymbol{\\theta}\)</span> to reduce the TD error for the observed transition. Since the value of any state depends on the shared weights <span class="math inline">\(\\boldsymbol{\\theta}\)</span>, this single update influences the value estimates across the entire state space.</p>
+<p>Similarly, the update for <strong>Q-learning</strong> is:
+<span class="math display">\[\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a&#39;} Q_{\boldsymbol{\theta}}(S_{t+1}, a&#39;) - Q_{\boldsymbol{\theta}}(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)\]</span></p>
 </div>
-<div id="standard-q-learning-for-comparison" class="section level3 hasAnchor" number="9.3.3">
-<h3><span class="header-section-number">9.3.3</span> Standard Q-Learning for Comparison<a href="dyna-and-dynaq.html#standard-q-learning-for-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="dyna-and-dynaq.html#cb23-1" tabindex="-1"></a><span class="co"># Q-Learning with performance tracking</span></span>
-<span id="cb23-2"><a href="dyna-and-dynaq.html#cb23-2" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
-<span id="cb23-3"><a href="dyna-and-dynaq.html#cb23-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
-<span id="cb23-4"><a href="dyna-and-dynaq.html#cb23-4" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb23-5"><a href="dyna-and-dynaq.html#cb23-5" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb23-6"><a href="dyna-and-dynaq.html#cb23-6" tabindex="-1"></a>  </span>
-<span id="cb23-7"><a href="dyna-and-dynaq.html#cb23-7" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb23-8"><a href="dyna-and-dynaq.html#cb23-8" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb23-9"><a href="dyna-and-dynaq.html#cb23-9" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb23-10"><a href="dyna-and-dynaq.html#cb23-10" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb23-11"><a href="dyna-and-dynaq.html#cb23-11" tabindex="-1"></a>    </span>
-<span id="cb23-12"><a href="dyna-and-dynaq.html#cb23-12" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {</span>
-<span id="cb23-13"><a href="dyna-and-dynaq.html#cb23-13" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
-<span id="cb23-14"><a href="dyna-and-dynaq.html#cb23-14" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb23-15"><a href="dyna-and-dynaq.html#cb23-15" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
-<span id="cb23-16"><a href="dyna-and-dynaq.html#cb23-16" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
-<span id="cb23-17"><a href="dyna-and-dynaq.html#cb23-17" tabindex="-1"></a>      </span>
-<span id="cb23-18"><a href="dyna-and-dynaq.html#cb23-18" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
-<span id="cb23-19"><a href="dyna-and-dynaq.html#cb23-19" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb23-20"><a href="dyna-and-dynaq.html#cb23-20" tabindex="-1"></a>      </span>
-<span id="cb23-21"><a href="dyna-and-dynaq.html#cb23-21" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
-<span id="cb23-22"><a href="dyna-and-dynaq.html#cb23-22" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb23-23"><a href="dyna-and-dynaq.html#cb23-23" tabindex="-1"></a>    }</span>
-<span id="cb23-24"><a href="dyna-and-dynaq.html#cb23-24" tabindex="-1"></a>    </span>
-<span id="cb23-25"><a href="dyna-and-dynaq.html#cb23-25" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
-<span id="cb23-26"><a href="dyna-and-dynaq.html#cb23-26" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
-<span id="cb23-27"><a href="dyna-and-dynaq.html#cb23-27" tabindex="-1"></a>  }</span>
-<span id="cb23-28"><a href="dyna-and-dynaq.html#cb23-28" tabindex="-1"></a>  </span>
-<span id="cb23-29"><a href="dyna-and-dynaq.html#cb23-29" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
-<span id="cb23-30"><a href="dyna-and-dynaq.html#cb23-30" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
-<span id="cb23-31"><a href="dyna-and-dynaq.html#cb23-31" tabindex="-1"></a>}</span></code></pre></div>
+<div id="convergence-and-the-deadly-triad" class="section level3 hasAnchor" number="11.2.3">
+<h3><span class="header-section-number">11.2.3</span> Convergence and the “Deadly Triad”<a href="function-approximation-and-feature-engineering.html#convergence-and-the-deadly-triad" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>While on-policy TD learning with linear function approximation is guaranteed to converge, stability is not assured under all conditions. The combination of <strong>off-policy learning</strong>, <strong>function approximation</strong>, and <strong>bootstrapping</strong> (updating estimates from other estimates) is known as the <strong>“deadly triad”</strong> and can lead to divergence, where the value estimates grow uncontrollably. This instability is a fundamental challenge that motivated much of the research leading to modern deep RL algorithms like DQN, which employ techniques like experience replay and target networks to mitigate it.</p>
 </div>
 </div>
-<div id="experimental-analysis" class="section level2 hasAnchor" number="9.4">
-<h2><span class="header-section-number">9.4</span> Experimental Analysis<a href="dyna-and-dynaq.html#experimental-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="learning-efficiency-comparison" class="section level3 hasAnchor" number="9.4.1">
-<h3><span class="header-section-number">9.4.1</span> Learning Efficiency Comparison<a href="dyna-and-dynaq.html#learning-efficiency-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>We compare Dyna-Q against standard Q-Learning across different numbers of planning steps:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="dyna-and-dynaq.html#cb24-1" tabindex="-1"></a><span class="co"># Run comprehensive experiments</span></span>
-<span id="cb24-2"><a href="dyna-and-dynaq.html#cb24-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb24-3"><a href="dyna-and-dynaq.html#cb24-3" tabindex="-1"></a>n_runs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb24-4"><a href="dyna-and-dynaq.html#cb24-4" tabindex="-1"></a>episodes <span class="ot">&lt;-</span> <span class="dv">300</span></span>
-<span id="cb24-5"><a href="dyna-and-dynaq.html#cb24-5" tabindex="-1"></a></span>
-<span id="cb24-6"><a href="dyna-and-dynaq.html#cb24-6" tabindex="-1"></a><span class="co"># Initialize results storage</span></span>
-<span id="cb24-7"><a href="dyna-and-dynaq.html#cb24-7" tabindex="-1"></a>all_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb24-8"><a href="dyna-and-dynaq.html#cb24-8" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="dyna-and-dynaq.html#cb24-9" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Running experiments...&quot;</span>)</span>
-<span id="cb24-10"><a href="dyna-and-dynaq.html#cb24-10" tabindex="-1"></a></span>
-<span id="cb24-11"><a href="dyna-and-dynaq.html#cb24-11" tabindex="-1"></a><span class="cf">for</span> (run <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_runs) {</span>
-<span id="cb24-12"><a href="dyna-and-dynaq.html#cb24-12" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Run&quot;</span>, run, <span class="st">&quot;of&quot;</span>, n_runs, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb24-13"><a href="dyna-and-dynaq.html#cb24-13" tabindex="-1"></a>  </span>
-<span id="cb24-14"><a href="dyna-and-dynaq.html#cb24-14" tabindex="-1"></a>  <span class="co"># Run algorithms</span></span>
-<span id="cb24-15"><a href="dyna-and-dynaq.html#cb24-15" tabindex="-1"></a>  ql_result <span class="ot">&lt;-</span> <span class="fu">q_learning</span>(<span class="at">episodes =</span> episodes)</span>
-<span id="cb24-16"><a href="dyna-and-dynaq.html#cb24-16" tabindex="-1"></a>  dyna5_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">5</span>)</span>
-<span id="cb24-17"><a href="dyna-and-dynaq.html#cb24-17" tabindex="-1"></a>  dyna10_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">10</span>)</span>
-<span id="cb24-18"><a href="dyna-and-dynaq.html#cb24-18" tabindex="-1"></a>  dyna20_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">20</span>)</span>
-<span id="cb24-19"><a href="dyna-and-dynaq.html#cb24-19" tabindex="-1"></a>  </span>
-<span id="cb24-20"><a href="dyna-and-dynaq.html#cb24-20" tabindex="-1"></a>  <span class="co"># Store results</span></span>
-<span id="cb24-21"><a href="dyna-and-dynaq.html#cb24-21" tabindex="-1"></a>  run_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb24-22"><a href="dyna-and-dynaq.html#cb24-22" tabindex="-1"></a>    <span class="at">episode =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>episodes, <span class="dv">4</span>),</span>
-<span id="cb24-23"><a href="dyna-and-dynaq.html#cb24-23" tabindex="-1"></a>    <span class="at">run =</span> run,</span>
-<span id="cb24-24"><a href="dyna-and-dynaq.html#cb24-24" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span>, <span class="st">&quot;Dyna-Q (n=10)&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span>), <span class="at">each =</span> episodes),</span>
-<span id="cb24-25"><a href="dyna-and-dynaq.html#cb24-25" tabindex="-1"></a>    <span class="at">reward =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_rewards, dyna5_result<span class="sc">$</span>episode_rewards, </span>
-<span id="cb24-26"><a href="dyna-and-dynaq.html#cb24-26" tabindex="-1"></a>               dyna10_result<span class="sc">$</span>episode_rewards, dyna20_result<span class="sc">$</span>episode_rewards),</span>
-<span id="cb24-27"><a href="dyna-and-dynaq.html#cb24-27" tabindex="-1"></a>    <span class="at">steps =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_steps, dyna5_result<span class="sc">$</span>episode_steps,</span>
-<span id="cb24-28"><a href="dyna-and-dynaq.html#cb24-28" tabindex="-1"></a>              dyna10_result<span class="sc">$</span>episode_steps, dyna20_result<span class="sc">$</span>episode_steps)</span>
-<span id="cb24-29"><a href="dyna-and-dynaq.html#cb24-29" tabindex="-1"></a>  )</span>
-<span id="cb24-30"><a href="dyna-and-dynaq.html#cb24-30" tabindex="-1"></a>  </span>
-<span id="cb24-31"><a href="dyna-and-dynaq.html#cb24-31" tabindex="-1"></a>  all_results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_results, run_data)</span>
-<span id="cb24-32"><a href="dyna-and-dynaq.html#cb24-32" tabindex="-1"></a>}</span></code></pre></div>
-<pre><code># Compute smoothed averages
-smoothed_results &lt;- all_results %&gt;%
-  group_by(algorithm, episode) %&gt;%
-  summarise(
-    mean_reward = mean(reward),
-    se_reward = sd(reward) / sqrt(n()),
-    mean_steps = mean(steps),
-    se_steps = sd(steps) / sqrt(n()),
-    .groups = &#39;drop&#39;
-  ) %&gt;%
-  group_by(algorithm) %&gt;%
-  mutate(
-    smooth_reward = stats::filter(mean_reward, rep(1/10, 10), sides = 2),
-    smooth_steps = stats::filter(mean_steps, rep(1/10, 10), sides = 2)
-  )
+<div id="classical-basis-function-methods" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> Classical Basis Function Methods<a href="function-approximation-and-feature-engineering.html#classical-basis-function-methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Basis functions are systematic methods for constructing features. They provide a bridge from simple linear models to the powerful, automatically-learned features of neural networks.</p>
+<div id="coarse-coding" class="section level3 hasAnchor" number="11.3.1">
+<h3><span class="header-section-number">11.3.1</span> Coarse Coding<a href="function-approximation-and-feature-engineering.html#coarse-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Coarse coding</strong> uses overlapping binary features, where each feature corresponds to a “receptive field” or region in the state space. A feature is active (value 1) if the state falls within its region and inactive (0) otherwise. The overlap between regions enables generalization: nearby states activate a similar set of features, so they receive similar value estimates.</p>
+<p>The degree of overlap controls the smoothness of the learned function. More overlap leads to broader generalization.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="function-approximation-and-feature-engineering.html#cb36-1" tabindex="-1"></a><span class="co"># Load necessary libraries for all visualizations</span></span>
+<span id="cb36-2"><a href="function-approximation-and-feature-engineering.html#cb36-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb36-3"><a href="function-approximation-and-feature-engineering.html#cb36-3" tabindex="-1"></a><span class="fu">library</span>(ggforce) <span class="co"># For drawing circles</span></span>
+<span id="cb36-4"><a href="function-approximation-and-feature-engineering.html#cb36-4" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="function-approximation-and-feature-engineering.html#cb36-5" tabindex="-1"></a><span class="co"># --- Coarse Coding Implementation ---</span></span>
+<span id="cb36-6"><a href="function-approximation-and-feature-engineering.html#cb36-6" tabindex="-1"></a>create_coarse_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, num_features, <span class="at">overlap_factor =</span> <span class="dv">2</span>) {</span>
+<span id="cb36-7"><a href="function-approximation-and-feature-engineering.html#cb36-7" tabindex="-1"></a>  <span class="co"># Generate random centers for the receptive fields</span></span>
+<span id="cb36-8"><a href="function-approximation-and-feature-engineering.html#cb36-8" tabindex="-1"></a>  centers <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-9"><a href="function-approximation-and-feature-engineering.html#cb36-9" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
+<span id="cb36-10"><a href="function-approximation-and-feature-engineering.html#cb36-10" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])</span>
+<span id="cb36-11"><a href="function-approximation-and-feature-engineering.html#cb36-11" tabindex="-1"></a>  )</span>
+<span id="cb36-12"><a href="function-approximation-and-feature-engineering.html#cb36-12" tabindex="-1"></a>  </span>
+<span id="cb36-13"><a href="function-approximation-and-feature-engineering.html#cb36-13" tabindex="-1"></a>  <span class="co"># Calculate radius based on average spacing to ensure overlap</span></span>
+<span id="cb36-14"><a href="function-approximation-and-feature-engineering.html#cb36-14" tabindex="-1"></a>  avg_spacing <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">prod</span>(state_dims) <span class="sc">/</span> num_features)</span>
+<span id="cb36-15"><a href="function-approximation-and-feature-engineering.html#cb36-15" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> overlap_factor <span class="sc">*</span> avg_spacing <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb36-16"><a href="function-approximation-and-feature-engineering.html#cb36-16" tabindex="-1"></a>  </span>
+<span id="cb36-17"><a href="function-approximation-and-feature-engineering.html#cb36-17" tabindex="-1"></a>  <span class="co"># Function to compute the binary feature vector for a given state</span></span>
+<span id="cb36-18"><a href="function-approximation-and-feature-engineering.html#cb36-18" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb36-19"><a href="function-approximation-and-feature-engineering.html#cb36-19" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb36-20"><a href="function-approximation-and-feature-engineering.html#cb36-20" tabindex="-1"></a>    distances <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((centers<span class="sc">$</span>x <span class="sc">-</span> state_vec[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (centers<span class="sc">$</span>y <span class="sc">-</span> state_vec[<span class="dv">2</span>])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb36-21"><a href="function-approximation-and-feature-engineering.html#cb36-21" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(distances <span class="sc">&lt;=</span> radius)</span>
+<span id="cb36-22"><a href="function-approximation-and-feature-engineering.html#cb36-22" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb36-23"><a href="function-approximation-and-feature-engineering.html#cb36-23" tabindex="-1"></a>  }</span>
+<span id="cb36-24"><a href="function-approximation-and-feature-engineering.html#cb36-24" tabindex="-1"></a>  </span>
+<span id="cb36-25"><a href="function-approximation-and-feature-engineering.html#cb36-25" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb36-26"><a href="function-approximation-and-feature-engineering.html#cb36-26" tabindex="-1"></a>    <span class="at">compute_features =</span> compute_features,</span>
+<span id="cb36-27"><a href="function-approximation-and-feature-engineering.html#cb36-27" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb36-28"><a href="function-approximation-and-feature-engineering.html#cb36-28" tabindex="-1"></a>    <span class="at">radius =</span> radius,</span>
+<span id="cb36-29"><a href="function-approximation-and-feature-engineering.html#cb36-29" tabindex="-1"></a>    <span class="at">state_dims =</span> state_dims</span>
+<span id="cb36-30"><a href="function-approximation-and-feature-engineering.html#cb36-30" tabindex="-1"></a>  ))</span>
+<span id="cb36-31"><a href="function-approximation-and-feature-engineering.html#cb36-31" tabindex="-1"></a>}</span>
+<span id="cb36-32"><a href="function-approximation-and-feature-engineering.html#cb36-32" tabindex="-1"></a></span>
+<span id="cb36-33"><a href="function-approximation-and-feature-engineering.html#cb36-33" tabindex="-1"></a><span class="co"># --- Visualization Function for Coarse Coding ---</span></span>
+<span id="cb36-34"><a href="function-approximation-and-feature-engineering.html#cb36-34" tabindex="-1"></a>visualize_coarse_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(coarse_coder, <span class="at">state =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb36-35"><a href="function-approximation-and-feature-engineering.html#cb36-35" tabindex="-1"></a>  active_features <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) coarse_coder<span class="sc">$</span><span class="fu">compute_features</span>(state) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb36-36"><a href="function-approximation-and-feature-engineering.html#cb36-36" tabindex="-1"></a>  active_indices <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(active_features)) <span class="fu">which</span>(active_features <span class="sc">==</span> <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">integer</span>(<span class="dv">0</span>)</span>
+<span id="cb36-37"><a href="function-approximation-and-feature-engineering.html#cb36-37" tabindex="-1"></a>  </span>
+<span id="cb36-38"><a href="function-approximation-and-feature-engineering.html#cb36-38" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb36-39"><a href="function-approximation-and-feature-engineering.html#cb36-39" tabindex="-1"></a>    <span class="co"># Draw all receptive fields (inactive)</span></span>
+<span id="cb36-40"><a href="function-approximation-and-feature-engineering.html#cb36-40" tabindex="-1"></a>    <span class="fu">geom_circle</span>(</span>
+<span id="cb36-41"><a href="function-approximation-and-feature-engineering.html#cb36-41" tabindex="-1"></a>      <span class="at">data =</span> coarse_coder<span class="sc">$</span>centers,</span>
+<span id="cb36-42"><a href="function-approximation-and-feature-engineering.html#cb36-42" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> coarse_coder<span class="sc">$</span>radius),</span>
+<span id="cb36-43"><a href="function-approximation-and-feature-engineering.html#cb36-43" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;grey70&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
+<span id="cb36-44"><a href="function-approximation-and-feature-engineering.html#cb36-44" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-45"><a href="function-approximation-and-feature-engineering.html#cb36-45" tabindex="-1"></a>    <span class="co"># Highlight active receptive fields</span></span>
+<span id="cb36-46"><a href="function-approximation-and-feature-engineering.html#cb36-46" tabindex="-1"></a>    <span class="fu">geom_circle</span>(</span>
+<span id="cb36-47"><a href="function-approximation-and-feature-engineering.html#cb36-47" tabindex="-1"></a>      <span class="at">data =</span> coarse_coder<span class="sc">$</span>centers[active_indices, ],</span>
+<span id="cb36-48"><a href="function-approximation-and-feature-engineering.html#cb36-48" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> coarse_coder<span class="sc">$</span>radius),</span>
+<span id="cb36-49"><a href="function-approximation-and-feature-engineering.html#cb36-49" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">1</span></span>
+<span id="cb36-50"><a href="function-approximation-and-feature-engineering.html#cb36-50" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-51"><a href="function-approximation-and-feature-engineering.html#cb36-51" tabindex="-1"></a>    <span class="co"># Add center points</span></span>
+<span id="cb36-52"><a href="function-approximation-and-feature-engineering.html#cb36-52" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> coarse_coder<span class="sc">$</span>centers, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>)</span>
+<span id="cb36-53"><a href="function-approximation-and-feature-engineering.html#cb36-53" tabindex="-1"></a>  </span>
+<span id="cb36-54"><a href="function-approximation-and-feature-engineering.html#cb36-54" tabindex="-1"></a>  <span class="co"># Add the query state point</span></span>
+<span id="cb36-55"><a href="function-approximation-and-feature-engineering.html#cb36-55" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb36-56"><a href="function-approximation-and-feature-engineering.html#cb36-56" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> state[<span class="dv">1</span>], <span class="at">y =</span> state[<span class="dv">2</span>]), <span class="at">color =</span> <span class="st">&quot;#377eb8&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">17</span>)</span>
+<span id="cb36-57"><a href="function-approximation-and-feature-engineering.html#cb36-57" tabindex="-1"></a>  }</span>
+<span id="cb36-58"><a href="function-approximation-and-feature-engineering.html#cb36-58" tabindex="-1"></a>  </span>
+<span id="cb36-59"><a href="function-approximation-and-feature-engineering.html#cb36-59" tabindex="-1"></a>  p <span class="sc">+</span></span>
+<span id="cb36-60"><a href="function-approximation-and-feature-engineering.html#cb36-60" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, coarse_coder<span class="sc">$</span>state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, coarse_coder<span class="sc">$</span>state_dims[<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb36-61"><a href="function-approximation-and-feature-engineering.html#cb36-61" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb36-62"><a href="function-approximation-and-feature-engineering.html#cb36-62" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Coarse Coding Receptive Fields&quot;</span>,</span>
+<span id="cb36-63"><a href="function-approximation-and-feature-engineering.html#cb36-63" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="fu">length</span>(active_indices), <span class="st">&quot;of&quot;</span>, <span class="fu">nrow</span>(coarse_coder<span class="sc">$</span>centers), <span class="st">&quot;features active&quot;</span>),</span>
+<span id="cb36-64"><a href="function-approximation-and-feature-engineering.html#cb36-64" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb36-65"><a href="function-approximation-and-feature-engineering.html#cb36-65" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb36-66"><a href="function-approximation-and-feature-engineering.html#cb36-66" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb36-67"><a href="function-approximation-and-feature-engineering.html#cb36-67" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb36-68"><a href="function-approximation-and-feature-engineering.html#cb36-68" tabindex="-1"></a>}</span>
+<span id="cb36-69"><a href="function-approximation-and-feature-engineering.html#cb36-69" tabindex="-1"></a></span>
+<span id="cb36-70"><a href="function-approximation-and-feature-engineering.html#cb36-70" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb36-71"><a href="function-approximation-and-feature-engineering.html#cb36-71" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb36-72"><a href="function-approximation-and-feature-engineering.html#cb36-72" tabindex="-1"></a>coarse_coder_2d <span class="ot">&lt;-</span> <span class="fu">create_coarse_coder</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="at">num_features =</span> <span class="dv">50</span>, <span class="at">overlap_factor =</span> <span class="fl">1.5</span>)</span>
+<span id="cb36-73"><a href="function-approximation-and-feature-engineering.html#cb36-73" tabindex="-1"></a><span class="fu">visualize_coarse_coding</span>(coarse_coder_2d, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span></code></pre></div>
+</div>
+<div id="tile-coding" class="section level3 hasAnchor" number="11.3.2">
+<h3><span class="header-section-number">11.3.2</span> Tile Coding<a href="function-approximation-and-feature-engineering.html#tile-coding" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Tile coding</strong>, also known as CMAC (Cerebellar Model Articulation Controller), improves upon coarse coding by providing more structured and uniform coverage. It partitions the state space using multiple overlapping grids, called <strong>tilings</strong>. Each tiling is offset from the others. For any given state, exactly one tile in each tiling will be active. This ensures a constant number of active features, which is computationally efficient.</p>
+<p>The offsets provide fine-grained discrimination, while the tile size controls generalization. Unlike coarse coding with circular fields, tile coding’s rectangular tiles create <strong>asymmetric generalization</strong> that aligns with the coordinate axes, which is often desirable in control problems where dimensions represent different physical properties (e.g., position and velocity).</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="function-approximation-and-feature-engineering.html#cb37-1" tabindex="-1"></a><span class="co"># --- Tile Coding Implementation ---</span></span>
+<span id="cb37-2"><a href="function-approximation-and-feature-engineering.html#cb37-2" tabindex="-1"></a>create_tile_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_low, state_high, num_tilings, tiles_per_dim) {</span>
+<span id="cb37-3"><a href="function-approximation-and-feature-engineering.html#cb37-3" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> <span class="fu">length</span>(state_low)</span>
+<span id="cb37-4"><a href="function-approximation-and-feature-engineering.html#cb37-4" tabindex="-1"></a>  state_range <span class="ot">&lt;-</span> state_high <span class="sc">-</span> state_low</span>
+<span id="cb37-5"><a href="function-approximation-and-feature-engineering.html#cb37-5" tabindex="-1"></a>  tile_widths <span class="ot">&lt;-</span> state_range <span class="sc">/</span> tiles_per_dim</span>
+<span id="cb37-6"><a href="function-approximation-and-feature-engineering.html#cb37-6" tabindex="-1"></a>  </span>
+<span id="cb37-7"><a href="function-approximation-and-feature-engineering.html#cb37-7" tabindex="-1"></a>  <span class="co"># Generate offsets for each tiling</span></span>
+<span id="cb37-8"><a href="function-approximation-and-feature-engineering.html#cb37-8" tabindex="-1"></a>  offsets <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>state_dims, <span class="cf">function</span>(i) {</span>
+<span id="cb37-9"><a href="function-approximation-and-feature-engineering.html#cb37-9" tabindex="-1"></a>    (<span class="dv">1</span><span class="sc">:</span>num_tilings <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> tile_widths[i] <span class="sc">/</span> num_tilings</span>
+<span id="cb37-10"><a href="function-approximation-and-feature-engineering.html#cb37-10" tabindex="-1"></a>  })</span>
+<span id="cb37-11"><a href="function-approximation-and-feature-engineering.html#cb37-11" tabindex="-1"></a>  </span>
+<span id="cb37-12"><a href="function-approximation-and-feature-engineering.html#cb37-12" tabindex="-1"></a>  <span class="co"># Function to get the indices of active tiles for a given state</span></span>
+<span id="cb37-13"><a href="function-approximation-and-feature-engineering.html#cb37-13" tabindex="-1"></a>  get_active_tiles <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb37-14"><a href="function-approximation-and-feature-engineering.html#cb37-14" tabindex="-1"></a>    active_tiles <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb37-15"><a href="function-approximation-and-feature-engineering.html#cb37-15" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb37-16"><a href="function-approximation-and-feature-engineering.html#cb37-16" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">floor</span>((state <span class="sc">-</span> state_low <span class="sc">+</span> offsets[t, ]) <span class="sc">/</span> tile_widths)</span>
+<span id="cb37-17"><a href="function-approximation-and-feature-engineering.html#cb37-17" tabindex="-1"></a>      active_tiles[[t]] <span class="ot">&lt;-</span> tile_indices</span>
+<span id="cb37-18"><a href="function-approximation-and-feature-engineering.html#cb37-18" tabindex="-1"></a>    }</span>
+<span id="cb37-19"><a href="function-approximation-and-feature-engineering.html#cb37-19" tabindex="-1"></a>    <span class="fu">return</span>(active_tiles)</span>
+<span id="cb37-20"><a href="function-approximation-and-feature-engineering.html#cb37-20" tabindex="-1"></a>  }</span>
+<span id="cb37-21"><a href="function-approximation-and-feature-engineering.html#cb37-21" tabindex="-1"></a>  </span>
+<span id="cb37-22"><a href="function-approximation-and-feature-engineering.html#cb37-22" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb37-23"><a href="function-approximation-and-feature-engineering.html#cb37-23" tabindex="-1"></a>    <span class="at">get_active_tiles =</span> get_active_tiles,</span>
+<span id="cb37-24"><a href="function-approximation-and-feature-engineering.html#cb37-24" tabindex="-1"></a>    <span class="at">state_low =</span> state_low,</span>
+<span id="cb37-25"><a href="function-approximation-and-feature-engineering.html#cb37-25" tabindex="-1"></a>    <span class="at">state_high =</span> state_high,</span>
+<span id="cb37-26"><a href="function-approximation-and-feature-engineering.html#cb37-26" tabindex="-1"></a>    <span class="at">num_tilings =</span> num_tilings,</span>
+<span id="cb37-27"><a href="function-approximation-and-feature-engineering.html#cb37-27" tabindex="-1"></a>    <span class="at">tiles_per_dim =</span> tiles_per_dim,</span>
+<span id="cb37-28"><a href="function-approximation-and-feature-engineering.html#cb37-28" tabindex="-1"></a>    <span class="at">tile_widths =</span> tile_widths,</span>
+<span id="cb37-29"><a href="function-approximation-and-feature-engineering.html#cb37-29" tabindex="-1"></a>    <span class="at">offsets =</span> offsets</span>
+<span id="cb37-30"><a href="function-approximation-and-feature-engineering.html#cb37-30" tabindex="-1"></a>  ))</span>
+<span id="cb37-31"><a href="function-approximation-and-feature-engineering.html#cb37-31" tabindex="-1"></a>}</span>
+<span id="cb37-32"><a href="function-approximation-and-feature-engineering.html#cb37-32" tabindex="-1"></a></span>
+<span id="cb37-33"><a href="function-approximation-and-feature-engineering.html#cb37-33" tabindex="-1"></a><span class="co"># --- Visualization Function for Tile Coding ---</span></span>
+<span id="cb37-34"><a href="function-approximation-and-feature-engineering.html#cb37-34" tabindex="-1"></a>visualize_tile_coding <span class="ot">&lt;-</span> <span class="cf">function</span>(tile_coder, <span class="at">state =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb37-35"><a href="function-approximation-and-feature-engineering.html#cb37-35" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(tile_coder<span class="sc">$</span>state_low) <span class="sc">!=</span> <span class="dv">2</span>) <span class="fu">stop</span>(<span class="st">&quot;Visualization is for 2D state spaces only.&quot;</span>)</span>
+<span id="cb37-36"><a href="function-approximation-and-feature-engineering.html#cb37-36" tabindex="-1"></a>  </span>
+<span id="cb37-37"><a href="function-approximation-and-feature-engineering.html#cb37-37" tabindex="-1"></a>  <span class="co"># Create a data frame of grid lines for each tiling</span></span>
+<span id="cb37-38"><a href="function-approximation-and-feature-engineering.html#cb37-38" tabindex="-1"></a>  grids <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb37-39"><a href="function-approximation-and-feature-engineering.html#cb37-39" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>tile_coder<span class="sc">$</span>num_tilings) {</span>
+<span id="cb37-40"><a href="function-approximation-and-feature-engineering.html#cb37-40" tabindex="-1"></a>    <span class="co"># Vertical lines</span></span>
+<span id="cb37-41"><a href="function-approximation-and-feature-engineering.html#cb37-41" tabindex="-1"></a>    x_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
+<span id="cb37-42"><a href="function-approximation-and-feature-engineering.html#cb37-42" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_low[<span class="dv">1</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">1</span>],</span>
+<span id="cb37-43"><a href="function-approximation-and-feature-engineering.html#cb37-43" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_high[<span class="dv">1</span>],</span>
+<span id="cb37-44"><a href="function-approximation-and-feature-engineering.html#cb37-44" tabindex="-1"></a>      <span class="at">by =</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">1</span>]</span>
+<span id="cb37-45"><a href="function-approximation-and-feature-engineering.html#cb37-45" tabindex="-1"></a>    )</span>
+<span id="cb37-46"><a href="function-approximation-and-feature-engineering.html#cb37-46" tabindex="-1"></a>    <span class="co"># Horizontal lines</span></span>
+<span id="cb37-47"><a href="function-approximation-and-feature-engineering.html#cb37-47" tabindex="-1"></a>    y_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
+<span id="cb37-48"><a href="function-approximation-and-feature-engineering.html#cb37-48" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_low[<span class="dv">2</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">2</span>],</span>
+<span id="cb37-49"><a href="function-approximation-and-feature-engineering.html#cb37-49" tabindex="-1"></a>      tile_coder<span class="sc">$</span>state_high[<span class="dv">2</span>],</span>
+<span id="cb37-50"><a href="function-approximation-and-feature-engineering.html#cb37-50" tabindex="-1"></a>      <span class="at">by =</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">2</span>]</span>
+<span id="cb37-51"><a href="function-approximation-and-feature-engineering.html#cb37-51" tabindex="-1"></a>    )</span>
+<span id="cb37-52"><a href="function-approximation-and-feature-engineering.html#cb37-52" tabindex="-1"></a>    grids[[t]] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> x_lines, <span class="at">y =</span> y_lines)</span>
+<span id="cb37-53"><a href="function-approximation-and-feature-engineering.html#cb37-53" tabindex="-1"></a>  }</span>
+<span id="cb37-54"><a href="function-approximation-and-feature-engineering.html#cb37-54" tabindex="-1"></a>  </span>
+<span id="cb37-55"><a href="function-approximation-and-feature-engineering.html#cb37-55" tabindex="-1"></a>  <span class="co"># Base plot</span></span>
+<span id="cb37-56"><a href="function-approximation-and-feature-engineering.html#cb37-56" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb37-57"><a href="function-approximation-and-feature-engineering.html#cb37-57" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(</span>
+<span id="cb37-58"><a href="function-approximation-and-feature-engineering.html#cb37-58" tabindex="-1"></a>      <span class="at">xlim =</span> tile_coder<span class="sc">$</span>state_low,</span>
+<span id="cb37-59"><a href="function-approximation-and-feature-engineering.html#cb37-59" tabindex="-1"></a>      <span class="at">ylim =</span> tile_coder<span class="sc">$</span>state_high,</span>
+<span id="cb37-60"><a href="function-approximation-and-feature-engineering.html#cb37-60" tabindex="-1"></a>      <span class="at">expand =</span> <span class="cn">FALSE</span></span>
+<span id="cb37-61"><a href="function-approximation-and-feature-engineering.html#cb37-61" tabindex="-1"></a>    )</span>
+<span id="cb37-62"><a href="function-approximation-and-feature-engineering.html#cb37-62" tabindex="-1"></a>  </span>
+<span id="cb37-63"><a href="function-approximation-and-feature-engineering.html#cb37-63" tabindex="-1"></a>  <span class="co"># Add grid lines for each tiling with a unique color</span></span>
+<span id="cb37-64"><a href="function-approximation-and-feature-engineering.html#cb37-64" tabindex="-1"></a>  colors <span class="ot">&lt;-</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(tile_coder<span class="sc">$</span>num_tilings, <span class="st">&quot;Set1&quot;</span>)</span>
+<span id="cb37-65"><a href="function-approximation-and-feature-engineering.html#cb37-65" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>tile_coder<span class="sc">$</span>num_tilings) {</span>
+<span id="cb37-66"><a href="function-approximation-and-feature-engineering.html#cb37-66" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
+<span id="cb37-67"><a href="function-approximation-and-feature-engineering.html#cb37-67" tabindex="-1"></a>      <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> grids[[t]]<span class="sc">$</span>x, <span class="at">color =</span> colors[t], <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb37-68"><a href="function-approximation-and-feature-engineering.html#cb37-68" tabindex="-1"></a>      <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> grids[[t]]<span class="sc">$</span>y, <span class="at">color =</span> colors[t], <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>)</span>
+<span id="cb37-69"><a href="function-approximation-and-feature-engineering.html#cb37-69" tabindex="-1"></a>  }</span>
+<span id="cb37-70"><a href="function-approximation-and-feature-engineering.html#cb37-70" tabindex="-1"></a>  </span>
+<span id="cb37-71"><a href="function-approximation-and-feature-engineering.html#cb37-71" tabindex="-1"></a>  <span class="co"># Highlight the active tile for each tiling</span></span>
+<span id="cb37-72"><a href="function-approximation-and-feature-engineering.html#cb37-72" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(state)) {</span>
+<span id="cb37-73"><a href="function-approximation-and-feature-engineering.html#cb37-73" tabindex="-1"></a>    active_tiles_indices <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span><span class="fu">get_active_tiles</span>(state)</span>
+<span id="cb37-74"><a href="function-approximation-and-feature-engineering.html#cb37-74" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>tile_coder<span class="sc">$</span>num_tilings) {</span>
+<span id="cb37-75"><a href="function-approximation-and-feature-engineering.html#cb37-75" tabindex="-1"></a>      tile_xmin <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>state_low[<span class="dv">1</span>] <span class="sc">+</span> active_tiles_indices[[t]][<span class="dv">1</span>] <span class="sc">*</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">1</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">1</span>]</span>
+<span id="cb37-76"><a href="function-approximation-and-feature-engineering.html#cb37-76" tabindex="-1"></a>      tile_ymin <span class="ot">&lt;-</span> tile_coder<span class="sc">$</span>state_low[<span class="dv">2</span>] <span class="sc">+</span> active_tiles_indices[[t]][<span class="dv">2</span>] <span class="sc">*</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">2</span>] <span class="sc">-</span> tile_coder<span class="sc">$</span>offsets[t, <span class="dv">2</span>]</span>
+<span id="cb37-77"><a href="function-approximation-and-feature-engineering.html#cb37-77" tabindex="-1"></a>      </span>
+<span id="cb37-78"><a href="function-approximation-and-feature-engineering.html#cb37-78" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">annotate</span>(</span>
+<span id="cb37-79"><a href="function-approximation-and-feature-engineering.html#cb37-79" tabindex="-1"></a>        <span class="st">&quot;rect&quot;</span>,</span>
+<span id="cb37-80"><a href="function-approximation-and-feature-engineering.html#cb37-80" tabindex="-1"></a>        <span class="at">xmin =</span> tile_xmin,</span>
+<span id="cb37-81"><a href="function-approximation-and-feature-engineering.html#cb37-81" tabindex="-1"></a>        <span class="at">xmax =</span> tile_xmin <span class="sc">+</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">1</span>],</span>
+<span id="cb37-82"><a href="function-approximation-and-feature-engineering.html#cb37-82" tabindex="-1"></a>        <span class="at">ymin =</span> tile_ymin,</span>
+<span id="cb37-83"><a href="function-approximation-and-feature-engineering.html#cb37-83" tabindex="-1"></a>        <span class="at">ymax =</span> tile_ymin <span class="sc">+</span> tile_coder<span class="sc">$</span>tile_widths[<span class="dv">2</span>],</span>
+<span id="cb37-84"><a href="function-approximation-and-feature-engineering.html#cb37-84" tabindex="-1"></a>        <span class="at">fill =</span> colors[t], <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">color =</span> colors[t], <span class="at">size =</span> <span class="fl">1.2</span></span>
+<span id="cb37-85"><a href="function-approximation-and-feature-engineering.html#cb37-85" tabindex="-1"></a>      )</span>
+<span id="cb37-86"><a href="function-approximation-and-feature-engineering.html#cb37-86" tabindex="-1"></a>    }</span>
+<span id="cb37-87"><a href="function-approximation-and-feature-engineering.html#cb37-87" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> state[<span class="dv">1</span>], <span class="at">y =</span> state[<span class="dv">2</span>]), <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">shape =</span> <span class="dv">17</span>)</span>
+<span id="cb37-88"><a href="function-approximation-and-feature-engineering.html#cb37-88" tabindex="-1"></a>  }</span>
+<span id="cb37-89"><a href="function-approximation-and-feature-engineering.html#cb37-89" tabindex="-1"></a>  </span>
+<span id="cb37-90"><a href="function-approximation-and-feature-engineering.html#cb37-90" tabindex="-1"></a>  p <span class="sc">+</span> <span class="fu">labs</span>(</span>
+<span id="cb37-91"><a href="function-approximation-and-feature-engineering.html#cb37-91" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Tile Coding&quot;</span>,</span>
+<span id="cb37-92"><a href="function-approximation-and-feature-engineering.html#cb37-92" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(tile_coder<span class="sc">$</span>num_tilings, <span class="st">&quot;Overlapping Tilings&quot;</span>),</span>
+<span id="cb37-93"><a href="function-approximation-and-feature-engineering.html#cb37-93" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb37-94"><a href="function-approximation-and-feature-engineering.html#cb37-94" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb37-95"><a href="function-approximation-and-feature-engineering.html#cb37-95" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-96"><a href="function-approximation-and-feature-engineering.html#cb37-96" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb37-97"><a href="function-approximation-and-feature-engineering.html#cb37-97" tabindex="-1"></a>}</span>
+<span id="cb37-98"><a href="function-approximation-and-feature-engineering.html#cb37-98" tabindex="-1"></a></span>
+<span id="cb37-99"><a href="function-approximation-and-feature-engineering.html#cb37-99" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb37-100"><a href="function-approximation-and-feature-engineering.html#cb37-100" tabindex="-1"></a>tile_coder_2d <span class="ot">&lt;-</span> <span class="fu">create_tile_coder</span>(</span>
+<span id="cb37-101"><a href="function-approximation-and-feature-engineering.html#cb37-101" tabindex="-1"></a>  <span class="at">state_low =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb37-102"><a href="function-approximation-and-feature-engineering.html#cb37-102" tabindex="-1"></a>  <span class="at">state_high =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>),</span>
+<span id="cb37-103"><a href="function-approximation-and-feature-engineering.html#cb37-103" tabindex="-1"></a>  <span class="at">num_tilings =</span> <span class="dv">4</span>,</span>
+<span id="cb37-104"><a href="function-approximation-and-feature-engineering.html#cb37-104" tabindex="-1"></a>  <span class="at">tiles_per_dim =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb37-105"><a href="function-approximation-and-feature-engineering.html#cb37-105" tabindex="-1"></a>)</span>
+<span id="cb37-106"><a href="function-approximation-and-feature-engineering.html#cb37-106" tabindex="-1"></a><span class="fu">visualize_tile_coding</span>(tile_coder_2d, <span class="at">state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>))</span></code></pre></div>
+</div>
+<div id="radial-basis-functions-rbfs" class="section level3 hasAnchor" number="11.3.3">
+<h3><span class="header-section-number">11.3.3</span> Radial Basis Functions (RBFs)<a href="function-approximation-and-feature-engineering.html#radial-basis-functions-rbfs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Radial Basis Functions (RBFs)</strong> are smooth, continuous basis functions that produce a graded response based on the distance to a center point. The most common form is the Gaussian RBF:</p>
+<p><span class="math display">\[\phi_i(s) = \exp\left(-\frac{\|s - c_i\|^2}{2\sigma_i^2}\right)\]</span></p>
+<p>Here, <span class="math inline">\(c\_i\)</span> is the center of the <span class="math inline">\(i\)</span>-th RBF and <span class="math inline">\(\\sigma\_i\)</span> is its width (or bandwidth). Unlike binary features, RBFs provide a continuous measure of similarity. The width <span class="math inline">\(\\sigma\)</span> controls the locality of influence: a small <span class="math inline">\(\\sigma\)</span> creates a “spiky” function with local generalization, while a large <span class="math inline">\(\\sigma\)</span> creates a smooth function with broad generalization.</p>
+<p>RBF networks are <strong>universal approximators</strong>, meaning they can represent any continuous function with arbitrary accuracy, given enough basis functions. The placement of centers and choice of widths are critical. Centers can be placed on a fixed grid, randomly, or adapted during learning using techniques like k-means clustering on experienced states.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="function-approximation-and-feature-engineering.html#cb38-1" tabindex="-1"></a><span class="co"># --- Radial Basis Function (RBF) Implementation ---</span></span>
+<span id="cb38-2"><a href="function-approximation-and-feature-engineering.html#cb38-2" tabindex="-1"></a>create_rbf_network <span class="ot">&lt;-</span> <span class="cf">function</span>(centers, sigmas) {</span>
+<span id="cb38-3"><a href="function-approximation-and-feature-engineering.html#cb38-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.vector</span>(sigmas)) {</span>
+<span id="cb38-4"><a href="function-approximation-and-feature-engineering.html#cb38-4" tabindex="-1"></a>    sigmas <span class="ot">&lt;-</span> <span class="fu">rep</span>(sigmas[<span class="dv">1</span>], <span class="fu">nrow</span>(centers))</span>
+<span id="cb38-5"><a href="function-approximation-and-feature-engineering.html#cb38-5" tabindex="-1"></a>  }</span>
+<span id="cb38-6"><a href="function-approximation-and-feature-engineering.html#cb38-6" tabindex="-1"></a>  </span>
+<span id="cb38-7"><a href="function-approximation-and-feature-engineering.html#cb38-7" tabindex="-1"></a>  compute_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb38-8"><a href="function-approximation-and-feature-engineering.html#cb38-8" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb38-9"><a href="function-approximation-and-feature-engineering.html#cb38-9" tabindex="-1"></a>    distances_sq <span class="ot">&lt;-</span> <span class="fu">colSums</span>((<span class="fu">t</span>(centers) <span class="sc">-</span> state_vec)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb38-10"><a href="function-approximation-and-feature-engineering.html#cb38-10" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distances_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> sigmas<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb38-11"><a href="function-approximation-and-feature-engineering.html#cb38-11" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb38-12"><a href="function-approximation-and-feature-engineering.html#cb38-12" tabindex="-1"></a>  }</span>
+<span id="cb38-13"><a href="function-approximation-and-feature-engineering.html#cb38-13" tabindex="-1"></a>  </span>
+<span id="cb38-14"><a href="function-approximation-and-feature-engineering.html#cb38-14" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb38-15"><a href="function-approximation-and-feature-engineering.html#cb38-15" tabindex="-1"></a>    <span class="at">compute_features =</span> compute_features,</span>
+<span id="cb38-16"><a href="function-approximation-and-feature-engineering.html#cb38-16" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb38-17"><a href="function-approximation-and-feature-engineering.html#cb38-17" tabindex="-1"></a>    <span class="at">sigmas =</span> sigmas</span>
+<span id="cb38-18"><a href="function-approximation-and-feature-engineering.html#cb38-18" tabindex="-1"></a>  ))</span>
+<span id="cb38-19"><a href="function-approximation-and-feature-engineering.html#cb38-19" tabindex="-1"></a>}</span>
+<span id="cb38-20"><a href="function-approximation-and-feature-engineering.html#cb38-20" tabindex="-1"></a></span>
+<span id="cb38-21"><a href="function-approximation-and-feature-engineering.html#cb38-21" tabindex="-1"></a><span class="co"># --- Visualization Function for RBF Network Activation ---</span></span>
+<span id="cb38-22"><a href="function-approximation-and-feature-engineering.html#cb38-22" tabindex="-1"></a>visualize_rbf_activation <span class="ot">&lt;-</span> <span class="cf">function</span>(rbf_network, state_dims) {</span>
+<span id="cb38-23"><a href="function-approximation-and-feature-engineering.html#cb38-23" tabindex="-1"></a>  <span class="co"># Create a grid of points to evaluate the RBF network</span></span>
+<span id="cb38-24"><a href="function-approximation-and-feature-engineering.html#cb38-24" tabindex="-1"></a>  grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb38-25"><a href="function-approximation-and-feature-engineering.html#cb38-25" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>], <span class="at">length.out =</span> <span class="dv">100</span>),</span>
+<span id="cb38-26"><a href="function-approximation-and-feature-engineering.html#cb38-26" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>], <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb38-27"><a href="function-approximation-and-feature-engineering.html#cb38-27" tabindex="-1"></a>  )</span>
+<span id="cb38-28"><a href="function-approximation-and-feature-engineering.html#cb38-28" tabindex="-1"></a>  </span>
+<span id="cb38-29"><a href="function-approximation-and-feature-engineering.html#cb38-29" tabindex="-1"></a>  <span class="co"># Calculate the sum of all RBF activations at each grid point</span></span>
+<span id="cb38-30"><a href="function-approximation-and-feature-engineering.html#cb38-30" tabindex="-1"></a>  activations <span class="ot">&lt;-</span> <span class="fu">apply</span>(grid_df, <span class="dv">1</span>, <span class="cf">function</span>(point) {</span>
+<span id="cb38-31"><a href="function-approximation-and-feature-engineering.html#cb38-31" tabindex="-1"></a>    <span class="fu">sum</span>(rbf_network<span class="sc">$</span><span class="fu">compute_features</span>(point))</span>
+<span id="cb38-32"><a href="function-approximation-and-feature-engineering.html#cb38-32" tabindex="-1"></a>  })</span>
+<span id="cb38-33"><a href="function-approximation-and-feature-engineering.html#cb38-33" tabindex="-1"></a>  grid_df<span class="sc">$</span>activation <span class="ot">&lt;-</span> activations</span>
+<span id="cb38-34"><a href="function-approximation-and-feature-engineering.html#cb38-34" tabindex="-1"></a>  </span>
+<span id="cb38-35"><a href="function-approximation-and-feature-engineering.html#cb38-35" tabindex="-1"></a>  <span class="fu">ggplot</span>(grid_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
+<span id="cb38-36"><a href="function-approximation-and-feature-engineering.html#cb38-36" tabindex="-1"></a>    <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb38-37"><a href="function-approximation-and-feature-engineering.html#cb38-37" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">as.data.frame</span>(rbf_network<span class="sc">$</span>centers), <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2), </span>
+<span id="cb38-38"><a href="function-approximation-and-feature-engineering.html#cb38-38" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb38-39"><a href="function-approximation-and-feature-engineering.html#cb38-39" tabindex="-1"></a>    <span class="fu">scale_fill_viridis_c</span>(<span class="at">name =</span> <span class="st">&quot;Total</span><span class="sc">\n</span><span class="st">Activation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb38-40"><a href="function-approximation-and-feature-engineering.html#cb38-40" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb38-41"><a href="function-approximation-and-feature-engineering.html#cb38-41" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb38-42"><a href="function-approximation-and-feature-engineering.html#cb38-42" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Radial Basis Function Network Activation&quot;</span>,</span>
+<span id="cb38-43"><a href="function-approximation-and-feature-engineering.html#cb38-43" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="st">&quot;White crosses indicate RBF centers&quot;</span>,</span>
+<span id="cb38-44"><a href="function-approximation-and-feature-engineering.html#cb38-44" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb38-45"><a href="function-approximation-and-feature-engineering.html#cb38-45" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb38-46"><a href="function-approximation-and-feature-engineering.html#cb38-46" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb38-47"><a href="function-approximation-and-feature-engineering.html#cb38-47" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb38-48"><a href="function-approximation-and-feature-engineering.html#cb38-48" tabindex="-1"></a>}</span>
+<span id="cb38-49"><a href="function-approximation-and-feature-engineering.html#cb38-49" tabindex="-1"></a></span>
+<span id="cb38-50"><a href="function-approximation-and-feature-engineering.html#cb38-50" tabindex="-1"></a><span class="co"># Example Usage</span></span>
+<span id="cb38-51"><a href="function-approximation-and-feature-engineering.html#cb38-51" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb38-52"><a href="function-approximation-and-feature-engineering.html#cb38-52" tabindex="-1"></a>rbf_centers <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dv">10</span>), <span class="at">nrow =</span> <span class="dv">10</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb38-53"><a href="function-approximation-and-feature-engineering.html#cb38-53" tabindex="-1"></a>rbf_sigmas <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fl">2.0</span>, <span class="dv">10</span>) <span class="co"># Uniform width for all RBFs</span></span>
+<span id="cb38-54"><a href="function-approximation-and-feature-engineering.html#cb38-54" tabindex="-1"></a>rbf_net <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(<span class="at">centers =</span> rbf_centers, <span class="at">sigmas =</span> rbf_sigmas)</span>
+<span id="cb38-55"><a href="function-approximation-and-feature-engineering.html#cb38-55" tabindex="-1"></a></span>
+<span id="cb38-56"><a href="function-approximation-and-feature-engineering.html#cb38-56" tabindex="-1"></a><span class="fu">visualize_rbf_activation</span>(rbf_net, <span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span></code></pre></div>
+<p>The choice of basis function depends on the problem, computational budget, and desired generalization properties.</p>
+<ul>
+<li><strong>Computational Efficiency</strong>: <strong>Tile coding</strong> is often the fastest, as it involves simple arithmetic and guarantees a fixed, small number of active features. Coarse coding can be slower if it requires checking against many overlapping regions. RBFs are typically the most expensive, as they require distance calculations to all centers.</li>
+<li><strong>Memory Requirements</strong>: A tile coder with <span class="math inline">\(N\)</span> tilings and <span class="math inline">\(T\)</span> tiles per tiling has <span class="math inline">\(N \\times T\)</span> features. RBFs require storing all centers and widths. The memory footprint depends on the number of basis functions needed for the desired accuracy.</li>
+<li><strong>Generalization Control</strong>: <strong>RBFs</strong> offer the most fine-grained control over generalization through the placement of centers and tuning of widths. <strong>Tile coding</strong> provides structured, axis-aligned generalization controlled by the number and shape of tiles. <strong>Coarse coding</strong> is the most straightforward but offers the least precise control.</li>
+<li><strong>Ease of Use</strong>: Tile coding is often a strong default choice for low-to-medium dimensional control problems due to its computational efficiency and robust performance with minimal tuning.</li>
+</ul>
+<p>Linear function approximation and classical basis functions are not merely historical footnotes; they are the conceptual foundation upon which deep RL is built. They provide a clear and analyzable framework for understanding the core challenge of RL: balancing discrimination and generalization. The principles of feature design, the mathematics of TD updates, and the properties of different basis functions offer crucial insights that remain relevant when designing, training, and debugging complex neural network architectures.</p>
+<p>Mastering these fundamentals provides the intuition needed to navigate the complexities of modern RL. The journey from tabular methods to deep learning necessarily passes through this foundational territory, making it essential knowledge for any serious RL practitioner.</p>
 
-# Create comprehensive visualization
-# Plot 1: Learning Curves (Rewards)
-p1 &lt;- ggplot(smoothed_results, aes(x = episode, y = mean_reward, color = algorithm)) +
-  geom_line(size = 1.2) +
-  geom_ribbon(aes(ymin = mean_reward - se_reward, ymax = mean_reward + se_reward, fill = algorithm), 
-              alpha = 0.2, color = NA) +
-  scale_color_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
-                                &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
-  scale_fill_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
-                               &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
-  labs(title = &quot;Learning Performance: Average Episode Rewards&quot;,
-       x = &quot;Episode&quot;, y = &quot;Average Reward per Episode&quot;,
-       color = &quot;Algorithm&quot;, fill = &quot;Algorithm&quot;) +
-  theme_minimal() +
-  theme(plot.title = element_text(size = 14, face = &quot;bold&quot;),
-        legend.position = &quot;bottom&quot;)
-
-# Plot 2: Steps to Terminal (Efficiency)
-p2 &lt;- ggplot(smoothed_results, aes(x = episode, y = mean_steps, color = algorithm)) +
-  geom_line(size = 1.2) +
-  geom_ribbon(aes(ymin = mean_steps - se_steps, ymax = mean_steps + se_steps, fill = algorithm), 
-              alpha = 0.2, color = NA) +
-  scale_color_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
-                                &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
-  scale_fill_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
-                               &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
-  labs(title = &quot;Learning Efficiency: Steps to Reach Terminal State&quot;,
-       x = &quot;Episode&quot;, y = &quot;Average Steps per Episode&quot;,
-       color = &quot;Algorithm&quot;, fill = &quot;Algorithm&quot;) +
-  theme_minimal() +
-  theme(plot.title = element_text(size = 14, face = &quot;bold&quot;),
-        legend.position = &quot;bottom&quot;)
-
-# Plot 3: Final performance comparison (last 50 episodes)
-final_performance &lt;- all_results %&gt;%
-  filter(episode &gt; episodes - 50) %&gt;%
-  group_by(algorithm, run) %&gt;%
-  summarise(avg_reward = mean(reward), .groups = &#39;drop&#39;)
-
-p3 &lt;- ggplot(final_performance, aes(x = algorithm, y = avg_reward, fill = algorithm)) +
-  geom_boxplot(alpha = 0.7) +
-  geom_point(position = position_jitter(width = 0.2), alpha = 0.5) +
-  scale_fill_manual(values = c(&quot;Q-Learning&quot; = &quot;#E31A1C&quot;, &quot;Dyna-Q (n=5)&quot; = &quot;#1F78B4&quot;, 
-                               &quot;Dyna-Q (n=10)&quot; = &quot;#33A02C&quot;, &quot;Dyna-Q (n=20)&quot; = &quot;#FF7F00&quot;)) +
-  labs(title = &quot;Final Performance Comparison (Last 50 Episodes)&quot;,
-       x = &quot;Algorithm&quot;, y = &quot;Average Reward&quot;,
-       fill = &quot;Algorithm&quot;) +
-  theme_minimal() +
-  theme(plot.title = element_text(size = 14, face = &quot;bold&quot;),
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = &quot;none&quot;)
-
-# Display all plots
-print(p1)
-print(p2)
-print(p3)</code></pre>
 </div>
-</div>
-<div id="discussion" class="section level2 hasAnchor" number="9.5">
-<h2><span class="header-section-number">9.5</span> Discussion<a href="dyna-and-dynaq.html#discussion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Dyna demonstrates a fundamental trade-off between sample efficiency and computational cost, requiring <span class="math inline">\((n+1)\)</span> times the computation per step compared to model-free methods due to additional planning updates. This computational investment typically yields faster convergence, particularly when real experience is expensive or dangerous to obtain, though optimal planning steps depend on problem characteristics—moderate values (5-10) generally provide good improvements without excessive overhead while very large values can produce diminishing returns or hurt performance with inaccurate models. The algorithm’s effectiveness critically depends on model quality, with our deterministic table-based implementation becoming increasingly accurate as more state-action pairs are visited, though this approach assumes deterministic transitions and uses simple model representation (storing only last observed transitions) that works well for stationary environments but struggles with non-stationary dynamics where more sophisticated representations maintaining transition probability distributions could improve robustness at increased computational cost. The interaction between exploration and planning creates a distinctive advantage where <span class="math inline">\(\epsilon\)</span>-greedy exploration ensures diverse state-action coverage that directly improves model quality and planning effectiveness, establishing a positive feedback loop where better exploration enhances the model, making planning more effective and leading to better policies with potentially more informed exploration. Relative to pure model-free methods like Q-Learning, Dyna typically shows faster convergence and better sample efficiency by allowing each real experience to propagate information more widely through planning, while compared to pure model-based approaches, it maintains robustness through continued direct learning even with imperfect models. However, basic Dyna has notable limitations including poor representation of stochastic environments through deterministic models and suboptimal uniform sampling for planning, though modern extensions like Dyna-Q+ with exploration bonuses, prioritized sweeping focusing on high-value updates, and model-based variants maintaining probability distributions over transitions address many of these constraints.</p>
-</div>
-<div id="implementation-considerations-and-conclusion" class="section level2 hasAnchor" number="9.6">
-<h2><span class="header-section-number">9.6</span> Implementation Considerations and Conclusion<a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Dyna requires additional memory to store the learned model alongside the value function. In our implementation, this doubles the memory requirements compared to pure Q-Learning. For larger state-action spaces, this can become a significant consideration, potentially requiring sparse representations or function approximation techniques. The planning phase introduces variable computational demands that can complicate real-time applications. While the number of planning steps can be adjusted based on available computational budget, this flexibility requires careful consideration of timing constraints in online learning scenarios. Dyna introduces additional hyperparameters, particularly the number of planning steps <span class="math inline">\(n\)</span>. This parameter requires tuning based on the specific problem characteristics and computational constraints. Unlike some hyperparameters that can be set based on theoretical considerations, <span class="math inline">\(n\)</span> often requires empirical validation.</p>
-<p>Dyna represents an elegant solution to integrating learning and planning in reinforcement learning, combining the sample efficiency of model-based methods with the robustness of model-free approaches. Our R implementation demonstrates both the benefits and challenges of this integration, showing improved learning speed at the cost of increased computational and memory requirements. The key insight of using real experience for both direct learning and model improvement creates a powerful synergy that can significantly accelerate learning in many environments. However, the approach requires careful consideration of model representation, computational constraints, and hyperparameter tuning to achieve optimal performance. Future extensions could explore more sophisticated model representations, prioritized planning strategies, or integration with function approximation techniques for handling larger state spaces. The fundamental principle of combining direct and indirect learning remains a valuable paradigm in modern reinforcement learning research.</p>
-
 </div>
 </div>
             </section>
@@ -774,8 +790,8 @@ print(p3)</code></pre>
           </div>
         </div>
       </div>
-<a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="learning-policies-versus-learning-values.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -806,7 +822,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/09-Q_Dyna.Rmd",
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/11-Functions_Features.Rmd",
     "text": "Edit"
   },
   "history": {
@@ -814,7 +830,7 @@ gitbook.start({
     "text": null
   },
   "view": {
-    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/09-Q_Dyna.Rmd",
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/11-Functions_Features.Rmd",
     "text": null
   },
   "download": null,
