@@ -1,181 +1,346 @@
 # Function Approximation And Feature Engineering 
 
-Reinforcement Learning (RL) has made remarkable progress, largely by moving from **tabular methods**, which store values for every state, to **deep learning** approaches that can handle vast, continuous environments. This leap, however, is built upon a critical intermediate step: **classical function approximation**. Understanding linear function approximation, basis functions, and feature engineering is essential for grasping why deep RL works, diagnosing its failures, and designing effective agent representations.
+Reinforcement Learning has evolved dramatically from its tabular origins, where algorithms stored explicit values for every state-action pair. Modern deep RL agents navigate vast continuous environments that would be impossible to represent in lookup tables. This transformation rests on a crucial foundation that bridges tabular methods and neural networks: classical function approximation. Understanding linear function approximation, basis functions, and feature engineering illuminates why deep RL succeeds, helps diagnose failures, and guides the design of effective agent representations.
 
-Tabular RL is impractical for large or continuous state spaces due to the **curse of dimensionality**. Function approximation overcomes this by learning a parameterized function that generalizes knowledge across similar states. This generalization is both a strength and a challenge. It allows agents to learn in complex worlds but introduces a fundamental tradeoff between **discrimination** (distinguishing important states) and **generalization** (sharing knowledge) that shapes all modern RL algorithms.
+The curse of dimensionality makes tabular RL impractical for realistic problems. Consider a robot with ten continuous state variables, each discretized into just 100 bins—the resulting state space contains 10^20 states, far exceeding what any computer could store. Function approximation solves this by learning parameterized functions that generalize knowledge across similar states. This generalization creates both opportunities and challenges, introducing a fundamental tension between discrimination (the ability to distinguish important differences) and generalization (the capacity to share knowledge) that shapes every modern RL algorithm.
 
-This appendix bridges the gap between tabular methods and deep RL. We begin with feature engineering, then cover the mathematical principles of linear function approximation, and finally explore classical basis functions like coarse coding, tile coding, and radial basis functions (RBFs).
-
+This appendix provides the conceptual bridge between simple tabular methods and sophisticated neural networks. We explore how to engineer effective features, examine the mathematical principles governing linear function approximation, and investigate classical basis functions that remain relevant in contemporary RL systems.
 
 ## Feature Engineering and State Representation
 
-The success of any RL algorithm hinges on the quality of its state representation. Raw environmental observations are rarely optimal for learning. Effective **feature engineering** transforms high-dimensional, noisy data into a compact, informative format that accelerates learning and improves generalization.
+The quality of state representation often determines the success or failure of RL algorithms more than the choice of learning method itself. Raw environmental observations—sensor readings, pixel values, or game states—rarely provide the optimal format for learning. Effective feature engineering transforms these high-dimensional, noisy inputs into compact, informative representations that accelerate learning and improve policy performance.
+
+Consider a autonomous vehicle navigating city streets. Raw sensor data might include thousands of LIDAR points, camera pixels, and instrument readings. However, the agent's success depends on recognizing higher-level patterns: the presence of pedestrians, the curvature of the road ahead, or the relative positions of nearby vehicles. Good features capture these essential abstractions while discarding irrelevant details like the exact shade of a building or the precise timestamp of the observation.
 
 ### The Discrimination vs. Generalization Tradeoff
 
-At the core of feature design is a fundamental tension:
+At the heart of feature design lies a fundamental tension that permeates all of machine learning but becomes particularly acute in RL. Discrimination enables the agent to recognize when seemingly similar states require different actions. A chess program must distinguish between positions that appear nearly identical but have vastly different strategic implications. Generalization allows the agent to apply lessons learned in one context to new, similar situations. The same chess program should recognize that tactical patterns transfer across different board positions.
 
-  * **Discrimination** is the ability to distinguish between states that require different actions or have different values. For example, a robot navigating near a cliff must have features that are highly sensitive to small changes in its position.
-  * **Generalization** is the ability to treat similar states similarly, allowing experiences in one state to inform decisions in others. In the same navigation task, large open areas should be represented similarly so the agent doesn't have to re-learn how to move in each one.
+Mathematically, we seek to approximate the true value function V*(s) using a parameterized function V_θ(s). In the linear case, this takes the form:
 
-Mathematically, we approximate a value function $V^\*(s)$ with a parameterized function $V\_{\\boldsymbol{\\theta}}(s)$. Using a linear model, this is expressed as:
+V_θ(s) = φ(s)^T θ = Σ_{i=1}^d φ_i(s) θ_i
 
-$$V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta} = \sum_{i=1}^d \phi_i(s) \theta_i$$
+The feature vector φ(s) determines what information the agent can access about state s, while the weight vector θ contains the learned parameters. The approximation quality depends critically on how well the feature space can represent the true value function. The theoretical limit of linear approximation is given by the projection error |V* - ΠV*|^2, where Π projects onto the space spanned by the features.
 
-Here, $\\boldsymbol{\\phi}(s)$ is the feature vector for state $s$, and $\\boldsymbol{\\theta}$ is the weight vector we learn. The quality of the approximation depends on how well the features $\\boldsymbol{\\phi}(s)$ can represent the true value function $V^*(s)$. The unavoidable error in the best possible linear approximation is given by $|V^* - \\Pi V^\*|^2$, where $\\Pi$ is the projection operator onto the space spanned by the features. A good feature set minimizes this error.
+This mathematical framework reveals why feature selection is so crucial. No amount of sophisticated learning can overcome fundamentally inadequate features. If the feature vector φ(s) cannot distinguish between states with different optimal values, the agent cannot learn the correct policy regardless of the learning algorithm used.
 
-### Principles of Feature Extraction
+### Principles of Effective Feature Design
 
-Effective feature design in RL often involves:
+Successful RL features often encode temporal structure, highlighting how the environment evolves over time. In physical systems, this means capturing both position and velocity. In financial applications, it involves representing price trends alongside current values. The key insight is that optimal actions depend not just on the current state, but on the trajectory that led to it.
 
-  * **Encoding Temporal Dependencies**: Features should capture dynamics, such as position and velocity in a physics problem or recent price trends in a trading algorithm.
-  * **Focusing on Action-Relevant Information**: Features should highlight aspects of the state that are critical for making a decision. The shape of a chess position is more important than the specific pieces if the underlying tactical pattern is the same.
-  * **Capturing Hierarchical Structure**: Good features can represent abstract concepts, like "in the kitchen" for a home robot or "opening phase" in a board game, which allows for hierarchical planning and learning.
+Features should focus on action-relevant information while filtering out distracting details. A poker-playing agent needs to represent card values, betting patterns, and opponent tendencies, but the color of the cards or the time of day are irrelevant. This filtering process requires domain knowledge and careful analysis of what information actually influences optimal decision-making.
 
+Hierarchical structure in features enables agents to reason at multiple levels of abstraction. A household robot benefits from features that represent both fine-grained spatial information ("near the kitchen counter") and higher-level semantic concepts ("in the cooking area"). This hierarchical representation supports both precise control and strategic planning.
 
 ## Mathematical Foundations of Linear Function Approximation
 
-Linear function approximation is the cornerstone of parametric value function methods. Its simplicity provides theoretical guarantees and computational efficiency, making it an essential starting point.
+Linear function approximation provides the theoretical foundation for understanding more complex methods. Its mathematical simplicity enables rigorous analysis while its computational efficiency makes it practical for many applications. Most importantly, the insights gained from linear methods transfer directly to neural network approaches.
 
-### Linear Value Functions
+### Linear Value Functions and Their Properties
 
-We represent the state-value function $V(s)$ or action-value function $Q(s, a)$ as a linear combination of features:
-$$V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)^T \boldsymbol{\theta}$$
-$$Q_{\boldsymbol{\theta}}(s, a) = \boldsymbol{\phi}(s, a)^T \boldsymbol{\theta}$$
-A key advantage is that the gradient of the value function with respect to the parameters is simply the feature vector itself:
-$$\nabla_{\boldsymbol{\theta}} V_{\boldsymbol{\theta}}(s) = \boldsymbol{\phi}(s)$$
-This property makes learning algorithms based on gradient descent straightforward and computationally cheap.
+The linear model represents value functions as weighted combinations of features:
 
-### Temporal Difference (TD) Learning with Function Approximation
+V_θ(s) = φ(s)^T θ
+Q_θ(s,a) = φ(s,a)^T θ
 
-With linear function approximation, the **TD(0)** update rule for learning $V\_{\\boldsymbol{\\theta}}(s)$ becomes:
-$$\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma V_{\boldsymbol{\theta}}(S_{t+1}) - V_{\boldsymbol{\theta}}(S_t)] \boldsymbol{\phi}(S_t)$$
-This update adjusts the weights $\\boldsymbol{\\theta}$ to reduce the TD error for the observed transition. Since the value of any state depends on the shared weights $\\boldsymbol{\\theta}$, this single update influences the value estimates across the entire state space.
+This representation has several appealing properties. The gradient with respect to parameters is simply the feature vector itself: ∇_θ V_θ(s) = φ(s). This makes gradient-based learning algorithms straightforward to implement and analyze. The update rules become linear in the features, ensuring computational efficiency even for high-dimensional feature spaces.
 
-Similarly, the update for **Q-learning** is:
-$$\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t + \alpha [R_{t+1} + \gamma \max_{a'} Q_{\boldsymbol{\theta}}(S_{t+1}, a') - Q_{\boldsymbol{\theta}}(S_t, A_t)] \boldsymbol{\phi}(S_t, A_t)$$
+Linear models also provide theoretical guarantees. Under certain conditions, they converge to the best possible approximation within the representational constraints. This convergence behavior can be analyzed using techniques from linear algebra and optimization theory, providing insights that remain valuable when working with more complex function approximators.
 
-### Convergence and the "Deadly Triad"
+### Temporal Difference Learning with Linear Approximation
 
-While on-policy TD learning with linear function approximation is guaranteed to converge, stability is not assured under all conditions. The combination of **off-policy learning**, **function approximation**, and **bootstrapping** (updating estimates from other estimates) is known as the **"deadly triad"** and can lead to divergence, where the value estimates grow uncontrollably. This instability is a fundamental challenge that motivated much of the research leading to modern deep RL algorithms like DQN, which employ techniques like experience replay and target networks to mitigate it.
+The temporal difference learning framework adapts naturally to linear function approximation. The TD(0) update rule becomes:
 
+θ_{t+1} ← θ_t + α [R_{t+1} + γ V_θ(S_{t+1}) - V_θ(S_t)] φ(S_t)
+
+This update adjusts the weight vector to reduce the temporal difference error for the observed transition. Since all states share the same parameter vector θ, each update influences value estimates throughout the entire state space. The degree of influence depends on the similarity of feature vectors between states.
+
+For action-value learning, the Q-learning update becomes:
+
+θ_{t+1} ← θ_t + α [R_{t+1} + γ max_{a'} Q_θ(S_{t+1}, a') - Q_θ(S_t, A_t)] φ(S_t, A_t)
+
+These updates have intuitive interpretations. When the agent discovers that a state is more valuable than expected (positive TD error), it increases the weights corresponding to active features. States with similar feature representations receive proportional increases in their estimated values.
+
+### The Deadly Triad and Stability Concerns
+
+Linear function approximation with on-policy TD learning enjoys strong convergence guarantees, but stability becomes problematic under certain combinations of conditions. The infamous "deadly triad" consists of off-policy learning (updating from data generated by a different policy), function approximation (using parameterized models rather than tabular representations), and bootstrapping (updating estimates based on other estimates rather than complete returns).
+
+This instability isn't merely a theoretical curiosity—it represents a fundamental challenge that motivated much of the research leading to modern deep RL algorithms. Techniques like experience replay, target networks, and careful exploration strategies all address various aspects of this stability problem. Understanding the deadly triad provides crucial intuition for diagnosing and fixing problems in deep RL systems.
 
 ## Classical Basis Function Methods
 
-Basis functions are systematic methods for constructing features. They provide a bridge from simple linear models to the powerful, automatically-learned features of neural networks.
+Basis functions provide systematic approaches to feature construction, bridging the gap between hand-crafted features and automatically learned representations. These classical methods remain relevant both as standalone techniques for appropriate problems and as conceptual frameworks for understanding more sophisticated approaches.
 
-### Coarse Coding
+### Coarse Coding: Overlapping Receptive Fields
 
-**Coarse coding** uses overlapping binary features, where each feature corresponds to a "receptive field" or region in the state space. A feature is active (value 1) if the state falls within its region and inactive (0) otherwise. The overlap between regions enables generalization: nearby states activate a similar set of features, so they receive similar value estimates.
+Coarse coding represents the state space using overlapping binary features, where each feature corresponds to a region or "receptive field." A feature activates when the state falls within its designated region and remains inactive otherwise. The power of this approach lies in the overlapping structure—nearby states activate similar sets of features, creating natural generalization.
 
-The degree of overlap controls the smoothness of the learned function. More overlap leads to broader generalization.
+The degree of overlap controls the smoothness of the learned function. Greater overlap produces broader generalization but reduces discrimination. The optimal balance depends on the problem structure and the complexity of the target function. Coarse coding mimics biological neural representations, where individual neurons respond to ranges of stimuli with overlapping tuning curves.
 
 ```r
-# Load necessary libraries for all visualizations
+# Load required libraries
 library(ggplot2)
-library(ggforce) # For drawing circles
+library(ggforce)
+library(dplyr)
 
-# --- Coarse Coding Implementation ---
-create_coarse_coder <- function(state_dims, num_features, overlap_factor = 2) {
-  # Generate random centers for the receptive fields
+# Coarse Coding Implementation
+create_coarse_coder <- function(state_dims, num_features, overlap_factor = 1.5, seed = 123) {
+  set.seed(seed)
+  
+  # Generate random centers uniformly across state space
   centers <- data.frame(
     x = runif(num_features, 0, state_dims[1]),
     y = runif(num_features, 0, state_dims[2])
   )
   
-  # Calculate radius based on average spacing to ensure overlap
+  # Calculate radius to ensure appropriate overlap
   avg_spacing <- sqrt(prod(state_dims) / num_features)
   radius <- overlap_factor * avg_spacing / 2
   
-  # Function to compute the binary feature vector for a given state
-  compute_features <- function(state) {
+  # Function to compute binary feature vector for given state
+  encode <- function(state) {
     state_vec <- as.numeric(state)
     distances <- sqrt((centers$x - state_vec[1])^2 + (centers$y - state_vec[2])^2)
     features <- as.numeric(distances <= radius)
     return(features)
   }
   
-  return(list(
-    compute_features = compute_features,
-    centers = centers,
-    radius = radius,
-    state_dims = state_dims
-  ))
-}
-
-# --- Visualization Function for Coarse Coding ---
-visualize_coarse_coding <- function(coarse_coder, state = NULL) {
-  active_features <- if (!is.null(state)) coarse_coder$compute_features(state) else NULL
-  active_indices <- if (!is.null(active_features)) which(active_features == 1) else integer(0)
-  
-  p <- ggplot() +
-    # Draw all receptive fields (inactive)
-    geom_circle(
-      data = coarse_coder$centers,
-      aes(x0 = x, y0 = y, r = coarse_coder$radius),
-      color = "grey70", fill = NA, linetype = "dashed"
-    ) +
+  # Visualization function
+  visualize <- function(query_state = NULL) {
+    # Determine active features for query state
+    active_features <- NULL
+    active_indices <- integer(0)
+    
+    if (!is.null(query_state)) {
+      active_features <- encode(query_state)
+      active_indices <- which(active_features == 1)
+    }
+    
+    # Create base plot
+    p <- ggplot() +
+      coord_fixed(xlim = c(0, state_dims[1]), ylim = c(0, state_dims[2]))
+    
+    # Add all receptive fields (inactive)
+    p <- p + geom_circle(
+      data = centers,
+      aes(x0 = x, y0 = y, r = radius),
+      color = "grey70", fill = "grey90", alpha = 0.3, linetype = "dashed"
+    )
+    
     # Highlight active receptive fields
-    geom_circle(
-      data = coarse_coder$centers[active_indices, ],
-      aes(x0 = x, y0 = y, r = coarse_coder$radius),
-      color = "#e41a1c", fill = "#e41a1c", alpha = 0.2, size = 1
-    ) +
+    if (length(active_indices) > 0) {
+      p <- p + geom_circle(
+        data = centers[active_indices, ],
+        aes(x0 = x, y0 = y, r = radius),
+        color = "#e41a1c", fill = "#e41a1c", alpha = 0.4, size = 1
+      )
+    }
+    
     # Add center points
-    geom_point(data = coarse_coder$centers, aes(x = x, y = y), color = "grey50", size = 1)
-  
-  # Add the query state point
-  if (!is.null(state)) {
-    p <- p + geom_point(aes(x = state[1], y = state[2]), color = "#377eb8", size = 5, shape = 17)
-  }
-  
-  p +
-    coord_fixed(xlim = c(0, coarse_coder$state_dims[1]), ylim = c(0, coarse_coder$state_dims[2])) +
-    labs(
-      title = "Coarse Coding Receptive Fields",
-      subtitle = paste(length(active_indices), "of", nrow(coarse_coder$centers), "features active"),
+    p <- p + geom_point(
+      data = centers, 
+      aes(x = x, y = y), 
+      color = "grey40", size = 1.5, alpha = 0.8
+    )
+    
+    # Add query state point
+    if (!is.null(query_state)) {
+      p <- p + geom_point(
+        aes(x = query_state[1], y = query_state[2]), 
+        color = "#377eb8", size = 4, shape = 17
+      )
+      
+      num_active <- length(active_indices)
+      subtitle <- paste(num_active, "of", num_features, "features active")
+    } else {
+      subtitle <- "Overlapping receptive fields"
+    }
+    
+    p + labs(
+      title = "Coarse Coding",
+      subtitle = subtitle,
       x = "State Dimension 1",
       y = "State Dimension 2"
     ) +
-    theme_minimal(base_size = 14)
+      theme_minimal(base_size = 12) +
+      theme(
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white", color = NA)
+      )
+  }
+  
+  return(list(
+    encode = encode,
+    visualize = visualize,
+    centers = centers,
+    radius = radius,
+    state_dims = state_dims,
+    num_features = num_features
+  ))
 }
 
-# Example Usage
-set.seed(123)
-coarse_coder_2d <- create_coarse_coder(state_dims = c(10, 10), num_features = 50, overlap_factor = 1.5)
-visualize_coarse_coding(coarse_coder_2d, state = c(3.2, 7.8))
+# Example usage
+coarse_coder <- create_coarse_coder(
+  state_dims = c(10, 10), 
+  num_features = 50, 
+  overlap_factor = 1.5
+)
+
+# Visualize with query state
+print(coarse_coder$visualize(query_state = c(3.2, 7.8)))
 ```
 
-### Tile Coding
+### Tile Coding: Structured Overlapping Grids
 
-**Tile coding**, also known as CMAC (Cerebellar Model Articulation Controller), improves upon coarse coding by providing more structured and uniform coverage. It partitions the state space using multiple overlapping grids, called **tilings**. Each tiling is offset from the others. For any given state, exactly one tile in each tiling will be active. This ensures a constant number of active features, which is computationally efficient.
+Tile coding, also known as CMAC (Cerebellar Model Articulation Controller), provides a more structured approach to creating overlapping features. Instead of random circular regions, tile coding partitions the state space using multiple offset grids called tilings. Each tiling covers the entire state space with non-overlapping rectangular tiles, but the tilings are offset from each other to create overlapping coverage.
 
-The offsets provide fine-grained discrimination, while the tile size controls generalization. Unlike coarse coding with circular fields, tile coding's rectangular tiles create **asymmetric generalization** that aligns with the coordinate axes, which is often desirable in control problems where dimensions represent different physical properties (e.g., position and velocity).
+For any given state, exactly one tile from each tiling will be active, ensuring a constant number of active features regardless of the state location. This property provides computational advantages and makes the learning dynamics more predictable. The offsets between tilings create fine-grained discrimination capability, while the tile sizes control the degree of generalization.
+
+Tile coding's rectangular structure creates asymmetric generalization that aligns with coordinate axes. This asymmetry is often desirable in control problems where different state dimensions represent distinct physical quantities with different units and scaling properties. A robot's position and velocity, for example, should generalize differently along each dimension.
 
 ```r
-# --- Tile Coding Implementation ---
+# Tile Coding Implementation
 create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim) {
   state_dims <- length(state_low)
   state_range <- state_high - state_low
   tile_widths <- state_range / tiles_per_dim
   
   # Generate offsets for each tiling
-  offsets <- sapply(1:state_dims, function(i) {
-    (1:num_tilings - 1) * tile_widths[i] / num_tilings
-  })
+  offsets <- array(0, dim = c(num_tilings, state_dims))
+  for (dim in 1:state_dims) {
+    offsets[, dim] <- (0:(num_tilings - 1)) * tile_widths[dim] / num_tilings
+  }
   
-  # Function to get the indices of active tiles for a given state
-  get_active_tiles <- function(state) {
+  # Function to get indices of active tiles for given state
+  encode <- function(state) {
+    state_vec <- as.numeric(state)
     active_tiles <- list()
+    
     for (t in 1:num_tilings) {
-      tile_indices <- floor((state - state_low + offsets[t, ]) / tile_widths)
+      # Apply offset and compute tile indices
+      offset_state <- state_vec - state_low + offsets[t, ]
+      tile_indices <- floor(offset_state / tile_widths)
+      
+      # Clip to valid range
+      tile_indices <- pmax(0, pmin(tile_indices, tiles_per_dim - 1))
       active_tiles[[t]] <- tile_indices
     }
     return(active_tiles)
   }
   
+  # Visualization function (2D only)
+  visualize <- function(query_state = NULL) {
+    if (state_dims != 2) {
+      stop("Visualization only supports 2D state spaces")
+    }
+    
+    # Create base plot
+    p <- ggplot() +
+      coord_fixed(xlim = state_low, ylim = state_high, expand = FALSE)
+    
+    # Generate colors for tilings
+    colors <- RColorBrewer::brewer.pal(min(num_tilings, 8), "Set1")
+    if (num_tilings > 8) colors <- rep(colors, ceiling(num_tilings / 8))
+    
+    # Draw grid lines for each tiling
+    for (t in 1:num_tilings) {
+      color <- colors[t]
+      
+      # Vertical lines
+      x_lines <- seq(
+        state_low[1] - offsets[t, 1],
+        state_high[1] + tile_widths[1],
+        by = tile_widths[1]
+      )
+      valid_x <- x_lines[x_lines >= state_low[1] & x_lines <= state_high[1]]
+      
+      if (length(valid_x) > 0) {
+        p <- p + geom_vline(
+          xintercept = valid_x, 
+          color = color, 
+          alpha = 0.7, 
+          linetype = "dashed", 
+          size = 0.5
+        )
+      }
+      
+      # Horizontal lines
+      y_lines <- seq(
+        state_low[2] - offsets[t, 2],
+        state_high[2] + tile_widths[2],
+        by = tile_widths[2]
+      )
+      valid_y <- y_lines[y_lines >= state_low[2] & y_lines <= state_high[2]]
+      
+      if (length(valid_y) > 0) {
+        p <- p + geom_hline(
+          yintercept = valid_y, 
+          color = color, 
+          alpha = 0.7, 
+          linetype = "dashed", 
+          size = 0.5
+        )
+      }
+    }
+    
+    # Highlight active tiles for query state
+    if (!is.null(query_state)) {
+      active_tiles_indices <- encode(query_state)
+      
+      for (t in 1:num_tilings) {
+        color <- colors[t]
+        tile_indices <- active_tiles_indices[[t]]
+        
+        # Calculate tile boundaries
+        tile_x <- state_low[1] + tile_indices[1] * tile_widths[1] - offsets[t, 1]
+        tile_y <- state_low[2] + tile_indices[2] * tile_widths[2] - offsets[t, 2]
+        
+        # Create rectangle data
+        rect_data <- data.frame(
+          xmin = tile_x,
+          xmax = tile_x + tile_widths[1],
+          ymin = tile_y,
+          ymax = tile_y + tile_widths[2]
+        )
+        
+        # Add highlighted tile
+        p <- p + geom_rect(
+          data = rect_data,
+          aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+          fill = color, 
+          alpha = 0.4, 
+          color = color, 
+          size = 1.2
+        )
+      }
+      
+      # Mark query state
+      p <- p + geom_point(
+        aes(x = query_state[1], y = query_state[2]), 
+        color = "black", size = 4, shape = 17
+      )
+      
+      subtitle <- paste(num_tilings, "active tiles (one per tiling)")
+    } else {
+      subtitle <- paste(num_tilings, "overlapping tilings")
+    }
+    
+    p + labs(
+      title = "Tile Coding",
+      subtitle = subtitle,
+      x = "State Dimension 1",
+      y = "State Dimension 2"
+    ) +
+      theme_minimal(base_size = 12) +
+      theme(
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "white", color = NA)
+      )
+  }
+  
   return(list(
-    get_active_tiles = get_active_tiles,
+    encode = encode,
+    visualize = visualize,
     state_low = state_low,
     state_high = state_high,
     num_tilings = num_tilings,
@@ -185,158 +350,252 @@ create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim)
   ))
 }
 
-# --- Visualization Function for Tile Coding ---
-visualize_tile_coding <- function(tile_coder, state = NULL) {
-  if (length(tile_coder$state_low) != 2) stop("Visualization is for 2D state spaces only.")
-  
-  # Create a data frame of grid lines for each tiling
-  grids <- list()
-  for (t in 1:tile_coder$num_tilings) {
-    # Vertical lines
-    x_lines <- seq(
-      tile_coder$state_low[1] - tile_coder$offsets[t, 1],
-      tile_coder$state_high[1],
-      by = tile_coder$tile_widths[1]
-    )
-    # Horizontal lines
-    y_lines <- seq(
-      tile_coder$state_low[2] - tile_coder$offsets[t, 2],
-      tile_coder$state_high[2],
-      by = tile_coder$tile_widths[2]
-    )
-    grids[[t]] <- list(x = x_lines, y = y_lines)
-  }
-  
-  # Base plot
-  p <- ggplot() +
-    coord_fixed(
-      xlim = tile_coder$state_low,
-      ylim = tile_coder$state_high,
-      expand = FALSE
-    )
-  
-  # Add grid lines for each tiling with a unique color
-  colors <- RColorBrewer::brewer.pal(tile_coder$num_tilings, "Set1")
-  for (t in 1:tile_coder$num_tilings) {
-    p <- p +
-      geom_vline(xintercept = grids[[t]]$x, color = colors[t], linetype = "dashed", alpha = 0.8) +
-      geom_hline(yintercept = grids[[t]]$y, color = colors[t], linetype = "dashed", alpha = 0.8)
-  }
-  
-  # Highlight the active tile for each tiling
-  if (!is.null(state)) {
-    active_tiles_indices <- tile_coder$get_active_tiles(state)
-    for (t in 1:tile_coder$num_tilings) {
-      tile_xmin <- tile_coder$state_low[1] + active_tiles_indices[[t]][1] * tile_coder$tile_widths[1] - tile_coder$offsets[t, 1]
-      tile_ymin <- tile_coder$state_low[2] + active_tiles_indices[[t]][2] * tile_coder$tile_widths[2] - tile_coder$offsets[t, 2]
-      
-      p <- p + annotate(
-        "rect",
-        xmin = tile_xmin,
-        xmax = tile_xmin + tile_coder$tile_widths[1],
-        ymin = tile_ymin,
-        ymax = tile_ymin + tile_coder$tile_widths[2],
-        fill = colors[t], alpha = 0.3, color = colors[t], size = 1.2
-      )
-    }
-    p <- p + geom_point(aes(x = state[1], y = state[2]), color = "black", size = 5, shape = 17)
-  }
-  
-  p + labs(
-    title = "Tile Coding",
-    subtitle = paste(tile_coder$num_tilings, "Overlapping Tilings"),
-    x = "State Dimension 1",
-    y = "State Dimension 2"
-  ) +
-    theme_minimal(base_size = 14)
-}
-
-# Example Usage
-tile_coder_2d <- create_tile_coder(
+# Example usage
+tile_coder <- create_tile_coder(
   state_low = c(0, 0),
   state_high = c(10, 10),
   num_tilings = 4,
   tiles_per_dim = c(5, 5)
 )
-visualize_tile_coding(tile_coder_2d, state = c(3.2, 7.8))
+
+# Visualize with query state
+print(tile_coder$visualize(query_state = c(3.2, 7.8)))
 ```
 
-### Radial Basis Functions (RBFs)
+### Radial Basis Functions: Smooth Continuous Features
 
-**Radial Basis Functions (RBFs)** are smooth, continuous basis functions that produce a graded response based on the distance to a center point. The most common form is the Gaussian RBF:
+Radial Basis Functions represent a fundamentally different approach to feature construction. Instead of binary activations, RBFs provide smooth, continuous responses that depend on the distance from fixed center points. The most common form uses Gaussian functions:
 
-$$\phi_i(s) = \exp\left(-\frac{\|s - c_i\|^2}{2\sigma_i^2}\right)$$
+φ_i(s) = exp(-||s - c_i||^2 / (2σ_i^2))
 
-Here, $c\_i$ is the center of the $i$-th RBF and $\\sigma\_i$ is its width (or bandwidth). Unlike binary features, RBFs provide a continuous measure of similarity. The width $\\sigma$ controls the locality of influence: a small $\\sigma$ creates a "spiky" function with local generalization, while a large $\\sigma$ creates a smooth function with broad generalization.
+Here c_i represents the center of the i-th RBF, while σ_i controls its width or bandwidth. Unlike the sharp boundaries of tile coding or coarse coding, RBFs create smooth activation landscapes that vary continuously with state changes. This smoothness often produces more stable learning dynamics and can lead to better generalization in certain domains.
 
-RBF networks are **universal approximators**, meaning they can represent any continuous function with arbitrary accuracy, given enough basis functions. The placement of centers and choice of widths are critical. Centers can be placed on a fixed grid, randomly, or adapted during learning using techniques like k-means clustering on experienced states.
+The width parameter σ plays a crucial role in controlling the locality of influence. Narrow RBFs (small σ) create peaked functions that provide high discrimination but limited generalization. Wide RBFs (large σ) create broad functions that generalize extensively but may lack the discrimination needed for complex tasks. The optimal choice depends on the smoothness of the target function and the density of training data.
+
+RBF networks possess powerful theoretical properties. They are universal approximators, meaning they can represent any continuous function to arbitrary accuracy given sufficient basis functions. The placement of centers and selection of widths determine the network's effectiveness. Centers can be positioned on regular grids, placed randomly, or adapted during learning using techniques like k-means clustering on experienced states.
 
 ```r
-# --- Radial Basis Function (RBF) Implementation ---
-create_rbf_network <- function(centers, sigmas) {
-  if (is.vector(sigmas)) {
-    sigmas <- rep(sigmas[1], nrow(centers))
+# Load additional libraries for RBF network
+library(viridis)
+library(RColorBrewer)
+
+# Radial Basis Function Network Implementation
+create_rbf_network <- function(centers, widths) {
+  # Convert centers to matrix format
+  if (is.data.frame(centers)) {
+    centers <- as.matrix(centers)
   }
   
-  compute_features <- function(state) {
+  n_rbf <- nrow(centers)
+  
+  # Handle scalar or vector widths
+  if (length(widths) == 1) {
+    widths <- rep(widths, n_rbf)
+  }
+  
+  # Function to compute RBF activations for given state
+  encode <- function(state) {
     state_vec <- as.numeric(state)
-    distances_sq <- colSums((t(centers) - state_vec)^2)
-    features <- exp(-distances_sq / (2 * sigmas^2))
-    return(features)
+    distances_sq <- rowSums((centers - matrix(rep(state_vec, n_rbf), 
+                                            nrow = n_rbf, byrow = TRUE))^2)
+    activations <- exp(-distances_sq / (2 * widths^2))
+    return(activations)
+  }
+  
+  # Function to create adaptive RBF centers using k-means-like placement
+  create_adaptive_centers <- function(state_dims, n_centers, n_samples = 1000, seed = 42) {
+    set.seed(seed)
+    
+    # Generate random samples from state space
+    samples <- data.frame(
+      x = runif(n_samples, 0, state_dims[1]),
+      y = runif(n_samples, 0, state_dims[2])
+    )
+    
+    # Simple k-means implementation
+    centers <- samples[sample(nrow(samples), n_centers), ]
+    
+    for (iter in 1:50) {
+      # Assign points to closest centers
+      distances <- as.matrix(dist(rbind(centers, samples)))
+      distances <- distances[(n_centers + 1):(n_centers + n_samples), 1:n_centers]
+      assignments <- apply(distances, 1, which.min)
+      
+      # Update centers
+      new_centers <- centers
+      for (k in 1:n_centers) {
+        if (sum(assignments == k) > 0) {
+          cluster_points <- samples[assignments == k, ]
+          new_centers[k, ] <- colMeans(cluster_points)
+        }
+      }
+      
+      # Check convergence
+      if (sum((new_centers - centers)^2) < 1e-6) break
+      centers <- new_centers
+    }
+    
+    return(as.matrix(centers))
+  }
+  
+  # Visualization function for activation landscape
+  visualize_activation_landscape <- function(state_dims, resolution = 100) {
+    # Create evaluation grid
+    x_seq <- seq(0, state_dims[1], length.out = resolution)
+    y_seq <- seq(0, state_dims[2], length.out = resolution)
+    grid_df <- expand.grid(x = x_seq, y = y_seq)
+    
+    # Compute total activation at each point
+    grid_df$activation <- apply(grid_df, 1, function(point) {
+      sum(encode(point))
+    })
+    
+    # Create visualization
+    p <- ggplot(grid_df, aes(x = x, y = y, fill = activation)) +
+      geom_raster(interpolate = TRUE) +
+      geom_contour(aes(z = activation), color = "white", alpha = 0.4, size = 0.3) +
+      geom_point(
+        data = as.data.frame(centers), 
+        aes(x = V1, y = V2), 
+        color = "white", shape = 4, size = 3, stroke = 1.5,
+        inherit.aes = FALSE
+      ) +
+      scale_fill_viridis_c(name = "Total\nActivation", option = "plasma") +
+      coord_fixed(xlim = c(0, state_dims[1]), ylim = c(0, state_dims[2]), expand = FALSE) +
+      labs(
+        title = "RBF Network: Combined Activation Landscape",
+        subtitle = paste("White crosses indicate", n_rbf, "RBF centers"),
+        x = "State Dimension 1",
+        y = "State Dimension 2"
+      ) +
+      theme_minimal(base_size = 12) +
+      theme(
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white", color = NA)
+      )
+    
+    return(p)
+  }
+  
+  # Visualization function for individual RBFs
+  visualize_individual_rbfs <- function(state_dims, resolution = 50) {
+    # Determine subplot layout
+    n_cols <- ceiling(sqrt(n_rbf))
+    n_rows <- ceiling(n_rbf / n_cols)
+    
+    # Create evaluation grid
+    x_seq <- seq(0, state_dims[1], length.out = resolution)
+    y_seq <- seq(0, state_dims[2], length.out = resolution)
+    grid_df <- expand.grid(x = x_seq, y = y_seq)
+    
+    # Prepare data for all RBFs
+    all_rbf_data <- list()
+    
+    for (i in 1:n_rbf) {
+      # Compute activation for this RBF only
+      distances_sq <- rowSums((grid_df - matrix(rep(centers[i, ], nrow(grid_df)), 
+                                              nrow = nrow(grid_df), byrow = TRUE))^2)
+      activations <- exp(-distances_sq / (2 * widths[i]^2))
+      
+      rbf_data <- grid_df
+      rbf_data$activation <- activations
+      rbf_data$rbf_id <- i
+      rbf_data$rbf_label <- paste0("RBF ", i, " (σ=", round(widths[i], 1), ")")
+      
+      all_rbf_data[[i]] <- rbf_data
+    }
+    
+    # Combine all data
+    combined_data <- do.call(rbind, all_rbf_data)
+    
+    # Add center information
+    center_data <- data.frame(
+      x = rep(centers[, 1], each = 1),
+      y = rep(centers[, 2], each = 1),
+      rbf_id = 1:n_rbf,
+      rbf_label = paste0("RBF ", 1:n_rbf, " (σ=", round(widths, 1), ")")
+    )
+    
+    # Create faceted plot
+    p <- ggplot(combined_data, aes(x = x, y = y, fill = activation)) +
+      geom_raster(interpolate = TRUE) +
+      geom_point(
+        data = center_data,
+        aes(x = x, y = y),
+        color = "white", shape = 4, size = 2, stroke = 1,
+        inherit.aes = FALSE
+      ) +
+      facet_wrap(~ rbf_label, ncol = n_cols) +
+      scale_fill_viridis_c(option = "plasma", name = "Activation") +
+      coord_fixed(expand = FALSE) +
+      labs(
+        title = "Individual RBF Activations",
+        x = "State Dimension 1",
+        y = "State Dimension 2"
+      ) +
+      theme_minimal(base_size = 10) +
+      theme(
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white", color = NA),
+        strip.background = element_rect(fill = "grey90", color = NA),
+        axis.text = element_text(size = 8)
+      )
+    
+    return(p)
   }
   
   return(list(
-    compute_features = compute_features,
+    encode = encode,
+    visualize_activation_landscape = visualize_activation_landscape,
+    visualize_individual_rbfs = visualize_individual_rbfs,
     centers = centers,
-    sigmas = sigmas
+    widths = widths,
+    n_rbf = n_rbf,
+    create_adaptive_centers = create_adaptive_centers
   ))
 }
 
-# --- Visualization Function for RBF Network Activation ---
-visualize_rbf_activation <- function(rbf_network, state_dims) {
-  # Create a grid of points to evaluate the RBF network
-  grid_df <- expand.grid(
-    x = seq(0, state_dims[1], length.out = 100),
-    y = seq(0, state_dims[2], length.out = 100)
-  )
-  
-  # Calculate the sum of all RBF activations at each grid point
-  activations <- apply(grid_df, 1, function(point) {
-    sum(rbf_network$compute_features(point))
-  })
-  grid_df$activation <- activations
-  
-  ggplot(grid_df, aes(x = x, y = y, fill = activation)) +
-    geom_raster(interpolate = TRUE) +
-    geom_point(data = as.data.frame(rbf_network$centers), aes(x = V1, y = V2), 
-               color = "white", shape = 3, size = 2, alpha = 0.8) +
-    scale_fill_viridis_c(name = "Total\nActivation") +
-    coord_fixed(expand = FALSE) +
-    labs(
-      title = "Radial Basis Function Network Activation",
-      subtitle = "White crosses indicate RBF centers",
-      x = "State Dimension 1",
-      y = "State Dimension 2"
-    ) +
-    theme_minimal(base_size = 14)
-}
-
-# Example Usage
+# Example usage with adaptive center placement
 set.seed(42)
-rbf_centers <- matrix(runif(20, 0, 10), nrow = 10, ncol = 2)
-rbf_sigmas <- rep(2.0, 10) # Uniform width for all RBFs
-rbf_net <- create_rbf_network(centers = rbf_centers, sigmas = rbf_sigmas)
 
-visualize_rbf_activation(rbf_net, state_dims = c(10, 10))
+# Create RBF centers using k-means-like clustering
+rbf_net_temp <- create_rbf_network(matrix(c(0, 0), nrow = 1), 1.0)
+rbf_centers <- rbf_net_temp$create_adaptive_centers(
+  state_dims = c(10, 10), 
+  n_centers = 12
+)
+
+# Create RBF network with adaptive centers
+rbf_network <- create_rbf_network(
+  centers = rbf_centers, 
+  widths = 1.5  # Uniform width for all RBFs
+)
+
+# Visualize activation landscape
+print(rbf_network$visualize_activation_landscape(state_dims = c(10, 10)))
+
+# Visualize individual RBFs
+print(rbf_network$visualize_individual_rbfs(state_dims = c(10, 10)))
 ```
 
-The choice of basis function depends on the problem, computational budget, and desired generalization properties.
+## Comparative Analysis and Practical Considerations
 
-  * **Computational Efficiency**: **Tile coding** is often the fastest, as it involves simple arithmetic and guarantees a fixed, small number of active features. Coarse coding can be slower if it requires checking against many overlapping regions. RBFs are typically the most expensive, as they require distance calculations to all centers.
-  * **Memory Requirements**: A tile coder with $N$ tilings and $T$ tiles per tiling has $N \\times T$ features. RBFs require storing all centers and widths. The memory footprint depends on the number of basis functions needed for the desired accuracy.
-  * **Generalization Control**: **RBFs** offer the most fine-grained control over generalization through the placement of centers and tuning of widths. **Tile coding** provides structured, axis-aligned generalization controlled by the number and shape of tiles. **Coarse coding** is the most straightforward but offers the least precise control.
-  * **Ease of Use**: Tile coding is often a strong default choice for low-to-medium dimensional control problems due to its computational efficiency and robust performance with minimal tuning.
+The choice between different basis function methods involves tradeoffs across multiple dimensions that depend on the specific requirements of the learning problem. Computational efficiency varies significantly between approaches. Tile coding typically offers the best computational performance because it requires only simple arithmetic operations and guarantees a fixed, small number of active features per state. This predictable activation pattern makes memory access patterns efficient and simplifies the implementation of learning algorithms.
 
-Linear function approximation and classical basis functions are not merely historical footnotes; they are the conceptual foundation upon which deep RL is built. They provide a clear and analyzable framework for understanding the core challenge of RL: balancing discrimination and generalization. The principles of feature design, the mathematics of TD updates, and the properties of different basis functions offer crucial insights that remain relevant when designing, training, and debugging complex neural network architectures.
+Coarse coding can be computationally expensive when implemented naively, requiring distance calculations to all receptive field centers. However, efficient implementations using spatial data structures can dramatically reduce this cost. RBF networks generally require the most computation since they must evaluate all basis functions for every state, though this cost can be acceptable for problems with moderate numbers of basis functions.
 
-Mastering these fundamentals provides the intuition needed to navigate the complexities of modern RL. The journey from tabular methods to deep learning necessarily passes through this foundational territory, making it essential knowledge for any serious RL practitioner.
+Memory requirements also differ substantially. Tile coding with N tilings and T tiles per tiling requires N×T features, but the sparse activation pattern means that storage can be optimized. RBF networks must store all centers and widths explicitly, and the dense activation patterns require more memory during computation.
+
+The control over generalization represents perhaps the most important distinction between methods. RBF networks provide the finest-grained control through careful placement of centers and tuning of widths. This flexibility makes them particularly suitable for problems where the optimal policy varies smoothly across the state space. Tile coding offers structured, axis-aligned generalization that can be controlled through the number and arrangement of tilings. This asymmetric generalization often matches the structure of control problems where different state dimensions have different physical meanings and scaling properties.
+
+Coarse coding provides the most intuitive approach to generalization control but offers less precise tuning than the alternatives. The circular or spherical regions create symmetric generalization that may not align well with the natural structure of some problems.
+
+## Bridging Classical and Modern Approaches
+
+These classical basis function methods are not mere historical artifacts but continue to play important roles in modern RL systems. They provide interpretable building blocks that can be combined with neural networks to create hybrid architectures. For instance, RBF networks can serve as the final layer of a deep network, providing smooth interpolation over a learned feature space. Tile coding remains competitive for many control problems, particularly those with moderate dimensionality where its computational advantages outweigh the representational limitations.
+
+Perhaps most importantly, these methods provide the conceptual foundation for understanding deep RL. The discrimination-generalization tradeoff that appears explicitly in classical function approximation operates implicitly in neural networks. The stability issues that arise in linear TD learning become even more complex in the nonlinear setting but follow similar patterns. The feature engineering principles that guide classical basis function design inform the architecture choices and training procedures used in deep networks.
+
+Understanding how to balance computational efficiency, representational power, and generalization control in classical methods provides invaluable intuition for navigating the much larger design space of modern deep RL systems. The journey from tabular methods to neural networks necessarily passes through this classical territory, making these concepts essential knowledge for any serious RL practitioner.
+
+The mathematical principles, design tradeoffs, and practical considerations explored in this appendix provide a solid foundation for understanding both current RL systems and future developments in the field. As the field continues to evolve, these fundamental concepts remain relevant, offering both practical tools for appropriate problems and conceptual frameworks for understanding more sophisticated approaches.
