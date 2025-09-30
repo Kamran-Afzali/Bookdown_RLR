@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-09-25" />
+<meta name="date" content="2025-09-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -471,23 +471,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="introduction-1" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Introduction<a href="markov-decision-processes-and-dynamic-programming.html#introduction-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Markov Decision Processes (MDPs) constitute a formal framework for modeling sequential decision-making under uncertainty. Widely applied in operations research, control theory, economics, and artificial intelligence, MDPs encapsulate the dynamics of environments where outcomes are partly stochastic and partly under an agent’s control. At their core, MDPs unify probabilistic transitions, state-contingent rewards, and long-term optimization goals. This post explores MDPs from a computational standpoint, emphasizing Dynamic Programming (DP) methods—particularly Value Iteration—for solving them when the model is fully known. We proceed by defining the mathematical components of MDPs, implementing them in R, and illustrating policy derivation using value iteration. A comparative summary of key aspects of DP methods concludes the post.</p>
-<p>An MDP is formally defined by the tuple <span class="math inline">\((S, A, P, R, \gamma)\)</span>, where:</p>
+<p>An MDP is formally defined by the tuple $(S, A, P, R, )$, where:</p>
 <ul>
-<li><span class="math inline">\(S\)</span>: a finite set of states.</li>
-<li><span class="math inline">\(A\)</span>: a finite set of actions.</li>
-<li><span class="math inline">\(P(s&#39;|s, a)\)</span>: the transition probability function—probability of moving to state <span class="math inline">\(s&#39;\)</span> given current state <span class="math inline">\(s\)</span> and action <span class="math inline">\(a\)</span>.</li>
-<li><span class="math inline">\(R(s, a, s&#39;)\)</span>: the reward received after transitioning from state <span class="math inline">\(s\)</span> to <span class="math inline">\(s&#39;\)</span> via action <span class="math inline">\(a\)</span>.</li>
-<li><span class="math inline">\(\gamma \in [0,1]\)</span>: the discount factor, representing the agent’s preference for immediate versus delayed rewards.</li>
+<li>$S$: a finite set of states.</li>
+<li>$A$: a finite set of actions.</li>
+<li>$P(s’|s, a)$: the transition probability function—probability of moving to state $s’$ given current state $s$ and action $a$.</li>
+<li>$R(s, a, s’)$: the reward received after transitioning from state $s$ to $s’$ via action $a$.</li>
+<li>$[0,1]$: the discount factor, representing the agent’s preference for immediate versus delayed rewards.</li>
 </ul>
-<p>The agent’s objective is to learn a policy <span class="math inline">\(\pi: S \to A\)</span> that maximizes the expected cumulative discounted reward:</p>
+<p>The agent’s objective is to learn a policy $: S A$ that maximizes the expected cumulative discounted reward:</p>
 <p><span class="math display">\[
 V^\pi(s) = \mathbb{E}_\pi \left[ \sum_{t=0}^{\infty} \gamma^t R(S_t, A_t, S_{t+1}) \,\bigg|\, S_0 = s \right]
 \]</span></p>
-<p>The optimal value function <span class="math inline">\(V^*\)</span> satisfies the Bellman optimality equation:</p>
+<p>The optimal value function $V^*$ satisfies the Bellman optimality equation:</p>
 <p>$$
 V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <p>$$</p>
-<p>Once <span class="math inline">\(V^*\)</span> is computed, the optimal policy <span class="math inline">\(\pi^*\)</span> is obtained via:</p>
+<p>Once $V^<em>$ is computed, the optimal policy $^</em>$ is obtained via:</p>
 <p>$$
 ^*(s) = <em>{a A} </em>{s’} P(s’|s,a) </p>
 <p>$$</p>
@@ -519,7 +519,8 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <span id="cb4-22"><a href="markov-decision-processes-and-dynamic-programming.html#cb4-22" tabindex="-1"></a></span>
 <span id="cb4-23"><a href="markov-decision-processes-and-dynamic-programming.html#cb4-23" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
 <span id="cb4-24"><a href="markov-decision-processes-and-dynamic-programming.html#cb4-24" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
-<p>This setup specifies an MDP with stochastic transitions favoring forward progression and asymmetric reward structures across actions. State 10 is a terminal state.</p>
+<p><strong>Explanation:</strong>
+This block defines the MDP. We create <code>n_states = 10</code> with <code>n_actions = 2</code>. The transition probabilities are stored in a 3D array, where the first dimension is the current state, the second is the action, and the third is the next state. Action 1 strongly favors moving forward to the next state (90% chance), while Action 2 introduces more randomness (different probabilities to jump to random states). Rewards are drawn randomly, but reaching the terminal state yields higher rewards (1.0 for Action 1 and 0.5 for Action 2). Finally, the terminal state has no outgoing transitions or rewards, making it absorbing.</p>
 <p>We define a function to sample from the environment:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="markov-decision-processes-and-dynamic-programming.html#cb5-1" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
 <span id="cb5-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb5-2" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
@@ -527,6 +528,8 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <span id="cb5-4"><a href="markov-decision-processes-and-dynamic-programming.html#cb5-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
 <span id="cb5-5"><a href="markov-decision-processes-and-dynamic-programming.html#cb5-5" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
 <span id="cb5-6"><a href="markov-decision-processes-and-dynamic-programming.html#cb5-6" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Explanation:</strong>
+This function simulates environment dynamics. Given a current state <code>s</code> and action <code>a</code>, it samples the next state <code>s_prime</code> according to the transition probabilities and retrieves the corresponding reward. The function outputs both the next state and the reward, mimicking how an agent would experience interaction with the MDP.</p>
 </div>
 <div id="value-iteration-algorithm" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Value Iteration Algorithm<a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -556,14 +559,16 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <span id="cb6-23"><a href="markov-decision-processes-and-dynamic-programming.html#cb6-23" tabindex="-1"></a>  }</span>
 <span id="cb6-24"><a href="markov-decision-processes-and-dynamic-programming.html#cb6-24" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">V =</span> V, <span class="at">policy =</span> policy)</span>
 <span id="cb6-25"><a href="markov-decision-processes-and-dynamic-programming.html#cb6-25" tabindex="-1"></a>}</span></code></pre></div>
-<p>This implementation iteratively updates value estimates until convergence, determined by a small threshold <span class="math inline">\(\theta\)</span>. At each iteration, the value of state <span class="math inline">\(s\)</span> is updated using the maximum expected return across available actions.</p>
+<p><strong>Explanation:</strong>
+This function implements value iteration. It initializes all state values <code>V</code> to zero and assigns a default policy of choosing action 1. At each iteration, the algorithm updates the value of each state by computing expected returns for all actions (<code>q_values</code>) and taking the maximum. The associated action becomes the new policy for that state. The process continues until the maximum change in values (<code>delta</code>) is below the convergence threshold <code>theta</code>. The function outputs both the value function and the derived policy.</p>
 <p>We now apply the algorithm and extract the resulting value function and policy:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-1" tabindex="-1"></a>dp_result <span class="ot">&lt;-</span> <span class="fu">value_iteration</span>()</span>
 <span id="cb7-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-2" tabindex="-1"></a>dp_value <span class="ot">&lt;-</span> dp_result<span class="sc">$</span>V</span>
 <span id="cb7-3"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-3" tabindex="-1"></a>dp_policy <span class="ot">&lt;-</span> dp_result<span class="sc">$</span>policy</span>
 <span id="cb7-4"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-4" tabindex="-1"></a>dp_policy</span></code></pre></div>
 <pre><code>##  [1] 2 2 1 1 2 1 1 1 1 1</code></pre>
-<p>The returned policy is a vector of optimal actions indexed by state. The value function can be visualized to reveal which states yield higher expected returns under the optimal policy.</p>
+<p><strong>Explanation:</strong>
+Here we run the value iteration function and extract the results. The <code>dp_value</code> vector contains the optimal state values, while <code>dp_policy</code> indicates the best action to take at each state. Printing <code>dp_policy</code> gives us a direct mapping from state to optimal action.</p>
 </div>
 <div id="evaluation-and-interpretation" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> Evaluation and Interpretation<a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -577,19 +582,21 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-1" tabindex="-1"></a><span class="fu">plot</span>(dp_value, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">19</span>,</span>
 <span id="cb9-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-2" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;State&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Value&quot;</span>,</span>
 <span id="cb9-3"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-3" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Optimal State Values via Value Iteration&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><strong>Explanation:</strong>
+This plot shows the computed value function across all states. Higher values indicate states with greater expected long-term returns under the optimal policy. The shape of the curve helps us see how proximity to the terminal state (and the possibility of reaching it through Action 1) drives up the expected value.</p>
 </div>
 <div id="theoretical-properties-of-value-iteration" class="section level2 hasAnchor" number="3.5">
 <h2><span class="header-section-number">3.5</span> Theoretical Properties of Value Iteration<a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Value Iteration exhibits the following theoretical guarantees:</p>
 <ul>
-<li><strong>Convergence</strong>: The algorithm is guaranteed to converge to <span class="math inline">\(V^*\)</span> for any finite MDP with bounded rewards and <span class="math inline">\(0 \leq \gamma &lt; 1\)</span>.</li>
-<li><strong>Policy Derivation</strong>: Once <span class="math inline">\(V^*\)</span> is known, the greedy policy is optimal.</li>
-<li><strong>Computational Complexity</strong>: For state space size <span class="math inline">\(S\)</span> and action space size <span class="math inline">\(A\)</span>, each iteration requires <span class="math inline">\(O(S^2 A)\)</span> operations due to the summation over all successor states.</li>
+<li><strong>Convergence</strong>: The algorithm is guaranteed to converge to $V^*$ for any finite MDP with bounded rewards and $0 &lt; 1$.</li>
+<li><strong>Policy Derivation</strong>: Once $V^*$ is known, the greedy policy is optimal.</li>
+<li><strong>Computational Complexity</strong>: For state space size $S$ and action space size $A$, each iteration requires $O(S^2 A)$ operations due to the summation over all successor states.</li>
 </ul>
 <p>However, in practice, the applicability of DP methods is restricted by:</p>
 <ul>
-<li>The need for full knowledge of <span class="math inline">\(P\)</span> and <span class="math inline">\(R\)</span>,</li>
+<li>The need for full knowledge of $P$ and $R$,</li>
 <li>Infeasibility in large or continuous state spaces (the “curse of dimensionality”).</li>
 </ul>
 <p>These challenges motivate the use of approximation, sampling-based methods, and model-free approaches in reinforcement learning contexts.</p>
@@ -599,8 +606,8 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <p>The following table summarizes the key elements and tradeoffs of the value iteration algorithm:</p>
 <table>
 <colgroup>
-<col width="36%" />
-<col width="63%" />
+<col width="35%" />
+<col width="64%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -623,7 +630,7 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 </tr>
 <tr class="even">
 <td>Convergence Guarantee</td>
-<td>Yes (under finite <span class="math inline">\(S, A\)</span>, <span class="math inline">\(\gamma &lt; 1\)</span>)</td>
+<td>Yes (under finite $S, A$, $&lt; 1$)</td>
 </tr>
 <tr class="odd">
 <td>Sample Efficiency</td>
@@ -639,7 +646,7 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 </tr>
 <tr class="even">
 <td>Computational Complexity</td>
-<td><span class="math inline">\(O(S^2 A)\)</span> per iteration</td>
+<td>$O(S^2 A)$ per iteration</td>
 </tr>
 </tbody>
 </table>
@@ -650,6 +657,8 @@ V^*(s) = <em>{a A} </em>{s’ S} P(s’|s,a) </p>
 <p>While its practical scope is limited by scalability and model assumptions, DP remains foundational in the study of decision processes. Understanding these principles is essential for extending to model-free reinforcement learning, function approximation, and policy gradient methods.</p>
 <p>Future posts in this series will explore Temporal Difference learning, Monte Carlo methods, and the transition to policy optimization. These approaches lift the strict requirements of model knowledge and allow learning from interaction, thereby opening the door to real-world applications.</p>
 
+<p>Of course. Here is the provided text with detailed explanations added
+below each code chunk.</p>
 </div>
 </div>
             </section>
