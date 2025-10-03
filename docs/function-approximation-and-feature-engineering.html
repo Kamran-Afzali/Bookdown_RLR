@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-09-29" />
+<meta name="date" content="2025-10-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -523,283 +523,283 @@ Q_θ(s,a) = φ(s,a)^T θ</p>
 <h3><span class="header-section-number">11.3.1</span> Coarse Coding: Overlapping Receptive Fields<a href="function-approximation-and-feature-engineering.html#coarse-coding-overlapping-receptive-fields" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Coarse coding represents the state space using overlapping binary features, where each feature corresponds to a region or “receptive field.” A feature activates when the state falls within its designated region and remains inactive otherwise. The power of this approach lies in the overlapping structure—nearby states activate similar sets of features, creating natural generalization.</p>
 <p>The degree of overlap controls the smoothness of the learned function. Greater overlap produces broader generalization but reduces discrimination. The optimal balance depends on the problem structure and the complexity of the target function. Coarse coding mimics biological neural representations, where individual neurons respond to ranges of stimuli with overlapping tuning curves.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="function-approximation-and-feature-engineering.html#cb37-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
-<span id="cb37-2"><a href="function-approximation-and-feature-engineering.html#cb37-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb37-3"><a href="function-approximation-and-feature-engineering.html#cb37-3" tabindex="-1"></a><span class="fu">library</span>(ggforce)</span>
-<span id="cb37-4"><a href="function-approximation-and-feature-engineering.html#cb37-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb37-5"><a href="function-approximation-and-feature-engineering.html#cb37-5" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="function-approximation-and-feature-engineering.html#cb37-6" tabindex="-1"></a><span class="co"># Coarse Coding Implementation</span></span>
-<span id="cb37-7"><a href="function-approximation-and-feature-engineering.html#cb37-7" tabindex="-1"></a>create_coarse_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, num_features, <span class="at">overlap_factor =</span> <span class="fl">1.5</span>, <span class="at">seed =</span> <span class="dv">123</span>) {</span>
-<span id="cb37-8"><a href="function-approximation-and-feature-engineering.html#cb37-8" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
-<span id="cb37-9"><a href="function-approximation-and-feature-engineering.html#cb37-9" tabindex="-1"></a>  </span>
-<span id="cb37-10"><a href="function-approximation-and-feature-engineering.html#cb37-10" tabindex="-1"></a>  <span class="co"># Generate random centers uniformly across state space</span></span>
-<span id="cb37-11"><a href="function-approximation-and-feature-engineering.html#cb37-11" tabindex="-1"></a>  centers <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb37-12"><a href="function-approximation-and-feature-engineering.html#cb37-12" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
-<span id="cb37-13"><a href="function-approximation-and-feature-engineering.html#cb37-13" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])</span>
-<span id="cb37-14"><a href="function-approximation-and-feature-engineering.html#cb37-14" tabindex="-1"></a>  )</span>
-<span id="cb37-15"><a href="function-approximation-and-feature-engineering.html#cb37-15" tabindex="-1"></a>  </span>
-<span id="cb37-16"><a href="function-approximation-and-feature-engineering.html#cb37-16" tabindex="-1"></a>  <span class="co"># Calculate radius to ensure appropriate overlap</span></span>
-<span id="cb37-17"><a href="function-approximation-and-feature-engineering.html#cb37-17" tabindex="-1"></a>  avg_spacing <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">prod</span>(state_dims) <span class="sc">/</span> num_features)</span>
-<span id="cb37-18"><a href="function-approximation-and-feature-engineering.html#cb37-18" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> overlap_factor <span class="sc">*</span> avg_spacing <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb37-19"><a href="function-approximation-and-feature-engineering.html#cb37-19" tabindex="-1"></a>  </span>
-<span id="cb37-20"><a href="function-approximation-and-feature-engineering.html#cb37-20" tabindex="-1"></a>  <span class="co"># Function to compute binary feature vector for given state</span></span>
-<span id="cb37-21"><a href="function-approximation-and-feature-engineering.html#cb37-21" tabindex="-1"></a>  encode <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
-<span id="cb37-22"><a href="function-approximation-and-feature-engineering.html#cb37-22" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
-<span id="cb37-23"><a href="function-approximation-and-feature-engineering.html#cb37-23" tabindex="-1"></a>    distances <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((centers<span class="sc">$</span>x <span class="sc">-</span> state_vec[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (centers<span class="sc">$</span>y <span class="sc">-</span> state_vec[<span class="dv">2</span>])<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb37-24"><a href="function-approximation-and-feature-engineering.html#cb37-24" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(distances <span class="sc">&lt;=</span> radius)</span>
-<span id="cb37-25"><a href="function-approximation-and-feature-engineering.html#cb37-25" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
-<span id="cb37-26"><a href="function-approximation-and-feature-engineering.html#cb37-26" tabindex="-1"></a>  }</span>
-<span id="cb37-27"><a href="function-approximation-and-feature-engineering.html#cb37-27" tabindex="-1"></a>  </span>
-<span id="cb37-28"><a href="function-approximation-and-feature-engineering.html#cb37-28" tabindex="-1"></a>  <span class="co"># Visualization function</span></span>
-<span id="cb37-29"><a href="function-approximation-and-feature-engineering.html#cb37-29" tabindex="-1"></a>  visualize <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">query_state =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb37-30"><a href="function-approximation-and-feature-engineering.html#cb37-30" tabindex="-1"></a>    <span class="co"># Determine active features for query state</span></span>
-<span id="cb37-31"><a href="function-approximation-and-feature-engineering.html#cb37-31" tabindex="-1"></a>    active_features <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb37-32"><a href="function-approximation-and-feature-engineering.html#cb37-32" tabindex="-1"></a>    active_indices <span class="ot">&lt;-</span> <span class="fu">integer</span>(<span class="dv">0</span>)</span>
-<span id="cb37-33"><a href="function-approximation-and-feature-engineering.html#cb37-33" tabindex="-1"></a>    </span>
-<span id="cb37-34"><a href="function-approximation-and-feature-engineering.html#cb37-34" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(query_state)) {</span>
-<span id="cb37-35"><a href="function-approximation-and-feature-engineering.html#cb37-35" tabindex="-1"></a>      active_features <span class="ot">&lt;-</span> <span class="fu">encode</span>(query_state)</span>
-<span id="cb37-36"><a href="function-approximation-and-feature-engineering.html#cb37-36" tabindex="-1"></a>      active_indices <span class="ot">&lt;-</span> <span class="fu">which</span>(active_features <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb37-37"><a href="function-approximation-and-feature-engineering.html#cb37-37" tabindex="-1"></a>    }</span>
-<span id="cb37-38"><a href="function-approximation-and-feature-engineering.html#cb37-38" tabindex="-1"></a>    </span>
-<span id="cb37-39"><a href="function-approximation-and-feature-engineering.html#cb37-39" tabindex="-1"></a>    <span class="co"># Create base plot</span></span>
-<span id="cb37-40"><a href="function-approximation-and-feature-engineering.html#cb37-40" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb37-41"><a href="function-approximation-and-feature-engineering.html#cb37-41" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>]))</span>
-<span id="cb37-42"><a href="function-approximation-and-feature-engineering.html#cb37-42" tabindex="-1"></a>    </span>
-<span id="cb37-43"><a href="function-approximation-and-feature-engineering.html#cb37-43" tabindex="-1"></a>    <span class="co"># Add all receptive fields (inactive)</span></span>
-<span id="cb37-44"><a href="function-approximation-and-feature-engineering.html#cb37-44" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_circle</span>(</span>
-<span id="cb37-45"><a href="function-approximation-and-feature-engineering.html#cb37-45" tabindex="-1"></a>      <span class="at">data =</span> centers,</span>
-<span id="cb37-46"><a href="function-approximation-and-feature-engineering.html#cb37-46" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> radius),</span>
-<span id="cb37-47"><a href="function-approximation-and-feature-engineering.html#cb37-47" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;grey70&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;grey90&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
-<span id="cb37-48"><a href="function-approximation-and-feature-engineering.html#cb37-48" tabindex="-1"></a>    )</span>
-<span id="cb37-49"><a href="function-approximation-and-feature-engineering.html#cb37-49" tabindex="-1"></a>    </span>
-<span id="cb37-50"><a href="function-approximation-and-feature-engineering.html#cb37-50" tabindex="-1"></a>    <span class="co"># Highlight active receptive fields</span></span>
-<span id="cb37-51"><a href="function-approximation-and-feature-engineering.html#cb37-51" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(active_indices) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb37-52"><a href="function-approximation-and-feature-engineering.html#cb37-52" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_circle</span>(</span>
-<span id="cb37-53"><a href="function-approximation-and-feature-engineering.html#cb37-53" tabindex="-1"></a>        <span class="at">data =</span> centers[active_indices, ],</span>
-<span id="cb37-54"><a href="function-approximation-and-feature-engineering.html#cb37-54" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> radius),</span>
-<span id="cb37-55"><a href="function-approximation-and-feature-engineering.html#cb37-55" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">size =</span> <span class="dv">1</span></span>
-<span id="cb37-56"><a href="function-approximation-and-feature-engineering.html#cb37-56" tabindex="-1"></a>      )</span>
-<span id="cb37-57"><a href="function-approximation-and-feature-engineering.html#cb37-57" tabindex="-1"></a>    }</span>
-<span id="cb37-58"><a href="function-approximation-and-feature-engineering.html#cb37-58" tabindex="-1"></a>    </span>
-<span id="cb37-59"><a href="function-approximation-and-feature-engineering.html#cb37-59" tabindex="-1"></a>    <span class="co"># Add center points</span></span>
-<span id="cb37-60"><a href="function-approximation-and-feature-engineering.html#cb37-60" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb37-61"><a href="function-approximation-and-feature-engineering.html#cb37-61" tabindex="-1"></a>      <span class="at">data =</span> centers, </span>
-<span id="cb37-62"><a href="function-approximation-and-feature-engineering.html#cb37-62" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
-<span id="cb37-63"><a href="function-approximation-and-feature-engineering.html#cb37-63" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="fl">0.8</span></span>
-<span id="cb37-64"><a href="function-approximation-and-feature-engineering.html#cb37-64" tabindex="-1"></a>    )</span>
-<span id="cb37-65"><a href="function-approximation-and-feature-engineering.html#cb37-65" tabindex="-1"></a>    </span>
-<span id="cb37-66"><a href="function-approximation-and-feature-engineering.html#cb37-66" tabindex="-1"></a>    <span class="co"># Add query state point</span></span>
-<span id="cb37-67"><a href="function-approximation-and-feature-engineering.html#cb37-67" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(query_state)) {</span>
-<span id="cb37-68"><a href="function-approximation-and-feature-engineering.html#cb37-68" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb37-69"><a href="function-approximation-and-feature-engineering.html#cb37-69" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> query_state[<span class="dv">1</span>], <span class="at">y =</span> query_state[<span class="dv">2</span>]), </span>
-<span id="cb37-70"><a href="function-approximation-and-feature-engineering.html#cb37-70" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;#377eb8&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">17</span></span>
-<span id="cb37-71"><a href="function-approximation-and-feature-engineering.html#cb37-71" tabindex="-1"></a>      )</span>
-<span id="cb37-72"><a href="function-approximation-and-feature-engineering.html#cb37-72" tabindex="-1"></a>      </span>
-<span id="cb37-73"><a href="function-approximation-and-feature-engineering.html#cb37-73" tabindex="-1"></a>      num_active <span class="ot">&lt;-</span> <span class="fu">length</span>(active_indices)</span>
-<span id="cb37-74"><a href="function-approximation-and-feature-engineering.html#cb37-74" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="fu">paste</span>(num_active, <span class="st">&quot;of&quot;</span>, num_features, <span class="st">&quot;features active&quot;</span>)</span>
-<span id="cb37-75"><a href="function-approximation-and-feature-engineering.html#cb37-75" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb37-76"><a href="function-approximation-and-feature-engineering.html#cb37-76" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="st">&quot;Overlapping receptive fields&quot;</span></span>
-<span id="cb37-77"><a href="function-approximation-and-feature-engineering.html#cb37-77" tabindex="-1"></a>    }</span>
-<span id="cb37-78"><a href="function-approximation-and-feature-engineering.html#cb37-78" tabindex="-1"></a>    </span>
-<span id="cb37-79"><a href="function-approximation-and-feature-engineering.html#cb37-79" tabindex="-1"></a>    p <span class="sc">+</span> <span class="fu">labs</span>(</span>
-<span id="cb37-80"><a href="function-approximation-and-feature-engineering.html#cb37-80" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Coarse Coding&quot;</span>,</span>
-<span id="cb37-81"><a href="function-approximation-and-feature-engineering.html#cb37-81" tabindex="-1"></a>      <span class="at">subtitle =</span> subtitle,</span>
-<span id="cb37-82"><a href="function-approximation-and-feature-engineering.html#cb37-82" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
-<span id="cb37-83"><a href="function-approximation-and-feature-engineering.html#cb37-83" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
-<span id="cb37-84"><a href="function-approximation-and-feature-engineering.html#cb37-84" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb37-85"><a href="function-approximation-and-feature-engineering.html#cb37-85" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb37-86"><a href="function-approximation-and-feature-engineering.html#cb37-86" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
-<span id="cb37-87"><a href="function-approximation-and-feature-engineering.html#cb37-87" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb37-88"><a href="function-approximation-and-feature-engineering.html#cb37-88" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
-<span id="cb37-89"><a href="function-approximation-and-feature-engineering.html#cb37-89" tabindex="-1"></a>      )</span>
-<span id="cb37-90"><a href="function-approximation-and-feature-engineering.html#cb37-90" tabindex="-1"></a>  }</span>
-<span id="cb37-91"><a href="function-approximation-and-feature-engineering.html#cb37-91" tabindex="-1"></a>  </span>
-<span id="cb37-92"><a href="function-approximation-and-feature-engineering.html#cb37-92" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
-<span id="cb37-93"><a href="function-approximation-and-feature-engineering.html#cb37-93" tabindex="-1"></a>    <span class="at">encode =</span> encode,</span>
-<span id="cb37-94"><a href="function-approximation-and-feature-engineering.html#cb37-94" tabindex="-1"></a>    <span class="at">visualize =</span> visualize,</span>
-<span id="cb37-95"><a href="function-approximation-and-feature-engineering.html#cb37-95" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
-<span id="cb37-96"><a href="function-approximation-and-feature-engineering.html#cb37-96" tabindex="-1"></a>    <span class="at">radius =</span> radius,</span>
-<span id="cb37-97"><a href="function-approximation-and-feature-engineering.html#cb37-97" tabindex="-1"></a>    <span class="at">state_dims =</span> state_dims,</span>
-<span id="cb37-98"><a href="function-approximation-and-feature-engineering.html#cb37-98" tabindex="-1"></a>    <span class="at">num_features =</span> num_features</span>
-<span id="cb37-99"><a href="function-approximation-and-feature-engineering.html#cb37-99" tabindex="-1"></a>  ))</span>
-<span id="cb37-100"><a href="function-approximation-and-feature-engineering.html#cb37-100" tabindex="-1"></a>}</span>
-<span id="cb37-101"><a href="function-approximation-and-feature-engineering.html#cb37-101" tabindex="-1"></a></span>
-<span id="cb37-102"><a href="function-approximation-and-feature-engineering.html#cb37-102" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="cb37-103"><a href="function-approximation-and-feature-engineering.html#cb37-103" tabindex="-1"></a>coarse_coder <span class="ot">&lt;-</span> <span class="fu">create_coarse_coder</span>(</span>
-<span id="cb37-104"><a href="function-approximation-and-feature-engineering.html#cb37-104" tabindex="-1"></a>  <span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), </span>
-<span id="cb37-105"><a href="function-approximation-and-feature-engineering.html#cb37-105" tabindex="-1"></a>  <span class="at">num_features =</span> <span class="dv">50</span>, </span>
-<span id="cb37-106"><a href="function-approximation-and-feature-engineering.html#cb37-106" tabindex="-1"></a>  <span class="at">overlap_factor =</span> <span class="fl">1.5</span></span>
-<span id="cb37-107"><a href="function-approximation-and-feature-engineering.html#cb37-107" tabindex="-1"></a>)</span>
-<span id="cb37-108"><a href="function-approximation-and-feature-engineering.html#cb37-108" tabindex="-1"></a></span>
-<span id="cb37-109"><a href="function-approximation-and-feature-engineering.html#cb37-109" tabindex="-1"></a><span class="co"># Visualize with query state</span></span>
-<span id="cb37-110"><a href="function-approximation-and-feature-engineering.html#cb37-110" tabindex="-1"></a><span class="fu">print</span>(coarse_coder<span class="sc">$</span><span class="fu">visualize</span>(<span class="at">query_state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="function-approximation-and-feature-engineering.html#cb52-1" tabindex="-1"></a><span class="co"># Load required libraries</span></span>
+<span id="cb52-2"><a href="function-approximation-and-feature-engineering.html#cb52-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb52-3"><a href="function-approximation-and-feature-engineering.html#cb52-3" tabindex="-1"></a><span class="fu">library</span>(ggforce)</span>
+<span id="cb52-4"><a href="function-approximation-and-feature-engineering.html#cb52-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb52-5"><a href="function-approximation-and-feature-engineering.html#cb52-5" tabindex="-1"></a></span>
+<span id="cb52-6"><a href="function-approximation-and-feature-engineering.html#cb52-6" tabindex="-1"></a><span class="co"># Coarse Coding Implementation</span></span>
+<span id="cb52-7"><a href="function-approximation-and-feature-engineering.html#cb52-7" tabindex="-1"></a>create_coarse_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, num_features, <span class="at">overlap_factor =</span> <span class="fl">1.5</span>, <span class="at">seed =</span> <span class="dv">123</span>) {</span>
+<span id="cb52-8"><a href="function-approximation-and-feature-engineering.html#cb52-8" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb52-9"><a href="function-approximation-and-feature-engineering.html#cb52-9" tabindex="-1"></a>  </span>
+<span id="cb52-10"><a href="function-approximation-and-feature-engineering.html#cb52-10" tabindex="-1"></a>  <span class="co"># Generate random centers uniformly across state space</span></span>
+<span id="cb52-11"><a href="function-approximation-and-feature-engineering.html#cb52-11" tabindex="-1"></a>  centers <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb52-12"><a href="function-approximation-and-feature-engineering.html#cb52-12" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
+<span id="cb52-13"><a href="function-approximation-and-feature-engineering.html#cb52-13" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">runif</span>(num_features, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])</span>
+<span id="cb52-14"><a href="function-approximation-and-feature-engineering.html#cb52-14" tabindex="-1"></a>  )</span>
+<span id="cb52-15"><a href="function-approximation-and-feature-engineering.html#cb52-15" tabindex="-1"></a>  </span>
+<span id="cb52-16"><a href="function-approximation-and-feature-engineering.html#cb52-16" tabindex="-1"></a>  <span class="co"># Calculate radius to ensure appropriate overlap</span></span>
+<span id="cb52-17"><a href="function-approximation-and-feature-engineering.html#cb52-17" tabindex="-1"></a>  avg_spacing <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">prod</span>(state_dims) <span class="sc">/</span> num_features)</span>
+<span id="cb52-18"><a href="function-approximation-and-feature-engineering.html#cb52-18" tabindex="-1"></a>  radius <span class="ot">&lt;-</span> overlap_factor <span class="sc">*</span> avg_spacing <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb52-19"><a href="function-approximation-and-feature-engineering.html#cb52-19" tabindex="-1"></a>  </span>
+<span id="cb52-20"><a href="function-approximation-and-feature-engineering.html#cb52-20" tabindex="-1"></a>  <span class="co"># Function to compute binary feature vector for given state</span></span>
+<span id="cb52-21"><a href="function-approximation-and-feature-engineering.html#cb52-21" tabindex="-1"></a>  encode <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb52-22"><a href="function-approximation-and-feature-engineering.html#cb52-22" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb52-23"><a href="function-approximation-and-feature-engineering.html#cb52-23" tabindex="-1"></a>    distances <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((centers<span class="sc">$</span>x <span class="sc">-</span> state_vec[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (centers<span class="sc">$</span>y <span class="sc">-</span> state_vec[<span class="dv">2</span>])<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb52-24"><a href="function-approximation-and-feature-engineering.html#cb52-24" tabindex="-1"></a>    features <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(distances <span class="sc">&lt;=</span> radius)</span>
+<span id="cb52-25"><a href="function-approximation-and-feature-engineering.html#cb52-25" tabindex="-1"></a>    <span class="fu">return</span>(features)</span>
+<span id="cb52-26"><a href="function-approximation-and-feature-engineering.html#cb52-26" tabindex="-1"></a>  }</span>
+<span id="cb52-27"><a href="function-approximation-and-feature-engineering.html#cb52-27" tabindex="-1"></a>  </span>
+<span id="cb52-28"><a href="function-approximation-and-feature-engineering.html#cb52-28" tabindex="-1"></a>  <span class="co"># Visualization function</span></span>
+<span id="cb52-29"><a href="function-approximation-and-feature-engineering.html#cb52-29" tabindex="-1"></a>  visualize <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">query_state =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb52-30"><a href="function-approximation-and-feature-engineering.html#cb52-30" tabindex="-1"></a>    <span class="co"># Determine active features for query state</span></span>
+<span id="cb52-31"><a href="function-approximation-and-feature-engineering.html#cb52-31" tabindex="-1"></a>    active_features <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb52-32"><a href="function-approximation-and-feature-engineering.html#cb52-32" tabindex="-1"></a>    active_indices <span class="ot">&lt;-</span> <span class="fu">integer</span>(<span class="dv">0</span>)</span>
+<span id="cb52-33"><a href="function-approximation-and-feature-engineering.html#cb52-33" tabindex="-1"></a>    </span>
+<span id="cb52-34"><a href="function-approximation-and-feature-engineering.html#cb52-34" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(query_state)) {</span>
+<span id="cb52-35"><a href="function-approximation-and-feature-engineering.html#cb52-35" tabindex="-1"></a>      active_features <span class="ot">&lt;-</span> <span class="fu">encode</span>(query_state)</span>
+<span id="cb52-36"><a href="function-approximation-and-feature-engineering.html#cb52-36" tabindex="-1"></a>      active_indices <span class="ot">&lt;-</span> <span class="fu">which</span>(active_features <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb52-37"><a href="function-approximation-and-feature-engineering.html#cb52-37" tabindex="-1"></a>    }</span>
+<span id="cb52-38"><a href="function-approximation-and-feature-engineering.html#cb52-38" tabindex="-1"></a>    </span>
+<span id="cb52-39"><a href="function-approximation-and-feature-engineering.html#cb52-39" tabindex="-1"></a>    <span class="co"># Create base plot</span></span>
+<span id="cb52-40"><a href="function-approximation-and-feature-engineering.html#cb52-40" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb52-41"><a href="function-approximation-and-feature-engineering.html#cb52-41" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>]))</span>
+<span id="cb52-42"><a href="function-approximation-and-feature-engineering.html#cb52-42" tabindex="-1"></a>    </span>
+<span id="cb52-43"><a href="function-approximation-and-feature-engineering.html#cb52-43" tabindex="-1"></a>    <span class="co"># Add all receptive fields (inactive)</span></span>
+<span id="cb52-44"><a href="function-approximation-and-feature-engineering.html#cb52-44" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_circle</span>(</span>
+<span id="cb52-45"><a href="function-approximation-and-feature-engineering.html#cb52-45" tabindex="-1"></a>      <span class="at">data =</span> centers,</span>
+<span id="cb52-46"><a href="function-approximation-and-feature-engineering.html#cb52-46" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> radius),</span>
+<span id="cb52-47"><a href="function-approximation-and-feature-engineering.html#cb52-47" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;grey70&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;grey90&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span></span>
+<span id="cb52-48"><a href="function-approximation-and-feature-engineering.html#cb52-48" tabindex="-1"></a>    )</span>
+<span id="cb52-49"><a href="function-approximation-and-feature-engineering.html#cb52-49" tabindex="-1"></a>    </span>
+<span id="cb52-50"><a href="function-approximation-and-feature-engineering.html#cb52-50" tabindex="-1"></a>    <span class="co"># Highlight active receptive fields</span></span>
+<span id="cb52-51"><a href="function-approximation-and-feature-engineering.html#cb52-51" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(active_indices) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb52-52"><a href="function-approximation-and-feature-engineering.html#cb52-52" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_circle</span>(</span>
+<span id="cb52-53"><a href="function-approximation-and-feature-engineering.html#cb52-53" tabindex="-1"></a>        <span class="at">data =</span> centers[active_indices, ],</span>
+<span id="cb52-54"><a href="function-approximation-and-feature-engineering.html#cb52-54" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x0 =</span> x, <span class="at">y0 =</span> y, <span class="at">r =</span> radius),</span>
+<span id="cb52-55"><a href="function-approximation-and-feature-engineering.html#cb52-55" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#e41a1c&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">size =</span> <span class="dv">1</span></span>
+<span id="cb52-56"><a href="function-approximation-and-feature-engineering.html#cb52-56" tabindex="-1"></a>      )</span>
+<span id="cb52-57"><a href="function-approximation-and-feature-engineering.html#cb52-57" tabindex="-1"></a>    }</span>
+<span id="cb52-58"><a href="function-approximation-and-feature-engineering.html#cb52-58" tabindex="-1"></a>    </span>
+<span id="cb52-59"><a href="function-approximation-and-feature-engineering.html#cb52-59" tabindex="-1"></a>    <span class="co"># Add center points</span></span>
+<span id="cb52-60"><a href="function-approximation-and-feature-engineering.html#cb52-60" tabindex="-1"></a>    p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
+<span id="cb52-61"><a href="function-approximation-and-feature-engineering.html#cb52-61" tabindex="-1"></a>      <span class="at">data =</span> centers, </span>
+<span id="cb52-62"><a href="function-approximation-and-feature-engineering.html#cb52-62" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb52-63"><a href="function-approximation-and-feature-engineering.html#cb52-63" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="fl">0.8</span></span>
+<span id="cb52-64"><a href="function-approximation-and-feature-engineering.html#cb52-64" tabindex="-1"></a>    )</span>
+<span id="cb52-65"><a href="function-approximation-and-feature-engineering.html#cb52-65" tabindex="-1"></a>    </span>
+<span id="cb52-66"><a href="function-approximation-and-feature-engineering.html#cb52-66" tabindex="-1"></a>    <span class="co"># Add query state point</span></span>
+<span id="cb52-67"><a href="function-approximation-and-feature-engineering.html#cb52-67" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(query_state)) {</span>
+<span id="cb52-68"><a href="function-approximation-and-feature-engineering.html#cb52-68" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
+<span id="cb52-69"><a href="function-approximation-and-feature-engineering.html#cb52-69" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> query_state[<span class="dv">1</span>], <span class="at">y =</span> query_state[<span class="dv">2</span>]), </span>
+<span id="cb52-70"><a href="function-approximation-and-feature-engineering.html#cb52-70" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;#377eb8&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">17</span></span>
+<span id="cb52-71"><a href="function-approximation-and-feature-engineering.html#cb52-71" tabindex="-1"></a>      )</span>
+<span id="cb52-72"><a href="function-approximation-and-feature-engineering.html#cb52-72" tabindex="-1"></a>      </span>
+<span id="cb52-73"><a href="function-approximation-and-feature-engineering.html#cb52-73" tabindex="-1"></a>      num_active <span class="ot">&lt;-</span> <span class="fu">length</span>(active_indices)</span>
+<span id="cb52-74"><a href="function-approximation-and-feature-engineering.html#cb52-74" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="fu">paste</span>(num_active, <span class="st">&quot;of&quot;</span>, num_features, <span class="st">&quot;features active&quot;</span>)</span>
+<span id="cb52-75"><a href="function-approximation-and-feature-engineering.html#cb52-75" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb52-76"><a href="function-approximation-and-feature-engineering.html#cb52-76" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="st">&quot;Overlapping receptive fields&quot;</span></span>
+<span id="cb52-77"><a href="function-approximation-and-feature-engineering.html#cb52-77" tabindex="-1"></a>    }</span>
+<span id="cb52-78"><a href="function-approximation-and-feature-engineering.html#cb52-78" tabindex="-1"></a>    </span>
+<span id="cb52-79"><a href="function-approximation-and-feature-engineering.html#cb52-79" tabindex="-1"></a>    p <span class="sc">+</span> <span class="fu">labs</span>(</span>
+<span id="cb52-80"><a href="function-approximation-and-feature-engineering.html#cb52-80" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Coarse Coding&quot;</span>,</span>
+<span id="cb52-81"><a href="function-approximation-and-feature-engineering.html#cb52-81" tabindex="-1"></a>      <span class="at">subtitle =</span> subtitle,</span>
+<span id="cb52-82"><a href="function-approximation-and-feature-engineering.html#cb52-82" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb52-83"><a href="function-approximation-and-feature-engineering.html#cb52-83" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb52-84"><a href="function-approximation-and-feature-engineering.html#cb52-84" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb52-85"><a href="function-approximation-and-feature-engineering.html#cb52-85" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb52-86"><a href="function-approximation-and-feature-engineering.html#cb52-86" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
+<span id="cb52-87"><a href="function-approximation-and-feature-engineering.html#cb52-87" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb52-88"><a href="function-approximation-and-feature-engineering.html#cb52-88" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
+<span id="cb52-89"><a href="function-approximation-and-feature-engineering.html#cb52-89" tabindex="-1"></a>      )</span>
+<span id="cb52-90"><a href="function-approximation-and-feature-engineering.html#cb52-90" tabindex="-1"></a>  }</span>
+<span id="cb52-91"><a href="function-approximation-and-feature-engineering.html#cb52-91" tabindex="-1"></a>  </span>
+<span id="cb52-92"><a href="function-approximation-and-feature-engineering.html#cb52-92" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb52-93"><a href="function-approximation-and-feature-engineering.html#cb52-93" tabindex="-1"></a>    <span class="at">encode =</span> encode,</span>
+<span id="cb52-94"><a href="function-approximation-and-feature-engineering.html#cb52-94" tabindex="-1"></a>    <span class="at">visualize =</span> visualize,</span>
+<span id="cb52-95"><a href="function-approximation-and-feature-engineering.html#cb52-95" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb52-96"><a href="function-approximation-and-feature-engineering.html#cb52-96" tabindex="-1"></a>    <span class="at">radius =</span> radius,</span>
+<span id="cb52-97"><a href="function-approximation-and-feature-engineering.html#cb52-97" tabindex="-1"></a>    <span class="at">state_dims =</span> state_dims,</span>
+<span id="cb52-98"><a href="function-approximation-and-feature-engineering.html#cb52-98" tabindex="-1"></a>    <span class="at">num_features =</span> num_features</span>
+<span id="cb52-99"><a href="function-approximation-and-feature-engineering.html#cb52-99" tabindex="-1"></a>  ))</span>
+<span id="cb52-100"><a href="function-approximation-and-feature-engineering.html#cb52-100" tabindex="-1"></a>}</span>
+<span id="cb52-101"><a href="function-approximation-and-feature-engineering.html#cb52-101" tabindex="-1"></a></span>
+<span id="cb52-102"><a href="function-approximation-and-feature-engineering.html#cb52-102" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb52-103"><a href="function-approximation-and-feature-engineering.html#cb52-103" tabindex="-1"></a>coarse_coder <span class="ot">&lt;-</span> <span class="fu">create_coarse_coder</span>(</span>
+<span id="cb52-104"><a href="function-approximation-and-feature-engineering.html#cb52-104" tabindex="-1"></a>  <span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), </span>
+<span id="cb52-105"><a href="function-approximation-and-feature-engineering.html#cb52-105" tabindex="-1"></a>  <span class="at">num_features =</span> <span class="dv">50</span>, </span>
+<span id="cb52-106"><a href="function-approximation-and-feature-engineering.html#cb52-106" tabindex="-1"></a>  <span class="at">overlap_factor =</span> <span class="fl">1.5</span></span>
+<span id="cb52-107"><a href="function-approximation-and-feature-engineering.html#cb52-107" tabindex="-1"></a>)</span>
+<span id="cb52-108"><a href="function-approximation-and-feature-engineering.html#cb52-108" tabindex="-1"></a></span>
+<span id="cb52-109"><a href="function-approximation-and-feature-engineering.html#cb52-109" tabindex="-1"></a><span class="co"># Visualize with query state</span></span>
+<span id="cb52-110"><a href="function-approximation-and-feature-engineering.html#cb52-110" tabindex="-1"></a><span class="fu">print</span>(coarse_coder<span class="sc">$</span><span class="fu">visualize</span>(<span class="at">query_state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>)))</span></code></pre></div>
 </div>
 <div id="tile-coding-structured-overlapping-grids" class="section level3 hasAnchor" number="11.3.2">
 <h3><span class="header-section-number">11.3.2</span> Tile Coding: Structured Overlapping Grids<a href="function-approximation-and-feature-engineering.html#tile-coding-structured-overlapping-grids" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Tile coding, also known as CMAC (Cerebellar Model Articulation Controller), provides a more structured approach to creating overlapping features. Instead of random circular regions, tile coding partitions the state space using multiple offset grids called tilings. Each tiling covers the entire state space with non-overlapping rectangular tiles, but the tilings are offset from each other to create overlapping coverage.</p>
 <p>For any given state, exactly one tile from each tiling will be active, ensuring a constant number of active features regardless of the state location. This property provides computational advantages and makes the learning dynamics more predictable. The offsets between tilings create fine-grained discrimination capability, while the tile sizes control the degree of generalization.</p>
 <p>Tile coding’s rectangular structure creates asymmetric generalization that aligns with coordinate axes. This asymmetry is often desirable in control problems where different state dimensions represent distinct physical quantities with different units and scaling properties. A robot’s position and velocity, for example, should generalize differently along each dimension.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="function-approximation-and-feature-engineering.html#cb38-1" tabindex="-1"></a><span class="co"># Tile Coding Implementation</span></span>
-<span id="cb38-2"><a href="function-approximation-and-feature-engineering.html#cb38-2" tabindex="-1"></a>create_tile_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_low, state_high, num_tilings, tiles_per_dim) {</span>
-<span id="cb38-3"><a href="function-approximation-and-feature-engineering.html#cb38-3" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> <span class="fu">length</span>(state_low)</span>
-<span id="cb38-4"><a href="function-approximation-and-feature-engineering.html#cb38-4" tabindex="-1"></a>  state_range <span class="ot">&lt;-</span> state_high <span class="sc">-</span> state_low</span>
-<span id="cb38-5"><a href="function-approximation-and-feature-engineering.html#cb38-5" tabindex="-1"></a>  tile_widths <span class="ot">&lt;-</span> state_range <span class="sc">/</span> tiles_per_dim</span>
-<span id="cb38-6"><a href="function-approximation-and-feature-engineering.html#cb38-6" tabindex="-1"></a>  </span>
-<span id="cb38-7"><a href="function-approximation-and-feature-engineering.html#cb38-7" tabindex="-1"></a>  <span class="co"># Generate offsets for each tiling</span></span>
-<span id="cb38-8"><a href="function-approximation-and-feature-engineering.html#cb38-8" tabindex="-1"></a>  offsets <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(num_tilings, state_dims))</span>
-<span id="cb38-9"><a href="function-approximation-and-feature-engineering.html#cb38-9" tabindex="-1"></a>  <span class="cf">for</span> (dim <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>state_dims) {</span>
-<span id="cb38-10"><a href="function-approximation-and-feature-engineering.html#cb38-10" tabindex="-1"></a>    offsets[, dim] <span class="ot">&lt;-</span> (<span class="dv">0</span><span class="sc">:</span>(num_tilings <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">*</span> tile_widths[dim] <span class="sc">/</span> num_tilings</span>
-<span id="cb38-11"><a href="function-approximation-and-feature-engineering.html#cb38-11" tabindex="-1"></a>  }</span>
-<span id="cb38-12"><a href="function-approximation-and-feature-engineering.html#cb38-12" tabindex="-1"></a>  </span>
-<span id="cb38-13"><a href="function-approximation-and-feature-engineering.html#cb38-13" tabindex="-1"></a>  <span class="co"># Function to get indices of active tiles for given state</span></span>
-<span id="cb38-14"><a href="function-approximation-and-feature-engineering.html#cb38-14" tabindex="-1"></a>  encode <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
-<span id="cb38-15"><a href="function-approximation-and-feature-engineering.html#cb38-15" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
-<span id="cb38-16"><a href="function-approximation-and-feature-engineering.html#cb38-16" tabindex="-1"></a>    active_tiles <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb38-17"><a href="function-approximation-and-feature-engineering.html#cb38-17" tabindex="-1"></a>    </span>
-<span id="cb38-18"><a href="function-approximation-and-feature-engineering.html#cb38-18" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
-<span id="cb38-19"><a href="function-approximation-and-feature-engineering.html#cb38-19" tabindex="-1"></a>      <span class="co"># Apply offset and compute tile indices</span></span>
-<span id="cb38-20"><a href="function-approximation-and-feature-engineering.html#cb38-20" tabindex="-1"></a>      offset_state <span class="ot">&lt;-</span> state_vec <span class="sc">-</span> state_low <span class="sc">+</span> offsets[t, ]</span>
-<span id="cb38-21"><a href="function-approximation-and-feature-engineering.html#cb38-21" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">floor</span>(offset_state <span class="sc">/</span> tile_widths)</span>
-<span id="cb38-22"><a href="function-approximation-and-feature-engineering.html#cb38-22" tabindex="-1"></a>      </span>
-<span id="cb38-23"><a href="function-approximation-and-feature-engineering.html#cb38-23" tabindex="-1"></a>      <span class="co"># Clip to valid range</span></span>
-<span id="cb38-24"><a href="function-approximation-and-feature-engineering.html#cb38-24" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">pmin</span>(tile_indices, tiles_per_dim <span class="sc">-</span> <span class="dv">1</span>))</span>
-<span id="cb38-25"><a href="function-approximation-and-feature-engineering.html#cb38-25" tabindex="-1"></a>      active_tiles[[t]] <span class="ot">&lt;-</span> tile_indices</span>
-<span id="cb38-26"><a href="function-approximation-and-feature-engineering.html#cb38-26" tabindex="-1"></a>    }</span>
-<span id="cb38-27"><a href="function-approximation-and-feature-engineering.html#cb38-27" tabindex="-1"></a>    <span class="fu">return</span>(active_tiles)</span>
-<span id="cb38-28"><a href="function-approximation-and-feature-engineering.html#cb38-28" tabindex="-1"></a>  }</span>
-<span id="cb38-29"><a href="function-approximation-and-feature-engineering.html#cb38-29" tabindex="-1"></a>  </span>
-<span id="cb38-30"><a href="function-approximation-and-feature-engineering.html#cb38-30" tabindex="-1"></a>  <span class="co"># Visualization function (2D only)</span></span>
-<span id="cb38-31"><a href="function-approximation-and-feature-engineering.html#cb38-31" tabindex="-1"></a>  visualize <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">query_state =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb38-32"><a href="function-approximation-and-feature-engineering.html#cb38-32" tabindex="-1"></a>    <span class="cf">if</span> (state_dims <span class="sc">!=</span> <span class="dv">2</span>) {</span>
-<span id="cb38-33"><a href="function-approximation-and-feature-engineering.html#cb38-33" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="st">&quot;Visualization only supports 2D state spaces&quot;</span>)</span>
-<span id="cb38-34"><a href="function-approximation-and-feature-engineering.html#cb38-34" tabindex="-1"></a>    }</span>
-<span id="cb38-35"><a href="function-approximation-and-feature-engineering.html#cb38-35" tabindex="-1"></a>    </span>
-<span id="cb38-36"><a href="function-approximation-and-feature-engineering.html#cb38-36" tabindex="-1"></a>    <span class="co"># Create base plot</span></span>
-<span id="cb38-37"><a href="function-approximation-and-feature-engineering.html#cb38-37" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb38-38"><a href="function-approximation-and-feature-engineering.html#cb38-38" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> state_low, <span class="at">ylim =</span> state_high, <span class="at">expand =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb38-39"><a href="function-approximation-and-feature-engineering.html#cb38-39" tabindex="-1"></a>    </span>
-<span id="cb38-40"><a href="function-approximation-and-feature-engineering.html#cb38-40" tabindex="-1"></a>    <span class="co"># Generate colors for tilings</span></span>
-<span id="cb38-41"><a href="function-approximation-and-feature-engineering.html#cb38-41" tabindex="-1"></a>    colors <span class="ot">&lt;-</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="fu">min</span>(num_tilings, <span class="dv">8</span>), <span class="st">&quot;Set1&quot;</span>)</span>
-<span id="cb38-42"><a href="function-approximation-and-feature-engineering.html#cb38-42" tabindex="-1"></a>    <span class="cf">if</span> (num_tilings <span class="sc">&gt;</span> <span class="dv">8</span>) colors <span class="ot">&lt;-</span> <span class="fu">rep</span>(colors, <span class="fu">ceiling</span>(num_tilings <span class="sc">/</span> <span class="dv">8</span>))</span>
-<span id="cb38-43"><a href="function-approximation-and-feature-engineering.html#cb38-43" tabindex="-1"></a>    </span>
-<span id="cb38-44"><a href="function-approximation-and-feature-engineering.html#cb38-44" tabindex="-1"></a>    <span class="co"># Draw grid lines for each tiling</span></span>
-<span id="cb38-45"><a href="function-approximation-and-feature-engineering.html#cb38-45" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
-<span id="cb38-46"><a href="function-approximation-and-feature-engineering.html#cb38-46" tabindex="-1"></a>      color <span class="ot">&lt;-</span> colors[t]</span>
-<span id="cb38-47"><a href="function-approximation-and-feature-engineering.html#cb38-47" tabindex="-1"></a>      </span>
-<span id="cb38-48"><a href="function-approximation-and-feature-engineering.html#cb38-48" tabindex="-1"></a>      <span class="co"># Vertical lines</span></span>
-<span id="cb38-49"><a href="function-approximation-and-feature-engineering.html#cb38-49" tabindex="-1"></a>      x_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
-<span id="cb38-50"><a href="function-approximation-and-feature-engineering.html#cb38-50" tabindex="-1"></a>        state_low[<span class="dv">1</span>] <span class="sc">-</span> offsets[t, <span class="dv">1</span>],</span>
-<span id="cb38-51"><a href="function-approximation-and-feature-engineering.html#cb38-51" tabindex="-1"></a>        state_high[<span class="dv">1</span>] <span class="sc">+</span> tile_widths[<span class="dv">1</span>],</span>
-<span id="cb38-52"><a href="function-approximation-and-feature-engineering.html#cb38-52" tabindex="-1"></a>        <span class="at">by =</span> tile_widths[<span class="dv">1</span>]</span>
-<span id="cb38-53"><a href="function-approximation-and-feature-engineering.html#cb38-53" tabindex="-1"></a>      )</span>
-<span id="cb38-54"><a href="function-approximation-and-feature-engineering.html#cb38-54" tabindex="-1"></a>      valid_x <span class="ot">&lt;-</span> x_lines[x_lines <span class="sc">&gt;=</span> state_low[<span class="dv">1</span>] <span class="sc">&amp;</span> x_lines <span class="sc">&lt;=</span> state_high[<span class="dv">1</span>]]</span>
-<span id="cb38-55"><a href="function-approximation-and-feature-engineering.html#cb38-55" tabindex="-1"></a>      </span>
-<span id="cb38-56"><a href="function-approximation-and-feature-engineering.html#cb38-56" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(valid_x) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb38-57"><a href="function-approximation-and-feature-engineering.html#cb38-57" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_vline</span>(</span>
-<span id="cb38-58"><a href="function-approximation-and-feature-engineering.html#cb38-58" tabindex="-1"></a>          <span class="at">xintercept =</span> valid_x, </span>
-<span id="cb38-59"><a href="function-approximation-and-feature-engineering.html#cb38-59" tabindex="-1"></a>          <span class="at">color =</span> color, </span>
-<span id="cb38-60"><a href="function-approximation-and-feature-engineering.html#cb38-60" tabindex="-1"></a>          <span class="at">alpha =</span> <span class="fl">0.7</span>, </span>
-<span id="cb38-61"><a href="function-approximation-and-feature-engineering.html#cb38-61" tabindex="-1"></a>          <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, </span>
-<span id="cb38-62"><a href="function-approximation-and-feature-engineering.html#cb38-62" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">0.5</span></span>
-<span id="cb38-63"><a href="function-approximation-and-feature-engineering.html#cb38-63" tabindex="-1"></a>        )</span>
-<span id="cb38-64"><a href="function-approximation-and-feature-engineering.html#cb38-64" tabindex="-1"></a>      }</span>
-<span id="cb38-65"><a href="function-approximation-and-feature-engineering.html#cb38-65" tabindex="-1"></a>      </span>
-<span id="cb38-66"><a href="function-approximation-and-feature-engineering.html#cb38-66" tabindex="-1"></a>      <span class="co"># Horizontal lines</span></span>
-<span id="cb38-67"><a href="function-approximation-and-feature-engineering.html#cb38-67" tabindex="-1"></a>      y_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
-<span id="cb38-68"><a href="function-approximation-and-feature-engineering.html#cb38-68" tabindex="-1"></a>        state_low[<span class="dv">2</span>] <span class="sc">-</span> offsets[t, <span class="dv">2</span>],</span>
-<span id="cb38-69"><a href="function-approximation-and-feature-engineering.html#cb38-69" tabindex="-1"></a>        state_high[<span class="dv">2</span>] <span class="sc">+</span> tile_widths[<span class="dv">2</span>],</span>
-<span id="cb38-70"><a href="function-approximation-and-feature-engineering.html#cb38-70" tabindex="-1"></a>        <span class="at">by =</span> tile_widths[<span class="dv">2</span>]</span>
-<span id="cb38-71"><a href="function-approximation-and-feature-engineering.html#cb38-71" tabindex="-1"></a>      )</span>
-<span id="cb38-72"><a href="function-approximation-and-feature-engineering.html#cb38-72" tabindex="-1"></a>      valid_y <span class="ot">&lt;-</span> y_lines[y_lines <span class="sc">&gt;=</span> state_low[<span class="dv">2</span>] <span class="sc">&amp;</span> y_lines <span class="sc">&lt;=</span> state_high[<span class="dv">2</span>]]</span>
-<span id="cb38-73"><a href="function-approximation-and-feature-engineering.html#cb38-73" tabindex="-1"></a>      </span>
-<span id="cb38-74"><a href="function-approximation-and-feature-engineering.html#cb38-74" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(valid_y) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb38-75"><a href="function-approximation-and-feature-engineering.html#cb38-75" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_hline</span>(</span>
-<span id="cb38-76"><a href="function-approximation-and-feature-engineering.html#cb38-76" tabindex="-1"></a>          <span class="at">yintercept =</span> valid_y, </span>
-<span id="cb38-77"><a href="function-approximation-and-feature-engineering.html#cb38-77" tabindex="-1"></a>          <span class="at">color =</span> color, </span>
-<span id="cb38-78"><a href="function-approximation-and-feature-engineering.html#cb38-78" tabindex="-1"></a>          <span class="at">alpha =</span> <span class="fl">0.7</span>, </span>
-<span id="cb38-79"><a href="function-approximation-and-feature-engineering.html#cb38-79" tabindex="-1"></a>          <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, </span>
-<span id="cb38-80"><a href="function-approximation-and-feature-engineering.html#cb38-80" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">0.5</span></span>
-<span id="cb38-81"><a href="function-approximation-and-feature-engineering.html#cb38-81" tabindex="-1"></a>        )</span>
-<span id="cb38-82"><a href="function-approximation-and-feature-engineering.html#cb38-82" tabindex="-1"></a>      }</span>
-<span id="cb38-83"><a href="function-approximation-and-feature-engineering.html#cb38-83" tabindex="-1"></a>    }</span>
-<span id="cb38-84"><a href="function-approximation-and-feature-engineering.html#cb38-84" tabindex="-1"></a>    </span>
-<span id="cb38-85"><a href="function-approximation-and-feature-engineering.html#cb38-85" tabindex="-1"></a>    <span class="co"># Highlight active tiles for query state</span></span>
-<span id="cb38-86"><a href="function-approximation-and-feature-engineering.html#cb38-86" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(query_state)) {</span>
-<span id="cb38-87"><a href="function-approximation-and-feature-engineering.html#cb38-87" tabindex="-1"></a>      active_tiles_indices <span class="ot">&lt;-</span> <span class="fu">encode</span>(query_state)</span>
-<span id="cb38-88"><a href="function-approximation-and-feature-engineering.html#cb38-88" tabindex="-1"></a>      </span>
-<span id="cb38-89"><a href="function-approximation-and-feature-engineering.html#cb38-89" tabindex="-1"></a>      <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
-<span id="cb38-90"><a href="function-approximation-and-feature-engineering.html#cb38-90" tabindex="-1"></a>        color <span class="ot">&lt;-</span> colors[t]</span>
-<span id="cb38-91"><a href="function-approximation-and-feature-engineering.html#cb38-91" tabindex="-1"></a>        tile_indices <span class="ot">&lt;-</span> active_tiles_indices[[t]]</span>
-<span id="cb38-92"><a href="function-approximation-and-feature-engineering.html#cb38-92" tabindex="-1"></a>        </span>
-<span id="cb38-93"><a href="function-approximation-and-feature-engineering.html#cb38-93" tabindex="-1"></a>        <span class="co"># Calculate tile boundaries</span></span>
-<span id="cb38-94"><a href="function-approximation-and-feature-engineering.html#cb38-94" tabindex="-1"></a>        tile_x <span class="ot">&lt;-</span> state_low[<span class="dv">1</span>] <span class="sc">+</span> tile_indices[<span class="dv">1</span>] <span class="sc">*</span> tile_widths[<span class="dv">1</span>] <span class="sc">-</span> offsets[t, <span class="dv">1</span>]</span>
-<span id="cb38-95"><a href="function-approximation-and-feature-engineering.html#cb38-95" tabindex="-1"></a>        tile_y <span class="ot">&lt;-</span> state_low[<span class="dv">2</span>] <span class="sc">+</span> tile_indices[<span class="dv">2</span>] <span class="sc">*</span> tile_widths[<span class="dv">2</span>] <span class="sc">-</span> offsets[t, <span class="dv">2</span>]</span>
-<span id="cb38-96"><a href="function-approximation-and-feature-engineering.html#cb38-96" tabindex="-1"></a>        </span>
-<span id="cb38-97"><a href="function-approximation-and-feature-engineering.html#cb38-97" tabindex="-1"></a>        <span class="co"># Create rectangle data</span></span>
-<span id="cb38-98"><a href="function-approximation-and-feature-engineering.html#cb38-98" tabindex="-1"></a>        rect_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb38-99"><a href="function-approximation-and-feature-engineering.html#cb38-99" tabindex="-1"></a>          <span class="at">xmin =</span> tile_x,</span>
-<span id="cb38-100"><a href="function-approximation-and-feature-engineering.html#cb38-100" tabindex="-1"></a>          <span class="at">xmax =</span> tile_x <span class="sc">+</span> tile_widths[<span class="dv">1</span>],</span>
-<span id="cb38-101"><a href="function-approximation-and-feature-engineering.html#cb38-101" tabindex="-1"></a>          <span class="at">ymin =</span> tile_y,</span>
-<span id="cb38-102"><a href="function-approximation-and-feature-engineering.html#cb38-102" tabindex="-1"></a>          <span class="at">ymax =</span> tile_y <span class="sc">+</span> tile_widths[<span class="dv">2</span>]</span>
-<span id="cb38-103"><a href="function-approximation-and-feature-engineering.html#cb38-103" tabindex="-1"></a>        )</span>
-<span id="cb38-104"><a href="function-approximation-and-feature-engineering.html#cb38-104" tabindex="-1"></a>        </span>
-<span id="cb38-105"><a href="function-approximation-and-feature-engineering.html#cb38-105" tabindex="-1"></a>        <span class="co"># Add highlighted tile</span></span>
-<span id="cb38-106"><a href="function-approximation-and-feature-engineering.html#cb38-106" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_rect</span>(</span>
-<span id="cb38-107"><a href="function-approximation-and-feature-engineering.html#cb38-107" tabindex="-1"></a>          <span class="at">data =</span> rect_data,</span>
-<span id="cb38-108"><a href="function-approximation-and-feature-engineering.html#cb38-108" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">xmin =</span> xmin, <span class="at">xmax =</span> xmax, <span class="at">ymin =</span> ymin, <span class="at">ymax =</span> ymax),</span>
-<span id="cb38-109"><a href="function-approximation-and-feature-engineering.html#cb38-109" tabindex="-1"></a>          <span class="at">fill =</span> color, </span>
-<span id="cb38-110"><a href="function-approximation-and-feature-engineering.html#cb38-110" tabindex="-1"></a>          <span class="at">alpha =</span> <span class="fl">0.4</span>, </span>
-<span id="cb38-111"><a href="function-approximation-and-feature-engineering.html#cb38-111" tabindex="-1"></a>          <span class="at">color =</span> color, </span>
-<span id="cb38-112"><a href="function-approximation-and-feature-engineering.html#cb38-112" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">1.2</span></span>
-<span id="cb38-113"><a href="function-approximation-and-feature-engineering.html#cb38-113" tabindex="-1"></a>        )</span>
-<span id="cb38-114"><a href="function-approximation-and-feature-engineering.html#cb38-114" tabindex="-1"></a>      }</span>
-<span id="cb38-115"><a href="function-approximation-and-feature-engineering.html#cb38-115" tabindex="-1"></a>      </span>
-<span id="cb38-116"><a href="function-approximation-and-feature-engineering.html#cb38-116" tabindex="-1"></a>      <span class="co"># Mark query state</span></span>
-<span id="cb38-117"><a href="function-approximation-and-feature-engineering.html#cb38-117" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
-<span id="cb38-118"><a href="function-approximation-and-feature-engineering.html#cb38-118" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> query_state[<span class="dv">1</span>], <span class="at">y =</span> query_state[<span class="dv">2</span>]), </span>
-<span id="cb38-119"><a href="function-approximation-and-feature-engineering.html#cb38-119" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">17</span></span>
-<span id="cb38-120"><a href="function-approximation-and-feature-engineering.html#cb38-120" tabindex="-1"></a>      )</span>
-<span id="cb38-121"><a href="function-approximation-and-feature-engineering.html#cb38-121" tabindex="-1"></a>      </span>
-<span id="cb38-122"><a href="function-approximation-and-feature-engineering.html#cb38-122" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="fu">paste</span>(num_tilings, <span class="st">&quot;active tiles (one per tiling)&quot;</span>)</span>
-<span id="cb38-123"><a href="function-approximation-and-feature-engineering.html#cb38-123" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb38-124"><a href="function-approximation-and-feature-engineering.html#cb38-124" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="fu">paste</span>(num_tilings, <span class="st">&quot;overlapping tilings&quot;</span>)</span>
-<span id="cb38-125"><a href="function-approximation-and-feature-engineering.html#cb38-125" tabindex="-1"></a>    }</span>
-<span id="cb38-126"><a href="function-approximation-and-feature-engineering.html#cb38-126" tabindex="-1"></a>    </span>
-<span id="cb38-127"><a href="function-approximation-and-feature-engineering.html#cb38-127" tabindex="-1"></a>    p <span class="sc">+</span> <span class="fu">labs</span>(</span>
-<span id="cb38-128"><a href="function-approximation-and-feature-engineering.html#cb38-128" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Tile Coding&quot;</span>,</span>
-<span id="cb38-129"><a href="function-approximation-and-feature-engineering.html#cb38-129" tabindex="-1"></a>      <span class="at">subtitle =</span> subtitle,</span>
-<span id="cb38-130"><a href="function-approximation-and-feature-engineering.html#cb38-130" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
-<span id="cb38-131"><a href="function-approximation-and-feature-engineering.html#cb38-131" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
-<span id="cb38-132"><a href="function-approximation-and-feature-engineering.html#cb38-132" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb38-133"><a href="function-approximation-and-feature-engineering.html#cb38-133" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb38-134"><a href="function-approximation-and-feature-engineering.html#cb38-134" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
-<span id="cb38-135"><a href="function-approximation-and-feature-engineering.html#cb38-135" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb38-136"><a href="function-approximation-and-feature-engineering.html#cb38-136" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
-<span id="cb38-137"><a href="function-approximation-and-feature-engineering.html#cb38-137" tabindex="-1"></a>      )</span>
-<span id="cb38-138"><a href="function-approximation-and-feature-engineering.html#cb38-138" tabindex="-1"></a>  }</span>
-<span id="cb38-139"><a href="function-approximation-and-feature-engineering.html#cb38-139" tabindex="-1"></a>  </span>
-<span id="cb38-140"><a href="function-approximation-and-feature-engineering.html#cb38-140" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
-<span id="cb38-141"><a href="function-approximation-and-feature-engineering.html#cb38-141" tabindex="-1"></a>    <span class="at">encode =</span> encode,</span>
-<span id="cb38-142"><a href="function-approximation-and-feature-engineering.html#cb38-142" tabindex="-1"></a>    <span class="at">visualize =</span> visualize,</span>
-<span id="cb38-143"><a href="function-approximation-and-feature-engineering.html#cb38-143" tabindex="-1"></a>    <span class="at">state_low =</span> state_low,</span>
-<span id="cb38-144"><a href="function-approximation-and-feature-engineering.html#cb38-144" tabindex="-1"></a>    <span class="at">state_high =</span> state_high,</span>
-<span id="cb38-145"><a href="function-approximation-and-feature-engineering.html#cb38-145" tabindex="-1"></a>    <span class="at">num_tilings =</span> num_tilings,</span>
-<span id="cb38-146"><a href="function-approximation-and-feature-engineering.html#cb38-146" tabindex="-1"></a>    <span class="at">tiles_per_dim =</span> tiles_per_dim,</span>
-<span id="cb38-147"><a href="function-approximation-and-feature-engineering.html#cb38-147" tabindex="-1"></a>    <span class="at">tile_widths =</span> tile_widths,</span>
-<span id="cb38-148"><a href="function-approximation-and-feature-engineering.html#cb38-148" tabindex="-1"></a>    <span class="at">offsets =</span> offsets</span>
-<span id="cb38-149"><a href="function-approximation-and-feature-engineering.html#cb38-149" tabindex="-1"></a>  ))</span>
-<span id="cb38-150"><a href="function-approximation-and-feature-engineering.html#cb38-150" tabindex="-1"></a>}</span>
-<span id="cb38-151"><a href="function-approximation-and-feature-engineering.html#cb38-151" tabindex="-1"></a></span>
-<span id="cb38-152"><a href="function-approximation-and-feature-engineering.html#cb38-152" tabindex="-1"></a><span class="co"># Example usage</span></span>
-<span id="cb38-153"><a href="function-approximation-and-feature-engineering.html#cb38-153" tabindex="-1"></a>tile_coder <span class="ot">&lt;-</span> <span class="fu">create_tile_coder</span>(</span>
-<span id="cb38-154"><a href="function-approximation-and-feature-engineering.html#cb38-154" tabindex="-1"></a>  <span class="at">state_low =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb38-155"><a href="function-approximation-and-feature-engineering.html#cb38-155" tabindex="-1"></a>  <span class="at">state_high =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>),</span>
-<span id="cb38-156"><a href="function-approximation-and-feature-engineering.html#cb38-156" tabindex="-1"></a>  <span class="at">num_tilings =</span> <span class="dv">4</span>,</span>
-<span id="cb38-157"><a href="function-approximation-and-feature-engineering.html#cb38-157" tabindex="-1"></a>  <span class="at">tiles_per_dim =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>)</span>
-<span id="cb38-158"><a href="function-approximation-and-feature-engineering.html#cb38-158" tabindex="-1"></a>)</span>
-<span id="cb38-159"><a href="function-approximation-and-feature-engineering.html#cb38-159" tabindex="-1"></a></span>
-<span id="cb38-160"><a href="function-approximation-and-feature-engineering.html#cb38-160" tabindex="-1"></a><span class="co"># Visualize with query state</span></span>
-<span id="cb38-161"><a href="function-approximation-and-feature-engineering.html#cb38-161" tabindex="-1"></a><span class="fu">print</span>(tile_coder<span class="sc">$</span><span class="fu">visualize</span>(<span class="at">query_state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="function-approximation-and-feature-engineering.html#cb53-1" tabindex="-1"></a><span class="co"># Tile Coding Implementation</span></span>
+<span id="cb53-2"><a href="function-approximation-and-feature-engineering.html#cb53-2" tabindex="-1"></a>create_tile_coder <span class="ot">&lt;-</span> <span class="cf">function</span>(state_low, state_high, num_tilings, tiles_per_dim) {</span>
+<span id="cb53-3"><a href="function-approximation-and-feature-engineering.html#cb53-3" tabindex="-1"></a>  state_dims <span class="ot">&lt;-</span> <span class="fu">length</span>(state_low)</span>
+<span id="cb53-4"><a href="function-approximation-and-feature-engineering.html#cb53-4" tabindex="-1"></a>  state_range <span class="ot">&lt;-</span> state_high <span class="sc">-</span> state_low</span>
+<span id="cb53-5"><a href="function-approximation-and-feature-engineering.html#cb53-5" tabindex="-1"></a>  tile_widths <span class="ot">&lt;-</span> state_range <span class="sc">/</span> tiles_per_dim</span>
+<span id="cb53-6"><a href="function-approximation-and-feature-engineering.html#cb53-6" tabindex="-1"></a>  </span>
+<span id="cb53-7"><a href="function-approximation-and-feature-engineering.html#cb53-7" tabindex="-1"></a>  <span class="co"># Generate offsets for each tiling</span></span>
+<span id="cb53-8"><a href="function-approximation-and-feature-engineering.html#cb53-8" tabindex="-1"></a>  offsets <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(num_tilings, state_dims))</span>
+<span id="cb53-9"><a href="function-approximation-and-feature-engineering.html#cb53-9" tabindex="-1"></a>  <span class="cf">for</span> (dim <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>state_dims) {</span>
+<span id="cb53-10"><a href="function-approximation-and-feature-engineering.html#cb53-10" tabindex="-1"></a>    offsets[, dim] <span class="ot">&lt;-</span> (<span class="dv">0</span><span class="sc">:</span>(num_tilings <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">*</span> tile_widths[dim] <span class="sc">/</span> num_tilings</span>
+<span id="cb53-11"><a href="function-approximation-and-feature-engineering.html#cb53-11" tabindex="-1"></a>  }</span>
+<span id="cb53-12"><a href="function-approximation-and-feature-engineering.html#cb53-12" tabindex="-1"></a>  </span>
+<span id="cb53-13"><a href="function-approximation-and-feature-engineering.html#cb53-13" tabindex="-1"></a>  <span class="co"># Function to get indices of active tiles for given state</span></span>
+<span id="cb53-14"><a href="function-approximation-and-feature-engineering.html#cb53-14" tabindex="-1"></a>  encode <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb53-15"><a href="function-approximation-and-feature-engineering.html#cb53-15" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb53-16"><a href="function-approximation-and-feature-engineering.html#cb53-16" tabindex="-1"></a>    active_tiles <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb53-17"><a href="function-approximation-and-feature-engineering.html#cb53-17" tabindex="-1"></a>    </span>
+<span id="cb53-18"><a href="function-approximation-and-feature-engineering.html#cb53-18" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb53-19"><a href="function-approximation-and-feature-engineering.html#cb53-19" tabindex="-1"></a>      <span class="co"># Apply offset and compute tile indices</span></span>
+<span id="cb53-20"><a href="function-approximation-and-feature-engineering.html#cb53-20" tabindex="-1"></a>      offset_state <span class="ot">&lt;-</span> state_vec <span class="sc">-</span> state_low <span class="sc">+</span> offsets[t, ]</span>
+<span id="cb53-21"><a href="function-approximation-and-feature-engineering.html#cb53-21" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">floor</span>(offset_state <span class="sc">/</span> tile_widths)</span>
+<span id="cb53-22"><a href="function-approximation-and-feature-engineering.html#cb53-22" tabindex="-1"></a>      </span>
+<span id="cb53-23"><a href="function-approximation-and-feature-engineering.html#cb53-23" tabindex="-1"></a>      <span class="co"># Clip to valid range</span></span>
+<span id="cb53-24"><a href="function-approximation-and-feature-engineering.html#cb53-24" tabindex="-1"></a>      tile_indices <span class="ot">&lt;-</span> <span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">pmin</span>(tile_indices, tiles_per_dim <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb53-25"><a href="function-approximation-and-feature-engineering.html#cb53-25" tabindex="-1"></a>      active_tiles[[t]] <span class="ot">&lt;-</span> tile_indices</span>
+<span id="cb53-26"><a href="function-approximation-and-feature-engineering.html#cb53-26" tabindex="-1"></a>    }</span>
+<span id="cb53-27"><a href="function-approximation-and-feature-engineering.html#cb53-27" tabindex="-1"></a>    <span class="fu">return</span>(active_tiles)</span>
+<span id="cb53-28"><a href="function-approximation-and-feature-engineering.html#cb53-28" tabindex="-1"></a>  }</span>
+<span id="cb53-29"><a href="function-approximation-and-feature-engineering.html#cb53-29" tabindex="-1"></a>  </span>
+<span id="cb53-30"><a href="function-approximation-and-feature-engineering.html#cb53-30" tabindex="-1"></a>  <span class="co"># Visualization function (2D only)</span></span>
+<span id="cb53-31"><a href="function-approximation-and-feature-engineering.html#cb53-31" tabindex="-1"></a>  visualize <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">query_state =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb53-32"><a href="function-approximation-and-feature-engineering.html#cb53-32" tabindex="-1"></a>    <span class="cf">if</span> (state_dims <span class="sc">!=</span> <span class="dv">2</span>) {</span>
+<span id="cb53-33"><a href="function-approximation-and-feature-engineering.html#cb53-33" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="st">&quot;Visualization only supports 2D state spaces&quot;</span>)</span>
+<span id="cb53-34"><a href="function-approximation-and-feature-engineering.html#cb53-34" tabindex="-1"></a>    }</span>
+<span id="cb53-35"><a href="function-approximation-and-feature-engineering.html#cb53-35" tabindex="-1"></a>    </span>
+<span id="cb53-36"><a href="function-approximation-and-feature-engineering.html#cb53-36" tabindex="-1"></a>    <span class="co"># Create base plot</span></span>
+<span id="cb53-37"><a href="function-approximation-and-feature-engineering.html#cb53-37" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb53-38"><a href="function-approximation-and-feature-engineering.html#cb53-38" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> state_low, <span class="at">ylim =</span> state_high, <span class="at">expand =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb53-39"><a href="function-approximation-and-feature-engineering.html#cb53-39" tabindex="-1"></a>    </span>
+<span id="cb53-40"><a href="function-approximation-and-feature-engineering.html#cb53-40" tabindex="-1"></a>    <span class="co"># Generate colors for tilings</span></span>
+<span id="cb53-41"><a href="function-approximation-and-feature-engineering.html#cb53-41" tabindex="-1"></a>    colors <span class="ot">&lt;-</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="fu">min</span>(num_tilings, <span class="dv">8</span>), <span class="st">&quot;Set1&quot;</span>)</span>
+<span id="cb53-42"><a href="function-approximation-and-feature-engineering.html#cb53-42" tabindex="-1"></a>    <span class="cf">if</span> (num_tilings <span class="sc">&gt;</span> <span class="dv">8</span>) colors <span class="ot">&lt;-</span> <span class="fu">rep</span>(colors, <span class="fu">ceiling</span>(num_tilings <span class="sc">/</span> <span class="dv">8</span>))</span>
+<span id="cb53-43"><a href="function-approximation-and-feature-engineering.html#cb53-43" tabindex="-1"></a>    </span>
+<span id="cb53-44"><a href="function-approximation-and-feature-engineering.html#cb53-44" tabindex="-1"></a>    <span class="co"># Draw grid lines for each tiling</span></span>
+<span id="cb53-45"><a href="function-approximation-and-feature-engineering.html#cb53-45" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb53-46"><a href="function-approximation-and-feature-engineering.html#cb53-46" tabindex="-1"></a>      color <span class="ot">&lt;-</span> colors[t]</span>
+<span id="cb53-47"><a href="function-approximation-and-feature-engineering.html#cb53-47" tabindex="-1"></a>      </span>
+<span id="cb53-48"><a href="function-approximation-and-feature-engineering.html#cb53-48" tabindex="-1"></a>      <span class="co"># Vertical lines</span></span>
+<span id="cb53-49"><a href="function-approximation-and-feature-engineering.html#cb53-49" tabindex="-1"></a>      x_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
+<span id="cb53-50"><a href="function-approximation-and-feature-engineering.html#cb53-50" tabindex="-1"></a>        state_low[<span class="dv">1</span>] <span class="sc">-</span> offsets[t, <span class="dv">1</span>],</span>
+<span id="cb53-51"><a href="function-approximation-and-feature-engineering.html#cb53-51" tabindex="-1"></a>        state_high[<span class="dv">1</span>] <span class="sc">+</span> tile_widths[<span class="dv">1</span>],</span>
+<span id="cb53-52"><a href="function-approximation-and-feature-engineering.html#cb53-52" tabindex="-1"></a>        <span class="at">by =</span> tile_widths[<span class="dv">1</span>]</span>
+<span id="cb53-53"><a href="function-approximation-and-feature-engineering.html#cb53-53" tabindex="-1"></a>      )</span>
+<span id="cb53-54"><a href="function-approximation-and-feature-engineering.html#cb53-54" tabindex="-1"></a>      valid_x <span class="ot">&lt;-</span> x_lines[x_lines <span class="sc">&gt;=</span> state_low[<span class="dv">1</span>] <span class="sc">&amp;</span> x_lines <span class="sc">&lt;=</span> state_high[<span class="dv">1</span>]]</span>
+<span id="cb53-55"><a href="function-approximation-and-feature-engineering.html#cb53-55" tabindex="-1"></a>      </span>
+<span id="cb53-56"><a href="function-approximation-and-feature-engineering.html#cb53-56" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(valid_x) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb53-57"><a href="function-approximation-and-feature-engineering.html#cb53-57" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_vline</span>(</span>
+<span id="cb53-58"><a href="function-approximation-and-feature-engineering.html#cb53-58" tabindex="-1"></a>          <span class="at">xintercept =</span> valid_x, </span>
+<span id="cb53-59"><a href="function-approximation-and-feature-engineering.html#cb53-59" tabindex="-1"></a>          <span class="at">color =</span> color, </span>
+<span id="cb53-60"><a href="function-approximation-and-feature-engineering.html#cb53-60" tabindex="-1"></a>          <span class="at">alpha =</span> <span class="fl">0.7</span>, </span>
+<span id="cb53-61"><a href="function-approximation-and-feature-engineering.html#cb53-61" tabindex="-1"></a>          <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, </span>
+<span id="cb53-62"><a href="function-approximation-and-feature-engineering.html#cb53-62" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">0.5</span></span>
+<span id="cb53-63"><a href="function-approximation-and-feature-engineering.html#cb53-63" tabindex="-1"></a>        )</span>
+<span id="cb53-64"><a href="function-approximation-and-feature-engineering.html#cb53-64" tabindex="-1"></a>      }</span>
+<span id="cb53-65"><a href="function-approximation-and-feature-engineering.html#cb53-65" tabindex="-1"></a>      </span>
+<span id="cb53-66"><a href="function-approximation-and-feature-engineering.html#cb53-66" tabindex="-1"></a>      <span class="co"># Horizontal lines</span></span>
+<span id="cb53-67"><a href="function-approximation-and-feature-engineering.html#cb53-67" tabindex="-1"></a>      y_lines <span class="ot">&lt;-</span> <span class="fu">seq</span>(</span>
+<span id="cb53-68"><a href="function-approximation-and-feature-engineering.html#cb53-68" tabindex="-1"></a>        state_low[<span class="dv">2</span>] <span class="sc">-</span> offsets[t, <span class="dv">2</span>],</span>
+<span id="cb53-69"><a href="function-approximation-and-feature-engineering.html#cb53-69" tabindex="-1"></a>        state_high[<span class="dv">2</span>] <span class="sc">+</span> tile_widths[<span class="dv">2</span>],</span>
+<span id="cb53-70"><a href="function-approximation-and-feature-engineering.html#cb53-70" tabindex="-1"></a>        <span class="at">by =</span> tile_widths[<span class="dv">2</span>]</span>
+<span id="cb53-71"><a href="function-approximation-and-feature-engineering.html#cb53-71" tabindex="-1"></a>      )</span>
+<span id="cb53-72"><a href="function-approximation-and-feature-engineering.html#cb53-72" tabindex="-1"></a>      valid_y <span class="ot">&lt;-</span> y_lines[y_lines <span class="sc">&gt;=</span> state_low[<span class="dv">2</span>] <span class="sc">&amp;</span> y_lines <span class="sc">&lt;=</span> state_high[<span class="dv">2</span>]]</span>
+<span id="cb53-73"><a href="function-approximation-and-feature-engineering.html#cb53-73" tabindex="-1"></a>      </span>
+<span id="cb53-74"><a href="function-approximation-and-feature-engineering.html#cb53-74" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(valid_y) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb53-75"><a href="function-approximation-and-feature-engineering.html#cb53-75" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_hline</span>(</span>
+<span id="cb53-76"><a href="function-approximation-and-feature-engineering.html#cb53-76" tabindex="-1"></a>          <span class="at">yintercept =</span> valid_y, </span>
+<span id="cb53-77"><a href="function-approximation-and-feature-engineering.html#cb53-77" tabindex="-1"></a>          <span class="at">color =</span> color, </span>
+<span id="cb53-78"><a href="function-approximation-and-feature-engineering.html#cb53-78" tabindex="-1"></a>          <span class="at">alpha =</span> <span class="fl">0.7</span>, </span>
+<span id="cb53-79"><a href="function-approximation-and-feature-engineering.html#cb53-79" tabindex="-1"></a>          <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, </span>
+<span id="cb53-80"><a href="function-approximation-and-feature-engineering.html#cb53-80" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">0.5</span></span>
+<span id="cb53-81"><a href="function-approximation-and-feature-engineering.html#cb53-81" tabindex="-1"></a>        )</span>
+<span id="cb53-82"><a href="function-approximation-and-feature-engineering.html#cb53-82" tabindex="-1"></a>      }</span>
+<span id="cb53-83"><a href="function-approximation-and-feature-engineering.html#cb53-83" tabindex="-1"></a>    }</span>
+<span id="cb53-84"><a href="function-approximation-and-feature-engineering.html#cb53-84" tabindex="-1"></a>    </span>
+<span id="cb53-85"><a href="function-approximation-and-feature-engineering.html#cb53-85" tabindex="-1"></a>    <span class="co"># Highlight active tiles for query state</span></span>
+<span id="cb53-86"><a href="function-approximation-and-feature-engineering.html#cb53-86" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(query_state)) {</span>
+<span id="cb53-87"><a href="function-approximation-and-feature-engineering.html#cb53-87" tabindex="-1"></a>      active_tiles_indices <span class="ot">&lt;-</span> <span class="fu">encode</span>(query_state)</span>
+<span id="cb53-88"><a href="function-approximation-and-feature-engineering.html#cb53-88" tabindex="-1"></a>      </span>
+<span id="cb53-89"><a href="function-approximation-and-feature-engineering.html#cb53-89" tabindex="-1"></a>      <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_tilings) {</span>
+<span id="cb53-90"><a href="function-approximation-and-feature-engineering.html#cb53-90" tabindex="-1"></a>        color <span class="ot">&lt;-</span> colors[t]</span>
+<span id="cb53-91"><a href="function-approximation-and-feature-engineering.html#cb53-91" tabindex="-1"></a>        tile_indices <span class="ot">&lt;-</span> active_tiles_indices[[t]]</span>
+<span id="cb53-92"><a href="function-approximation-and-feature-engineering.html#cb53-92" tabindex="-1"></a>        </span>
+<span id="cb53-93"><a href="function-approximation-and-feature-engineering.html#cb53-93" tabindex="-1"></a>        <span class="co"># Calculate tile boundaries</span></span>
+<span id="cb53-94"><a href="function-approximation-and-feature-engineering.html#cb53-94" tabindex="-1"></a>        tile_x <span class="ot">&lt;-</span> state_low[<span class="dv">1</span>] <span class="sc">+</span> tile_indices[<span class="dv">1</span>] <span class="sc">*</span> tile_widths[<span class="dv">1</span>] <span class="sc">-</span> offsets[t, <span class="dv">1</span>]</span>
+<span id="cb53-95"><a href="function-approximation-and-feature-engineering.html#cb53-95" tabindex="-1"></a>        tile_y <span class="ot">&lt;-</span> state_low[<span class="dv">2</span>] <span class="sc">+</span> tile_indices[<span class="dv">2</span>] <span class="sc">*</span> tile_widths[<span class="dv">2</span>] <span class="sc">-</span> offsets[t, <span class="dv">2</span>]</span>
+<span id="cb53-96"><a href="function-approximation-and-feature-engineering.html#cb53-96" tabindex="-1"></a>        </span>
+<span id="cb53-97"><a href="function-approximation-and-feature-engineering.html#cb53-97" tabindex="-1"></a>        <span class="co"># Create rectangle data</span></span>
+<span id="cb53-98"><a href="function-approximation-and-feature-engineering.html#cb53-98" tabindex="-1"></a>        rect_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb53-99"><a href="function-approximation-and-feature-engineering.html#cb53-99" tabindex="-1"></a>          <span class="at">xmin =</span> tile_x,</span>
+<span id="cb53-100"><a href="function-approximation-and-feature-engineering.html#cb53-100" tabindex="-1"></a>          <span class="at">xmax =</span> tile_x <span class="sc">+</span> tile_widths[<span class="dv">1</span>],</span>
+<span id="cb53-101"><a href="function-approximation-and-feature-engineering.html#cb53-101" tabindex="-1"></a>          <span class="at">ymin =</span> tile_y,</span>
+<span id="cb53-102"><a href="function-approximation-and-feature-engineering.html#cb53-102" tabindex="-1"></a>          <span class="at">ymax =</span> tile_y <span class="sc">+</span> tile_widths[<span class="dv">2</span>]</span>
+<span id="cb53-103"><a href="function-approximation-and-feature-engineering.html#cb53-103" tabindex="-1"></a>        )</span>
+<span id="cb53-104"><a href="function-approximation-and-feature-engineering.html#cb53-104" tabindex="-1"></a>        </span>
+<span id="cb53-105"><a href="function-approximation-and-feature-engineering.html#cb53-105" tabindex="-1"></a>        <span class="co"># Add highlighted tile</span></span>
+<span id="cb53-106"><a href="function-approximation-and-feature-engineering.html#cb53-106" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_rect</span>(</span>
+<span id="cb53-107"><a href="function-approximation-and-feature-engineering.html#cb53-107" tabindex="-1"></a>          <span class="at">data =</span> rect_data,</span>
+<span id="cb53-108"><a href="function-approximation-and-feature-engineering.html#cb53-108" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">xmin =</span> xmin, <span class="at">xmax =</span> xmax, <span class="at">ymin =</span> ymin, <span class="at">ymax =</span> ymax),</span>
+<span id="cb53-109"><a href="function-approximation-and-feature-engineering.html#cb53-109" tabindex="-1"></a>          <span class="at">fill =</span> color, </span>
+<span id="cb53-110"><a href="function-approximation-and-feature-engineering.html#cb53-110" tabindex="-1"></a>          <span class="at">alpha =</span> <span class="fl">0.4</span>, </span>
+<span id="cb53-111"><a href="function-approximation-and-feature-engineering.html#cb53-111" tabindex="-1"></a>          <span class="at">color =</span> color, </span>
+<span id="cb53-112"><a href="function-approximation-and-feature-engineering.html#cb53-112" tabindex="-1"></a>          <span class="at">size =</span> <span class="fl">1.2</span></span>
+<span id="cb53-113"><a href="function-approximation-and-feature-engineering.html#cb53-113" tabindex="-1"></a>        )</span>
+<span id="cb53-114"><a href="function-approximation-and-feature-engineering.html#cb53-114" tabindex="-1"></a>      }</span>
+<span id="cb53-115"><a href="function-approximation-and-feature-engineering.html#cb53-115" tabindex="-1"></a>      </span>
+<span id="cb53-116"><a href="function-approximation-and-feature-engineering.html#cb53-116" tabindex="-1"></a>      <span class="co"># Mark query state</span></span>
+<span id="cb53-117"><a href="function-approximation-and-feature-engineering.html#cb53-117" tabindex="-1"></a>      p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(</span>
+<span id="cb53-118"><a href="function-approximation-and-feature-engineering.html#cb53-118" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> query_state[<span class="dv">1</span>], <span class="at">y =</span> query_state[<span class="dv">2</span>]), </span>
+<span id="cb53-119"><a href="function-approximation-and-feature-engineering.html#cb53-119" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">17</span></span>
+<span id="cb53-120"><a href="function-approximation-and-feature-engineering.html#cb53-120" tabindex="-1"></a>      )</span>
+<span id="cb53-121"><a href="function-approximation-and-feature-engineering.html#cb53-121" tabindex="-1"></a>      </span>
+<span id="cb53-122"><a href="function-approximation-and-feature-engineering.html#cb53-122" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="fu">paste</span>(num_tilings, <span class="st">&quot;active tiles (one per tiling)&quot;</span>)</span>
+<span id="cb53-123"><a href="function-approximation-and-feature-engineering.html#cb53-123" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb53-124"><a href="function-approximation-and-feature-engineering.html#cb53-124" tabindex="-1"></a>      subtitle <span class="ot">&lt;-</span> <span class="fu">paste</span>(num_tilings, <span class="st">&quot;overlapping tilings&quot;</span>)</span>
+<span id="cb53-125"><a href="function-approximation-and-feature-engineering.html#cb53-125" tabindex="-1"></a>    }</span>
+<span id="cb53-126"><a href="function-approximation-and-feature-engineering.html#cb53-126" tabindex="-1"></a>    </span>
+<span id="cb53-127"><a href="function-approximation-and-feature-engineering.html#cb53-127" tabindex="-1"></a>    p <span class="sc">+</span> <span class="fu">labs</span>(</span>
+<span id="cb53-128"><a href="function-approximation-and-feature-engineering.html#cb53-128" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">&quot;Tile Coding&quot;</span>,</span>
+<span id="cb53-129"><a href="function-approximation-and-feature-engineering.html#cb53-129" tabindex="-1"></a>      <span class="at">subtitle =</span> subtitle,</span>
+<span id="cb53-130"><a href="function-approximation-and-feature-engineering.html#cb53-130" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb53-131"><a href="function-approximation-and-feature-engineering.html#cb53-131" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb53-132"><a href="function-approximation-and-feature-engineering.html#cb53-132" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb53-133"><a href="function-approximation-and-feature-engineering.html#cb53-133" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb53-134"><a href="function-approximation-and-feature-engineering.html#cb53-134" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
+<span id="cb53-135"><a href="function-approximation-and-feature-engineering.html#cb53-135" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb53-136"><a href="function-approximation-and-feature-engineering.html#cb53-136" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
+<span id="cb53-137"><a href="function-approximation-and-feature-engineering.html#cb53-137" tabindex="-1"></a>      )</span>
+<span id="cb53-138"><a href="function-approximation-and-feature-engineering.html#cb53-138" tabindex="-1"></a>  }</span>
+<span id="cb53-139"><a href="function-approximation-and-feature-engineering.html#cb53-139" tabindex="-1"></a>  </span>
+<span id="cb53-140"><a href="function-approximation-and-feature-engineering.html#cb53-140" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb53-141"><a href="function-approximation-and-feature-engineering.html#cb53-141" tabindex="-1"></a>    <span class="at">encode =</span> encode,</span>
+<span id="cb53-142"><a href="function-approximation-and-feature-engineering.html#cb53-142" tabindex="-1"></a>    <span class="at">visualize =</span> visualize,</span>
+<span id="cb53-143"><a href="function-approximation-and-feature-engineering.html#cb53-143" tabindex="-1"></a>    <span class="at">state_low =</span> state_low,</span>
+<span id="cb53-144"><a href="function-approximation-and-feature-engineering.html#cb53-144" tabindex="-1"></a>    <span class="at">state_high =</span> state_high,</span>
+<span id="cb53-145"><a href="function-approximation-and-feature-engineering.html#cb53-145" tabindex="-1"></a>    <span class="at">num_tilings =</span> num_tilings,</span>
+<span id="cb53-146"><a href="function-approximation-and-feature-engineering.html#cb53-146" tabindex="-1"></a>    <span class="at">tiles_per_dim =</span> tiles_per_dim,</span>
+<span id="cb53-147"><a href="function-approximation-and-feature-engineering.html#cb53-147" tabindex="-1"></a>    <span class="at">tile_widths =</span> tile_widths,</span>
+<span id="cb53-148"><a href="function-approximation-and-feature-engineering.html#cb53-148" tabindex="-1"></a>    <span class="at">offsets =</span> offsets</span>
+<span id="cb53-149"><a href="function-approximation-and-feature-engineering.html#cb53-149" tabindex="-1"></a>  ))</span>
+<span id="cb53-150"><a href="function-approximation-and-feature-engineering.html#cb53-150" tabindex="-1"></a>}</span>
+<span id="cb53-151"><a href="function-approximation-and-feature-engineering.html#cb53-151" tabindex="-1"></a></span>
+<span id="cb53-152"><a href="function-approximation-and-feature-engineering.html#cb53-152" tabindex="-1"></a><span class="co"># Example usage</span></span>
+<span id="cb53-153"><a href="function-approximation-and-feature-engineering.html#cb53-153" tabindex="-1"></a>tile_coder <span class="ot">&lt;-</span> <span class="fu">create_tile_coder</span>(</span>
+<span id="cb53-154"><a href="function-approximation-and-feature-engineering.html#cb53-154" tabindex="-1"></a>  <span class="at">state_low =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb53-155"><a href="function-approximation-and-feature-engineering.html#cb53-155" tabindex="-1"></a>  <span class="at">state_high =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>),</span>
+<span id="cb53-156"><a href="function-approximation-and-feature-engineering.html#cb53-156" tabindex="-1"></a>  <span class="at">num_tilings =</span> <span class="dv">4</span>,</span>
+<span id="cb53-157"><a href="function-approximation-and-feature-engineering.html#cb53-157" tabindex="-1"></a>  <span class="at">tiles_per_dim =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb53-158"><a href="function-approximation-and-feature-engineering.html#cb53-158" tabindex="-1"></a>)</span>
+<span id="cb53-159"><a href="function-approximation-and-feature-engineering.html#cb53-159" tabindex="-1"></a></span>
+<span id="cb53-160"><a href="function-approximation-and-feature-engineering.html#cb53-160" tabindex="-1"></a><span class="co"># Visualize with query state</span></span>
+<span id="cb53-161"><a href="function-approximation-and-feature-engineering.html#cb53-161" tabindex="-1"></a><span class="fu">print</span>(tile_coder<span class="sc">$</span><span class="fu">visualize</span>(<span class="at">query_state =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">7.8</span>)))</span></code></pre></div>
 </div>
 <div id="radial-basis-functions-smooth-continuous-features" class="section level3 hasAnchor" number="11.3.3">
 <h3><span class="header-section-number">11.3.3</span> Radial Basis Functions: Smooth Continuous Features<a href="function-approximation-and-feature-engineering.html#radial-basis-functions-smooth-continuous-features" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -808,207 +808,207 @@ Q_θ(s,a) = φ(s,a)^T θ</p>
 <p>Here c_i represents the center of the i-th RBF, while σ_i controls its width or bandwidth. Unlike the sharp boundaries of tile coding or coarse coding, RBFs create smooth activation landscapes that vary continuously with state changes. This smoothness often produces more stable learning dynamics and can lead to better generalization in certain domains.</p>
 <p>The width parameter σ plays a crucial role in controlling the locality of influence. Narrow RBFs (small σ) create peaked functions that provide high discrimination but limited generalization. Wide RBFs (large σ) create broad functions that generalize extensively but may lack the discrimination needed for complex tasks. The optimal choice depends on the smoothness of the target function and the density of training data.</p>
 <p>RBF networks possess powerful theoretical properties. They are universal approximators, meaning they can represent any continuous function to arbitrary accuracy given sufficient basis functions. The placement of centers and selection of widths determine the network’s effectiveness. Centers can be positioned on regular grids, placed randomly, or adapted during learning using techniques like k-means clustering on experienced states.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="function-approximation-and-feature-engineering.html#cb39-1" tabindex="-1"></a><span class="co"># Load additional libraries for RBF network</span></span>
-<span id="cb39-2"><a href="function-approximation-and-feature-engineering.html#cb39-2" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
-<span id="cb39-3"><a href="function-approximation-and-feature-engineering.html#cb39-3" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
-<span id="cb39-4"><a href="function-approximation-and-feature-engineering.html#cb39-4" tabindex="-1"></a></span>
-<span id="cb39-5"><a href="function-approximation-and-feature-engineering.html#cb39-5" tabindex="-1"></a><span class="co"># Radial Basis Function Network Implementation</span></span>
-<span id="cb39-6"><a href="function-approximation-and-feature-engineering.html#cb39-6" tabindex="-1"></a>create_rbf_network <span class="ot">&lt;-</span> <span class="cf">function</span>(centers, widths) {</span>
-<span id="cb39-7"><a href="function-approximation-and-feature-engineering.html#cb39-7" tabindex="-1"></a>  <span class="co"># Convert centers to matrix format</span></span>
-<span id="cb39-8"><a href="function-approximation-and-feature-engineering.html#cb39-8" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.data.frame</span>(centers)) {</span>
-<span id="cb39-9"><a href="function-approximation-and-feature-engineering.html#cb39-9" tabindex="-1"></a>    centers <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(centers)</span>
-<span id="cb39-10"><a href="function-approximation-and-feature-engineering.html#cb39-10" tabindex="-1"></a>  }</span>
-<span id="cb39-11"><a href="function-approximation-and-feature-engineering.html#cb39-11" tabindex="-1"></a>  </span>
-<span id="cb39-12"><a href="function-approximation-and-feature-engineering.html#cb39-12" tabindex="-1"></a>  n_rbf <span class="ot">&lt;-</span> <span class="fu">nrow</span>(centers)</span>
-<span id="cb39-13"><a href="function-approximation-and-feature-engineering.html#cb39-13" tabindex="-1"></a>  </span>
-<span id="cb39-14"><a href="function-approximation-and-feature-engineering.html#cb39-14" tabindex="-1"></a>  <span class="co"># Handle scalar or vector widths</span></span>
-<span id="cb39-15"><a href="function-approximation-and-feature-engineering.html#cb39-15" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(widths) <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb39-16"><a href="function-approximation-and-feature-engineering.html#cb39-16" tabindex="-1"></a>    widths <span class="ot">&lt;-</span> <span class="fu">rep</span>(widths, n_rbf)</span>
-<span id="cb39-17"><a href="function-approximation-and-feature-engineering.html#cb39-17" tabindex="-1"></a>  }</span>
-<span id="cb39-18"><a href="function-approximation-and-feature-engineering.html#cb39-18" tabindex="-1"></a>  </span>
-<span id="cb39-19"><a href="function-approximation-and-feature-engineering.html#cb39-19" tabindex="-1"></a>  <span class="co"># Function to compute RBF activations for given state</span></span>
-<span id="cb39-20"><a href="function-approximation-and-feature-engineering.html#cb39-20" tabindex="-1"></a>  encode <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
-<span id="cb39-21"><a href="function-approximation-and-feature-engineering.html#cb39-21" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
-<span id="cb39-22"><a href="function-approximation-and-feature-engineering.html#cb39-22" tabindex="-1"></a>    distances_sq <span class="ot">&lt;-</span> <span class="fu">rowSums</span>((centers <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(state_vec, n_rbf), </span>
-<span id="cb39-23"><a href="function-approximation-and-feature-engineering.html#cb39-23" tabindex="-1"></a>                                            <span class="at">nrow =</span> n_rbf, <span class="at">byrow =</span> <span class="cn">TRUE</span>))<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb39-24"><a href="function-approximation-and-feature-engineering.html#cb39-24" tabindex="-1"></a>    activations <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distances_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> widths<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb39-25"><a href="function-approximation-and-feature-engineering.html#cb39-25" tabindex="-1"></a>    <span class="fu">return</span>(activations)</span>
-<span id="cb39-26"><a href="function-approximation-and-feature-engineering.html#cb39-26" tabindex="-1"></a>  }</span>
-<span id="cb39-27"><a href="function-approximation-and-feature-engineering.html#cb39-27" tabindex="-1"></a>  </span>
-<span id="cb39-28"><a href="function-approximation-and-feature-engineering.html#cb39-28" tabindex="-1"></a>  <span class="co"># Function to create adaptive RBF centers using k-means-like placement</span></span>
-<span id="cb39-29"><a href="function-approximation-and-feature-engineering.html#cb39-29" tabindex="-1"></a>  create_adaptive_centers <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, n_centers, <span class="at">n_samples =</span> <span class="dv">1000</span>, <span class="at">seed =</span> <span class="dv">42</span>) {</span>
-<span id="cb39-30"><a href="function-approximation-and-feature-engineering.html#cb39-30" tabindex="-1"></a>    <span class="fu">set.seed</span>(seed)</span>
-<span id="cb39-31"><a href="function-approximation-and-feature-engineering.html#cb39-31" tabindex="-1"></a>    </span>
-<span id="cb39-32"><a href="function-approximation-and-feature-engineering.html#cb39-32" tabindex="-1"></a>    <span class="co"># Generate random samples from state space</span></span>
-<span id="cb39-33"><a href="function-approximation-and-feature-engineering.html#cb39-33" tabindex="-1"></a>    samples <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb39-34"><a href="function-approximation-and-feature-engineering.html#cb39-34" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">runif</span>(n_samples, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
-<span id="cb39-35"><a href="function-approximation-and-feature-engineering.html#cb39-35" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">runif</span>(n_samples, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])</span>
-<span id="cb39-36"><a href="function-approximation-and-feature-engineering.html#cb39-36" tabindex="-1"></a>    )</span>
-<span id="cb39-37"><a href="function-approximation-and-feature-engineering.html#cb39-37" tabindex="-1"></a>    </span>
-<span id="cb39-38"><a href="function-approximation-and-feature-engineering.html#cb39-38" tabindex="-1"></a>    <span class="co"># Simple k-means implementation</span></span>
-<span id="cb39-39"><a href="function-approximation-and-feature-engineering.html#cb39-39" tabindex="-1"></a>    centers <span class="ot">&lt;-</span> samples[<span class="fu">sample</span>(<span class="fu">nrow</span>(samples), n_centers), ]</span>
-<span id="cb39-40"><a href="function-approximation-and-feature-engineering.html#cb39-40" tabindex="-1"></a>    </span>
-<span id="cb39-41"><a href="function-approximation-and-feature-engineering.html#cb39-41" tabindex="-1"></a>    <span class="cf">for</span> (iter <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>) {</span>
-<span id="cb39-42"><a href="function-approximation-and-feature-engineering.html#cb39-42" tabindex="-1"></a>      <span class="co"># Assign points to closest centers</span></span>
-<span id="cb39-43"><a href="function-approximation-and-feature-engineering.html#cb39-43" tabindex="-1"></a>      distances <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">dist</span>(<span class="fu">rbind</span>(centers, samples)))</span>
-<span id="cb39-44"><a href="function-approximation-and-feature-engineering.html#cb39-44" tabindex="-1"></a>      distances <span class="ot">&lt;-</span> distances[(n_centers <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(n_centers <span class="sc">+</span> n_samples), <span class="dv">1</span><span class="sc">:</span>n_centers]</span>
-<span id="cb39-45"><a href="function-approximation-and-feature-engineering.html#cb39-45" tabindex="-1"></a>      assignments <span class="ot">&lt;-</span> <span class="fu">apply</span>(distances, <span class="dv">1</span>, which.min)</span>
-<span id="cb39-46"><a href="function-approximation-and-feature-engineering.html#cb39-46" tabindex="-1"></a>      </span>
-<span id="cb39-47"><a href="function-approximation-and-feature-engineering.html#cb39-47" tabindex="-1"></a>      <span class="co"># Update centers</span></span>
-<span id="cb39-48"><a href="function-approximation-and-feature-engineering.html#cb39-48" tabindex="-1"></a>      new_centers <span class="ot">&lt;-</span> centers</span>
-<span id="cb39-49"><a href="function-approximation-and-feature-engineering.html#cb39-49" tabindex="-1"></a>      <span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_centers) {</span>
-<span id="cb39-50"><a href="function-approximation-and-feature-engineering.html#cb39-50" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">sum</span>(assignments <span class="sc">==</span> k) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb39-51"><a href="function-approximation-and-feature-engineering.html#cb39-51" tabindex="-1"></a>          cluster_points <span class="ot">&lt;-</span> samples[assignments <span class="sc">==</span> k, ]</span>
-<span id="cb39-52"><a href="function-approximation-and-feature-engineering.html#cb39-52" tabindex="-1"></a>          new_centers[k, ] <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(cluster_points)</span>
-<span id="cb39-53"><a href="function-approximation-and-feature-engineering.html#cb39-53" tabindex="-1"></a>        }</span>
-<span id="cb39-54"><a href="function-approximation-and-feature-engineering.html#cb39-54" tabindex="-1"></a>      }</span>
-<span id="cb39-55"><a href="function-approximation-and-feature-engineering.html#cb39-55" tabindex="-1"></a>      </span>
-<span id="cb39-56"><a href="function-approximation-and-feature-engineering.html#cb39-56" tabindex="-1"></a>      <span class="co"># Check convergence</span></span>
-<span id="cb39-57"><a href="function-approximation-and-feature-engineering.html#cb39-57" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">sum</span>((new_centers <span class="sc">-</span> centers)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">&lt;</span> <span class="fl">1e-6</span>) <span class="cf">break</span></span>
-<span id="cb39-58"><a href="function-approximation-and-feature-engineering.html#cb39-58" tabindex="-1"></a>      centers <span class="ot">&lt;-</span> new_centers</span>
-<span id="cb39-59"><a href="function-approximation-and-feature-engineering.html#cb39-59" tabindex="-1"></a>    }</span>
-<span id="cb39-60"><a href="function-approximation-and-feature-engineering.html#cb39-60" tabindex="-1"></a>    </span>
-<span id="cb39-61"><a href="function-approximation-and-feature-engineering.html#cb39-61" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">as.matrix</span>(centers))</span>
-<span id="cb39-62"><a href="function-approximation-and-feature-engineering.html#cb39-62" tabindex="-1"></a>  }</span>
-<span id="cb39-63"><a href="function-approximation-and-feature-engineering.html#cb39-63" tabindex="-1"></a>  </span>
-<span id="cb39-64"><a href="function-approximation-and-feature-engineering.html#cb39-64" tabindex="-1"></a>  <span class="co"># Visualization function for activation landscape</span></span>
-<span id="cb39-65"><a href="function-approximation-and-feature-engineering.html#cb39-65" tabindex="-1"></a>  visualize_activation_landscape <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, <span class="at">resolution =</span> <span class="dv">100</span>) {</span>
-<span id="cb39-66"><a href="function-approximation-and-feature-engineering.html#cb39-66" tabindex="-1"></a>    <span class="co"># Create evaluation grid</span></span>
-<span id="cb39-67"><a href="function-approximation-and-feature-engineering.html#cb39-67" tabindex="-1"></a>    x_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>], <span class="at">length.out =</span> resolution)</span>
-<span id="cb39-68"><a href="function-approximation-and-feature-engineering.html#cb39-68" tabindex="-1"></a>    y_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>], <span class="at">length.out =</span> resolution)</span>
-<span id="cb39-69"><a href="function-approximation-and-feature-engineering.html#cb39-69" tabindex="-1"></a>    grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x =</span> x_seq, <span class="at">y =</span> y_seq)</span>
-<span id="cb39-70"><a href="function-approximation-and-feature-engineering.html#cb39-70" tabindex="-1"></a>    </span>
-<span id="cb39-71"><a href="function-approximation-and-feature-engineering.html#cb39-71" tabindex="-1"></a>    <span class="co"># Compute total activation at each point</span></span>
-<span id="cb39-72"><a href="function-approximation-and-feature-engineering.html#cb39-72" tabindex="-1"></a>    grid_df<span class="sc">$</span>activation <span class="ot">&lt;-</span> <span class="fu">apply</span>(grid_df, <span class="dv">1</span>, <span class="cf">function</span>(point) {</span>
-<span id="cb39-73"><a href="function-approximation-and-feature-engineering.html#cb39-73" tabindex="-1"></a>      <span class="fu">sum</span>(<span class="fu">encode</span>(point))</span>
-<span id="cb39-74"><a href="function-approximation-and-feature-engineering.html#cb39-74" tabindex="-1"></a>    })</span>
-<span id="cb39-75"><a href="function-approximation-and-feature-engineering.html#cb39-75" tabindex="-1"></a>    </span>
-<span id="cb39-76"><a href="function-approximation-and-feature-engineering.html#cb39-76" tabindex="-1"></a>    <span class="co"># Create visualization</span></span>
-<span id="cb39-77"><a href="function-approximation-and-feature-engineering.html#cb39-77" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(grid_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
-<span id="cb39-78"><a href="function-approximation-and-feature-engineering.html#cb39-78" tabindex="-1"></a>      <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb39-79"><a href="function-approximation-and-feature-engineering.html#cb39-79" tabindex="-1"></a>      <span class="fu">geom_contour</span>(<span class="fu">aes</span>(<span class="at">z =</span> activation), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb39-80"><a href="function-approximation-and-feature-engineering.html#cb39-80" tabindex="-1"></a>      <span class="fu">geom_point</span>(</span>
-<span id="cb39-81"><a href="function-approximation-and-feature-engineering.html#cb39-81" tabindex="-1"></a>        <span class="at">data =</span> <span class="fu">as.data.frame</span>(centers), </span>
-<span id="cb39-82"><a href="function-approximation-and-feature-engineering.html#cb39-82" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2), </span>
-<span id="cb39-83"><a href="function-approximation-and-feature-engineering.html#cb39-83" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">shape =</span> <span class="dv">4</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="fl">1.5</span>,</span>
-<span id="cb39-84"><a href="function-approximation-and-feature-engineering.html#cb39-84" tabindex="-1"></a>        <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
-<span id="cb39-85"><a href="function-approximation-and-feature-engineering.html#cb39-85" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb39-86"><a href="function-approximation-and-feature-engineering.html#cb39-86" tabindex="-1"></a>      <span class="fu">scale_fill_viridis_c</span>(<span class="at">name =</span> <span class="st">&quot;Total</span><span class="sc">\n</span><span class="st">Activation&quot;</span>, <span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb39-87"><a href="function-approximation-and-feature-engineering.html#cb39-87" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>]), <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb39-88"><a href="function-approximation-and-feature-engineering.html#cb39-88" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
-<span id="cb39-89"><a href="function-approximation-and-feature-engineering.html#cb39-89" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">&quot;RBF Network: Combined Activation Landscape&quot;</span>,</span>
-<span id="cb39-90"><a href="function-approximation-and-feature-engineering.html#cb39-90" tabindex="-1"></a>        <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">&quot;White crosses indicate&quot;</span>, n_rbf, <span class="st">&quot;RBF centers&quot;</span>),</span>
-<span id="cb39-91"><a href="function-approximation-and-feature-engineering.html#cb39-91" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
-<span id="cb39-92"><a href="function-approximation-and-feature-engineering.html#cb39-92" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
-<span id="cb39-93"><a href="function-approximation-and-feature-engineering.html#cb39-93" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb39-94"><a href="function-approximation-and-feature-engineering.html#cb39-94" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb39-95"><a href="function-approximation-and-feature-engineering.html#cb39-95" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
-<span id="cb39-96"><a href="function-approximation-and-feature-engineering.html#cb39-96" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb39-97"><a href="function-approximation-and-feature-engineering.html#cb39-97" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
-<span id="cb39-98"><a href="function-approximation-and-feature-engineering.html#cb39-98" tabindex="-1"></a>      )</span>
-<span id="cb39-99"><a href="function-approximation-and-feature-engineering.html#cb39-99" tabindex="-1"></a>    </span>
-<span id="cb39-100"><a href="function-approximation-and-feature-engineering.html#cb39-100" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
-<span id="cb39-101"><a href="function-approximation-and-feature-engineering.html#cb39-101" tabindex="-1"></a>  }</span>
-<span id="cb39-102"><a href="function-approximation-and-feature-engineering.html#cb39-102" tabindex="-1"></a>  </span>
-<span id="cb39-103"><a href="function-approximation-and-feature-engineering.html#cb39-103" tabindex="-1"></a>  <span class="co"># Visualization function for individual RBFs</span></span>
-<span id="cb39-104"><a href="function-approximation-and-feature-engineering.html#cb39-104" tabindex="-1"></a>  visualize_individual_rbfs <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, <span class="at">resolution =</span> <span class="dv">50</span>) {</span>
-<span id="cb39-105"><a href="function-approximation-and-feature-engineering.html#cb39-105" tabindex="-1"></a>    <span class="co"># Determine subplot layout</span></span>
-<span id="cb39-106"><a href="function-approximation-and-feature-engineering.html#cb39-106" tabindex="-1"></a>    n_cols <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(<span class="fu">sqrt</span>(n_rbf))</span>
-<span id="cb39-107"><a href="function-approximation-and-feature-engineering.html#cb39-107" tabindex="-1"></a>    n_rows <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(n_rbf <span class="sc">/</span> n_cols)</span>
-<span id="cb39-108"><a href="function-approximation-and-feature-engineering.html#cb39-108" tabindex="-1"></a>    </span>
-<span id="cb39-109"><a href="function-approximation-and-feature-engineering.html#cb39-109" tabindex="-1"></a>    <span class="co"># Create evaluation grid</span></span>
-<span id="cb39-110"><a href="function-approximation-and-feature-engineering.html#cb39-110" tabindex="-1"></a>    x_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>], <span class="at">length.out =</span> resolution)</span>
-<span id="cb39-111"><a href="function-approximation-and-feature-engineering.html#cb39-111" tabindex="-1"></a>    y_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>], <span class="at">length.out =</span> resolution)</span>
-<span id="cb39-112"><a href="function-approximation-and-feature-engineering.html#cb39-112" tabindex="-1"></a>    grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x =</span> x_seq, <span class="at">y =</span> y_seq)</span>
-<span id="cb39-113"><a href="function-approximation-and-feature-engineering.html#cb39-113" tabindex="-1"></a>    </span>
-<span id="cb39-114"><a href="function-approximation-and-feature-engineering.html#cb39-114" tabindex="-1"></a>    <span class="co"># Prepare data for all RBFs</span></span>
-<span id="cb39-115"><a href="function-approximation-and-feature-engineering.html#cb39-115" tabindex="-1"></a>    all_rbf_data <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb39-116"><a href="function-approximation-and-feature-engineering.html#cb39-116" tabindex="-1"></a>    </span>
-<span id="cb39-117"><a href="function-approximation-and-feature-engineering.html#cb39-117" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_rbf) {</span>
-<span id="cb39-118"><a href="function-approximation-and-feature-engineering.html#cb39-118" tabindex="-1"></a>      <span class="co"># Compute activation for this RBF only</span></span>
-<span id="cb39-119"><a href="function-approximation-and-feature-engineering.html#cb39-119" tabindex="-1"></a>      distances_sq <span class="ot">&lt;-</span> <span class="fu">rowSums</span>((grid_df <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(centers[i, ], <span class="fu">nrow</span>(grid_df)), </span>
-<span id="cb39-120"><a href="function-approximation-and-feature-engineering.html#cb39-120" tabindex="-1"></a>                                              <span class="at">nrow =</span> <span class="fu">nrow</span>(grid_df), <span class="at">byrow =</span> <span class="cn">TRUE</span>))<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb39-121"><a href="function-approximation-and-feature-engineering.html#cb39-121" tabindex="-1"></a>      activations <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distances_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> widths[i]<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb39-122"><a href="function-approximation-and-feature-engineering.html#cb39-122" tabindex="-1"></a>      </span>
-<span id="cb39-123"><a href="function-approximation-and-feature-engineering.html#cb39-123" tabindex="-1"></a>      rbf_data <span class="ot">&lt;-</span> grid_df</span>
-<span id="cb39-124"><a href="function-approximation-and-feature-engineering.html#cb39-124" tabindex="-1"></a>      rbf_data<span class="sc">$</span>activation <span class="ot">&lt;-</span> activations</span>
-<span id="cb39-125"><a href="function-approximation-and-feature-engineering.html#cb39-125" tabindex="-1"></a>      rbf_data<span class="sc">$</span>rbf_id <span class="ot">&lt;-</span> i</span>
-<span id="cb39-126"><a href="function-approximation-and-feature-engineering.html#cb39-126" tabindex="-1"></a>      rbf_data<span class="sc">$</span>rbf_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;RBF &quot;</span>, i, <span class="st">&quot; (σ=&quot;</span>, <span class="fu">round</span>(widths[i], <span class="dv">1</span>), <span class="st">&quot;)&quot;</span>)</span>
-<span id="cb39-127"><a href="function-approximation-and-feature-engineering.html#cb39-127" tabindex="-1"></a>      </span>
-<span id="cb39-128"><a href="function-approximation-and-feature-engineering.html#cb39-128" tabindex="-1"></a>      all_rbf_data[[i]] <span class="ot">&lt;-</span> rbf_data</span>
-<span id="cb39-129"><a href="function-approximation-and-feature-engineering.html#cb39-129" tabindex="-1"></a>    }</span>
-<span id="cb39-130"><a href="function-approximation-and-feature-engineering.html#cb39-130" tabindex="-1"></a>    </span>
-<span id="cb39-131"><a href="function-approximation-and-feature-engineering.html#cb39-131" tabindex="-1"></a>    <span class="co"># Combine all data</span></span>
-<span id="cb39-132"><a href="function-approximation-and-feature-engineering.html#cb39-132" tabindex="-1"></a>    combined_data <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, all_rbf_data)</span>
-<span id="cb39-133"><a href="function-approximation-and-feature-engineering.html#cb39-133" tabindex="-1"></a>    </span>
-<span id="cb39-134"><a href="function-approximation-and-feature-engineering.html#cb39-134" tabindex="-1"></a>    <span class="co"># Add center information</span></span>
-<span id="cb39-135"><a href="function-approximation-and-feature-engineering.html#cb39-135" tabindex="-1"></a>    center_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb39-136"><a href="function-approximation-and-feature-engineering.html#cb39-136" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">rep</span>(centers[, <span class="dv">1</span>], <span class="at">each =</span> <span class="dv">1</span>),</span>
-<span id="cb39-137"><a href="function-approximation-and-feature-engineering.html#cb39-137" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">rep</span>(centers[, <span class="dv">2</span>], <span class="at">each =</span> <span class="dv">1</span>),</span>
-<span id="cb39-138"><a href="function-approximation-and-feature-engineering.html#cb39-138" tabindex="-1"></a>      <span class="at">rbf_id =</span> <span class="dv">1</span><span class="sc">:</span>n_rbf,</span>
-<span id="cb39-139"><a href="function-approximation-and-feature-engineering.html#cb39-139" tabindex="-1"></a>      <span class="at">rbf_label =</span> <span class="fu">paste0</span>(<span class="st">&quot;RBF &quot;</span>, <span class="dv">1</span><span class="sc">:</span>n_rbf, <span class="st">&quot; (σ=&quot;</span>, <span class="fu">round</span>(widths, <span class="dv">1</span>), <span class="st">&quot;)&quot;</span>)</span>
-<span id="cb39-140"><a href="function-approximation-and-feature-engineering.html#cb39-140" tabindex="-1"></a>    )</span>
-<span id="cb39-141"><a href="function-approximation-and-feature-engineering.html#cb39-141" tabindex="-1"></a>    </span>
-<span id="cb39-142"><a href="function-approximation-and-feature-engineering.html#cb39-142" tabindex="-1"></a>    <span class="co"># Create faceted plot</span></span>
-<span id="cb39-143"><a href="function-approximation-and-feature-engineering.html#cb39-143" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
-<span id="cb39-144"><a href="function-approximation-and-feature-engineering.html#cb39-144" tabindex="-1"></a>      <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb39-145"><a href="function-approximation-and-feature-engineering.html#cb39-145" tabindex="-1"></a>      <span class="fu">geom_point</span>(</span>
-<span id="cb39-146"><a href="function-approximation-and-feature-engineering.html#cb39-146" tabindex="-1"></a>        <span class="at">data =</span> center_data,</span>
-<span id="cb39-147"><a href="function-approximation-and-feature-engineering.html#cb39-147" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),</span>
-<span id="cb39-148"><a href="function-approximation-and-feature-engineering.html#cb39-148" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">shape =</span> <span class="dv">4</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>,</span>
-<span id="cb39-149"><a href="function-approximation-and-feature-engineering.html#cb39-149" tabindex="-1"></a>        <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
-<span id="cb39-150"><a href="function-approximation-and-feature-engineering.html#cb39-150" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb39-151"><a href="function-approximation-and-feature-engineering.html#cb39-151" tabindex="-1"></a>      <span class="fu">facet_wrap</span>(<span class="sc">~</span> rbf_label, <span class="at">ncol =</span> n_cols) <span class="sc">+</span></span>
-<span id="cb39-152"><a href="function-approximation-and-feature-engineering.html#cb39-152" tabindex="-1"></a>      <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>, <span class="at">name =</span> <span class="st">&quot;Activation&quot;</span>) <span class="sc">+</span></span>
-<span id="cb39-153"><a href="function-approximation-and-feature-engineering.html#cb39-153" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb39-154"><a href="function-approximation-and-feature-engineering.html#cb39-154" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
-<span id="cb39-155"><a href="function-approximation-and-feature-engineering.html#cb39-155" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">&quot;Individual RBF Activations&quot;</span>,</span>
-<span id="cb39-156"><a href="function-approximation-and-feature-engineering.html#cb39-156" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
-<span id="cb39-157"><a href="function-approximation-and-feature-engineering.html#cb39-157" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
-<span id="cb39-158"><a href="function-approximation-and-feature-engineering.html#cb39-158" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb39-159"><a href="function-approximation-and-feature-engineering.html#cb39-159" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb39-160"><a href="function-approximation-and-feature-engineering.html#cb39-160" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
-<span id="cb39-161"><a href="function-approximation-and-feature-engineering.html#cb39-161" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb39-162"><a href="function-approximation-and-feature-engineering.html#cb39-162" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
-<span id="cb39-163"><a href="function-approximation-and-feature-engineering.html#cb39-163" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;grey90&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
-<span id="cb39-164"><a href="function-approximation-and-feature-engineering.html#cb39-164" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>)</span>
-<span id="cb39-165"><a href="function-approximation-and-feature-engineering.html#cb39-165" tabindex="-1"></a>      )</span>
-<span id="cb39-166"><a href="function-approximation-and-feature-engineering.html#cb39-166" tabindex="-1"></a>    </span>
-<span id="cb39-167"><a href="function-approximation-and-feature-engineering.html#cb39-167" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
-<span id="cb39-168"><a href="function-approximation-and-feature-engineering.html#cb39-168" tabindex="-1"></a>  }</span>
-<span id="cb39-169"><a href="function-approximation-and-feature-engineering.html#cb39-169" tabindex="-1"></a>  </span>
-<span id="cb39-170"><a href="function-approximation-and-feature-engineering.html#cb39-170" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
-<span id="cb39-171"><a href="function-approximation-and-feature-engineering.html#cb39-171" tabindex="-1"></a>    <span class="at">encode =</span> encode,</span>
-<span id="cb39-172"><a href="function-approximation-and-feature-engineering.html#cb39-172" tabindex="-1"></a>    <span class="at">visualize_activation_landscape =</span> visualize_activation_landscape,</span>
-<span id="cb39-173"><a href="function-approximation-and-feature-engineering.html#cb39-173" tabindex="-1"></a>    <span class="at">visualize_individual_rbfs =</span> visualize_individual_rbfs,</span>
-<span id="cb39-174"><a href="function-approximation-and-feature-engineering.html#cb39-174" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
-<span id="cb39-175"><a href="function-approximation-and-feature-engineering.html#cb39-175" tabindex="-1"></a>    <span class="at">widths =</span> widths,</span>
-<span id="cb39-176"><a href="function-approximation-and-feature-engineering.html#cb39-176" tabindex="-1"></a>    <span class="at">n_rbf =</span> n_rbf,</span>
-<span id="cb39-177"><a href="function-approximation-and-feature-engineering.html#cb39-177" tabindex="-1"></a>    <span class="at">create_adaptive_centers =</span> create_adaptive_centers</span>
-<span id="cb39-178"><a href="function-approximation-and-feature-engineering.html#cb39-178" tabindex="-1"></a>  ))</span>
-<span id="cb39-179"><a href="function-approximation-and-feature-engineering.html#cb39-179" tabindex="-1"></a>}</span>
-<span id="cb39-180"><a href="function-approximation-and-feature-engineering.html#cb39-180" tabindex="-1"></a></span>
-<span id="cb39-181"><a href="function-approximation-and-feature-engineering.html#cb39-181" tabindex="-1"></a><span class="co"># Example usage with adaptive center placement</span></span>
-<span id="cb39-182"><a href="function-approximation-and-feature-engineering.html#cb39-182" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb39-183"><a href="function-approximation-and-feature-engineering.html#cb39-183" tabindex="-1"></a></span>
-<span id="cb39-184"><a href="function-approximation-and-feature-engineering.html#cb39-184" tabindex="-1"></a><span class="co"># Create RBF centers using k-means-like clustering</span></span>
-<span id="cb39-185"><a href="function-approximation-and-feature-engineering.html#cb39-185" tabindex="-1"></a>rbf_net_temp <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">nrow =</span> <span class="dv">1</span>), <span class="fl">1.0</span>)</span>
-<span id="cb39-186"><a href="function-approximation-and-feature-engineering.html#cb39-186" tabindex="-1"></a>rbf_centers <span class="ot">&lt;-</span> rbf_net_temp<span class="sc">$</span><span class="fu">create_adaptive_centers</span>(</span>
-<span id="cb39-187"><a href="function-approximation-and-feature-engineering.html#cb39-187" tabindex="-1"></a>  <span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), </span>
-<span id="cb39-188"><a href="function-approximation-and-feature-engineering.html#cb39-188" tabindex="-1"></a>  <span class="at">n_centers =</span> <span class="dv">12</span></span>
-<span id="cb39-189"><a href="function-approximation-and-feature-engineering.html#cb39-189" tabindex="-1"></a>)</span>
-<span id="cb39-190"><a href="function-approximation-and-feature-engineering.html#cb39-190" tabindex="-1"></a></span>
-<span id="cb39-191"><a href="function-approximation-and-feature-engineering.html#cb39-191" tabindex="-1"></a><span class="co"># Create RBF network with adaptive centers</span></span>
-<span id="cb39-192"><a href="function-approximation-and-feature-engineering.html#cb39-192" tabindex="-1"></a>rbf_network <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(</span>
-<span id="cb39-193"><a href="function-approximation-and-feature-engineering.html#cb39-193" tabindex="-1"></a>  <span class="at">centers =</span> rbf_centers, </span>
-<span id="cb39-194"><a href="function-approximation-and-feature-engineering.html#cb39-194" tabindex="-1"></a>  <span class="at">widths =</span> <span class="fl">1.5</span>  <span class="co"># Uniform width for all RBFs</span></span>
-<span id="cb39-195"><a href="function-approximation-and-feature-engineering.html#cb39-195" tabindex="-1"></a>)</span>
-<span id="cb39-196"><a href="function-approximation-and-feature-engineering.html#cb39-196" tabindex="-1"></a></span>
-<span id="cb39-197"><a href="function-approximation-and-feature-engineering.html#cb39-197" tabindex="-1"></a><span class="co"># Visualize activation landscape</span></span>
-<span id="cb39-198"><a href="function-approximation-and-feature-engineering.html#cb39-198" tabindex="-1"></a><span class="fu">print</span>(rbf_network<span class="sc">$</span><span class="fu">visualize_activation_landscape</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>)))</span>
-<span id="cb39-199"><a href="function-approximation-and-feature-engineering.html#cb39-199" tabindex="-1"></a></span>
-<span id="cb39-200"><a href="function-approximation-and-feature-engineering.html#cb39-200" tabindex="-1"></a><span class="co"># Visualize individual RBFs</span></span>
-<span id="cb39-201"><a href="function-approximation-and-feature-engineering.html#cb39-201" tabindex="-1"></a><span class="fu">print</span>(rbf_network<span class="sc">$</span><span class="fu">visualize_individual_rbfs</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="function-approximation-and-feature-engineering.html#cb54-1" tabindex="-1"></a><span class="co"># Load additional libraries for RBF network</span></span>
+<span id="cb54-2"><a href="function-approximation-and-feature-engineering.html#cb54-2" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb54-3"><a href="function-approximation-and-feature-engineering.html#cb54-3" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb54-4"><a href="function-approximation-and-feature-engineering.html#cb54-4" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="function-approximation-and-feature-engineering.html#cb54-5" tabindex="-1"></a><span class="co"># Radial Basis Function Network Implementation</span></span>
+<span id="cb54-6"><a href="function-approximation-and-feature-engineering.html#cb54-6" tabindex="-1"></a>create_rbf_network <span class="ot">&lt;-</span> <span class="cf">function</span>(centers, widths) {</span>
+<span id="cb54-7"><a href="function-approximation-and-feature-engineering.html#cb54-7" tabindex="-1"></a>  <span class="co"># Convert centers to matrix format</span></span>
+<span id="cb54-8"><a href="function-approximation-and-feature-engineering.html#cb54-8" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.data.frame</span>(centers)) {</span>
+<span id="cb54-9"><a href="function-approximation-and-feature-engineering.html#cb54-9" tabindex="-1"></a>    centers <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(centers)</span>
+<span id="cb54-10"><a href="function-approximation-and-feature-engineering.html#cb54-10" tabindex="-1"></a>  }</span>
+<span id="cb54-11"><a href="function-approximation-and-feature-engineering.html#cb54-11" tabindex="-1"></a>  </span>
+<span id="cb54-12"><a href="function-approximation-and-feature-engineering.html#cb54-12" tabindex="-1"></a>  n_rbf <span class="ot">&lt;-</span> <span class="fu">nrow</span>(centers)</span>
+<span id="cb54-13"><a href="function-approximation-and-feature-engineering.html#cb54-13" tabindex="-1"></a>  </span>
+<span id="cb54-14"><a href="function-approximation-and-feature-engineering.html#cb54-14" tabindex="-1"></a>  <span class="co"># Handle scalar or vector widths</span></span>
+<span id="cb54-15"><a href="function-approximation-and-feature-engineering.html#cb54-15" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(widths) <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb54-16"><a href="function-approximation-and-feature-engineering.html#cb54-16" tabindex="-1"></a>    widths <span class="ot">&lt;-</span> <span class="fu">rep</span>(widths, n_rbf)</span>
+<span id="cb54-17"><a href="function-approximation-and-feature-engineering.html#cb54-17" tabindex="-1"></a>  }</span>
+<span id="cb54-18"><a href="function-approximation-and-feature-engineering.html#cb54-18" tabindex="-1"></a>  </span>
+<span id="cb54-19"><a href="function-approximation-and-feature-engineering.html#cb54-19" tabindex="-1"></a>  <span class="co"># Function to compute RBF activations for given state</span></span>
+<span id="cb54-20"><a href="function-approximation-and-feature-engineering.html#cb54-20" tabindex="-1"></a>  encode <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb54-21"><a href="function-approximation-and-feature-engineering.html#cb54-21" tabindex="-1"></a>    state_vec <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(state)</span>
+<span id="cb54-22"><a href="function-approximation-and-feature-engineering.html#cb54-22" tabindex="-1"></a>    distances_sq <span class="ot">&lt;-</span> <span class="fu">rowSums</span>((centers <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(state_vec, n_rbf), </span>
+<span id="cb54-23"><a href="function-approximation-and-feature-engineering.html#cb54-23" tabindex="-1"></a>                                            <span class="at">nrow =</span> n_rbf, <span class="at">byrow =</span> <span class="cn">TRUE</span>))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb54-24"><a href="function-approximation-and-feature-engineering.html#cb54-24" tabindex="-1"></a>    activations <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distances_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> widths<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb54-25"><a href="function-approximation-and-feature-engineering.html#cb54-25" tabindex="-1"></a>    <span class="fu">return</span>(activations)</span>
+<span id="cb54-26"><a href="function-approximation-and-feature-engineering.html#cb54-26" tabindex="-1"></a>  }</span>
+<span id="cb54-27"><a href="function-approximation-and-feature-engineering.html#cb54-27" tabindex="-1"></a>  </span>
+<span id="cb54-28"><a href="function-approximation-and-feature-engineering.html#cb54-28" tabindex="-1"></a>  <span class="co"># Function to create adaptive RBF centers using k-means-like placement</span></span>
+<span id="cb54-29"><a href="function-approximation-and-feature-engineering.html#cb54-29" tabindex="-1"></a>  create_adaptive_centers <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, n_centers, <span class="at">n_samples =</span> <span class="dv">1000</span>, <span class="at">seed =</span> <span class="dv">42</span>) {</span>
+<span id="cb54-30"><a href="function-approximation-and-feature-engineering.html#cb54-30" tabindex="-1"></a>    <span class="fu">set.seed</span>(seed)</span>
+<span id="cb54-31"><a href="function-approximation-and-feature-engineering.html#cb54-31" tabindex="-1"></a>    </span>
+<span id="cb54-32"><a href="function-approximation-and-feature-engineering.html#cb54-32" tabindex="-1"></a>    <span class="co"># Generate random samples from state space</span></span>
+<span id="cb54-33"><a href="function-approximation-and-feature-engineering.html#cb54-33" tabindex="-1"></a>    samples <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb54-34"><a href="function-approximation-and-feature-engineering.html#cb54-34" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">runif</span>(n_samples, <span class="dv">0</span>, state_dims[<span class="dv">1</span>]),</span>
+<span id="cb54-35"><a href="function-approximation-and-feature-engineering.html#cb54-35" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">runif</span>(n_samples, <span class="dv">0</span>, state_dims[<span class="dv">2</span>])</span>
+<span id="cb54-36"><a href="function-approximation-and-feature-engineering.html#cb54-36" tabindex="-1"></a>    )</span>
+<span id="cb54-37"><a href="function-approximation-and-feature-engineering.html#cb54-37" tabindex="-1"></a>    </span>
+<span id="cb54-38"><a href="function-approximation-and-feature-engineering.html#cb54-38" tabindex="-1"></a>    <span class="co"># Simple k-means implementation</span></span>
+<span id="cb54-39"><a href="function-approximation-and-feature-engineering.html#cb54-39" tabindex="-1"></a>    centers <span class="ot">&lt;-</span> samples[<span class="fu">sample</span>(<span class="fu">nrow</span>(samples), n_centers), ]</span>
+<span id="cb54-40"><a href="function-approximation-and-feature-engineering.html#cb54-40" tabindex="-1"></a>    </span>
+<span id="cb54-41"><a href="function-approximation-and-feature-engineering.html#cb54-41" tabindex="-1"></a>    <span class="cf">for</span> (iter <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>) {</span>
+<span id="cb54-42"><a href="function-approximation-and-feature-engineering.html#cb54-42" tabindex="-1"></a>      <span class="co"># Assign points to closest centers</span></span>
+<span id="cb54-43"><a href="function-approximation-and-feature-engineering.html#cb54-43" tabindex="-1"></a>      distances <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">dist</span>(<span class="fu">rbind</span>(centers, samples)))</span>
+<span id="cb54-44"><a href="function-approximation-and-feature-engineering.html#cb54-44" tabindex="-1"></a>      distances <span class="ot">&lt;-</span> distances[(n_centers <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(n_centers <span class="sc">+</span> n_samples), <span class="dv">1</span><span class="sc">:</span>n_centers]</span>
+<span id="cb54-45"><a href="function-approximation-and-feature-engineering.html#cb54-45" tabindex="-1"></a>      assignments <span class="ot">&lt;-</span> <span class="fu">apply</span>(distances, <span class="dv">1</span>, which.min)</span>
+<span id="cb54-46"><a href="function-approximation-and-feature-engineering.html#cb54-46" tabindex="-1"></a>      </span>
+<span id="cb54-47"><a href="function-approximation-and-feature-engineering.html#cb54-47" tabindex="-1"></a>      <span class="co"># Update centers</span></span>
+<span id="cb54-48"><a href="function-approximation-and-feature-engineering.html#cb54-48" tabindex="-1"></a>      new_centers <span class="ot">&lt;-</span> centers</span>
+<span id="cb54-49"><a href="function-approximation-and-feature-engineering.html#cb54-49" tabindex="-1"></a>      <span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_centers) {</span>
+<span id="cb54-50"><a href="function-approximation-and-feature-engineering.html#cb54-50" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">sum</span>(assignments <span class="sc">==</span> k) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb54-51"><a href="function-approximation-and-feature-engineering.html#cb54-51" tabindex="-1"></a>          cluster_points <span class="ot">&lt;-</span> samples[assignments <span class="sc">==</span> k, ]</span>
+<span id="cb54-52"><a href="function-approximation-and-feature-engineering.html#cb54-52" tabindex="-1"></a>          new_centers[k, ] <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(cluster_points)</span>
+<span id="cb54-53"><a href="function-approximation-and-feature-engineering.html#cb54-53" tabindex="-1"></a>        }</span>
+<span id="cb54-54"><a href="function-approximation-and-feature-engineering.html#cb54-54" tabindex="-1"></a>      }</span>
+<span id="cb54-55"><a href="function-approximation-and-feature-engineering.html#cb54-55" tabindex="-1"></a>      </span>
+<span id="cb54-56"><a href="function-approximation-and-feature-engineering.html#cb54-56" tabindex="-1"></a>      <span class="co"># Check convergence</span></span>
+<span id="cb54-57"><a href="function-approximation-and-feature-engineering.html#cb54-57" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">sum</span>((new_centers <span class="sc">-</span> centers)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">&lt;</span> <span class="fl">1e-6</span>) <span class="cf">break</span></span>
+<span id="cb54-58"><a href="function-approximation-and-feature-engineering.html#cb54-58" tabindex="-1"></a>      centers <span class="ot">&lt;-</span> new_centers</span>
+<span id="cb54-59"><a href="function-approximation-and-feature-engineering.html#cb54-59" tabindex="-1"></a>    }</span>
+<span id="cb54-60"><a href="function-approximation-and-feature-engineering.html#cb54-60" tabindex="-1"></a>    </span>
+<span id="cb54-61"><a href="function-approximation-and-feature-engineering.html#cb54-61" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">as.matrix</span>(centers))</span>
+<span id="cb54-62"><a href="function-approximation-and-feature-engineering.html#cb54-62" tabindex="-1"></a>  }</span>
+<span id="cb54-63"><a href="function-approximation-and-feature-engineering.html#cb54-63" tabindex="-1"></a>  </span>
+<span id="cb54-64"><a href="function-approximation-and-feature-engineering.html#cb54-64" tabindex="-1"></a>  <span class="co"># Visualization function for activation landscape</span></span>
+<span id="cb54-65"><a href="function-approximation-and-feature-engineering.html#cb54-65" tabindex="-1"></a>  visualize_activation_landscape <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, <span class="at">resolution =</span> <span class="dv">100</span>) {</span>
+<span id="cb54-66"><a href="function-approximation-and-feature-engineering.html#cb54-66" tabindex="-1"></a>    <span class="co"># Create evaluation grid</span></span>
+<span id="cb54-67"><a href="function-approximation-and-feature-engineering.html#cb54-67" tabindex="-1"></a>    x_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>], <span class="at">length.out =</span> resolution)</span>
+<span id="cb54-68"><a href="function-approximation-and-feature-engineering.html#cb54-68" tabindex="-1"></a>    y_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>], <span class="at">length.out =</span> resolution)</span>
+<span id="cb54-69"><a href="function-approximation-and-feature-engineering.html#cb54-69" tabindex="-1"></a>    grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x =</span> x_seq, <span class="at">y =</span> y_seq)</span>
+<span id="cb54-70"><a href="function-approximation-and-feature-engineering.html#cb54-70" tabindex="-1"></a>    </span>
+<span id="cb54-71"><a href="function-approximation-and-feature-engineering.html#cb54-71" tabindex="-1"></a>    <span class="co"># Compute total activation at each point</span></span>
+<span id="cb54-72"><a href="function-approximation-and-feature-engineering.html#cb54-72" tabindex="-1"></a>    grid_df<span class="sc">$</span>activation <span class="ot">&lt;-</span> <span class="fu">apply</span>(grid_df, <span class="dv">1</span>, <span class="cf">function</span>(point) {</span>
+<span id="cb54-73"><a href="function-approximation-and-feature-engineering.html#cb54-73" tabindex="-1"></a>      <span class="fu">sum</span>(<span class="fu">encode</span>(point))</span>
+<span id="cb54-74"><a href="function-approximation-and-feature-engineering.html#cb54-74" tabindex="-1"></a>    })</span>
+<span id="cb54-75"><a href="function-approximation-and-feature-engineering.html#cb54-75" tabindex="-1"></a>    </span>
+<span id="cb54-76"><a href="function-approximation-and-feature-engineering.html#cb54-76" tabindex="-1"></a>    <span class="co"># Create visualization</span></span>
+<span id="cb54-77"><a href="function-approximation-and-feature-engineering.html#cb54-77" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(grid_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
+<span id="cb54-78"><a href="function-approximation-and-feature-engineering.html#cb54-78" tabindex="-1"></a>      <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb54-79"><a href="function-approximation-and-feature-engineering.html#cb54-79" tabindex="-1"></a>      <span class="fu">geom_contour</span>(<span class="fu">aes</span>(<span class="at">z =</span> activation), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb54-80"><a href="function-approximation-and-feature-engineering.html#cb54-80" tabindex="-1"></a>      <span class="fu">geom_point</span>(</span>
+<span id="cb54-81"><a href="function-approximation-and-feature-engineering.html#cb54-81" tabindex="-1"></a>        <span class="at">data =</span> <span class="fu">as.data.frame</span>(centers), </span>
+<span id="cb54-82"><a href="function-approximation-and-feature-engineering.html#cb54-82" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2), </span>
+<span id="cb54-83"><a href="function-approximation-and-feature-engineering.html#cb54-83" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">shape =</span> <span class="dv">4</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke =</span> <span class="fl">1.5</span>,</span>
+<span id="cb54-84"><a href="function-approximation-and-feature-engineering.html#cb54-84" tabindex="-1"></a>        <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
+<span id="cb54-85"><a href="function-approximation-and-feature-engineering.html#cb54-85" tabindex="-1"></a>      ) <span class="sc">+</span></span>
+<span id="cb54-86"><a href="function-approximation-and-feature-engineering.html#cb54-86" tabindex="-1"></a>      <span class="fu">scale_fill_viridis_c</span>(<span class="at">name =</span> <span class="st">&quot;Total</span><span class="sc">\n</span><span class="st">Activation&quot;</span>, <span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-87"><a href="function-approximation-and-feature-engineering.html#cb54-87" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>]), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>]), <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb54-88"><a href="function-approximation-and-feature-engineering.html#cb54-88" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
+<span id="cb54-89"><a href="function-approximation-and-feature-engineering.html#cb54-89" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">&quot;RBF Network: Combined Activation Landscape&quot;</span>,</span>
+<span id="cb54-90"><a href="function-approximation-and-feature-engineering.html#cb54-90" tabindex="-1"></a>        <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">&quot;White crosses indicate&quot;</span>, n_rbf, <span class="st">&quot;RBF centers&quot;</span>),</span>
+<span id="cb54-91"><a href="function-approximation-and-feature-engineering.html#cb54-91" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb54-92"><a href="function-approximation-and-feature-engineering.html#cb54-92" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb54-93"><a href="function-approximation-and-feature-engineering.html#cb54-93" tabindex="-1"></a>      ) <span class="sc">+</span></span>
+<span id="cb54-94"><a href="function-approximation-and-feature-engineering.html#cb54-94" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb54-95"><a href="function-approximation-and-feature-engineering.html#cb54-95" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
+<span id="cb54-96"><a href="function-approximation-and-feature-engineering.html#cb54-96" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb54-97"><a href="function-approximation-and-feature-engineering.html#cb54-97" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
+<span id="cb54-98"><a href="function-approximation-and-feature-engineering.html#cb54-98" tabindex="-1"></a>      )</span>
+<span id="cb54-99"><a href="function-approximation-and-feature-engineering.html#cb54-99" tabindex="-1"></a>    </span>
+<span id="cb54-100"><a href="function-approximation-and-feature-engineering.html#cb54-100" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
+<span id="cb54-101"><a href="function-approximation-and-feature-engineering.html#cb54-101" tabindex="-1"></a>  }</span>
+<span id="cb54-102"><a href="function-approximation-and-feature-engineering.html#cb54-102" tabindex="-1"></a>  </span>
+<span id="cb54-103"><a href="function-approximation-and-feature-engineering.html#cb54-103" tabindex="-1"></a>  <span class="co"># Visualization function for individual RBFs</span></span>
+<span id="cb54-104"><a href="function-approximation-and-feature-engineering.html#cb54-104" tabindex="-1"></a>  visualize_individual_rbfs <span class="ot">&lt;-</span> <span class="cf">function</span>(state_dims, <span class="at">resolution =</span> <span class="dv">50</span>) {</span>
+<span id="cb54-105"><a href="function-approximation-and-feature-engineering.html#cb54-105" tabindex="-1"></a>    <span class="co"># Determine subplot layout</span></span>
+<span id="cb54-106"><a href="function-approximation-and-feature-engineering.html#cb54-106" tabindex="-1"></a>    n_cols <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(<span class="fu">sqrt</span>(n_rbf))</span>
+<span id="cb54-107"><a href="function-approximation-and-feature-engineering.html#cb54-107" tabindex="-1"></a>    n_rows <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(n_rbf <span class="sc">/</span> n_cols)</span>
+<span id="cb54-108"><a href="function-approximation-and-feature-engineering.html#cb54-108" tabindex="-1"></a>    </span>
+<span id="cb54-109"><a href="function-approximation-and-feature-engineering.html#cb54-109" tabindex="-1"></a>    <span class="co"># Create evaluation grid</span></span>
+<span id="cb54-110"><a href="function-approximation-and-feature-engineering.html#cb54-110" tabindex="-1"></a>    x_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">1</span>], <span class="at">length.out =</span> resolution)</span>
+<span id="cb54-111"><a href="function-approximation-and-feature-engineering.html#cb54-111" tabindex="-1"></a>    y_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, state_dims[<span class="dv">2</span>], <span class="at">length.out =</span> resolution)</span>
+<span id="cb54-112"><a href="function-approximation-and-feature-engineering.html#cb54-112" tabindex="-1"></a>    grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x =</span> x_seq, <span class="at">y =</span> y_seq)</span>
+<span id="cb54-113"><a href="function-approximation-and-feature-engineering.html#cb54-113" tabindex="-1"></a>    </span>
+<span id="cb54-114"><a href="function-approximation-and-feature-engineering.html#cb54-114" tabindex="-1"></a>    <span class="co"># Prepare data for all RBFs</span></span>
+<span id="cb54-115"><a href="function-approximation-and-feature-engineering.html#cb54-115" tabindex="-1"></a>    all_rbf_data <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb54-116"><a href="function-approximation-and-feature-engineering.html#cb54-116" tabindex="-1"></a>    </span>
+<span id="cb54-117"><a href="function-approximation-and-feature-engineering.html#cb54-117" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_rbf) {</span>
+<span id="cb54-118"><a href="function-approximation-and-feature-engineering.html#cb54-118" tabindex="-1"></a>      <span class="co"># Compute activation for this RBF only</span></span>
+<span id="cb54-119"><a href="function-approximation-and-feature-engineering.html#cb54-119" tabindex="-1"></a>      distances_sq <span class="ot">&lt;-</span> <span class="fu">rowSums</span>((grid_df <span class="sc">-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(centers[i, ], <span class="fu">nrow</span>(grid_df)), </span>
+<span id="cb54-120"><a href="function-approximation-and-feature-engineering.html#cb54-120" tabindex="-1"></a>                                              <span class="at">nrow =</span> <span class="fu">nrow</span>(grid_df), <span class="at">byrow =</span> <span class="cn">TRUE</span>))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb54-121"><a href="function-approximation-and-feature-engineering.html#cb54-121" tabindex="-1"></a>      activations <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span>distances_sq <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> widths[i]<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb54-122"><a href="function-approximation-and-feature-engineering.html#cb54-122" tabindex="-1"></a>      </span>
+<span id="cb54-123"><a href="function-approximation-and-feature-engineering.html#cb54-123" tabindex="-1"></a>      rbf_data <span class="ot">&lt;-</span> grid_df</span>
+<span id="cb54-124"><a href="function-approximation-and-feature-engineering.html#cb54-124" tabindex="-1"></a>      rbf_data<span class="sc">$</span>activation <span class="ot">&lt;-</span> activations</span>
+<span id="cb54-125"><a href="function-approximation-and-feature-engineering.html#cb54-125" tabindex="-1"></a>      rbf_data<span class="sc">$</span>rbf_id <span class="ot">&lt;-</span> i</span>
+<span id="cb54-126"><a href="function-approximation-and-feature-engineering.html#cb54-126" tabindex="-1"></a>      rbf_data<span class="sc">$</span>rbf_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;RBF &quot;</span>, i, <span class="st">&quot; (σ=&quot;</span>, <span class="fu">round</span>(widths[i], <span class="dv">1</span>), <span class="st">&quot;)&quot;</span>)</span>
+<span id="cb54-127"><a href="function-approximation-and-feature-engineering.html#cb54-127" tabindex="-1"></a>      </span>
+<span id="cb54-128"><a href="function-approximation-and-feature-engineering.html#cb54-128" tabindex="-1"></a>      all_rbf_data[[i]] <span class="ot">&lt;-</span> rbf_data</span>
+<span id="cb54-129"><a href="function-approximation-and-feature-engineering.html#cb54-129" tabindex="-1"></a>    }</span>
+<span id="cb54-130"><a href="function-approximation-and-feature-engineering.html#cb54-130" tabindex="-1"></a>    </span>
+<span id="cb54-131"><a href="function-approximation-and-feature-engineering.html#cb54-131" tabindex="-1"></a>    <span class="co"># Combine all data</span></span>
+<span id="cb54-132"><a href="function-approximation-and-feature-engineering.html#cb54-132" tabindex="-1"></a>    combined_data <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, all_rbf_data)</span>
+<span id="cb54-133"><a href="function-approximation-and-feature-engineering.html#cb54-133" tabindex="-1"></a>    </span>
+<span id="cb54-134"><a href="function-approximation-and-feature-engineering.html#cb54-134" tabindex="-1"></a>    <span class="co"># Add center information</span></span>
+<span id="cb54-135"><a href="function-approximation-and-feature-engineering.html#cb54-135" tabindex="-1"></a>    center_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb54-136"><a href="function-approximation-and-feature-engineering.html#cb54-136" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">rep</span>(centers[, <span class="dv">1</span>], <span class="at">each =</span> <span class="dv">1</span>),</span>
+<span id="cb54-137"><a href="function-approximation-and-feature-engineering.html#cb54-137" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">rep</span>(centers[, <span class="dv">2</span>], <span class="at">each =</span> <span class="dv">1</span>),</span>
+<span id="cb54-138"><a href="function-approximation-and-feature-engineering.html#cb54-138" tabindex="-1"></a>      <span class="at">rbf_id =</span> <span class="dv">1</span><span class="sc">:</span>n_rbf,</span>
+<span id="cb54-139"><a href="function-approximation-and-feature-engineering.html#cb54-139" tabindex="-1"></a>      <span class="at">rbf_label =</span> <span class="fu">paste0</span>(<span class="st">&quot;RBF &quot;</span>, <span class="dv">1</span><span class="sc">:</span>n_rbf, <span class="st">&quot; (σ=&quot;</span>, <span class="fu">round</span>(widths, <span class="dv">1</span>), <span class="st">&quot;)&quot;</span>)</span>
+<span id="cb54-140"><a href="function-approximation-and-feature-engineering.html#cb54-140" tabindex="-1"></a>    )</span>
+<span id="cb54-141"><a href="function-approximation-and-feature-engineering.html#cb54-141" tabindex="-1"></a>    </span>
+<span id="cb54-142"><a href="function-approximation-and-feature-engineering.html#cb54-142" tabindex="-1"></a>    <span class="co"># Create faceted plot</span></span>
+<span id="cb54-143"><a href="function-approximation-and-feature-engineering.html#cb54-143" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> activation)) <span class="sc">+</span></span>
+<span id="cb54-144"><a href="function-approximation-and-feature-engineering.html#cb54-144" tabindex="-1"></a>      <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb54-145"><a href="function-approximation-and-feature-engineering.html#cb54-145" tabindex="-1"></a>      <span class="fu">geom_point</span>(</span>
+<span id="cb54-146"><a href="function-approximation-and-feature-engineering.html#cb54-146" tabindex="-1"></a>        <span class="at">data =</span> center_data,</span>
+<span id="cb54-147"><a href="function-approximation-and-feature-engineering.html#cb54-147" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),</span>
+<span id="cb54-148"><a href="function-approximation-and-feature-engineering.html#cb54-148" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">shape =</span> <span class="dv">4</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>,</span>
+<span id="cb54-149"><a href="function-approximation-and-feature-engineering.html#cb54-149" tabindex="-1"></a>        <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
+<span id="cb54-150"><a href="function-approximation-and-feature-engineering.html#cb54-150" tabindex="-1"></a>      ) <span class="sc">+</span></span>
+<span id="cb54-151"><a href="function-approximation-and-feature-engineering.html#cb54-151" tabindex="-1"></a>      <span class="fu">facet_wrap</span>(<span class="sc">~</span> rbf_label, <span class="at">ncol =</span> n_cols) <span class="sc">+</span></span>
+<span id="cb54-152"><a href="function-approximation-and-feature-engineering.html#cb54-152" tabindex="-1"></a>      <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>, <span class="at">name =</span> <span class="st">&quot;Activation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-153"><a href="function-approximation-and-feature-engineering.html#cb54-153" tabindex="-1"></a>      <span class="fu">coord_fixed</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb54-154"><a href="function-approximation-and-feature-engineering.html#cb54-154" tabindex="-1"></a>      <span class="fu">labs</span>(</span>
+<span id="cb54-155"><a href="function-approximation-and-feature-engineering.html#cb54-155" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">&quot;Individual RBF Activations&quot;</span>,</span>
+<span id="cb54-156"><a href="function-approximation-and-feature-engineering.html#cb54-156" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">&quot;State Dimension 1&quot;</span>,</span>
+<span id="cb54-157"><a href="function-approximation-and-feature-engineering.html#cb54-157" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">&quot;State Dimension 2&quot;</span></span>
+<span id="cb54-158"><a href="function-approximation-and-feature-engineering.html#cb54-158" tabindex="-1"></a>      ) <span class="sc">+</span></span>
+<span id="cb54-159"><a href="function-approximation-and-feature-engineering.html#cb54-159" tabindex="-1"></a>      <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb54-160"><a href="function-approximation-and-feature-engineering.html#cb54-160" tabindex="-1"></a>      <span class="fu">theme</span>(</span>
+<span id="cb54-161"><a href="function-approximation-and-feature-engineering.html#cb54-161" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb54-162"><a href="function-approximation-and-feature-engineering.html#cb54-162" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb54-163"><a href="function-approximation-and-feature-engineering.html#cb54-163" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;grey90&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb54-164"><a href="function-approximation-and-feature-engineering.html#cb54-164" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>)</span>
+<span id="cb54-165"><a href="function-approximation-and-feature-engineering.html#cb54-165" tabindex="-1"></a>      )</span>
+<span id="cb54-166"><a href="function-approximation-and-feature-engineering.html#cb54-166" tabindex="-1"></a>    </span>
+<span id="cb54-167"><a href="function-approximation-and-feature-engineering.html#cb54-167" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
+<span id="cb54-168"><a href="function-approximation-and-feature-engineering.html#cb54-168" tabindex="-1"></a>  }</span>
+<span id="cb54-169"><a href="function-approximation-and-feature-engineering.html#cb54-169" tabindex="-1"></a>  </span>
+<span id="cb54-170"><a href="function-approximation-and-feature-engineering.html#cb54-170" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb54-171"><a href="function-approximation-and-feature-engineering.html#cb54-171" tabindex="-1"></a>    <span class="at">encode =</span> encode,</span>
+<span id="cb54-172"><a href="function-approximation-and-feature-engineering.html#cb54-172" tabindex="-1"></a>    <span class="at">visualize_activation_landscape =</span> visualize_activation_landscape,</span>
+<span id="cb54-173"><a href="function-approximation-and-feature-engineering.html#cb54-173" tabindex="-1"></a>    <span class="at">visualize_individual_rbfs =</span> visualize_individual_rbfs,</span>
+<span id="cb54-174"><a href="function-approximation-and-feature-engineering.html#cb54-174" tabindex="-1"></a>    <span class="at">centers =</span> centers,</span>
+<span id="cb54-175"><a href="function-approximation-and-feature-engineering.html#cb54-175" tabindex="-1"></a>    <span class="at">widths =</span> widths,</span>
+<span id="cb54-176"><a href="function-approximation-and-feature-engineering.html#cb54-176" tabindex="-1"></a>    <span class="at">n_rbf =</span> n_rbf,</span>
+<span id="cb54-177"><a href="function-approximation-and-feature-engineering.html#cb54-177" tabindex="-1"></a>    <span class="at">create_adaptive_centers =</span> create_adaptive_centers</span>
+<span id="cb54-178"><a href="function-approximation-and-feature-engineering.html#cb54-178" tabindex="-1"></a>  ))</span>
+<span id="cb54-179"><a href="function-approximation-and-feature-engineering.html#cb54-179" tabindex="-1"></a>}</span>
+<span id="cb54-180"><a href="function-approximation-and-feature-engineering.html#cb54-180" tabindex="-1"></a></span>
+<span id="cb54-181"><a href="function-approximation-and-feature-engineering.html#cb54-181" tabindex="-1"></a><span class="co"># Example usage with adaptive center placement</span></span>
+<span id="cb54-182"><a href="function-approximation-and-feature-engineering.html#cb54-182" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb54-183"><a href="function-approximation-and-feature-engineering.html#cb54-183" tabindex="-1"></a></span>
+<span id="cb54-184"><a href="function-approximation-and-feature-engineering.html#cb54-184" tabindex="-1"></a><span class="co"># Create RBF centers using k-means-like clustering</span></span>
+<span id="cb54-185"><a href="function-approximation-and-feature-engineering.html#cb54-185" tabindex="-1"></a>rbf_net_temp <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">nrow =</span> <span class="dv">1</span>), <span class="fl">1.0</span>)</span>
+<span id="cb54-186"><a href="function-approximation-and-feature-engineering.html#cb54-186" tabindex="-1"></a>rbf_centers <span class="ot">&lt;-</span> rbf_net_temp<span class="sc">$</span><span class="fu">create_adaptive_centers</span>(</span>
+<span id="cb54-187"><a href="function-approximation-and-feature-engineering.html#cb54-187" tabindex="-1"></a>  <span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>), </span>
+<span id="cb54-188"><a href="function-approximation-and-feature-engineering.html#cb54-188" tabindex="-1"></a>  <span class="at">n_centers =</span> <span class="dv">12</span></span>
+<span id="cb54-189"><a href="function-approximation-and-feature-engineering.html#cb54-189" tabindex="-1"></a>)</span>
+<span id="cb54-190"><a href="function-approximation-and-feature-engineering.html#cb54-190" tabindex="-1"></a></span>
+<span id="cb54-191"><a href="function-approximation-and-feature-engineering.html#cb54-191" tabindex="-1"></a><span class="co"># Create RBF network with adaptive centers</span></span>
+<span id="cb54-192"><a href="function-approximation-and-feature-engineering.html#cb54-192" tabindex="-1"></a>rbf_network <span class="ot">&lt;-</span> <span class="fu">create_rbf_network</span>(</span>
+<span id="cb54-193"><a href="function-approximation-and-feature-engineering.html#cb54-193" tabindex="-1"></a>  <span class="at">centers =</span> rbf_centers, </span>
+<span id="cb54-194"><a href="function-approximation-and-feature-engineering.html#cb54-194" tabindex="-1"></a>  <span class="at">widths =</span> <span class="fl">1.5</span>  <span class="co"># Uniform width for all RBFs</span></span>
+<span id="cb54-195"><a href="function-approximation-and-feature-engineering.html#cb54-195" tabindex="-1"></a>)</span>
+<span id="cb54-196"><a href="function-approximation-and-feature-engineering.html#cb54-196" tabindex="-1"></a></span>
+<span id="cb54-197"><a href="function-approximation-and-feature-engineering.html#cb54-197" tabindex="-1"></a><span class="co"># Visualize activation landscape</span></span>
+<span id="cb54-198"><a href="function-approximation-and-feature-engineering.html#cb54-198" tabindex="-1"></a><span class="fu">print</span>(rbf_network<span class="sc">$</span><span class="fu">visualize_activation_landscape</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>)))</span>
+<span id="cb54-199"><a href="function-approximation-and-feature-engineering.html#cb54-199" tabindex="-1"></a></span>
+<span id="cb54-200"><a href="function-approximation-and-feature-engineering.html#cb54-200" tabindex="-1"></a><span class="co"># Visualize individual RBFs</span></span>
+<span id="cb54-201"><a href="function-approximation-and-feature-engineering.html#cb54-201" tabindex="-1"></a><span class="fu">print</span>(rbf_network<span class="sc">$</span><span class="fu">visualize_individual_rbfs</span>(<span class="at">state_dims =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">10</span>)))</span></code></pre></div>
 </div>
 </div>
 <div id="comparative-analysis-and-practical-considerations" class="section level2 hasAnchor" number="11.4">

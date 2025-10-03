@@ -59,7 +59,9 @@ $$
 
 
 
-```r
+
+
+```{r}
 # Common settings
 n_states <- 10
 n_actions <- 2
@@ -133,7 +135,61 @@ sarsa <- function(n_episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   policy[1:(n_states - 1)] <- apply(Q[1:(n_states - 1), ], 1, which.max)
   list(Q = Q, policy = policy, rewards = rewards)
 }
+```
 
+This chunk sets up the simulated environment for the reinforcement learning agent. This environment is a **Markov Decision Process (MDP)**.
+
+  * **Common Settings**:
+
+      * `n_states <- 10`: Defines a world with 10 possible states.
+      * `n_actions <- 2`: The agent can choose between 2 actions in any state.
+      * `gamma <- 0.9`: Sets the **discount factor** to 0.9. This means rewards received in the future are valued slightly less than immediate rewards.
+      * `terminal_state <- n_states`: State 10 is defined as the terminal state. Once the agent reaches this state, an episode ends.
+
+  * **Environment Models**:
+
+      * `set.seed(42)`: This function ensures that any random numbers generated are the same every time the code is run, making the results **reproducible**.
+      * `transition_model` and `reward_model`: These are 3D arrays that define the environment's dynamics.
+          * `transition_model[s, a, s']`: Stores the probability of transitioning to state `s'` after taking action `a` in state `s`.
+          * `reward_model[s, a, s']`: Stores the reward received when transitioning from state `s` to `s'` via action `a`.
+
+  * **Populating the Models**: The `for` loop defines the rules of the environment for all non-terminal states.
+
+      * For **Action 1**: There's a 90% chance of moving to the next state sequentially (`s + 1`) and a 10% chance of being sent to a random state. This is a relatively predictable action.
+      * For **Action 2**: There's an 80% chance of moving to one random state and a 20% chance of moving to another random state. This action is less predictable.
+      * **Rewards**: The agent gets a large positive reward (1.0 for Action 1, 0.5 for Action 2) for reaching the terminal state. All other transitions yield a small, random positive reward.
+
+  * **Terminal State Logic**: The final two lines ensure that if the agent is in the terminal state (`n_states`), all transition probabilities and rewards are zero, effectively ending the episode.
+
+  * `epsilon_greedy`: This function implements the **ε-greedy strategy**, which balances exploration and exploitation.
+
+      * **Exploration**: With a small probability `epsilon` (ε), the agent ignores what it has learned and chooses a random action. This helps discover new, potentially better, strategies.
+      * **Exploitation**: With probability `1 - epsilon`, the agent chooses the action that it currently believes is the best, based on the highest action-value (`Q`) for the given `state`. `which.max(Q[state, ])` finds the index (action) of the maximum value in that state's row.
+
+  * `simulate_step`: This function simulates the agent taking a single step in the environment.
+
+      * It takes the current `state` and chosen `action` as input.
+      * It looks up the transition probabilities for that state-action pair from the `transition_model`.
+      * It then samples a `next_state` based on those probabilities.
+      * Finally, it retrieves the corresponding `reward` from the `reward_model` for that specific transition.
+      * It returns the `next_state` and `reward` as a list.
+This function implements the **SARSA** algorithm, which stands for **State-Action-Reward-State-Action**. It's an **on-policy** temporal-difference learning algorithm.
+
+  * **Initialization**: It starts with a `Q` matrix (the action-value function) filled with zeros.
+  * **Main Loop**: The algorithm runs for a set number of `n_episodes`.
+  * **Inside an Episode**:
+    1.  The agent starts in a random `state`.
+    2.  It chooses an `action` using the ε-greedy policy.
+    3.  The agent takes the action, and the environment returns a `reward` and a `next_state`.
+    4.  **Crucially for SARSA**, it then chooses the `next_action` it will take from the `next_state`, again using the ε-greedy policy.
+    5.  The **Q-value update** is performed. It updates the value of the *original* state-action pair (`Q[state, action]`) using the tuple $(S, A, R, S', A')$. The update rule is:
+        $$
+        $$$$Q(S, A) \\leftarrow Q(S, A) + \\alpha [R + \\gamma Q(S', A') - Q(S, A)]
+        $$
+        $$$$Here, `alpha` ($\alpha$) is the **learning rate**. This update moves the current estimate of `Q[state, action]` slightly towards the target value `reward + gamma * Q[next_state, next_action]`. Because the update uses the Q-value of the action (`next_action`) that the current policy actually chooses, it is considered "on-policy."
+    6.  The agent moves to the next state (`state <- next_state`), and the chosen next action becomes the current action (`action <- next_action`). The loop continues until the terminal state is reached.
+  * **Output**: After all episodes, a final deterministic `policy` is created by choosing the action with the highest Q-value for each state. The function returns the learned `Q` table, the final `policy`, and the history of `rewards`.
+```{r}
 # Q-Learning
 q_learning <- function(n_episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   Q <- matrix(0, n_states, n_actions)
@@ -163,7 +219,19 @@ q_learning <- function(n_episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   policy[1:(n_states - 1)] <- apply(Q[1:(n_states - 1), ], 1, which.max)
   list(Q = Q, policy = policy, rewards = rewards)
 }
+```
 
+This function implements the **Q-Learning** algorithm. It is an **off-policy** temporal-difference learning algorithm. The structure is very similar to SARSA, with one critical difference.
+
+  * **The Q-value Update**: Unlike SARSA, Q-learning does not need to choose the next action (`A'`) to perform its update. Instead, it updates its Q-value based on the **maximum possible Q-value** in the next state. This represents the value of acting optimally (greedily) from the next state, regardless of what the ε-greedy policy might do. The update rule is:
+    $$
+    $$$$Q(S, A) \\leftarrow Q(S, A) + \\alpha [R + \\gamma \\max\_{a'} Q(S', a') - Q(S, A)]
+    $$
+    $$$$The term `max(Q[next_state, ])` finds the best possible future value from `next_state`. Because the agent learns about the optimal policy while following a different (ε-greedy) policy, it is considered "off-policy."
+    
+
+
+```{r}
 # Off-Policy Monte Carlo
 off_policy_mc <- function(n_episodes = 1000, epsilon = 0.1) {
   Q <- matrix(0, n_states, n_actions)
@@ -212,7 +280,25 @@ off_policy_mc <- function(n_episodes = 1000, epsilon = 0.1) {
   policy[1:(n_states - 1)] <- apply(Q[1:(n_states - 1), ], 1, which.max)
   list(Q = Q, policy = policy, rewards = rewards)
 }
+```
 
+
+
+
+This function implements an **Off-Policy Monte Carlo (MC)** control method using **importance sampling**.
+
+  * **Monte Carlo Method**: Unlike SARSA and Q-Learning, MC methods do not update values after every step. Instead, they run a complete episode and then update the values of the state-action pairs visited during that episode based on the total observed return.
+  * **Off-Policy Learning**: The goal is to learn the optimal (greedy) policy, called the **target policy**. However, to ensure exploration, the agent generates episodes using a different **behavior policy**. In this code, the behavior policy is to choose actions completely at random.
+  * **Episode Generation**: The first `while` loop generates a complete episode using the random behavior policy and stores all the states, actions, and rewards.
+  * **Update with Importance Sampling**: The second `for` loop iterates backward through the episode's steps.
+      * `G`: This is the **return**, or the cumulative discounted reward from time step `t` to the end of the episode.
+      * `W`: This is the **importance sampling ratio**. It corrects for the fact that we are learning about the target policy while observing actions from the behavior policy. It's the ratio of the probabilities of a trajectory occurring under the two policies.
+      * `Q` and `C` are updated using a weighted average formula. `C` accumulates the weights to ensure a stable average.
+      * `if (action != pi_action) break`: This is a key step. The target policy is greedy. If at any step the action taken under the random policy is not the one the greedy policy would have chosen, the probability of the rest of the trajectory under the target policy becomes zero. The importance sampling ratio `W` would become 0, so we can stop updating for this episode.
+
+
+
+```{r}
 # Value Iteration (from DP)
 value_iteration <- function(transition_model, reward_model, gamma, epsilon = 1e-6, max_iter = 1000) {
   V <- rep(0, n_states)
@@ -252,6 +338,25 @@ value_iteration <- function(transition_model, reward_model, gamma, epsilon = 1e-
   
   list(V = V, policy = policy, rewards = rewards)
 }
+
+```
+
+
+This function implements **Value Iteration**, a classic **Dynamic Programming (DP)** algorithm.
+
+  * **Model-Based**: Unlike the previous methods, DP is **model-based**, meaning it requires full knowledge of the environment's dynamics (the `transition_model` and `reward_model`). It doesn't learn from interaction but calculates the optimal policy directly from the model.
+  * **State-Value Function (`V`)**: Value Iteration computes the optimal state-value function, `V(s)`, which is the expected return starting from state `s` and following the optimal policy thereafter.
+  * **Main Loop**: The algorithm repeatedly sweeps through all states.
+      * In each sweep, it updates the value of each state `s` using the **Bellman optimality equation**:
+        $$
+        $$$$V\_{k+1}(s) \\leftarrow \\max\_a \\sum\_{s'} P(s'|s, a) [R(s,a,s') + \\gamma V\_k(s')]
+        $$
+        $$$$The code calculates the Q-value for each action (`Q[a] <- sum(...)`) and then takes the maximum of these to update `V[s]`.
+      * The loop continues until the value function converges, meaning the maximum change (`delta`) in any state's value between iterations is smaller than a tiny threshold `epsilon`.
+  * **Policy Extraction**: Once the optimal value function `V` is found, the optimal `policy` is extracted by choosing the action that maximizes the expected return from each state.
+  * **Evaluation**: Since DP doesn't generate reward data during learning, a separate loop is run at the end to evaluate the performance of the found policy for fair comparison with the other algorithms.
+
+```{r}
 
 # Run algorithms
 set.seed(42)
@@ -310,6 +415,20 @@ cat("Q-Learning:", mean(qlearn_result$rewards), "\n")
 cat("Off-Policy MC:", mean(mc_result$rewards), "\n")
                             
 ```
+
+This final chunk executes all the defined algorithms and visualizes their results for comparison.
+
+  * **Execution**: Each of the four algorithms is run with specified parameters, and their results (policies, rewards, etc.) are stored. `set.seed(42)` is used again to ensure consistent starting conditions for all methods.
+  * **Policy Comparison Plot**:
+      * A data frame is created to hold the final policies from all algorithms.
+      * `ggplot2` is used to create a plot that shows the action chosen by each algorithm for each state. This allows for a direct visual comparison of how the learned strategies differ.
+  * **Reward Comparison Plot**:
+      * A second data frame is created to track the **cumulative reward** over the training episodes. `cumsum` calculates the running total of rewards, which is a good indicator of learning performance over time.
+      * A line plot shows how the cumulative reward for each algorithm increases with each episode. A steeper slope indicates faster and more effective learning.
+  * **Display and Metrics**:
+      * `grid.arrange` from the `gridExtra` package combines the two plots into a single output.
+      * Finally, the average reward per episode is calculated and printed for each algorithm, providing a simple, quantitative summary of their overall performance.
+
 
 ## Interpretation and Discussion
 

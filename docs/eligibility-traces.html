@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-09-29" />
+<meta name="date" content="2025-10-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -532,113 +532,113 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="practical-implementation-server-load-balancing-with-sarsalambda" class="section level2 hasAnchor" number="14.5">
 <h2><span class="header-section-number">14.5</span> Practical Implementation: Server Load Balancing with Sarsa(<span class="math inline">\(\\lambda\)</span>)<a href="eligibility-traces.html#practical-implementation-server-load-balancing-with-sarsalambda" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We can adapt the previous server load balancing example to use Average Reward Sarsa(<span class="math inline">\(\\lambda\)</span>). This modification should demonstrate faster convergence to an optimal policy due to the more efficient credit assignment enabled by eligibility traces.</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="eligibility-traces.html#cb52-1" tabindex="-1"></a><span class="co"># Server Load Balancing with Average Reward Sarsa(lambda)</span></span>
-<span id="cb52-2"><a href="eligibility-traces.html#cb52-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb52-3"><a href="eligibility-traces.html#cb52-3" tabindex="-1"></a></span>
-<span id="cb52-4"><a href="eligibility-traces.html#cb52-4" tabindex="-1"></a><span class="co"># Environment setup (identical to previous example)</span></span>
-<span id="cb52-5"><a href="eligibility-traces.html#cb52-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb52-6"><a href="eligibility-traces.html#cb52-6" tabindex="-1"></a>n_servers <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb52-7"><a href="eligibility-traces.html#cb52-7" tabindex="-1"></a>max_load <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb52-8"><a href="eligibility-traces.html#cb52-8" tabindex="-1"></a>n_steps <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
-<span id="cb52-9"><a href="eligibility-traces.html#cb52-9" tabindex="-1"></a></span>
-<span id="cb52-10"><a href="eligibility-traces.html#cb52-10" tabindex="-1"></a><span class="co"># State encoding and reward function</span></span>
-<span id="cb52-11"><a href="eligibility-traces.html#cb52-11" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(loads) {</span>
-<span id="cb52-12"><a href="eligibility-traces.html#cb52-12" tabindex="-1"></a>  <span class="fu">sum</span>(loads <span class="sc">*</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>(<span class="dv">0</span><span class="sc">:</span>(<span class="fu">length</span>(loads)<span class="sc">-</span><span class="dv">1</span>))) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb52-13"><a href="eligibility-traces.html#cb52-13" tabindex="-1"></a>}</span>
-<span id="cb52-14"><a href="eligibility-traces.html#cb52-14" tabindex="-1"></a></span>
-<span id="cb52-15"><a href="eligibility-traces.html#cb52-15" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
-<span id="cb52-16"><a href="eligibility-traces.html#cb52-16" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> state_id <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb52-17"><a href="eligibility-traces.html#cb52-17" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_servers)</span>
-<span id="cb52-18"><a href="eligibility-traces.html#cb52-18" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
-<span id="cb52-19"><a href="eligibility-traces.html#cb52-19" tabindex="-1"></a>    loads[i] <span class="ot">&lt;-</span> state_id <span class="sc">%%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb52-20"><a href="eligibility-traces.html#cb52-20" tabindex="-1"></a>    state_id <span class="ot">&lt;-</span> state_id <span class="sc">%/%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb52-21"><a href="eligibility-traces.html#cb52-21" tabindex="-1"></a>  }</span>
-<span id="cb52-22"><a href="eligibility-traces.html#cb52-22" tabindex="-1"></a>  loads</span>
-<span id="cb52-23"><a href="eligibility-traces.html#cb52-23" tabindex="-1"></a>}</span>
-<span id="cb52-24"><a href="eligibility-traces.html#cb52-24" tabindex="-1"></a></span>
-<span id="cb52-25"><a href="eligibility-traces.html#cb52-25" tabindex="-1"></a>get_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(loads, server_choice) {</span>
-<span id="cb52-26"><a href="eligibility-traces.html#cb52-26" tabindex="-1"></a>  new_loads <span class="ot">&lt;-</span> loads</span>
-<span id="cb52-27"><a href="eligibility-traces.html#cb52-27" tabindex="-1"></a>  new_loads[server_choice] <span class="ot">&lt;-</span> <span class="fu">min</span>(new_loads[server_choice] <span class="sc">+</span> <span class="dv">1</span>, max_load)</span>
-<span id="cb52-28"><a href="eligibility-traces.html#cb52-28" tabindex="-1"></a>  avg_load <span class="ot">&lt;-</span> <span class="fu">mean</span>(new_loads)</span>
-<span id="cb52-29"><a href="eligibility-traces.html#cb52-29" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="sc">-</span>avg_load</span>
-<span id="cb52-30"><a href="eligibility-traces.html#cb52-30" tabindex="-1"></a>  </span>
-<span id="cb52-31"><a href="eligibility-traces.html#cb52-31" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
-<span id="cb52-32"><a href="eligibility-traces.html#cb52-32" tabindex="-1"></a>    <span class="cf">if</span> (new_loads[i] <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
-<span id="cb52-33"><a href="eligibility-traces.html#cb52-33" tabindex="-1"></a>      new_loads[i] <span class="ot">&lt;-</span> new_loads[i] <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb52-34"><a href="eligibility-traces.html#cb52-34" tabindex="-1"></a>    }</span>
-<span id="cb52-35"><a href="eligibility-traces.html#cb52-35" tabindex="-1"></a>  }</span>
-<span id="cb52-36"><a href="eligibility-traces.html#cb52-36" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">reward =</span> reward, <span class="at">new_loads =</span> new_loads)</span>
-<span id="cb52-37"><a href="eligibility-traces.html#cb52-37" tabindex="-1"></a>}</span>
-<span id="cb52-38"><a href="eligibility-traces.html#cb52-38" tabindex="-1"></a></span>
-<span id="cb52-39"><a href="eligibility-traces.html#cb52-39" tabindex="-1"></a><span class="co"># Initialize parameters</span></span>
-<span id="cb52-40"><a href="eligibility-traces.html#cb52-40" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>n_servers</span>
-<span id="cb52-41"><a href="eligibility-traces.html#cb52-41" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers))</span>
-<span id="cb52-42"><a href="eligibility-traces.html#cb52-42" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers)) <span class="co"># Eligibility traces</span></span>
-<span id="cb52-43"><a href="eligibility-traces.html#cb52-43" tabindex="-1"></a>rho_hat <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb52-44"><a href="eligibility-traces.html#cb52-44" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb52-45"><a href="eligibility-traces.html#cb52-45" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fl">0.001</span></span>
-<span id="cb52-46"><a href="eligibility-traces.html#cb52-46" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb52-47"><a href="eligibility-traces.html#cb52-47" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fl">0.9</span> <span class="co"># Trace decay parameter</span></span>
-<span id="cb52-48"><a href="eligibility-traces.html#cb52-48" tabindex="-1"></a></span>
-<span id="cb52-49"><a href="eligibility-traces.html#cb52-49" tabindex="-1"></a><span class="co"># --- Helper function for epsilon-greedy action selection ---</span></span>
-<span id="cb52-50"><a href="eligibility-traces.html#cb52-50" tabindex="-1"></a>choose_action <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id, q_table, eps) {</span>
-<span id="cb52-51"><a href="eligibility-traces.html#cb52-51" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> eps) {</span>
-<span id="cb52-52"><a href="eligibility-traces.html#cb52-52" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_servers, <span class="dv">1</span>))</span>
-<span id="cb52-53"><a href="eligibility-traces.html#cb52-53" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb52-54"><a href="eligibility-traces.html#cb52-54" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">which.max</span>(q_table[state_id, ]))</span>
-<span id="cb52-55"><a href="eligibility-traces.html#cb52-55" tabindex="-1"></a>  }</span>
-<span id="cb52-56"><a href="eligibility-traces.html#cb52-56" tabindex="-1"></a>}</span>
-<span id="cb52-57"><a href="eligibility-traces.html#cb52-57" tabindex="-1"></a></span>
-<span id="cb52-58"><a href="eligibility-traces.html#cb52-58" tabindex="-1"></a><span class="co"># Training loop</span></span>
-<span id="cb52-59"><a href="eligibility-traces.html#cb52-59" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_servers)</span>
-<span id="cb52-60"><a href="eligibility-traces.html#cb52-60" tabindex="-1"></a>state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
-<span id="cb52-61"><a href="eligibility-traces.html#cb52-61" tabindex="-1"></a>action <span class="ot">&lt;-</span> <span class="fu">choose_action</span>(state_id, Q, epsilon)</span>
-<span id="cb52-62"><a href="eligibility-traces.html#cb52-62" tabindex="-1"></a>rho_history_sarsa_lambda <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_steps)</span>
-<span id="cb52-63"><a href="eligibility-traces.html#cb52-63" tabindex="-1"></a></span>
-<span id="cb52-64"><a href="eligibility-traces.html#cb52-64" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training average reward Sarsa(lambda) agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="eligibility-traces.html#cb67-1" tabindex="-1"></a><span class="co"># Server Load Balancing with Average Reward Sarsa(lambda)</span></span>
+<span id="cb67-2"><a href="eligibility-traces.html#cb67-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb67-3"><a href="eligibility-traces.html#cb67-3" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="eligibility-traces.html#cb67-4" tabindex="-1"></a><span class="co"># Environment setup (identical to previous example)</span></span>
+<span id="cb67-5"><a href="eligibility-traces.html#cb67-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb67-6"><a href="eligibility-traces.html#cb67-6" tabindex="-1"></a>n_servers <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb67-7"><a href="eligibility-traces.html#cb67-7" tabindex="-1"></a>max_load <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb67-8"><a href="eligibility-traces.html#cb67-8" tabindex="-1"></a>n_steps <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
+<span id="cb67-9"><a href="eligibility-traces.html#cb67-9" tabindex="-1"></a></span>
+<span id="cb67-10"><a href="eligibility-traces.html#cb67-10" tabindex="-1"></a><span class="co"># State encoding and reward function</span></span>
+<span id="cb67-11"><a href="eligibility-traces.html#cb67-11" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(loads) {</span>
+<span id="cb67-12"><a href="eligibility-traces.html#cb67-12" tabindex="-1"></a>  <span class="fu">sum</span>(loads <span class="sc">*</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>(<span class="dv">0</span><span class="sc">:</span>(<span class="fu">length</span>(loads)<span class="sc">-</span><span class="dv">1</span>))) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb67-13"><a href="eligibility-traces.html#cb67-13" tabindex="-1"></a>}</span>
+<span id="cb67-14"><a href="eligibility-traces.html#cb67-14" tabindex="-1"></a></span>
+<span id="cb67-15"><a href="eligibility-traces.html#cb67-15" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
+<span id="cb67-16"><a href="eligibility-traces.html#cb67-16" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> state_id <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb67-17"><a href="eligibility-traces.html#cb67-17" tabindex="-1"></a>  loads <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_servers)</span>
+<span id="cb67-18"><a href="eligibility-traces.html#cb67-18" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
+<span id="cb67-19"><a href="eligibility-traces.html#cb67-19" tabindex="-1"></a>    loads[i] <span class="ot">&lt;-</span> state_id <span class="sc">%%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb67-20"><a href="eligibility-traces.html#cb67-20" tabindex="-1"></a>    state_id <span class="ot">&lt;-</span> state_id <span class="sc">%/%</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb67-21"><a href="eligibility-traces.html#cb67-21" tabindex="-1"></a>  }</span>
+<span id="cb67-22"><a href="eligibility-traces.html#cb67-22" tabindex="-1"></a>  loads</span>
+<span id="cb67-23"><a href="eligibility-traces.html#cb67-23" tabindex="-1"></a>}</span>
+<span id="cb67-24"><a href="eligibility-traces.html#cb67-24" tabindex="-1"></a></span>
+<span id="cb67-25"><a href="eligibility-traces.html#cb67-25" tabindex="-1"></a>get_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(loads, server_choice) {</span>
+<span id="cb67-26"><a href="eligibility-traces.html#cb67-26" tabindex="-1"></a>  new_loads <span class="ot">&lt;-</span> loads</span>
+<span id="cb67-27"><a href="eligibility-traces.html#cb67-27" tabindex="-1"></a>  new_loads[server_choice] <span class="ot">&lt;-</span> <span class="fu">min</span>(new_loads[server_choice] <span class="sc">+</span> <span class="dv">1</span>, max_load)</span>
+<span id="cb67-28"><a href="eligibility-traces.html#cb67-28" tabindex="-1"></a>  avg_load <span class="ot">&lt;-</span> <span class="fu">mean</span>(new_loads)</span>
+<span id="cb67-29"><a href="eligibility-traces.html#cb67-29" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> <span class="sc">-</span>avg_load</span>
+<span id="cb67-30"><a href="eligibility-traces.html#cb67-30" tabindex="-1"></a>  </span>
+<span id="cb67-31"><a href="eligibility-traces.html#cb67-31" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_servers) {</span>
+<span id="cb67-32"><a href="eligibility-traces.html#cb67-32" tabindex="-1"></a>    <span class="cf">if</span> (new_loads[i] <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
+<span id="cb67-33"><a href="eligibility-traces.html#cb67-33" tabindex="-1"></a>      new_loads[i] <span class="ot">&lt;-</span> new_loads[i] <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb67-34"><a href="eligibility-traces.html#cb67-34" tabindex="-1"></a>    }</span>
+<span id="cb67-35"><a href="eligibility-traces.html#cb67-35" tabindex="-1"></a>  }</span>
+<span id="cb67-36"><a href="eligibility-traces.html#cb67-36" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">reward =</span> reward, <span class="at">new_loads =</span> new_loads)</span>
+<span id="cb67-37"><a href="eligibility-traces.html#cb67-37" tabindex="-1"></a>}</span>
+<span id="cb67-38"><a href="eligibility-traces.html#cb67-38" tabindex="-1"></a></span>
+<span id="cb67-39"><a href="eligibility-traces.html#cb67-39" tabindex="-1"></a><span class="co"># Initialize parameters</span></span>
+<span id="cb67-40"><a href="eligibility-traces.html#cb67-40" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> (max_load <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">^</span>n_servers</span>
+<span id="cb67-41"><a href="eligibility-traces.html#cb67-41" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers))</span>
+<span id="cb67-42"><a href="eligibility-traces.html#cb67-42" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_servers)) <span class="co"># Eligibility traces</span></span>
+<span id="cb67-43"><a href="eligibility-traces.html#cb67-43" tabindex="-1"></a>rho_hat <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb67-44"><a href="eligibility-traces.html#cb67-44" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb67-45"><a href="eligibility-traces.html#cb67-45" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fl">0.001</span></span>
+<span id="cb67-46"><a href="eligibility-traces.html#cb67-46" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb67-47"><a href="eligibility-traces.html#cb67-47" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fl">0.9</span> <span class="co"># Trace decay parameter</span></span>
+<span id="cb67-48"><a href="eligibility-traces.html#cb67-48" tabindex="-1"></a></span>
+<span id="cb67-49"><a href="eligibility-traces.html#cb67-49" tabindex="-1"></a><span class="co"># --- Helper function for epsilon-greedy action selection ---</span></span>
+<span id="cb67-50"><a href="eligibility-traces.html#cb67-50" tabindex="-1"></a>choose_action <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id, q_table, eps) {</span>
+<span id="cb67-51"><a href="eligibility-traces.html#cb67-51" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> eps) {</span>
+<span id="cb67-52"><a href="eligibility-traces.html#cb67-52" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_servers, <span class="dv">1</span>))</span>
+<span id="cb67-53"><a href="eligibility-traces.html#cb67-53" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb67-54"><a href="eligibility-traces.html#cb67-54" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">which.max</span>(q_table[state_id, ]))</span>
+<span id="cb67-55"><a href="eligibility-traces.html#cb67-55" tabindex="-1"></a>  }</span>
+<span id="cb67-56"><a href="eligibility-traces.html#cb67-56" tabindex="-1"></a>}</span>
+<span id="cb67-57"><a href="eligibility-traces.html#cb67-57" tabindex="-1"></a></span>
+<span id="cb67-58"><a href="eligibility-traces.html#cb67-58" tabindex="-1"></a><span class="co"># Training loop</span></span>
+<span id="cb67-59"><a href="eligibility-traces.html#cb67-59" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_servers)</span>
+<span id="cb67-60"><a href="eligibility-traces.html#cb67-60" tabindex="-1"></a>state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(loads)</span>
+<span id="cb67-61"><a href="eligibility-traces.html#cb67-61" tabindex="-1"></a>action <span class="ot">&lt;-</span> <span class="fu">choose_action</span>(state_id, Q, epsilon)</span>
+<span id="cb67-62"><a href="eligibility-traces.html#cb67-62" tabindex="-1"></a>rho_history_sarsa_lambda <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_steps)</span>
+<span id="cb67-63"><a href="eligibility-traces.html#cb67-63" tabindex="-1"></a></span>
+<span id="cb67-64"><a href="eligibility-traces.html#cb67-64" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training average reward Sarsa(lambda) agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## Training average reward Sarsa(lambda) agent...</code></pre>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="eligibility-traces.html#cb54-1" tabindex="-1"></a><span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_steps) {</span>
-<span id="cb54-2"><a href="eligibility-traces.html#cb54-2" tabindex="-1"></a>  <span class="co"># Take action and observe outcome</span></span>
-<span id="cb54-3"><a href="eligibility-traces.html#cb54-3" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">get_reward</span>(loads, action)</span>
-<span id="cb54-4"><a href="eligibility-traces.html#cb54-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> result<span class="sc">$</span>reward</span>
-<span id="cb54-5"><a href="eligibility-traces.html#cb54-5" tabindex="-1"></a>  next_loads <span class="ot">&lt;-</span> result<span class="sc">$</span>new_loads</span>
-<span id="cb54-6"><a href="eligibility-traces.html#cb54-6" tabindex="-1"></a>  next_state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(next_loads)</span>
-<span id="cb54-7"><a href="eligibility-traces.html#cb54-7" tabindex="-1"></a>  </span>
-<span id="cb54-8"><a href="eligibility-traces.html#cb54-8" tabindex="-1"></a>  <span class="co"># Choose next action (A_{t+1}) for the Sarsa update</span></span>
-<span id="cb54-9"><a href="eligibility-traces.html#cb54-9" tabindex="-1"></a>  next_action <span class="ot">&lt;-</span> <span class="fu">choose_action</span>(next_state_id, Q, epsilon)</span>
-<span id="cb54-10"><a href="eligibility-traces.html#cb54-10" tabindex="-1"></a>  </span>
-<span id="cb54-11"><a href="eligibility-traces.html#cb54-11" tabindex="-1"></a>  <span class="co"># Sarsa(lambda) update</span></span>
-<span id="cb54-12"><a href="eligibility-traces.html#cb54-12" tabindex="-1"></a>  td_error <span class="ot">&lt;-</span> reward <span class="sc">-</span> rho_hat <span class="sc">+</span> Q[next_state_id, next_action] <span class="sc">-</span> Q[state_id, action]</span>
-<span id="cb54-13"><a href="eligibility-traces.html#cb54-13" tabindex="-1"></a>  </span>
-<span id="cb54-14"><a href="eligibility-traces.html#cb54-14" tabindex="-1"></a>  <span class="co"># Increment trace for the current state-action pair</span></span>
-<span id="cb54-15"><a href="eligibility-traces.html#cb54-15" tabindex="-1"></a>  E[state_id, action] <span class="ot">&lt;-</span> E[state_id, action] <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb54-16"><a href="eligibility-traces.html#cb54-16" tabindex="-1"></a>  </span>
-<span id="cb54-17"><a href="eligibility-traces.html#cb54-17" tabindex="-1"></a>  <span class="co"># Update Q-values and rho using the trace</span></span>
-<span id="cb54-18"><a href="eligibility-traces.html#cb54-18" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> Q <span class="sc">+</span> alpha <span class="sc">*</span> td_error <span class="sc">*</span> E</span>
-<span id="cb54-19"><a href="eligibility-traces.html#cb54-19" tabindex="-1"></a>  rho_hat <span class="ot">&lt;-</span> rho_hat <span class="sc">+</span> beta <span class="sc">*</span> td_error</span>
-<span id="cb54-20"><a href="eligibility-traces.html#cb54-20" tabindex="-1"></a>  </span>
-<span id="cb54-21"><a href="eligibility-traces.html#cb54-21" tabindex="-1"></a>  <span class="co"># Decay eligibility traces</span></span>
-<span id="cb54-22"><a href="eligibility-traces.html#cb54-22" tabindex="-1"></a>  E <span class="ot">&lt;-</span> lambda <span class="sc">*</span> E</span>
-<span id="cb54-23"><a href="eligibility-traces.html#cb54-23" tabindex="-1"></a>  </span>
-<span id="cb54-24"><a href="eligibility-traces.html#cb54-24" tabindex="-1"></a>  <span class="co"># Record progress and update state/action for next iteration</span></span>
-<span id="cb54-25"><a href="eligibility-traces.html#cb54-25" tabindex="-1"></a>  rho_history_sarsa_lambda[step] <span class="ot">&lt;-</span> rho_hat</span>
-<span id="cb54-26"><a href="eligibility-traces.html#cb54-26" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> next_state_id</span>
-<span id="cb54-27"><a href="eligibility-traces.html#cb54-27" tabindex="-1"></a>  action <span class="ot">&lt;-</span> next_action</span>
-<span id="cb54-28"><a href="eligibility-traces.html#cb54-28" tabindex="-1"></a>  </span>
-<span id="cb54-29"><a href="eligibility-traces.html#cb54-29" tabindex="-1"></a>  <span class="cf">if</span> (step <span class="sc">%%</span> <span class="dv">10000</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb54-30"><a href="eligibility-traces.html#cb54-30" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Step %d: Average reward estimate = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, step, rho_hat))</span>
-<span id="cb54-31"><a href="eligibility-traces.html#cb54-31" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.01</span>, epsilon <span class="sc">*</span> <span class="fl">0.95</span>) <span class="co"># Faster decay for demonstration</span></span>
-<span id="cb54-32"><a href="eligibility-traces.html#cb54-32" tabindex="-1"></a>  }</span>
-<span id="cb54-33"><a href="eligibility-traces.html#cb54-33" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="eligibility-traces.html#cb69-1" tabindex="-1"></a><span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_steps) {</span>
+<span id="cb69-2"><a href="eligibility-traces.html#cb69-2" tabindex="-1"></a>  <span class="co"># Take action and observe outcome</span></span>
+<span id="cb69-3"><a href="eligibility-traces.html#cb69-3" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">get_reward</span>(loads, action)</span>
+<span id="cb69-4"><a href="eligibility-traces.html#cb69-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> result<span class="sc">$</span>reward</span>
+<span id="cb69-5"><a href="eligibility-traces.html#cb69-5" tabindex="-1"></a>  next_loads <span class="ot">&lt;-</span> result<span class="sc">$</span>new_loads</span>
+<span id="cb69-6"><a href="eligibility-traces.html#cb69-6" tabindex="-1"></a>  next_state_id <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(next_loads)</span>
+<span id="cb69-7"><a href="eligibility-traces.html#cb69-7" tabindex="-1"></a>  </span>
+<span id="cb69-8"><a href="eligibility-traces.html#cb69-8" tabindex="-1"></a>  <span class="co"># Choose next action (A_{t+1}) for the Sarsa update</span></span>
+<span id="cb69-9"><a href="eligibility-traces.html#cb69-9" tabindex="-1"></a>  next_action <span class="ot">&lt;-</span> <span class="fu">choose_action</span>(next_state_id, Q, epsilon)</span>
+<span id="cb69-10"><a href="eligibility-traces.html#cb69-10" tabindex="-1"></a>  </span>
+<span id="cb69-11"><a href="eligibility-traces.html#cb69-11" tabindex="-1"></a>  <span class="co"># Sarsa(lambda) update</span></span>
+<span id="cb69-12"><a href="eligibility-traces.html#cb69-12" tabindex="-1"></a>  td_error <span class="ot">&lt;-</span> reward <span class="sc">-</span> rho_hat <span class="sc">+</span> Q[next_state_id, next_action] <span class="sc">-</span> Q[state_id, action]</span>
+<span id="cb69-13"><a href="eligibility-traces.html#cb69-13" tabindex="-1"></a>  </span>
+<span id="cb69-14"><a href="eligibility-traces.html#cb69-14" tabindex="-1"></a>  <span class="co"># Increment trace for the current state-action pair</span></span>
+<span id="cb69-15"><a href="eligibility-traces.html#cb69-15" tabindex="-1"></a>  E[state_id, action] <span class="ot">&lt;-</span> E[state_id, action] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb69-16"><a href="eligibility-traces.html#cb69-16" tabindex="-1"></a>  </span>
+<span id="cb69-17"><a href="eligibility-traces.html#cb69-17" tabindex="-1"></a>  <span class="co"># Update Q-values and rho using the trace</span></span>
+<span id="cb69-18"><a href="eligibility-traces.html#cb69-18" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> Q <span class="sc">+</span> alpha <span class="sc">*</span> td_error <span class="sc">*</span> E</span>
+<span id="cb69-19"><a href="eligibility-traces.html#cb69-19" tabindex="-1"></a>  rho_hat <span class="ot">&lt;-</span> rho_hat <span class="sc">+</span> beta <span class="sc">*</span> td_error</span>
+<span id="cb69-20"><a href="eligibility-traces.html#cb69-20" tabindex="-1"></a>  </span>
+<span id="cb69-21"><a href="eligibility-traces.html#cb69-21" tabindex="-1"></a>  <span class="co"># Decay eligibility traces</span></span>
+<span id="cb69-22"><a href="eligibility-traces.html#cb69-22" tabindex="-1"></a>  E <span class="ot">&lt;-</span> lambda <span class="sc">*</span> E</span>
+<span id="cb69-23"><a href="eligibility-traces.html#cb69-23" tabindex="-1"></a>  </span>
+<span id="cb69-24"><a href="eligibility-traces.html#cb69-24" tabindex="-1"></a>  <span class="co"># Record progress and update state/action for next iteration</span></span>
+<span id="cb69-25"><a href="eligibility-traces.html#cb69-25" tabindex="-1"></a>  rho_history_sarsa_lambda[step] <span class="ot">&lt;-</span> rho_hat</span>
+<span id="cb69-26"><a href="eligibility-traces.html#cb69-26" tabindex="-1"></a>  state_id <span class="ot">&lt;-</span> next_state_id</span>
+<span id="cb69-27"><a href="eligibility-traces.html#cb69-27" tabindex="-1"></a>  action <span class="ot">&lt;-</span> next_action</span>
+<span id="cb69-28"><a href="eligibility-traces.html#cb69-28" tabindex="-1"></a>  </span>
+<span id="cb69-29"><a href="eligibility-traces.html#cb69-29" tabindex="-1"></a>  <span class="cf">if</span> (step <span class="sc">%%</span> <span class="dv">10000</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb69-30"><a href="eligibility-traces.html#cb69-30" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Step %d: Average reward estimate = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, step, rho_hat))</span>
+<span id="cb69-31"><a href="eligibility-traces.html#cb69-31" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.01</span>, epsilon <span class="sc">*</span> <span class="fl">0.95</span>) <span class="co"># Faster decay for demonstration</span></span>
+<span id="cb69-32"><a href="eligibility-traces.html#cb69-32" tabindex="-1"></a>  }</span>
+<span id="cb69-33"><a href="eligibility-traces.html#cb69-33" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Step 10000: Average reward estimate = -0.3333
 ## Step 20000: Average reward estimate = -0.3333
 ## Step 30000: Average reward estimate = -0.3333
 ## Step 40000: Average reward estimate = -0.3333
 ## Step 50000: Average reward estimate = -0.3333</code></pre>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="eligibility-traces.html#cb56-1" tabindex="-1"></a><span class="co"># Final evaluation and policy analysis (similar to before)</span></span>
-<span id="cb56-2"><a href="eligibility-traces.html#cb56-2" tabindex="-1"></a><span class="co"># ... [code for evaluation and printing policy examples] ...</span></span>
-<span id="cb56-3"><a href="eligibility-traces.html#cb56-3" tabindex="-1"></a>final_avg_reward_sarsa_lambda <span class="ot">&lt;-</span> <span class="fu">tail</span>(<span class="fu">cumsum</span>(rho_history_sarsa_lambda), <span class="dv">1</span>) <span class="sc">/</span> n_steps</span>
-<span id="cb56-4"><a href="eligibility-traces.html#cb56-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final average reward estimate from training: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, rho_hat))</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="eligibility-traces.html#cb71-1" tabindex="-1"></a><span class="co"># Final evaluation and policy analysis (similar to before)</span></span>
+<span id="cb71-2"><a href="eligibility-traces.html#cb71-2" tabindex="-1"></a><span class="co"># ... [code for evaluation and printing policy examples] ...</span></span>
+<span id="cb71-3"><a href="eligibility-traces.html#cb71-3" tabindex="-1"></a>final_avg_reward_sarsa_lambda <span class="ot">&lt;-</span> <span class="fu">tail</span>(<span class="fu">cumsum</span>(rho_history_sarsa_lambda), <span class="dv">1</span>) <span class="sc">/</span> n_steps</span>
+<span id="cb71-4"><a href="eligibility-traces.html#cb71-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final average reward estimate from training: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, rho_hat))</span></code></pre></div>
 <pre><code>## Final average reward estimate from training: -0.3333</code></pre>
 </div>
 <div id="computational-and-performance-considerations" class="section level2 hasAnchor" number="14.6">
