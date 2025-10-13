@@ -183,6 +183,7 @@ This code implements the Q-learning algorithm.
 
 ```{r}
 ql_policy_before <- q_learning()
+ql_policy_before
 ```
 
 This line executes the `q_learning` function with its default parameters
@@ -261,6 +262,7 @@ This code implements the every-visit Monte Carlo control algorithm.
 
 ```{r}
 mc_policy_before <- monte_carlo()
+mc_policy_before
 ```
 
 This line calls the `monte_carlo` function with its default parameters.
@@ -295,11 +297,7 @@ We compare policies derived via:
 -   **Q-Learning** and **Monte Carlo** which keep their previously
     learned policies (habitual behavior without retraining).
 
-<!-- end list -->
-
 ```{r}
-# DP recomputes policy based on updated reward model
-dp_policy_after <- value_iteration()$policy
 # Q-learning and MC keep previous policy (habitual)
 ql_policy_after <- ql_policy_before
 mc_policy_after <- mc_policy_before
