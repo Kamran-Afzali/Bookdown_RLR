@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Function Approximation Q-Learning with Linear Models | Reinforcement Learning in R</title>
+  <meta name="description" content="Chapter 6 Function Approximation Q-Learning with Linear Models | Reinforcement Learning in R" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Function Approximation Q-Learning with Linear Models | Reinforcement Learning in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Function Approximation Q-Learning with Linear Models | Reinforcement Learning in R" />
+  
+  
+  
+
+<meta name="author" content="Kamran Afzalui" />
+
+
+<meta name="date" content="2025-10-19" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"/>
+<link rel="next" href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Reinforcement Learning in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> <strong>Understanding Reinforcement Learning: From Bandits to Policy Optimization</strong></a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#introduction-to-reinforcement-learning"><i class="fa fa-check"></i><b>1.1</b> Introduction to Reinforcement Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#the-multi-armed-bandit-the-simplest-case"><i class="fa fa-check"></i><b>1.2</b> The Multi-Armed Bandit: The Simplest Case</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#transition-to-markov-decision-processes"><i class="fa fa-check"></i><b>1.3</b> Transition to Markov Decision Processes</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#comparing-reinforcement-learning-methods"><i class="fa fa-check"></i><b>1.4</b> Comparing Reinforcement Learning Methods</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#dynamic-programming-model-based-learning"><i class="fa fa-check"></i><b>1.4.1</b> Dynamic Programming: Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#model-free-approaches-monte-carlo-and-td-learning"><i class="fa fa-check"></i><b>1.4.2</b> Model-Free Approaches: Monte Carlo and TD Learning</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#dyna-bridging-model-free-and-model-based-learning"><i class="fa fa-check"></i><b>1.4.3</b> Dyna: Bridging Model-Free and Model-Based Learning</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#q-learning-and-function-approximation"><i class="fa fa-check"></i><b>1.4.4</b> Q-Learning and Function Approximation</a></li>
+<li class="chapter" data-level="1.4.5" data-path="index.html"><a href="index.html#policy-gradient-and-actor-critic-methods"><i class="fa fa-check"></i><b>1.4.5</b> Policy Gradient and Actor-Critic Methods</a></li>
+<li class="chapter" data-level="1.4.6" data-path="index.html"><a href="index.html#advanced-policy-optimization-techniques"><i class="fa fa-check"></i><b>1.4.6</b> Advanced Policy Optimization Techniques</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#further-directions"><i class="fa fa-check"></i><b>1.5</b> Further Directions</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html"><i class="fa fa-check"></i><b>2</b> The Multi-Armed Bandit Problem</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#mathematical-formalism"><i class="fa fa-check"></i><b>2.2</b> Mathematical Formalism</a></li>
+<li class="chapter" data-level="2.3" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#frequentist-approach-ucb1-algorithm"><i class="fa fa-check"></i><b>2.3</b> Frequentist Approach: UCB1 Algorithm</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-ucb1"><i class="fa fa-check"></i><b>2.3.1</b> R Code for UCB1</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#bayesian-approach-thompson-sampling"><i class="fa fa-check"></i><b>2.4</b> Bayesian Approach: Thompson Sampling</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-thompson-sampling"><i class="fa fa-check"></i><b>2.4.1</b> R Code for Thompson Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#epsilon-greedy-strategy"><i class="fa fa-check"></i><b>2.5</b> Epsilon-Greedy Strategy</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#r-code-for-epsilon-greedy"><i class="fa fa-check"></i><b>2.5.1</b> R Code for Epsilon-Greedy</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#summary-table"><i class="fa fa-check"></i><b>2.6</b> Summary Table</a></li>
+<li class="chapter" data-level="2.7" data-path="the-multi-armed-bandit-problem.html"><a href="the-multi-armed-bandit-problem.html#conclusion"><i class="fa fa-check"></i><b>2.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html"><i class="fa fa-check"></i><b>3</b> Markov Decision Processes and Dynamic Programming</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#introduction-1"><i class="fa fa-check"></i><b>3.1</b> Introduction</a></li>
+<li class="chapter" data-level="3.2" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#constructing-the-mdp-in-r"><i class="fa fa-check"></i><b>3.2</b> Constructing the MDP in R</a></li>
+<li class="chapter" data-level="3.3" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#value-iteration-algorithm"><i class="fa fa-check"></i><b>3.3</b> Value Iteration Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation"><i class="fa fa-check"></i><b>3.4</b> Evaluation and Interpretation</a></li>
+<li class="chapter" data-level="3.5" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#theoretical-properties-of-value-iteration"><i class="fa fa-check"></i><b>3.5</b> Theoretical Properties of Value Iteration</a></li>
+<li class="chapter" data-level="3.6" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#summary-table-1"><i class="fa fa-check"></i><b>3.6</b> Summary Table</a></li>
+<li class="chapter" data-level="3.7" data-path="markov-decision-processes-and-dynamic-programming.html"><a href="markov-decision-processes-and-dynamic-programming.html#conclusion-1"><i class="fa fa-check"></i><b>3.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><i class="fa fa-check"></i><b>4</b> Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#introduction-2"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#theoretical-background"><i class="fa fa-check"></i><b>4.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#temporal-difference-learning-q-learning"><i class="fa fa-check"></i><b>4.2.1</b> Temporal Difference Learning (Q-Learning)</a></li>
+<li class="chapter" data-level="4.2.2" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#monte-carlo-methods"><i class="fa fa-check"></i><b>4.2.2</b> Monte Carlo Methods</a></li>
+<li class="chapter" data-level="4.2.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-1-defining-the-environment-in-r"><i class="fa fa-check"></i><b>4.2.3</b> Step 1: Defining the Environment in R</a></li>
+<li class="chapter" data-level="4.2.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-2-q-learning-implementation-in-r"><i class="fa fa-check"></i><b>4.2.4</b> Step 2: Q-Learning Implementation in R</a></li>
+<li class="chapter" data-level="4.2.5" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-3-monte-carlo-every-visit-implementation"><i class="fa fa-check"></i><b>4.2.5</b> Step 3: Monte Carlo Every-Visit Implementation</a></li>
+<li class="chapter" data-level="4.2.6" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-4-simulating-outcome-devaluation"><i class="fa fa-check"></i><b>4.2.6</b> Step 4: Simulating Outcome Devaluation</a></li>
+<li class="chapter" data-level="4.2.7" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-5-comparing-policies-before-and-after-devaluation"><i class="fa fa-check"></i><b>4.2.7</b> Step 5: Comparing Policies Before and After Devaluation</a></li>
+<li class="chapter" data-level="4.2.8" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#step-6-visualizing-the-policies"><i class="fa fa-check"></i><b>4.2.8</b> Step 6: Visualizing the Policies</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#interpretation-and-discussion"><i class="fa fa-check"></i><b>4.3</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="4.4" data-path="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html"><a href="model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r.html#conclusion-2"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><i class="fa fa-check"></i><b>5</b> On-Policy vs Off-Policy Reinforcement Learning: SARSA, Q-Learning, and Monte Carlo in R</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#introduction-3"><i class="fa fa-check"></i><b>5.1</b> Introduction</a></li>
+<li class="chapter" data-level="5.2" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#sarsa-on-policy"><i class="fa fa-check"></i><b>5.2</b> SARSA (On-Policy)</a></li>
+<li class="chapter" data-level="5.3" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#q-learning-off-policy"><i class="fa fa-check"></i><b>5.3</b> Q-Learning (Off-Policy)</a></li>
+<li class="chapter" data-level="5.4" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#off-policy-monte-carlo-with-importance-sampling"><i class="fa fa-check"></i><b>5.4</b> Off-Policy Monte Carlo with Importance Sampling</a></li>
+<li class="chapter" data-level="5.5" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#key-differences"><i class="fa fa-check"></i><b>5.5</b> Key Differences</a></li>
+<li class="chapter" data-level="5.6" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#interpretation-and-discussion-1"><i class="fa fa-check"></i><b>5.6</b> Interpretation and Discussion</a></li>
+<li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
+<li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html"><i class="fa fa-check"></i><b>6</b> Function Approximation Q-Learning with Linear Models</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#introduction-5"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#theoretical-background-2"><i class="fa fa-check"></i><b>7.2</b> Theoretical Background</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#q-learning-with-random-forest-approximation"><i class="fa fa-check"></i><b>7.2.1</b> Q-Learning with Random Forest Approximation</a></li>
+<li class="chapter" data-level="7.2.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-engineering-for-tree-based-models"><i class="fa fa-check"></i><b>7.2.2</b> Feature Engineering for Tree-Based Models</a></li>
+<li class="chapter" data-level="7.2.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.2.3</b> Comparison with Previous Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.3</b> R Implementation</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.4</b> Analysis and Insights</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.4.1</b> Policy Learning Characteristics</a></li>
+<li class="chapter" data-level="7.4.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.4.2</b> Computational Considerations</a></li>
+<li class="chapter" data-level="7.4.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.4.3</b> Feature Importance Insights</a></li>
+<li class="chapter" data-level="7.4.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.4.4</b> Practical Implications</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.5</b> Comparison with Linear Approximation</a></li>
+<li class="chapter" data-level="7.6" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#introduction-6"><i class="fa fa-check"></i><b>8.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#theoretical-foundation"><i class="fa fa-check"></i><b>8.2</b> Theoretical Foundation</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#universal-approximation-and-expressivity"><i class="fa fa-check"></i><b>8.2.1</b> Universal Approximation and Expressivity</a></li>
+<li class="chapter" data-level="8.2.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#gradient-based-learning"><i class="fa fa-check"></i><b>8.2.2</b> Gradient-Based Learning</a></li>
+<li class="chapter" data-level="8.2.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-with-previous-approaches"><i class="fa fa-check"></i><b>8.2.3</b> Comparison with Previous Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#r-implementation-2"><i class="fa fa-check"></i><b>8.3</b> R Implementation</a></li>
+<li class="chapter" data-level="8.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#analysis-and-interpretation"><i class="fa fa-check"></i><b>8.4</b> Analysis and Interpretation</a>
+<ul>
+<li class="chapter" data-level="8.4.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#learning-dynamics"><i class="fa fa-check"></i><b>8.4.1</b> Learning Dynamics</a></li>
+<li class="chapter" data-level="8.4.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#function-representation"><i class="fa fa-check"></i><b>8.4.2</b> Function Representation</a></li>
+<li class="chapter" data-level="8.4.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#generalization-properties"><i class="fa fa-check"></i><b>8.4.3</b> Generalization Properties</a></li>
+<li class="chapter" data-level="8.4.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-stability"><i class="fa fa-check"></i><b>8.4.4</b> Training Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#practical-considerations"><i class="fa fa-check"></i><b>8.5</b> Practical Considerations</a>
+<ul>
+<li class="chapter" data-level="8.5.1" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#architecture-selection"><i class="fa fa-check"></i><b>8.5.1</b> Architecture Selection</a></li>
+<li class="chapter" data-level="8.5.2" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#training-frequency"><i class="fa fa-check"></i><b>8.5.2</b> Training Frequency</a></li>
+<li class="chapter" data-level="8.5.3" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#regularization"><i class="fa fa-check"></i><b>8.5.3</b> Regularization</a></li>
+<li class="chapter" data-level="8.5.4" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#initialization-and-convergence"><i class="fa fa-check"></i><b>8.5.4</b> Initialization and Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#comparison-across-function-approximation-methods"><i class="fa fa-check"></i><b>8.6</b> Comparison Across Function Approximation Methods</a></li>
+<li class="chapter" data-level="8.7" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#future-directions"><i class="fa fa-check"></i><b>8.7</b> Future Directions</a></li>
+<li class="chapter" data-level="8.8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html#conclusion-5"><i class="fa fa-check"></i><b>8.8</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html"><i class="fa fa-check"></i><b>9</b> Dyna and DynaQ</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#introduction-7"><i class="fa fa-check"></i><b>9.1</b> Introduction</a></li>
+<li class="chapter" data-level="9.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#theoretical-framework"><i class="fa fa-check"></i><b>9.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#the-dyna-architecture"><i class="fa fa-check"></i><b>9.2.1</b> The Dyna Architecture</a></li>
+<li class="chapter" data-level="9.2.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#model-representation"><i class="fa fa-check"></i><b>9.2.2</b> Model Representation</a></li>
+<li class="chapter" data-level="9.2.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#convergence-properties"><i class="fa fa-check"></i><b>9.2.3</b> Convergence Properties</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-in-r"><i class="fa fa-check"></i><b>9.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
+<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="9.4.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#learning-efficiency-comparison"><i class="fa fa-check"></i><b>9.4.1</b> Learning Efficiency Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#discussion"><i class="fa fa-check"></i><b>9.5</b> Discussion</a></li>
+<li class="chapter" data-level="9.6" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#implementation-considerations-and-conclusion"><i class="fa fa-check"></i><b>9.6</b> Implementation Considerations and Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><i class="fa fa-check"></i><b>10</b> Dyna-Q+: Enhanced Exploration in Integrated Learning and Planning</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#introduction-8"><i class="fa fa-check"></i><b>10.1</b> Introduction</a></li>
+<li class="chapter" data-level="10.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#theoretical-framework-1"><i class="fa fa-check"></i><b>10.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#the-exploration-bonus-mechanism"><i class="fa fa-check"></i><b>10.2.1</b> The Exploration Bonus Mechanism</a></li>
+<li class="chapter" data-level="10.2.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#complete-dyna-q-algorithm"><i class="fa fa-check"></i><b>10.2.2</b> Complete Dyna-Q+ Algorithm</a></li>
+<li class="chapter" data-level="10.2.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#convergence-and-stability"><i class="fa fa-check"></i><b>10.2.3</b> Convergence and Stability</a></li>
+</ul></li>
+<li class="chapter" data-level="10.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#implementation-in-r-1"><i class="fa fa-check"></i><b>10.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#environment-setup-1"><i class="fa fa-check"></i><b>10.3.1</b> Environment Setup</a></li>
+<li class="chapter" data-level="10.3.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#dyna-q-implementation-1"><i class="fa fa-check"></i><b>10.3.2</b> Dyna-Q+ Implementation</a></li>
+<li class="chapter" data-level="10.3.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#standard-dyna-for-comparison"><i class="fa fa-check"></i><b>10.3.3</b> Standard Dyna for Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#experimental-analysis-1"><i class="fa fa-check"></i><b>10.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="10.4.1" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#adaptation-to-environmental-changes"><i class="fa fa-check"></i><b>10.4.1</b> Adaptation to Environmental Changes</a></li>
+<li class="chapter" data-level="10.4.2" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#parameter-sensitivity-analysis"><i class="fa fa-check"></i><b>10.4.2</b> Parameter Sensitivity Analysis</a></li>
+<li class="chapter" data-level="10.4.3" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#exploration-pattern-analysis"><i class="fa fa-check"></i><b>10.4.3</b> Exploration Pattern Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#discussion-and-implementation-considerations"><i class="fa fa-check"></i><b>10.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="10.6" data-path="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html"><a href="dyna-q-enhanced-exploration-in-integrated-learning-and-planning.html#conclusion-6"><i class="fa fa-check"></i><b>10.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html"><i class="fa fa-check"></i><b>11</b> Function Approximation And Feature Engineering</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#feature-engineering-and-state-representation"><i class="fa fa-check"></i><b>11.1</b> Feature Engineering and State Representation</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#the-discrimination-vs.-generalization-tradeoff"><i class="fa fa-check"></i><b>11.1.1</b> The Discrimination vs. Generalization Tradeoff</a></li>
+<li class="chapter" data-level="11.1.2" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#principles-of-effective-feature-design"><i class="fa fa-check"></i><b>11.1.2</b> Principles of Effective Feature Design</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#mathematical-foundations-of-linear-function-approximation"><i class="fa fa-check"></i><b>11.2</b> Mathematical Foundations of Linear Function Approximation</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#linear-value-functions-and-their-properties"><i class="fa fa-check"></i><b>11.2.1</b> Linear Value Functions and Their Properties</a></li>
+<li class="chapter" data-level="11.2.2" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#temporal-difference-learning-with-linear-approximation"><i class="fa fa-check"></i><b>11.2.2</b> Temporal Difference Learning with Linear Approximation</a></li>
+<li class="chapter" data-level="11.2.3" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#the-deadly-triad-and-stability-concerns"><i class="fa fa-check"></i><b>11.2.3</b> The Deadly Triad and Stability Concerns</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#classical-basis-function-methods"><i class="fa fa-check"></i><b>11.3</b> Classical Basis Function Methods</a>
+<ul>
+<li class="chapter" data-level="11.3.1" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#coarse-coding-overlapping-receptive-fields"><i class="fa fa-check"></i><b>11.3.1</b> Coarse Coding: Overlapping Receptive Fields</a></li>
+<li class="chapter" data-level="11.3.2" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#tile-coding-structured-overlapping-grids"><i class="fa fa-check"></i><b>11.3.2</b> Tile Coding: Structured Overlapping Grids</a></li>
+<li class="chapter" data-level="11.3.3" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#radial-basis-functions-smooth-continuous-features"><i class="fa fa-check"></i><b>11.3.3</b> Radial Basis Functions: Smooth Continuous Features</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#comparative-analysis-and-practical-considerations"><i class="fa fa-check"></i><b>11.4</b> Comparative Analysis and Practical Considerations</a></li>
+<li class="chapter" data-level="11.5" data-path="function-approximation-and-feature-engineering.html"><a href="function-approximation-and-feature-engineering.html#bridging-classical-and-modern-approaches"><i class="fa fa-check"></i><b>11.5</b> Bridging Classical and Modern Approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html"><i class="fa fa-check"></i><b>12</b> Learning Policies versus Learning Values:</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html#the-two-paradigms-of-reinforcement-learning"><i class="fa fa-check"></i><b>12.1</b> The Two Paradigms of Reinforcement Learning</a>
+<ul>
+<li class="chapter" data-level="12.1.1" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html#value-based-methods-learning-worth-before-action"><i class="fa fa-check"></i><b>12.1.1</b> Value-Based Methods: Learning Worth Before Action</a></li>
+<li class="chapter" data-level="12.1.2" data-path="learning-policies-versus-learning-values.html"><a href="learning-policies-versus-learning-values.html#policy-based-methods-direct-optimization-of-behavior"><i class="fa fa-check"></i><b>12.1.2</b> Policy-Based Methods: Direct Optimization of Behavior</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><i class="fa fa-check"></i><b>13</b> Average Reward in Reinforcement Learning: A Comprehensive Guide</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#the-limitations-of-discounted-reward-formulations"><i class="fa fa-check"></i><b>13.1</b> The Limitations of Discounted Reward Formulations</a></li>
+<li class="chapter" data-level="13.2" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#the-average-reward-alternative-theoretical-foundations"><i class="fa fa-check"></i><b>13.2</b> The Average Reward Alternative: Theoretical Foundations</a></li>
+<li class="chapter" data-level="13.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#value-functions-in-the-average-reward-setting"><i class="fa fa-check"></i><b>13.3</b> Value Functions in the Average Reward Setting</a></li>
+<li class="chapter" data-level="13.4" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-theory-for-average-reward"><i class="fa fa-check"></i><b>13.4</b> Optimality Theory for Average Reward</a></li>
+<li class="chapter" data-level="13.5" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#learning-algorithms-for-average-reward"><i class="fa fa-check"></i><b>13.5</b> Learning Algorithms for Average Reward</a></li>
+<li class="chapter" data-level="13.6" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#practical-implementation-server-load-balancing"><i class="fa fa-check"></i><b>13.6</b> Practical Implementation: Server Load Balancing</a></li>
+<li class="chapter" data-level="13.7" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#implementation-considerations"><i class="fa fa-check"></i><b>13.7</b> Implementation Considerations</a></li>
+<li class="chapter" data-level="13.8" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#when-to-choose-average-reward-over-discounting"><i class="fa fa-check"></i><b>13.8</b> When to Choose Average Reward Over Discounting</a></li>
+<li class="chapter" data-level="13.9" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#appendix-a-mathematical-proofs-and-derivations"><i class="fa fa-check"></i><b>13.9</b> Appendix A: Mathematical Proofs and Derivations</a>
+<ul>
+<li class="chapter" data-level="13.9.1" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#convergence-of-average-reward-td-learning"><i class="fa fa-check"></i><b>13.9.1</b> Convergence of Average Reward TD Learning</a></li>
+<li class="chapter" data-level="13.9.2" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#policy-gradient-theorem-for-average-reward"><i class="fa fa-check"></i><b>13.9.2</b> Policy Gradient Theorem for Average Reward</a></li>
+<li class="chapter" data-level="13.9.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-equations-derivation"><i class="fa fa-check"></i><b>13.9.3</b> Optimality Equations Derivation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="eligibility-traces.html"><a href="eligibility-traces.html"><i class="fa fa-check"></i><b>14</b> Eligibility Traces</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="eligibility-traces.html"><a href="eligibility-traces.html#from-one-step-to-multi-step-learning"><i class="fa fa-check"></i><b>14.1</b> From One-Step to Multi-Step Learning</a></li>
+<li class="chapter" data-level="14.2" data-path="eligibility-traces.html"><a href="eligibility-traces.html#the-mechanics-of-eligibility-traces-a-backward-view"><i class="fa fa-check"></i><b>14.2</b> The Mechanics of Eligibility Traces: A Backward View</a></li>
+<li class="chapter" data-level="14.3" data-path="eligibility-traces.html"><a href="eligibility-traces.html#the-tdlambda-algorithm-for-prediction"><i class="fa fa-check"></i><b>14.3</b> The TD(<span class="math inline">\(\\lambda\)</span>) Algorithm for Prediction</a></li>
+<li class="chapter" data-level="14.4" data-path="eligibility-traces.html"><a href="eligibility-traces.html#control-with-eligibility-traces-average-reward-sarsalambda"><i class="fa fa-check"></i><b>14.4</b> Control with Eligibility Traces: Average Reward Sarsa(<span class="math inline">\(\\lambda\)</span>)</a></li>
+<li class="chapter" data-level="14.5" data-path="eligibility-traces.html"><a href="eligibility-traces.html#practical-implementation-server-load-balancing-with-sarsalambda"><i class="fa fa-check"></i><b>14.5</b> Practical Implementation: Server Load Balancing with Sarsa(<span class="math inline">\(\\lambda\)</span>)</a></li>
+<li class="chapter" data-level="14.6" data-path="eligibility-traces.html"><a href="eligibility-traces.html#computational-and-performance-considerations"><i class="fa fa-check"></i><b>14.6</b> Computational and Performance Considerations</a></li>
+<li class="chapter" data-level="14.7" data-path="eligibility-traces.html"><a href="eligibility-traces.html#conclusion-8"><i class="fa fa-check"></i><b>14.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html"><i class="fa fa-check"></i><b>15</b> Intrinsic Rewards</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#the-sparse-reward-problem-and-its-implications"><i class="fa fa-check"></i><b>15.1</b> The Sparse Reward Problem and Its Implications</a></li>
+<li class="chapter" data-level="15.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#mathematical-foundations-of-intrinsic-motivation"><i class="fa fa-check"></i><b>15.2</b> Mathematical Foundations of Intrinsic Motivation</a>
+<ul>
+<li class="chapter" data-level="15.2.1" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#curiosity-driven-learning"><i class="fa fa-check"></i><b>15.2.1</b> Curiosity-Driven Learning</a></li>
+<li class="chapter" data-level="15.2.2" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#count-based-exploration"><i class="fa fa-check"></i><b>15.2.2</b> Count-Based Exploration</a></li>
+</ul></li>
+<li class="chapter" data-level="15.3" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#practical-implementation-curiosity-driven-grid-world-navigation"><i class="fa fa-check"></i><b>15.3</b> Practical Implementation: Curiosity-Driven Grid World Navigation</a></li>
+<li class="chapter" data-level="15.4" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#advanced-intrinsic-motivation-mechanisms"><i class="fa fa-check"></i><b>15.4</b> Advanced Intrinsic Motivation Mechanisms</a></li>
+<li class="chapter" data-level="15.5" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#implementation-considerations-and-practical-guidelines"><i class="fa fa-check"></i><b>15.5</b> Implementation Considerations and Practical Guidelines</a></li>
+<li class="chapter" data-level="15.6" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#theoretical-analysis-and-convergence-properties"><i class="fa fa-check"></i><b>15.6</b> Theoretical Analysis and Convergence Properties</a></li>
+<li class="chapter" data-level="15.7" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#applications-and-empirical-results"><i class="fa fa-check"></i><b>15.7</b> Applications and Empirical Results</a></li>
+<li class="chapter" data-level="15.8" data-path="intrinsic-rewards.html"><a href="intrinsic-rewards.html#limitations-and-future-directions"><i class="fa fa-check"></i><b>15.8</b> Limitations and Future Directions</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><i class="fa fa-check"></i><b>16</b> Policy Gradients: Direct Optimization of Action Selection in Reinforcement Learning</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#introduction-9"><i class="fa fa-check"></i><b>16.1</b> Introduction</a></li>
+<li class="chapter" data-level="16.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#theoretical-framework-2"><i class="fa fa-check"></i><b>16.2</b> Theoretical Framework</a>
+<ul>
+<li class="chapter" data-level="16.2.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#the-policy-gradient-theorem-1"><i class="fa fa-check"></i><b>16.2.1</b> The Policy Gradient Theorem</a></li>
+<li class="chapter" data-level="16.2.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#reinforce-algorithm"><i class="fa fa-check"></i><b>16.2.2</b> REINFORCE Algorithm</a></li>
+<li class="chapter" data-level="16.2.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#baseline-subtraction-and-variance-reduction"><i class="fa fa-check"></i><b>16.2.3</b> Baseline Subtraction and Variance Reduction</a></li>
+<li class="chapter" data-level="16.2.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#softmax-policy-parameterization"><i class="fa fa-check"></i><b>16.2.4</b> Softmax Policy Parameterization</a></li>
+</ul></li>
+<li class="chapter" data-level="16.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#implementation-in-r-2"><i class="fa fa-check"></i><b>16.3</b> Implementation in R</a>
+<ul>
+<li class="chapter" data-level="16.3.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#environment-and-feature-representation"><i class="fa fa-check"></i><b>16.3.1</b> Environment and Feature Representation</a></li>
+<li class="chapter" data-level="16.3.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#softmax-policy-implementation"><i class="fa fa-check"></i><b>16.3.2</b> Softmax Policy Implementation</a></li>
+<li class="chapter" data-level="16.3.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#reinforce-implementation"><i class="fa fa-check"></i><b>16.3.3</b> REINFORCE Implementation</a></li>
+<li class="chapter" data-level="16.3.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#actor-critic-implementation"><i class="fa fa-check"></i><b>16.3.4</b> Actor-Critic Implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="16.4" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#experimental-analysis-2"><i class="fa fa-check"></i><b>16.4</b> Experimental Analysis</a>
+<ul>
+<li class="chapter" data-level="16.4.1" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#comparison-of-policy-gradient-variants"><i class="fa fa-check"></i><b>16.4.1</b> Comparison of Policy Gradient Variants</a></li>
+<li class="chapter" data-level="16.4.2" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#learning-rate-sensitivity-analysis"><i class="fa fa-check"></i><b>16.4.2</b> Learning Rate Sensitivity Analysis</a></li>
+<li class="chapter" data-level="16.4.3" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#variance-analysis-of-gradient-estimates"><i class="fa fa-check"></i><b>16.4.3</b> Variance Analysis of Gradient Estimates</a></li>
+</ul></li>
+<li class="chapter" data-level="16.5" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#discussion-and-implementation-considerations-1"><i class="fa fa-check"></i><b>16.5</b> Discussion and Implementation Considerations</a></li>
+<li class="chapter" data-level="16.6" data-path="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html"><a href="policy-gradients-direct-optimization-of-action-selection-in-reinforcement-learning.html#conclusion-9"><i class="fa fa-check"></i><b>16.6</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><i class="fa fa-check"></i><b>17</b> Actor-Critic Methods: Bridging Policy and Value Learning in Reinforcement Learning</a>
+<ul>
+<li class="chapter" data-level="17.1" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#theoretical-framework-3"><i class="fa fa-check"></i><b>17.1</b> Theoretical Framework</a></li>
+<li class="chapter" data-level="17.2" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#implementation-and-comparative-analysis"><i class="fa fa-check"></i><b>17.2</b> Implementation and Comparative Analysis</a>
+<ul>
+<li class="chapter" data-level="17.2.1" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#variance-analysis-and-learning-dynamics"><i class="fa fa-check"></i><b>17.2.1</b> Variance Analysis and Learning Dynamics</a></li>
+<li class="chapter" data-level="17.2.2" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#algorithmic-variants-and-extensions"><i class="fa fa-check"></i><b>17.2.2</b> Algorithmic Variants and Extensions</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#computational-and-convergence-considerations"><i class="fa fa-check"></i><b>17.3</b> Computational and Convergence Considerations</a>
+<ul>
+<li class="chapter" data-level="17.3.1" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#comparative-performance-analysis"><i class="fa fa-check"></i><b>17.3.1</b> Comparative Performance Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="17.4" data-path="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html"><a href="actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning.html#conclusion-10"><i class="fa fa-check"></i><b>17.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>18</b> Appendix</a>
+<ul>
+<li class="chapter" data-level="18.1" data-path="appendix.html"><a href="appendix.html#comprehensive-reinforcement-learning-concepts-guide"><i class="fa fa-check"></i><b>18.1</b> Comprehensive Reinforcement Learning Concepts Guide</a></li>
+<li class="chapter" data-level="18.2" data-path="appendix.html"><a href="appendix.html#learning-mechanisms"><i class="fa fa-check"></i><b>18.2</b> Learning Mechanisms</a></li>
+<li class="chapter" data-level="18.3" data-path="appendix.html"><a href="appendix.html#environment-properties"><i class="fa fa-check"></i><b>18.3</b> Environment Properties</a></li>
+<li class="chapter" data-level="18.4" data-path="appendix.html"><a href="appendix.html#learning-paradigms"><i class="fa fa-check"></i><b>18.4</b> Learning Paradigms</a></li>
+<li class="chapter" data-level="18.5" data-path="appendix.html"><a href="appendix.html#exploration-strategies"><i class="fa fa-check"></i><b>18.5</b> Exploration Strategies</a></li>
+<li class="chapter" data-level="18.6" data-path="appendix.html"><a href="appendix.html#key-algorithms-methods"><i class="fa fa-check"></i><b>18.6</b> Key Algorithms &amp; Methods</a></li>
+<li class="chapter" data-level="18.7" data-path="appendix.html"><a href="appendix.html#advanced-concepts"><i class="fa fa-check"></i><b>18.7</b> Advanced Concepts</a></li>
+<li class="chapter" data-level="18.8" data-path="appendix.html"><a href="appendix.html#fundamental-equations"><i class="fa fa-check"></i><b>18.8</b> Fundamental Equations</a>
+<ul>
+<li class="chapter" data-level="18.8.1" data-path="appendix.html"><a href="appendix.html#bellman-equations"><i class="fa fa-check"></i><b>18.8.1</b> <strong>Bellman Equations</strong></a></li>
+<li class="chapter" data-level="18.8.2" data-path="appendix.html"><a href="appendix.html#policy-gradient-theorem"><i class="fa fa-check"></i><b>18.8.2</b> <strong>Policy Gradient Theorem</strong></a></li>
+<li class="chapter" data-level="18.8.3" data-path="appendix.html"><a href="appendix.html#temporal-difference-error"><i class="fa fa-check"></i><b>18.8.3</b> <strong>Temporal Difference Error</strong></a></li>
+</ul></li>
+<li class="chapter" data-level="18.9" data-path="appendix.html"><a href="appendix.html#common-challenges-solutions"><i class="fa fa-check"></i><b>18.9</b> Common Challenges &amp; Solutions</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reinforcement Learning in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="function-approximation-q-learning-with-linear-models" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Function Approximation Q-Learning with Linear Models<a href="function-approximation-q-learning-with-linear-models.html#function-approximation-q-learning-with-linear-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="introduction-4" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Introduction<a href="function-approximation-q-learning-with-linear-models.html#introduction-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In reinforcement learning (RL), tabular methods like SARSA and
+Q-Learning store a separate Q-value for each state-action pair, which
+becomes infeasible in large or continuous state spaces. Function
+approximation addresses this by representing the action-value function
+<span class="math inline">\(Q(s, a)\)</span> as a parameterized function <span class="math inline">\(Q(s, a; \theta)\)</span>, enabling
+generalization across states and scalability. This post explores
+Q-Learning with linear function approximation, using a 10-state,
+2-action environment to demonstrate how it learns policies compared to
+tabular methods. We provide mathematical formulations, R code, and
+comparisons with tabular Q-Learning, focusing on generalization,
+scalability, and practical implications.</p>
+</div>
+<div id="theoretical-background-1" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Theoretical Background<a href="function-approximation-q-learning-with-linear-models.html#theoretical-background-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Function approximation in RL aims to estimate the action-value function:</p>
+<p><span class="math display">\[
+Q^\pi(s, a) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty \gamma^t R_{t+1} \mid S_0 = s, A_0 = a \right]
+\]</span></p>
+<p>where <span class="math inline">\(\gamma \in [0,1]\)</span> is the discount factor, and <span class="math inline">\(R_{t+1}\)</span> is the
+reward at time <span class="math inline">\(t+1\)</span>. Instead of storing <span class="math inline">\(Q(s, a)\)</span> in a table, we
+approximate it as:</p>
+<p><span class="math display">\[
+Q(s, a; \theta) = \phi(s, a)^T \theta
+\]</span></p>
+<p>where <span class="math inline">\(\phi(s, a)\)</span> is a feature vector for state-action pair <span class="math inline">\((s, a)\)</span>,
+and <span class="math inline">\(\theta\)</span> is a parameter vector learned via optimization, typically
+stochastic gradient descent (SGD).</p>
+<div id="q-learning-with-function-approximation" class="section level3 hasAnchor" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Q-Learning with Function Approximation<a href="function-approximation-q-learning-with-linear-models.html#q-learning-with-function-approximation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Q-Learning with function approximation is an off-policy method that
+learns the optimal policy by updating <span class="math inline">\(\theta\)</span> to minimize the temporal
+difference (TD) error. The update rule is:</p>
+<p><span class="math display">\[
+\theta \leftarrow \theta + \alpha \delta \nabla_\theta Q(s, a; \theta)
+\]</span></p>
+<p>where <span class="math inline">\(\alpha\)</span> is the learning rate, and the TD error <span class="math inline">\(\delta\)</span> is:</p>
+<p><span class="math display">\[
+\delta = r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;; \theta) - Q(s, a; \theta)
+\]</span></p>
+<p>Here, <span class="math inline">\(r\)</span> is the reward, <span class="math inline">\(s&#39;\)</span> is the next state, and
+<span class="math inline">\(\max_{a&#39;} Q(s&#39;, a&#39;; \theta)\)</span> estimates the value of the next state
+assuming the optimal action. For linear function approximation, the
+gradient is:</p>
+<p><span class="math display">\[
+\nabla_\theta Q(s, a; \theta) = \phi(s, a)
+\]</span></p>
+<p>Thus, the update becomes:</p>
+<p><span class="math display">\[
+\theta \leftarrow \theta + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;; \theta) - Q(s, a; \theta) \right) \phi(s, a)
+\]</span></p>
+<p>In our 10-state environment, we use one-hot encoding for <span class="math inline">\(\phi(s, a)\)</span>,
+mimicking tabular Q-Learning for simplicity but demonstrating the
+framework’s potential for generalization with more complex features.</p>
+</div>
+<div id="comparison-with-tabular-q-learning" class="section level3 hasAnchor" number="6.2.2">
+<h3><span class="header-section-number">6.2.2</span> Comparison with Tabular Q-Learning<a href="function-approximation-q-learning-with-linear-models.html#comparison-with-tabular-q-learning" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Tabular Q-Learning updates a table of Q-values directly:</p>
+<p><span class="math display">\[
+Q(s, a) \leftarrow Q(s, a) + \alpha \left( r + \gamma \max_{a&#39;} Q(s&#39;, a&#39;) - Q(s, a) \right)
+\]</span></p>
+<p>Function approximation generalizes across states via <span class="math inline">\(\phi(s, a)\)</span>,
+reducing memory requirements and enabling learning in large or
+continuous spaces. However, it introduces approximation errors and
+requires careful feature design to ensure convergence.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="24%" />
+<col width="34%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Aspect</strong></th>
+<th><strong>Tabular Q-Learning</strong></th>
+<th><strong>Q-Learning with Function Approximation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Representation</strong></td>
+<td>Table of <span class="math inline">\(Q(s, a)\)</span> values</td>
+<td><span class="math inline">\(Q(s, a; \theta) = \phi(s, a)^T \theta\)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Memory</strong></td>
+<td><span class="math inline">\(O(|\mathcal{S}| \cdot |\mathcal{A}|)\)</span></td>
+<td><span class="math inline">\(O(|\theta|)\)</span>, depends on feature size</td>
+</tr>
+<tr class="odd">
+<td><strong>Generalization</strong></td>
+<td>None; state-action specific</td>
+<td>Yes; depends on feature design</td>
+</tr>
+<tr class="even">
+<td><strong>Scalability</strong></td>
+<td>Poor for large/continuous spaces</td>
+<td>Good for large/continuous spaces with proper features</td>
+</tr>
+<tr class="odd">
+<td><strong>Update Rule</strong></td>
+<td>Direct Q-value update</td>
+<td>Parameter update via gradient descent</td>
+</tr>
+<tr class="even">
+<td><strong>Convergence</strong></td>
+<td>Guaranteed to optimal <span class="math inline">\(Q^*\)</span> under conditions</td>
+<td>Converges to approximation of <span class="math inline">\(Q^*\)</span>; depends on features</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="r-implementation" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> R Implementation<a href="function-approximation-q-learning-with-linear-models.html#r-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We implement Q-Learning with linear function approximation in a
+10-state, 2-action environment, using one-hot encoding for <span class="math inline">\(\phi(s, a)\)</span>.
+The environment mirrors the previous post, with action 1 yielding a 1.0
+reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="function-approximation-q-learning-with-linear-models.html#cb36-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
+<span id="cb36-2"><a href="function-approximation-q-learning-with-linear-models.html#cb36-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb36-3"><a href="function-approximation-q-learning-with-linear-models.html#cb36-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb36-4"><a href="function-approximation-q-learning-with-linear-models.html#cb36-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb36-5"><a href="function-approximation-q-learning-with-linear-models.html#cb36-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb36-6"><a href="function-approximation-q-learning-with-linear-models.html#cb36-6" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="function-approximation-q-learning-with-linear-models.html#cb36-7" tabindex="-1"></a><span class="co"># Environment: transition and reward models</span></span>
+<span id="cb36-8"><a href="function-approximation-q-learning-with-linear-models.html#cb36-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb36-9"><a href="function-approximation-q-learning-with-linear-models.html#cb36-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb36-10"><a href="function-approximation-q-learning-with-linear-models.html#cb36-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb36-11"><a href="function-approximation-q-learning-with-linear-models.html#cb36-11" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="function-approximation-q-learning-with-linear-models.html#cb36-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb36-13"><a href="function-approximation-q-learning-with-linear-models.html#cb36-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb36-14"><a href="function-approximation-q-learning-with-linear-models.html#cb36-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb36-15"><a href="function-approximation-q-learning-with-linear-models.html#cb36-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb36-16"><a href="function-approximation-q-learning-with-linear-models.html#cb36-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb36-17"><a href="function-approximation-q-learning-with-linear-models.html#cb36-17" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb36-18"><a href="function-approximation-q-learning-with-linear-models.html#cb36-18" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb36-19"><a href="function-approximation-q-learning-with-linear-models.html#cb36-19" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb36-20"><a href="function-approximation-q-learning-with-linear-models.html#cb36-20" tabindex="-1"></a>  }</span>
+<span id="cb36-21"><a href="function-approximation-q-learning-with-linear-models.html#cb36-21" tabindex="-1"></a>}</span>
+<span id="cb36-22"><a href="function-approximation-q-learning-with-linear-models.html#cb36-22" tabindex="-1"></a></span>
+<span id="cb36-23"><a href="function-approximation-q-learning-with-linear-models.html#cb36-23" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb36-24"><a href="function-approximation-q-learning-with-linear-models.html#cb36-24" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb36-25"><a href="function-approximation-q-learning-with-linear-models.html#cb36-25" tabindex="-1"></a></span>
+<span id="cb36-26"><a href="function-approximation-q-learning-with-linear-models.html#cb36-26" tabindex="-1"></a><span class="co"># Sampling function</span></span>
+<span id="cb36-27"><a href="function-approximation-q-learning-with-linear-models.html#cb36-27" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb36-28"><a href="function-approximation-q-learning-with-linear-models.html#cb36-28" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb36-29"><a href="function-approximation-q-learning-with-linear-models.html#cb36-29" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb36-30"><a href="function-approximation-q-learning-with-linear-models.html#cb36-30" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb36-31"><a href="function-approximation-q-learning-with-linear-models.html#cb36-31" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb36-32"><a href="function-approximation-q-learning-with-linear-models.html#cb36-32" tabindex="-1"></a>}</span>
+<span id="cb36-33"><a href="function-approximation-q-learning-with-linear-models.html#cb36-33" tabindex="-1"></a></span>
+<span id="cb36-34"><a href="function-approximation-q-learning-with-linear-models.html#cb36-34" tabindex="-1"></a><span class="co"># Create one-hot features for (state, action) pairs</span></span>
+<span id="cb36-35"><a href="function-approximation-q-learning-with-linear-models.html#cb36-35" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
+<span id="cb36-36"><a href="function-approximation-q-learning-with-linear-models.html#cb36-36" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
+<span id="cb36-37"><a href="function-approximation-q-learning-with-linear-models.html#cb36-37" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
+<span id="cb36-38"><a href="function-approximation-q-learning-with-linear-models.html#cb36-38" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb36-39"><a href="function-approximation-q-learning-with-linear-models.html#cb36-39" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
+<span id="cb36-40"><a href="function-approximation-q-learning-with-linear-models.html#cb36-40" tabindex="-1"></a>}</span>
+<span id="cb36-41"><a href="function-approximation-q-learning-with-linear-models.html#cb36-41" tabindex="-1"></a></span>
+<span id="cb36-42"><a href="function-approximation-q-learning-with-linear-models.html#cb36-42" tabindex="-1"></a><span class="co"># Initialize weights</span></span>
+<span id="cb36-43"><a href="function-approximation-q-learning-with-linear-models.html#cb36-43" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
+<span id="cb36-44"><a href="function-approximation-q-learning-with-linear-models.html#cb36-44" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb36-45"><a href="function-approximation-q-learning-with-linear-models.html#cb36-45" tabindex="-1"></a></span>
+<span id="cb36-46"><a href="function-approximation-q-learning-with-linear-models.html#cb36-46" tabindex="-1"></a><span class="co"># Q-value approximation function</span></span>
+<span id="cb36-47"><a href="function-approximation-q-learning-with-linear-models.html#cb36-47" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
+<span id="cb36-48"><a href="function-approximation-q-learning-with-linear-models.html#cb36-48" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb36-49"><a href="function-approximation-q-learning-with-linear-models.html#cb36-49" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
+<span id="cb36-50"><a href="function-approximation-q-learning-with-linear-models.html#cb36-50" tabindex="-1"></a>}</span>
+<span id="cb36-51"><a href="function-approximation-q-learning-with-linear-models.html#cb36-51" tabindex="-1"></a></span>
+<span id="cb36-52"><a href="function-approximation-q-learning-with-linear-models.html#cb36-52" tabindex="-1"></a><span class="co"># Q-Learning with function approximation</span></span>
+<span id="cb36-53"><a href="function-approximation-q-learning-with-linear-models.html#cb36-53" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb36-54"><a href="function-approximation-q-learning-with-linear-models.html#cb36-54" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb36-55"><a href="function-approximation-q-learning-with-linear-models.html#cb36-55" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb36-56"><a href="function-approximation-q-learning-with-linear-models.html#cb36-56" tabindex="-1"></a>  </span>
+<span id="cb36-57"><a href="function-approximation-q-learning-with-linear-models.html#cb36-57" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb36-58"><a href="function-approximation-q-learning-with-linear-models.html#cb36-58" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb36-59"><a href="function-approximation-q-learning-with-linear-models.html#cb36-59" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb36-60"><a href="function-approximation-q-learning-with-linear-models.html#cb36-60" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
+<span id="cb36-61"><a href="function-approximation-q-learning-with-linear-models.html#cb36-61" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb36-62"><a href="function-approximation-q-learning-with-linear-models.html#cb36-62" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb36-63"><a href="function-approximation-q-learning-with-linear-models.html#cb36-63" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb36-64"><a href="function-approximation-q-learning-with-linear-models.html#cb36-64" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb36-65"><a href="function-approximation-q-learning-with-linear-models.html#cb36-65" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
+<span id="cb36-66"><a href="function-approximation-q-learning-with-linear-models.html#cb36-66" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
+<span id="cb36-67"><a href="function-approximation-q-learning-with-linear-models.html#cb36-67" tabindex="-1"></a>      }</span>
+<span id="cb36-68"><a href="function-approximation-q-learning-with-linear-models.html#cb36-68" tabindex="-1"></a>      </span>
+<span id="cb36-69"><a href="function-approximation-q-learning-with-linear-models.html#cb36-69" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb36-70"><a href="function-approximation-q-learning-with-linear-models.html#cb36-70" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb36-71"><a href="function-approximation-q-learning-with-linear-models.html#cb36-71" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb36-72"><a href="function-approximation-q-learning-with-linear-models.html#cb36-72" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
+<span id="cb36-73"><a href="function-approximation-q-learning-with-linear-models.html#cb36-73" tabindex="-1"></a>      </span>
+<span id="cb36-74"><a href="function-approximation-q-learning-with-linear-models.html#cb36-74" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
+<span id="cb36-75"><a href="function-approximation-q-learning-with-linear-models.html#cb36-75" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
+<span id="cb36-76"><a href="function-approximation-q-learning-with-linear-models.html#cb36-76" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="dv">0</span> <span class="cf">else</span> <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
+<span id="cb36-77"><a href="function-approximation-q-learning-with-linear-models.html#cb36-77" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
+<span id="cb36-78"><a href="function-approximation-q-learning-with-linear-models.html#cb36-78" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
+<span id="cb36-79"><a href="function-approximation-q-learning-with-linear-models.html#cb36-79" tabindex="-1"></a>      </span>
+<span id="cb36-80"><a href="function-approximation-q-learning-with-linear-models.html#cb36-80" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
+<span id="cb36-81"><a href="function-approximation-q-learning-with-linear-models.html#cb36-81" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb36-82"><a href="function-approximation-q-learning-with-linear-models.html#cb36-82" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
+<span id="cb36-83"><a href="function-approximation-q-learning-with-linear-models.html#cb36-83" tabindex="-1"></a>      </span>
+<span id="cb36-84"><a href="function-approximation-q-learning-with-linear-models.html#cb36-84" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
+<span id="cb36-85"><a href="function-approximation-q-learning-with-linear-models.html#cb36-85" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb36-86"><a href="function-approximation-q-learning-with-linear-models.html#cb36-86" tabindex="-1"></a>    }</span>
+<span id="cb36-87"><a href="function-approximation-q-learning-with-linear-models.html#cb36-87" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb36-88"><a href="function-approximation-q-learning-with-linear-models.html#cb36-88" tabindex="-1"></a>  }</span>
+<span id="cb36-89"><a href="function-approximation-q-learning-with-linear-models.html#cb36-89" tabindex="-1"></a>  </span>
+<span id="cb36-90"><a href="function-approximation-q-learning-with-linear-models.html#cb36-90" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
+<span id="cb36-91"><a href="function-approximation-q-learning-with-linear-models.html#cb36-91" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
+<span id="cb36-92"><a href="function-approximation-q-learning-with-linear-models.html#cb36-92" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) <span class="cn">NA</span> <span class="cf">else</span> <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
+<span id="cb36-93"><a href="function-approximation-q-learning-with-linear-models.html#cb36-93" tabindex="-1"></a>  })</span>
+<span id="cb36-94"><a href="function-approximation-q-learning-with-linear-models.html#cb36-94" tabindex="-1"></a>  </span>
+<span id="cb36-95"><a href="function-approximation-q-learning-with-linear-models.html#cb36-95" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb36-96"><a href="function-approximation-q-learning-with-linear-models.html#cb36-96" tabindex="-1"></a>}</span>
+<span id="cb36-97"><a href="function-approximation-q-learning-with-linear-models.html#cb36-97" tabindex="-1"></a></span>
+<span id="cb36-98"><a href="function-approximation-q-learning-with-linear-models.html#cb36-98" tabindex="-1"></a><span class="co"># Run Q-Learning with function approximation</span></span>
+<span id="cb36-99"><a href="function-approximation-q-learning-with-linear-models.html#cb36-99" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb36-100"><a href="function-approximation-q-learning-with-linear-models.html#cb36-100" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb36-101"><a href="function-approximation-q-learning-with-linear-models.html#cb36-101" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
+<span id="cb36-102"><a href="function-approximation-q-learning-with-linear-models.html#cb36-102" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span>
+<span id="cb36-103"><a href="function-approximation-q-learning-with-linear-models.html#cb36-103" tabindex="-1"></a></span>
+<span id="cb36-104"><a href="function-approximation-q-learning-with-linear-models.html#cb36-104" tabindex="-1"></a><span class="co"># Visualize policy</span></span>
+<span id="cb36-105"><a href="function-approximation-q-learning-with-linear-models.html#cb36-105" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb36-106"><a href="function-approximation-q-learning-with-linear-models.html#cb36-106" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-107"><a href="function-approximation-q-learning-with-linear-models.html#cb36-107" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
+<span id="cb36-108"><a href="function-approximation-q-learning-with-linear-models.html#cb36-108" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
+<span id="cb36-109"><a href="function-approximation-q-learning-with-linear-models.html#cb36-109" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb36-110"><a href="function-approximation-q-learning-with-linear-models.html#cb36-110" tabindex="-1"></a>)</span>
+<span id="cb36-111"><a href="function-approximation-q-learning-with-linear-models.html#cb36-111" tabindex="-1"></a>policy_df<span class="sc">$</span>Policy[n_states] <span class="ot">&lt;-</span> <span class="cn">NA</span>  <span class="co"># Terminal state</span></span>
+<span id="cb36-112"><a href="function-approximation-q-learning-with-linear-models.html#cb36-112" tabindex="-1"></a></span>
+<span id="cb36-113"><a href="function-approximation-q-learning-with-linear-models.html#cb36-113" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
+<span id="cb36-114"><a href="function-approximation-q-learning-with-linear-models.html#cb36-114" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb36-115"><a href="function-approximation-q-learning-with-linear-models.html#cb36-115" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb36-116"><a href="function-approximation-q-learning-with-linear-models.html#cb36-116" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb36-117"><a href="function-approximation-q-learning-with-linear-models.html#cb36-117" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
+<span id="cb36-118"><a href="function-approximation-q-learning-with-linear-models.html#cb36-118" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb36-119"><a href="function-approximation-q-learning-with-linear-models.html#cb36-119" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb36-120"><a href="function-approximation-q-learning-with-linear-models.html#cb36-120" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb36-121"><a href="function-approximation-q-learning-with-linear-models.html#cb36-121" tabindex="-1"></a></span>
+<span id="cb36-122"><a href="function-approximation-q-learning-with-linear-models.html#cb36-122" tabindex="-1"></a><span class="co"># Visualize cumulative rewards</span></span>
+<span id="cb36-123"><a href="function-approximation-q-learning-with-linear-models.html#cb36-123" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-124"><a href="function-approximation-q-learning-with-linear-models.html#cb36-124" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb36-125"><a href="function-approximation-q-learning-with-linear-models.html#cb36-125" tabindex="-1"></a>  <span class="at">Reward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
+<span id="cb36-126"><a href="function-approximation-q-learning-with-linear-models.html#cb36-126" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb36-127"><a href="function-approximation-q-learning-with-linear-models.html#cb36-127" tabindex="-1"></a>)</span>
+<span id="cb36-128"><a href="function-approximation-q-learning-with-linear-models.html#cb36-128" tabindex="-1"></a></span>
+<span id="cb36-129"><a href="function-approximation-q-learning-with-linear-models.html#cb36-129" tabindex="-1"></a>policy_plot</span></code></pre></div>
+<pre><code>## Warning: Removed 1 row containing missing values or values outside the scale range (`geom_point()`).</code></pre>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>Nice — I’ll walk through this <strong>chunk by chunk</strong>, explain what each piece does, point out subtle behaviors/bugs, and finish with a few short, practical fixes and suggestions. I’ll keep it factual and focused.</p>
+<div id="top-level-settings" class="section level4 hasAnchor" number="6.3.0.1">
+<h4><span class="header-section-number">6.3.0.1</span> Top-level settings<a href="function-approximation-q-learning-with-linear-models.html#top-level-settings" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="function-approximation-q-learning-with-linear-models.html#cb38-1" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb38-2"><a href="function-approximation-q-learning-with-linear-models.html#cb38-2" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb38-3"><a href="function-approximation-q-learning-with-linear-models.html#cb38-3" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb38-4"><a href="function-approximation-q-learning-with-linear-models.html#cb38-4" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span></code></pre></div>
+<ul>
+<li><code>n_states</code> and <code>n_actions</code>: size of the MDP (10 states, 2 actions).</li>
+<li><code>gamma</code>: discount factor (0.9).</li>
+<li><code>terminal_state</code>: the index of the terminal state (state 10). Many later pieces use this to stop episodes and to set <code>q_next = 0</code> for transitions into terminal.</li>
+</ul>
+</div>
+<div id="environment-transition-and-reward-models" class="section level4 hasAnchor" number="6.3.0.2">
+<h4><span class="header-section-number">6.3.0.2</span> Environment: transition and reward models<a href="function-approximation-q-learning-with-linear-models.html#environment-transition-and-reward-models" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="function-approximation-q-learning-with-linear-models.html#cb39-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb39-2"><a href="function-approximation-q-learning-with-linear-models.html#cb39-2" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb39-3"><a href="function-approximation-q-learning-with-linear-models.html#cb39-3" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb39-4"><a href="function-approximation-q-learning-with-linear-models.html#cb39-4" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="function-approximation-q-learning-with-linear-models.html#cb39-5" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb39-6"><a href="function-approximation-q-learning-with-linear-models.html#cb39-6" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb39-7"><a href="function-approximation-q-learning-with-linear-models.html#cb39-7" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb39-8"><a href="function-approximation-q-learning-with-linear-models.html#cb39-8" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb39-9"><a href="function-approximation-q-learning-with-linear-models.html#cb39-9" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb39-10"><a href="function-approximation-q-learning-with-linear-models.html#cb39-10" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb39-11"><a href="function-approximation-q-learning-with-linear-models.html#cb39-11" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb39-12"><a href="function-approximation-q-learning-with-linear-models.html#cb39-12" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb39-13"><a href="function-approximation-q-learning-with-linear-models.html#cb39-13" tabindex="-1"></a>  }</span>
+<span id="cb39-14"><a href="function-approximation-q-learning-with-linear-models.html#cb39-14" tabindex="-1"></a>}</span>
+<span id="cb39-15"><a href="function-approximation-q-learning-with-linear-models.html#cb39-15" tabindex="-1"></a></span>
+<span id="cb39-16"><a href="function-approximation-q-learning-with-linear-models.html#cb39-16" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb39-17"><a href="function-approximation-q-learning-with-linear-models.html#cb39-17" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
+<p>What this builds:</p>
+<ul>
+<li><code>transition_model[s, a, s']</code> is the probability of transitioning from state <code>s</code> with action <code>a</code> to next state <code>s'</code>.</li>
+<li><code>reward_model[s, a, s']</code> is the reward received for that transition.</li>
+</ul>
+<p>Important behavioral details and <strong>issues</strong>:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Seeding</strong>: <code>set.seed(42)</code> fixes random draws so behavior is reproducible.</p></li>
+<li><p><strong>Action 1 transitions</strong>:</p>
+<ul>
+<li>For non-terminal <code>s</code> the code assigns <code>0.9</code> to go deterministically to <code>s+1</code> most of the time.</li>
+<li>Then it assigns <code>0.1</code> to a random state (<code>sample(1:n_states, 1)</code>).</li>
+<li>If the sampled random <code>s'</code> equals <code>s+1</code> you end up with <code>transition_model[s,1,s+1] = 0.9 + 0.1 = 1.0</code>. If it’s different, two entries are non-zero (0.9 and 0.1).</li>
+</ul></li>
+<li><p><strong>Action 2 transitions — probable bug / unintended overwrite</strong>:</p>
+<ul>
+<li>The code calls <code>sample()</code> twice for action 2, assigning <code>0.8</code> and then <code>0.2</code> to (possibly) two <em>different</em> random indices. That is allowed, but these two <code>sample()</code> calls are independent and may pick the same <code>s'</code> — if they pick the same index the entry becomes <code>1.0</code>.</li>
+<li>More subtle: because the two <code>sample()</code> calls pick indices independently, it’s possible that only one index gets both probabilities or one gets 0.8 and another 0.2. This is probably <strong>not</strong> what the author intended (likely they wanted two different explicitly chosen next states).</li>
+</ul></li>
+<li><p><strong>Normalization</strong>: <code>transition_model</code> rows are <em>not explicitly normalized</em>. In R, <code>sample()</code> will accept a <code>prob</code> vector that does not sum to 1 (it normalizes internally) — so sampling will still work even if rows don’t sum exactly to 1, provided the vector is non-negative and at least one positive entry exists. But for clarity and safety it’s better to ensure each <code>(s,a,·)</code> sums to 1.</p></li>
+<li><p><strong>Rewards</strong>:</p>
+<ul>
+<li>For action 1: if <code>s'</code> is terminal (<code>s_prime == n_states</code>) reward = <code>1.0</code>, else <code>0.1 * runif(1)</code> (random small reward).</li>
+<li>For action 2: terminal reward <code>0.5</code>, else <code>0.05 * runif(1)</code> (even smaller).</li>
+<li>So action 1 gives larger terminal reward than action 2; also non-terminal rewards are noisy.</li>
+</ul></li>
+<li><p><strong>Terminal state rows zeroed</strong>:</p>
+<ul>
+<li><code>transition_model[n_states,,] &lt;- 0</code> and <code>reward_model[n_states,,] &lt;- 0</code> make terminal state absorbing with no outgoing transitions/rewards. The code later treats terminal specially (stops episodes when reached).</li>
+</ul></li>
+</ol>
+</div>
+<div id="sampling-function" class="section level4 hasAnchor" number="6.3.0.3">
+<h4><span class="header-section-number">6.3.0.3</span> Sampling function<a href="function-approximation-q-learning-with-linear-models.html#sampling-function" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="function-approximation-q-learning-with-linear-models.html#cb40-1" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb40-2"><a href="function-approximation-q-learning-with-linear-models.html#cb40-2" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb40-3"><a href="function-approximation-q-learning-with-linear-models.html#cb40-3" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb40-4"><a href="function-approximation-q-learning-with-linear-models.html#cb40-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb40-5"><a href="function-approximation-q-learning-with-linear-models.html#cb40-5" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb40-6"><a href="function-approximation-q-learning-with-linear-models.html#cb40-6" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li>Given <code>(s, a)</code>, it samples <code>s'</code> according to the probability vector <code>probs</code> (R will normalize probabilities if they don’t sum to 1).</li>
+<li>Returns a list with <code>s_prime</code> and <code>reward = reward_model[s,a,s_prime]</code>.</li>
+<li>If <code>probs</code> is all zeros (possible for terminal state row), <code>sample()</code> will error — but the code avoids calling <code>sample_env</code> from terminal because episodes end when <code>s_prime == terminal_state</code>. Still, careful code should check for zero-prob rows.</li>
+</ul>
+</div>
+<div id="feature-creation-one-hot-for-stateaction" class="section level4 hasAnchor" number="6.3.0.4">
+<h4><span class="header-section-number">6.3.0.4</span> Feature creation (one-hot for (state,action))<a href="function-approximation-q-learning-with-linear-models.html#feature-creation-one-hot-for-stateaction" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="function-approximation-q-learning-with-linear-models.html#cb41-1" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
+<span id="cb41-2"><a href="function-approximation-q-learning-with-linear-models.html#cb41-2" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
+<span id="cb41-3"><a href="function-approximation-q-learning-with-linear-models.html#cb41-3" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
+<span id="cb41-4"><a href="function-approximation-q-learning-with-linear-models.html#cb41-4" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb41-5"><a href="function-approximation-q-learning-with-linear-models.html#cb41-5" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
+<span id="cb41-6"><a href="function-approximation-q-learning-with-linear-models.html#cb41-6" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li>Creates a one-hot feature vector of length <code>n_states * n_actions</code>.</li>
+<li>The mapping <code>index = (a - 1) * n_states + s</code> puts action blocks in the feature vector: first <code>n_states</code> entries correspond to action 1, next <code>n_states</code> to action 2, etc.</li>
+<li>Because features are one-hot, linear function approximation <code>q(s,a) = x^T theta</code> is mathematically equivalent to a <strong>tabular</strong> Q-value representation (each <code>(s,a)</code> has its own weight in <code>theta</code>).</li>
+</ul>
+</div>
+<div id="weights-and-q-value-function" class="section level4 hasAnchor" number="6.3.0.5">
+<h4><span class="header-section-number">6.3.0.5</span> Weights and Q-value function<a href="function-approximation-q-learning-with-linear-models.html#weights-and-q-value-function" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="function-approximation-q-learning-with-linear-models.html#cb42-1" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
+<span id="cb42-2"><a href="function-approximation-q-learning-with-linear-models.html#cb42-2" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb42-3"><a href="function-approximation-q-learning-with-linear-models.html#cb42-3" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="function-approximation-q-learning-with-linear-models.html#cb42-4" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
+<span id="cb42-5"><a href="function-approximation-q-learning-with-linear-models.html#cb42-5" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb42-6"><a href="function-approximation-q-learning-with-linear-models.html#cb42-6" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
+<span id="cb42-7"><a href="function-approximation-q-learning-with-linear-models.html#cb42-7" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li><code>theta</code> holds parameters for the linear approximator; initialized at zeros.</li>
+<li><code>q_hat(s,a,theta)</code> computes ( (s,a) = x^). With one-hot <code>x</code> this returns the single <code>theta</code> entry corresponding to <code>(s,a)</code>.</li>
+</ul>
+</div>
+<div id="q-learning-with-function-approximation-1" class="section level4 hasAnchor" number="6.3.0.6">
+<h4><span class="header-section-number">6.3.0.6</span> Q-learning with function approximation<a href="function-approximation-q-learning-with-linear-models.html#q-learning-with-function-approximation-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="function-approximation-q-learning-with-linear-models.html#cb43-1" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb43-2"><a href="function-approximation-q-learning-with-linear-models.html#cb43-2" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb43-3"><a href="function-approximation-q-learning-with-linear-models.html#cb43-3" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb43-4"><a href="function-approximation-q-learning-with-linear-models.html#cb43-4" tabindex="-1"></a>  </span>
+<span id="cb43-5"><a href="function-approximation-q-learning-with-linear-models.html#cb43-5" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb43-6"><a href="function-approximation-q-learning-with-linear-models.html#cb43-6" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb43-7"><a href="function-approximation-q-learning-with-linear-models.html#cb43-7" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb43-8"><a href="function-approximation-q-learning-with-linear-models.html#cb43-8" tabindex="-1"></a>    <span class="cf">while</span> (<span class="cn">TRUE</span>) {</span>
+<span id="cb43-9"><a href="function-approximation-q-learning-with-linear-models.html#cb43-9" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb43-10"><a href="function-approximation-q-learning-with-linear-models.html#cb43-10" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb43-11"><a href="function-approximation-q-learning-with-linear-models.html#cb43-11" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb43-12"><a href="function-approximation-q-learning-with-linear-models.html#cb43-12" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb43-13"><a href="function-approximation-q-learning-with-linear-models.html#cb43-13" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
+<span id="cb43-14"><a href="function-approximation-q-learning-with-linear-models.html#cb43-14" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
+<span id="cb43-15"><a href="function-approximation-q-learning-with-linear-models.html#cb43-15" tabindex="-1"></a>      }</span>
+<span id="cb43-16"><a href="function-approximation-q-learning-with-linear-models.html#cb43-16" tabindex="-1"></a>      </span>
+<span id="cb43-17"><a href="function-approximation-q-learning-with-linear-models.html#cb43-17" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb43-18"><a href="function-approximation-q-learning-with-linear-models.html#cb43-18" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb43-19"><a href="function-approximation-q-learning-with-linear-models.html#cb43-19" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb43-20"><a href="function-approximation-q-learning-with-linear-models.html#cb43-20" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
+<span id="cb43-21"><a href="function-approximation-q-learning-with-linear-models.html#cb43-21" tabindex="-1"></a>      </span>
+<span id="cb43-22"><a href="function-approximation-q-learning-with-linear-models.html#cb43-22" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
+<span id="cb43-23"><a href="function-approximation-q-learning-with-linear-models.html#cb43-23" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
+<span id="cb43-24"><a href="function-approximation-q-learning-with-linear-models.html#cb43-24" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="dv">0</span> <span class="cf">else</span> <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
+<span id="cb43-25"><a href="function-approximation-q-learning-with-linear-models.html#cb43-25" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
+<span id="cb43-26"><a href="function-approximation-q-learning-with-linear-models.html#cb43-26" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
+<span id="cb43-27"><a href="function-approximation-q-learning-with-linear-models.html#cb43-27" tabindex="-1"></a>      </span>
+<span id="cb43-28"><a href="function-approximation-q-learning-with-linear-models.html#cb43-28" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
+<span id="cb43-29"><a href="function-approximation-q-learning-with-linear-models.html#cb43-29" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb43-30"><a href="function-approximation-q-learning-with-linear-models.html#cb43-30" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
+<span id="cb43-31"><a href="function-approximation-q-learning-with-linear-models.html#cb43-31" tabindex="-1"></a>      </span>
+<span id="cb43-32"><a href="function-approximation-q-learning-with-linear-models.html#cb43-32" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
+<span id="cb43-33"><a href="function-approximation-q-learning-with-linear-models.html#cb43-33" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb43-34"><a href="function-approximation-q-learning-with-linear-models.html#cb43-34" tabindex="-1"></a>    }</span>
+<span id="cb43-35"><a href="function-approximation-q-learning-with-linear-models.html#cb43-35" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb43-36"><a href="function-approximation-q-learning-with-linear-models.html#cb43-36" tabindex="-1"></a>  }</span>
+<span id="cb43-37"><a href="function-approximation-q-learning-with-linear-models.html#cb43-37" tabindex="-1"></a>  </span>
+<span id="cb43-38"><a href="function-approximation-q-learning-with-linear-models.html#cb43-38" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
+<span id="cb43-39"><a href="function-approximation-q-learning-with-linear-models.html#cb43-39" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
+<span id="cb43-40"><a href="function-approximation-q-learning-with-linear-models.html#cb43-40" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) <span class="cn">NA</span> <span class="cf">else</span> <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
+<span id="cb43-41"><a href="function-approximation-q-learning-with-linear-models.html#cb43-41" tabindex="-1"></a>  })</span>
+<span id="cb43-42"><a href="function-approximation-q-learning-with-linear-models.html#cb43-42" tabindex="-1"></a>  </span>
+<span id="cb43-43"><a href="function-approximation-q-learning-with-linear-models.html#cb43-43" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb43-44"><a href="function-approximation-q-learning-with-linear-models.html#cb43-44" tabindex="-1"></a>}</span></code></pre></div>
+<p>Step-by-step explanation:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Initialization</strong>: new <code>theta</code> vector and a <code>rewards</code> vector to store total reward per episode.</p></li>
+<li><p><strong>Episode start</strong>: <code>s &lt;- sample(1:(n_states - 1), 1)</code> picks a random non-terminal start state for each episode.</p></li>
+<li><p><strong>Action selection (epsilon-greedy)</strong>:</p>
+<ul>
+<li>With probability <code>epsilon</code> pick a random action.</li>
+<li>Else compute Q-values <code>q_hat(s,a,theta)</code> for all actions and pick the action with maximum Q. Note: <code>which.max()</code> returns the index of the first maximum if there’s a tie.</li>
+</ul></li>
+<li><p><strong>Interact with environment</strong> using <code>sample_env</code>.</p></li>
+<li><p><strong>TD target and error</strong>:</p>
+<ul>
+<li><code>q_current</code> is the estimate for <code>(s,a)</code>.</li>
+<li><code>q_next</code> is <code>0</code> if <code>s_prime</code> is terminal, otherwise <code>max_a' q_hat(s', a')</code>.</li>
+<li><code>target = r + gamma * q_next</code></li>
+<li><code>error = target - q_current</code></li>
+</ul></li>
+<li><p><strong>Gradient (linear FA)</strong> update:</p>
+<ul>
+<li>For linear Q with features <code>x</code>, gradient of <code>q_hat</code> w.r.t <code>theta</code> is <code>x</code>. So the parameter update <code>theta &lt;- theta + alpha * error * x</code> is standard semi-gradient Q-learning.</li>
+<li>Because <code>x</code> is a one-hot, only the <code>(s,a)</code>-entry in <code>theta</code> is changed, identical to a tabular Q-learning update:
+(<em>{s,a} </em>{s,a} + (r + _{a’} Q(s’,a’) - Q(s,a)).)</li>
+</ul></li>
+<li><p><strong>Episode termination</strong>: break if <code>s_prime == terminal_state</code>; otherwise continue from <code>s &lt;- s_prime</code>.</p></li>
+<li><p><strong>Record episode total reward</strong> in <code>rewards[ep]</code>.</p></li>
+<li><p>After all episodes, <strong>derive greedy policy</strong> from final <code>theta</code>: for each non-terminal state pick <code>argmax_a q_hat(s,a,theta)</code>.</p></li>
+</ol>
+</div>
+<div id="running-the-learner" class="section level4 hasAnchor" number="6.3.0.7">
+<h4><span class="header-section-number">6.3.0.7</span> Running the learner<a href="function-approximation-q-learning-with-linear-models.html#running-the-learner" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="function-approximation-q-learning-with-linear-models.html#cb44-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb44-2"><a href="function-approximation-q-learning-with-linear-models.html#cb44-2" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb44-3"><a href="function-approximation-q-learning-with-linear-models.html#cb44-3" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
+<span id="cb44-4"><a href="function-approximation-q-learning-with-linear-models.html#cb44-4" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span></code></pre></div>
+<ul>
+<li>Trains for 1000 episodes using <code>alpha=0.1</code> and <code>epsilon=0.1</code>.</li>
+<li>Stores learned <code>policy</code> and episode rewards.</li>
+</ul>
+</div>
+<div id="visualization" class="section level4 hasAnchor" number="6.3.0.8">
+<h4><span class="header-section-number">6.3.0.8</span> Visualization<a href="function-approximation-q-learning-with-linear-models.html#visualization" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="function-approximation-q-learning-with-linear-models.html#cb45-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb45-2"><a href="function-approximation-q-learning-with-linear-models.html#cb45-2" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb45-3"><a href="function-approximation-q-learning-with-linear-models.html#cb45-3" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
+<span id="cb45-4"><a href="function-approximation-q-learning-with-linear-models.html#cb45-4" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
+<span id="cb45-5"><a href="function-approximation-q-learning-with-linear-models.html#cb45-5" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb45-6"><a href="function-approximation-q-learning-with-linear-models.html#cb45-6" tabindex="-1"></a>)</span>
+<span id="cb45-7"><a href="function-approximation-q-learning-with-linear-models.html#cb45-7" tabindex="-1"></a>policy_df<span class="sc">$</span>Policy[n_states] <span class="ot">&lt;-</span> <span class="cn">NA</span>  <span class="co"># Terminal state</span></span>
+<span id="cb45-8"><a href="function-approximation-q-learning-with-linear-models.html#cb45-8" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="function-approximation-q-learning-with-linear-models.html#cb45-9" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
+<span id="cb45-10"><a href="function-approximation-q-learning-with-linear-models.html#cb45-10" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb45-11"><a href="function-approximation-q-learning-with-linear-models.html#cb45-11" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb45-12"><a href="function-approximation-q-learning-with-linear-models.html#cb45-12" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb45-13"><a href="function-approximation-q-learning-with-linear-models.html#cb45-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
+<span id="cb45-14"><a href="function-approximation-q-learning-with-linear-models.html#cb45-14" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb45-15"><a href="function-approximation-q-learning-with-linear-models.html#cb45-15" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb45-16"><a href="function-approximation-q-learning-with-linear-models.html#cb45-16" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb45-17"><a href="function-approximation-q-learning-with-linear-models.html#cb45-17" tabindex="-1"></a></span>
+<span id="cb45-18"><a href="function-approximation-q-learning-with-linear-models.html#cb45-18" tabindex="-1"></a><span class="co"># Visualize cumulative rewards</span></span>
+<span id="cb45-19"><a href="function-approximation-q-learning-with-linear-models.html#cb45-19" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb45-20"><a href="function-approximation-q-learning-with-linear-models.html#cb45-20" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb45-21"><a href="function-approximation-q-learning-with-linear-models.html#cb45-21" tabindex="-1"></a>  <span class="at">Reward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
+<span id="cb45-22"><a href="function-approximation-q-learning-with-linear-models.html#cb45-22" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb45-23"><a href="function-approximation-q-learning-with-linear-models.html#cb45-23" tabindex="-1"></a>)</span>
+<span id="cb45-24"><a href="function-approximation-q-learning-with-linear-models.html#cb45-24" tabindex="-1"></a></span>
+<span id="cb45-25"><a href="function-approximation-q-learning-with-linear-models.html#cb45-25" tabindex="-1"></a>policy_plot</span></code></pre></div>
+<ul>
+<li><code>policy_plot</code> shows the greedy action (1 or 2) for each state as points/line.</li>
+<li><code>reward_df</code> computes <strong>cumulative</strong> rewards, but note: the code builds <code>reward_df</code> but never plots it. Only <code>policy_plot</code> is shown at the end. If you want episode-by-episode reward or moving average, you’d need to add a <code>ggplot</code> call for <code>reward_df</code> (see suggestions below).</li>
+</ul>
+</div>
+<div id="overall-algorithmic-behavior-complexity" class="section level4 hasAnchor" number="6.3.0.9">
+<h4><span class="header-section-number">6.3.0.9</span> Overall algorithmic behavior &amp; complexity<a href="function-approximation-q-learning-with-linear-models.html#overall-algorithmic-behavior-complexity" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>Because features are one-hot, this is function approximation that reduces exactly to <strong>tabular Q-learning</strong>.</li>
+<li>Per update cost: O(n_actions) for computing max over next-state actions. Per episode cost depends on episode length (random here), so total complexity roughly <code>O(episodes * average_episode_length * n_actions)</code>.</li>
+</ul>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/edit/main/06-Q_FA.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": "https://github.com/Kamran-Afzali/Bookdown_RLR/blob/main/06-Q_FA.Rmd",
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-10-13" />
+<meta name="date" content="2025-10-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -214,15 +214,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
 <li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<li class="chapter" data-level="6" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html"><i class="fa fa-check"></i><b>6</b> Function Approximation Q-Learning with Linear Models</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<li class="chapter" data-level="6.1" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
 <ul>
-<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
-<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
 </ul></li>
-<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
 <ul>
@@ -523,7 +523,7 @@ A_t = \arg\max_{k} \left[ \hat{\mu}_{k,t} + \sqrt{ \frac{2 \log t}{N_k(t)} } \ri
 <span id="cb1-27"><a href="the-multi-armed-bandit-problem.html#cb1-27" tabindex="-1"></a>cum_regret_ucb <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(regret)</span>
 <span id="cb1-28"><a href="the-multi-armed-bandit-problem.html#cb1-28" tabindex="-1"></a><span class="fu">plot</span>(cum_regret_ucb, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, </span>
 <span id="cb1-29"><a href="the-multi-armed-bandit-problem.html#cb1-29" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Cumulative Regret&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">main =</span> <span class="st">&quot;UCB1 Regret&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 </div>
 <div id="bayesian-approach-thompson-sampling" class="section level2 hasAnchor" number="2.4">
@@ -559,7 +559,7 @@ A_t = \arg\max_{k} \left[ \hat{\mu}_{k,t} + \sqrt{ \frac{2 \log t}{N_k(t)} } \ri
 <span id="cb2-18"><a href="the-multi-armed-bandit-problem.html#cb2-18" tabindex="-1"></a><span class="fu">lines</span>(cum_regret_ts, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb2-19"><a href="the-multi-armed-bandit-problem.html#cb2-19" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;UCB1&quot;</span>, <span class="st">&quot;Thompson Sampling&quot;</span>), </span>
 <span id="cb2-20"><a href="the-multi-armed-bandit-problem.html#cb2-20" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>The UCB1 algorithm guarantees a regret bound of:</p>
 <p><span class="math display">\[
 \mathcal{R}(T) \leq \sum_{k: \Delta_k &gt; 0} \left( \frac{8 \log T}{\Delta_k} + C_k \right),
@@ -609,7 +609,7 @@ A_t =
 <span id="cb3-22"><a href="the-multi-armed-bandit-problem.html#cb3-22" tabindex="-1"></a><span class="fu">lines</span>(cum_regret_eps, <span class="at">col =</span> <span class="st">&quot;darkgreen&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb3-23"><a href="the-multi-armed-bandit-problem.html#cb3-23" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;UCB1&quot;</span>, <span class="st">&quot;Thompson Sampling&quot;</span>, <span class="st">&quot;Epsilon-Greedy&quot;</span>), </span>
 <span id="cb3-24"><a href="the-multi-armed-bandit-problem.html#cb3-24" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;darkgreen&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 </div>
 <div id="summary-table" class="section level2 hasAnchor" number="2.6">

@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-10-13" />
+<meta name="date" content="2025-10-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -214,15 +214,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.7" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#conclusion-3"><i class="fa fa-check"></i><b>5.7</b> Conclusion</a></li>
 <li class="chapter" data-level="5.8" data-path="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html"><a href="on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r.html#comparison-table"><i class="fa fa-check"></i><b>5.8</b> Comparison Table</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><i class="fa fa-check"></i><b>6</b> Function Approximation in Reinforcement Learning: Q-Learning with Linear Models in R</a>
+<li class="chapter" data-level="6" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html"><i class="fa fa-check"></i><b>6</b> Function Approximation Q-Learning with Linear Models</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
-<li class="chapter" data-level="6.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
+<li class="chapter" data-level="6.1" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#introduction-4"><i class="fa fa-check"></i><b>6.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.2" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#theoretical-background-1"><i class="fa fa-check"></i><b>6.2</b> Theoretical Background</a>
 <ul>
-<li class="chapter" data-level="6.2.1" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
-<li class="chapter" data-level="6.2.2" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
+<li class="chapter" data-level="6.2.1" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#q-learning-with-function-approximation"><i class="fa fa-check"></i><b>6.2.1</b> Q-Learning with Function Approximation</a></li>
+<li class="chapter" data-level="6.2.2" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#comparison-with-tabular-q-learning"><i class="fa fa-check"></i><b>6.2.2</b> Comparison with Tabular Q-Learning</a></li>
 </ul></li>
-<li class="chapter" data-level="6.3" data-path="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html"><a href="function-approximation-in-reinforcement-learning-q-learning-with-linear-models-in-r.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
+<li class="chapter" data-level="6.3" data-path="function-approximation-q-learning-with-linear-models.html"><a href="function-approximation-q-learning-with-linear-models.html#r-implementation"><i class="fa fa-check"></i><b>6.3</b> R Implementation</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><i class="fa fa-check"></i><b>7</b> Beyond Linear Models: Q-Learning with Random Forest Function Approximation in R</a>
 <ul>
@@ -519,178 +519,178 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="practical-implementation-curiosity-driven-grid-world-navigation" class="section level2 hasAnchor" number="15.3">
 <h2><span class="header-section-number">15.3</span> Practical Implementation: Curiosity-Driven Grid World Navigation<a href="intrinsic-rewards.html#practical-implementation-curiosity-driven-grid-world-navigation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Consider a grid world environment where an agent must learn to navigate to a goal location. The environment provides rewards only upon reaching the goal, making exploration crucial for learning.</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="intrinsic-rewards.html#cb77-1" tabindex="-1"></a><span class="co"># Curiosity-Driven Grid World Navigation</span></span>
-<span id="cb77-2"><a href="intrinsic-rewards.html#cb77-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb77-3"><a href="intrinsic-rewards.html#cb77-3" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
-<span id="cb77-4"><a href="intrinsic-rewards.html#cb77-4" tabindex="-1"></a></span>
-<span id="cb77-5"><a href="intrinsic-rewards.html#cb77-5" tabindex="-1"></a><span class="co"># Environment setup</span></span>
-<span id="cb77-6"><a href="intrinsic-rewards.html#cb77-6" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb77-7"><a href="intrinsic-rewards.html#cb77-7" tabindex="-1"></a>grid_size <span class="ot">&lt;-</span> <span class="dv">8</span></span>
-<span id="cb77-8"><a href="intrinsic-rewards.html#cb77-8" tabindex="-1"></a>goal_state <span class="ot">&lt;-</span> <span class="fu">c</span>(grid_size, grid_size)</span>
-<span id="cb77-9"><a href="intrinsic-rewards.html#cb77-9" tabindex="-1"></a>n_episodes <span class="ot">&lt;-</span> <span class="dv">500</span></span>
-<span id="cb77-10"><a href="intrinsic-rewards.html#cb77-10" tabindex="-1"></a>max_steps <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb77-11"><a href="intrinsic-rewards.html#cb77-11" tabindex="-1"></a></span>
-<span id="cb77-12"><a href="intrinsic-rewards.html#cb77-12" tabindex="-1"></a><span class="co"># State encoding and action space</span></span>
-<span id="cb77-13"><a href="intrinsic-rewards.html#cb77-13" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(row, col) {</span>
-<span id="cb77-14"><a href="intrinsic-rewards.html#cb77-14" tabindex="-1"></a>  (row <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> grid_size <span class="sc">+</span> col</span>
-<span id="cb77-15"><a href="intrinsic-rewards.html#cb77-15" tabindex="-1"></a>}</span>
-<span id="cb77-16"><a href="intrinsic-rewards.html#cb77-16" tabindex="-1"></a></span>
-<span id="cb77-17"><a href="intrinsic-rewards.html#cb77-17" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
-<span id="cb77-18"><a href="intrinsic-rewards.html#cb77-18" tabindex="-1"></a>  row <span class="ot">&lt;-</span> <span class="fu">floor</span>((state_id <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> grid_size) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb77-19"><a href="intrinsic-rewards.html#cb77-19" tabindex="-1"></a>  col <span class="ot">&lt;-</span> (state_id <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> grid_size <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb77-20"><a href="intrinsic-rewards.html#cb77-20" tabindex="-1"></a>  <span class="fu">c</span>(row, col)</span>
-<span id="cb77-21"><a href="intrinsic-rewards.html#cb77-21" tabindex="-1"></a>}</span>
-<span id="cb77-22"><a href="intrinsic-rewards.html#cb77-22" tabindex="-1"></a></span>
-<span id="cb77-23"><a href="intrinsic-rewards.html#cb77-23" tabindex="-1"></a><span class="co"># Actions: 1=up, 2=right, 3=down, 4=left</span></span>
-<span id="cb77-24"><a href="intrinsic-rewards.html#cb77-24" tabindex="-1"></a>get_next_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action) {</span>
-<span id="cb77-25"><a href="intrinsic-rewards.html#cb77-25" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
-<span id="cb77-26"><a href="intrinsic-rewards.html#cb77-26" tabindex="-1"></a>  row <span class="ot">&lt;-</span> pos[<span class="dv">1</span>]</span>
-<span id="cb77-27"><a href="intrinsic-rewards.html#cb77-27" tabindex="-1"></a>  col <span class="ot">&lt;-</span> pos[<span class="dv">2</span>]</span>
-<span id="cb77-28"><a href="intrinsic-rewards.html#cb77-28" tabindex="-1"></a>  </span>
-<span id="cb77-29"><a href="intrinsic-rewards.html#cb77-29" tabindex="-1"></a>  <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">1</span>) row <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, row <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># up</span></span>
-<span id="cb77-30"><a href="intrinsic-rewards.html#cb77-30" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">2</span>) col <span class="ot">&lt;-</span> <span class="fu">min</span>(grid_size, col <span class="sc">+</span> <span class="dv">1</span>)  <span class="co"># right</span></span>
-<span id="cb77-31"><a href="intrinsic-rewards.html#cb77-31" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">3</span>) row <span class="ot">&lt;-</span> <span class="fu">min</span>(grid_size, row <span class="sc">+</span> <span class="dv">1</span>)  <span class="co"># down</span></span>
-<span id="cb77-32"><a href="intrinsic-rewards.html#cb77-32" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">4</span>) col <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, col <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># left</span></span>
-<span id="cb77-33"><a href="intrinsic-rewards.html#cb77-33" tabindex="-1"></a>  </span>
-<span id="cb77-34"><a href="intrinsic-rewards.html#cb77-34" tabindex="-1"></a>  <span class="fu">encode_state</span>(row, col)</span>
-<span id="cb77-35"><a href="intrinsic-rewards.html#cb77-35" tabindex="-1"></a>}</span>
-<span id="cb77-36"><a href="intrinsic-rewards.html#cb77-36" tabindex="-1"></a></span>
-<span id="cb77-37"><a href="intrinsic-rewards.html#cb77-37" tabindex="-1"></a><span class="co"># Extrinsic reward function</span></span>
-<span id="cb77-38"><a href="intrinsic-rewards.html#cb77-38" tabindex="-1"></a>get_extrinsic_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
-<span id="cb77-39"><a href="intrinsic-rewards.html#cb77-39" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
-<span id="cb77-40"><a href="intrinsic-rewards.html#cb77-40" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">all</span>(pos <span class="sc">==</span> goal_state)) <span class="fu">return</span>(<span class="dv">10</span>)</span>
-<span id="cb77-41"><a href="intrinsic-rewards.html#cb77-41" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">0</span>)</span>
-<span id="cb77-42"><a href="intrinsic-rewards.html#cb77-42" tabindex="-1"></a>}</span>
-<span id="cb77-43"><a href="intrinsic-rewards.html#cb77-43" tabindex="-1"></a></span>
-<span id="cb77-44"><a href="intrinsic-rewards.html#cb77-44" tabindex="-1"></a><span class="co"># Intrinsic Curiosity Module implementation</span></span>
-<span id="cb77-45"><a href="intrinsic-rewards.html#cb77-45" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> grid_size<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb77-46"><a href="intrinsic-rewards.html#cb77-46" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb77-47"><a href="intrinsic-rewards.html#cb77-47" tabindex="-1"></a>feature_dim <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb77-48"><a href="intrinsic-rewards.html#cb77-48" tabindex="-1"></a></span>
-<span id="cb77-49"><a href="intrinsic-rewards.html#cb77-49" tabindex="-1"></a><span class="co"># Initialize networks (simplified linear models for demonstration)</span></span>
-<span id="cb77-50"><a href="intrinsic-rewards.html#cb77-50" tabindex="-1"></a><span class="co"># Forward model: predicts next state features from current features and action</span></span>
-<span id="cb77-51"><a href="intrinsic-rewards.html#cb77-51" tabindex="-1"></a>forward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(feature_dim <span class="sc">*</span> (feature_dim <span class="sc">+</span> n_actions), <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
-<span id="cb77-52"><a href="intrinsic-rewards.html#cb77-52" tabindex="-1"></a>                      <span class="at">dim =</span> <span class="fu">c</span>(feature_dim, feature_dim <span class="sc">+</span> n_actions))</span>
-<span id="cb77-53"><a href="intrinsic-rewards.html#cb77-53" tabindex="-1"></a></span>
-<span id="cb77-54"><a href="intrinsic-rewards.html#cb77-54" tabindex="-1"></a><span class="co"># Inverse model: predicts action from state transition</span></span>
-<span id="cb77-55"><a href="intrinsic-rewards.html#cb77-55" tabindex="-1"></a>inverse_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(n_actions <span class="sc">*</span> (<span class="dv">2</span> <span class="sc">*</span> feature_dim), <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
-<span id="cb77-56"><a href="intrinsic-rewards.html#cb77-56" tabindex="-1"></a>                      <span class="at">dim =</span> <span class="fu">c</span>(n_actions, <span class="dv">2</span> <span class="sc">*</span> feature_dim))</span>
-<span id="cb77-57"><a href="intrinsic-rewards.html#cb77-57" tabindex="-1"></a></span>
-<span id="cb77-58"><a href="intrinsic-rewards.html#cb77-58" tabindex="-1"></a><span class="co"># Feature encoder: maps states to feature representations</span></span>
-<span id="cb77-59"><a href="intrinsic-rewards.html#cb77-59" tabindex="-1"></a>feature_encoder <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(feature_dim <span class="sc">*</span> <span class="dv">2</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
-<span id="cb77-60"><a href="intrinsic-rewards.html#cb77-60" tabindex="-1"></a>                        <span class="at">dim =</span> <span class="fu">c</span>(feature_dim, <span class="dv">2</span>))</span>
-<span id="cb77-61"><a href="intrinsic-rewards.html#cb77-61" tabindex="-1"></a></span>
-<span id="cb77-62"><a href="intrinsic-rewards.html#cb77-62" tabindex="-1"></a><span class="co"># Helper functions for neural network operations</span></span>
-<span id="cb77-63"><a href="intrinsic-rewards.html#cb77-63" tabindex="-1"></a>get_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
-<span id="cb77-64"><a href="intrinsic-rewards.html#cb77-64" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
-<span id="cb77-65"><a href="intrinsic-rewards.html#cb77-65" tabindex="-1"></a>  normalized_pos <span class="ot">&lt;-</span> (pos <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> (grid_size <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># normalize to [0,1]</span></span>
-<span id="cb77-66"><a href="intrinsic-rewards.html#cb77-66" tabindex="-1"></a>  features <span class="ot">&lt;-</span> feature_encoder <span class="sc">%*%</span> normalized_pos</span>
-<span id="cb77-67"><a href="intrinsic-rewards.html#cb77-67" tabindex="-1"></a>  <span class="fu">tanh</span>(features)  <span class="co"># activation function</span></span>
-<span id="cb77-68"><a href="intrinsic-rewards.html#cb77-68" tabindex="-1"></a>}</span>
-<span id="cb77-69"><a href="intrinsic-rewards.html#cb77-69" tabindex="-1"></a></span>
-<span id="cb77-70"><a href="intrinsic-rewards.html#cb77-70" tabindex="-1"></a>action_to_onehot <span class="ot">&lt;-</span> <span class="cf">function</span>(action) {</span>
-<span id="cb77-71"><a href="intrinsic-rewards.html#cb77-71" tabindex="-1"></a>  onehot <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_actions)</span>
-<span id="cb77-72"><a href="intrinsic-rewards.html#cb77-72" tabindex="-1"></a>  onehot[action] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb77-73"><a href="intrinsic-rewards.html#cb77-73" tabindex="-1"></a>  onehot</span>
-<span id="cb77-74"><a href="intrinsic-rewards.html#cb77-74" tabindex="-1"></a>}</span>
-<span id="cb77-75"><a href="intrinsic-rewards.html#cb77-75" tabindex="-1"></a></span>
-<span id="cb77-76"><a href="intrinsic-rewards.html#cb77-76" tabindex="-1"></a><span class="co"># Compute intrinsic reward using ICM</span></span>
-<span id="cb77-77"><a href="intrinsic-rewards.html#cb77-77" tabindex="-1"></a>get_intrinsic_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action, next_state, <span class="at">alpha =</span> <span class="fl">0.01</span>) {</span>
-<span id="cb77-78"><a href="intrinsic-rewards.html#cb77-78" tabindex="-1"></a>  features_t <span class="ot">&lt;-</span> <span class="fu">get_features</span>(state)</span>
-<span id="cb77-79"><a href="intrinsic-rewards.html#cb77-79" tabindex="-1"></a>  features_t1 <span class="ot">&lt;-</span> <span class="fu">get_features</span>(next_state)</span>
-<span id="cb77-80"><a href="intrinsic-rewards.html#cb77-80" tabindex="-1"></a>  action_onehot <span class="ot">&lt;-</span> <span class="fu">action_to_onehot</span>(action)</span>
-<span id="cb77-81"><a href="intrinsic-rewards.html#cb77-81" tabindex="-1"></a>  </span>
-<span id="cb77-82"><a href="intrinsic-rewards.html#cb77-82" tabindex="-1"></a>  <span class="co"># Forward model prediction</span></span>
-<span id="cb77-83"><a href="intrinsic-rewards.html#cb77-83" tabindex="-1"></a>  forward_input <span class="ot">&lt;-</span> <span class="fu">c</span>(features_t, action_onehot)</span>
-<span id="cb77-84"><a href="intrinsic-rewards.html#cb77-84" tabindex="-1"></a>  predicted_features <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(forward_model <span class="sc">%*%</span> forward_input)</span>
-<span id="cb77-85"><a href="intrinsic-rewards.html#cb77-85" tabindex="-1"></a>  </span>
-<span id="cb77-86"><a href="intrinsic-rewards.html#cb77-86" tabindex="-1"></a>  <span class="co"># Prediction error as intrinsic reward</span></span>
-<span id="cb77-87"><a href="intrinsic-rewards.html#cb77-87" tabindex="-1"></a>  prediction_error <span class="ot">&lt;-</span> <span class="fu">sum</span>((predicted_features <span class="sc">-</span> features_t1)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb77-88"><a href="intrinsic-rewards.html#cb77-88" tabindex="-1"></a>  intrinsic_reward <span class="ot">&lt;-</span> alpha <span class="sc">*</span> prediction_error</span>
-<span id="cb77-89"><a href="intrinsic-rewards.html#cb77-89" tabindex="-1"></a>  </span>
-<span id="cb77-90"><a href="intrinsic-rewards.html#cb77-90" tabindex="-1"></a>  <span class="co"># Update forward model (simple gradient descent)</span></span>
-<span id="cb77-91"><a href="intrinsic-rewards.html#cb77-91" tabindex="-1"></a>  <span class="co"># Gradient of loss w.r.t. weights: error * input</span></span>
-<span id="cb77-92"><a href="intrinsic-rewards.html#cb77-92" tabindex="-1"></a>  error_gradient <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (predicted_features <span class="sc">-</span> features_t1)</span>
-<span id="cb77-93"><a href="intrinsic-rewards.html#cb77-93" tabindex="-1"></a>  </span>
-<span id="cb77-94"><a href="intrinsic-rewards.html#cb77-94" tabindex="-1"></a>  <span class="co"># Update each row of the forward model</span></span>
-<span id="cb77-95"><a href="intrinsic-rewards.html#cb77-95" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>feature_dim) {</span>
-<span id="cb77-96"><a href="intrinsic-rewards.html#cb77-96" tabindex="-1"></a>    forward_model[i, ] <span class="ot">&lt;&lt;-</span> forward_model[i, ] <span class="sc">-</span> <span class="fl">0.001</span> <span class="sc">*</span> error_gradient[i] <span class="sc">*</span> forward_input</span>
-<span id="cb77-97"><a href="intrinsic-rewards.html#cb77-97" tabindex="-1"></a>  }</span>
-<span id="cb77-98"><a href="intrinsic-rewards.html#cb77-98" tabindex="-1"></a>  </span>
-<span id="cb77-99"><a href="intrinsic-rewards.html#cb77-99" tabindex="-1"></a>  intrinsic_reward</span>
-<span id="cb77-100"><a href="intrinsic-rewards.html#cb77-100" tabindex="-1"></a>}</span>
-<span id="cb77-101"><a href="intrinsic-rewards.html#cb77-101" tabindex="-1"></a></span>
-<span id="cb77-102"><a href="intrinsic-rewards.html#cb77-102" tabindex="-1"></a><span class="co"># Q-learning with intrinsic motivation</span></span>
-<span id="cb77-103"><a href="intrinsic-rewards.html#cb77-103" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
-<span id="cb77-104"><a href="intrinsic-rewards.html#cb77-104" tabindex="-1"></a>visit_counts <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states))</span>
-<span id="cb77-105"><a href="intrinsic-rewards.html#cb77-105" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb77-106"><a href="intrinsic-rewards.html#cb77-106" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.99</span></span>
-<span id="cb77-107"><a href="intrinsic-rewards.html#cb77-107" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
-<span id="cb77-108"><a href="intrinsic-rewards.html#cb77-108" tabindex="-1"></a>intrinsic_weight <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb77-109"><a href="intrinsic-rewards.html#cb77-109" tabindex="-1"></a></span>
-<span id="cb77-110"><a href="intrinsic-rewards.html#cb77-110" tabindex="-1"></a><span class="co"># Training metrics</span></span>
-<span id="cb77-111"><a href="intrinsic-rewards.html#cb77-111" tabindex="-1"></a>episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
-<span id="cb77-112"><a href="intrinsic-rewards.html#cb77-112" tabindex="-1"></a>episode_lengths <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
-<span id="cb77-113"><a href="intrinsic-rewards.html#cb77-113" tabindex="-1"></a>intrinsic_rewards_history <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb77-114"><a href="intrinsic-rewards.html#cb77-114" tabindex="-1"></a></span>
-<span id="cb77-115"><a href="intrinsic-rewards.html#cb77-115" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training curiosity-driven agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="intrinsic-rewards.html#cb84-1" tabindex="-1"></a><span class="co"># Curiosity-Driven Grid World Navigation</span></span>
+<span id="cb84-2"><a href="intrinsic-rewards.html#cb84-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb84-3"><a href="intrinsic-rewards.html#cb84-3" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
+<span id="cb84-4"><a href="intrinsic-rewards.html#cb84-4" tabindex="-1"></a></span>
+<span id="cb84-5"><a href="intrinsic-rewards.html#cb84-5" tabindex="-1"></a><span class="co"># Environment setup</span></span>
+<span id="cb84-6"><a href="intrinsic-rewards.html#cb84-6" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb84-7"><a href="intrinsic-rewards.html#cb84-7" tabindex="-1"></a>grid_size <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb84-8"><a href="intrinsic-rewards.html#cb84-8" tabindex="-1"></a>goal_state <span class="ot">&lt;-</span> <span class="fu">c</span>(grid_size, grid_size)</span>
+<span id="cb84-9"><a href="intrinsic-rewards.html#cb84-9" tabindex="-1"></a>n_episodes <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb84-10"><a href="intrinsic-rewards.html#cb84-10" tabindex="-1"></a>max_steps <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb84-11"><a href="intrinsic-rewards.html#cb84-11" tabindex="-1"></a></span>
+<span id="cb84-12"><a href="intrinsic-rewards.html#cb84-12" tabindex="-1"></a><span class="co"># State encoding and action space</span></span>
+<span id="cb84-13"><a href="intrinsic-rewards.html#cb84-13" tabindex="-1"></a>encode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(row, col) {</span>
+<span id="cb84-14"><a href="intrinsic-rewards.html#cb84-14" tabindex="-1"></a>  (row <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> grid_size <span class="sc">+</span> col</span>
+<span id="cb84-15"><a href="intrinsic-rewards.html#cb84-15" tabindex="-1"></a>}</span>
+<span id="cb84-16"><a href="intrinsic-rewards.html#cb84-16" tabindex="-1"></a></span>
+<span id="cb84-17"><a href="intrinsic-rewards.html#cb84-17" tabindex="-1"></a>decode_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state_id) {</span>
+<span id="cb84-18"><a href="intrinsic-rewards.html#cb84-18" tabindex="-1"></a>  row <span class="ot">&lt;-</span> <span class="fu">floor</span>((state_id <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> grid_size) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb84-19"><a href="intrinsic-rewards.html#cb84-19" tabindex="-1"></a>  col <span class="ot">&lt;-</span> (state_id <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> grid_size <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb84-20"><a href="intrinsic-rewards.html#cb84-20" tabindex="-1"></a>  <span class="fu">c</span>(row, col)</span>
+<span id="cb84-21"><a href="intrinsic-rewards.html#cb84-21" tabindex="-1"></a>}</span>
+<span id="cb84-22"><a href="intrinsic-rewards.html#cb84-22" tabindex="-1"></a></span>
+<span id="cb84-23"><a href="intrinsic-rewards.html#cb84-23" tabindex="-1"></a><span class="co"># Actions: 1=up, 2=right, 3=down, 4=left</span></span>
+<span id="cb84-24"><a href="intrinsic-rewards.html#cb84-24" tabindex="-1"></a>get_next_state <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action) {</span>
+<span id="cb84-25"><a href="intrinsic-rewards.html#cb84-25" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
+<span id="cb84-26"><a href="intrinsic-rewards.html#cb84-26" tabindex="-1"></a>  row <span class="ot">&lt;-</span> pos[<span class="dv">1</span>]</span>
+<span id="cb84-27"><a href="intrinsic-rewards.html#cb84-27" tabindex="-1"></a>  col <span class="ot">&lt;-</span> pos[<span class="dv">2</span>]</span>
+<span id="cb84-28"><a href="intrinsic-rewards.html#cb84-28" tabindex="-1"></a>  </span>
+<span id="cb84-29"><a href="intrinsic-rewards.html#cb84-29" tabindex="-1"></a>  <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">1</span>) row <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, row <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># up</span></span>
+<span id="cb84-30"><a href="intrinsic-rewards.html#cb84-30" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">2</span>) col <span class="ot">&lt;-</span> <span class="fu">min</span>(grid_size, col <span class="sc">+</span> <span class="dv">1</span>)  <span class="co"># right</span></span>
+<span id="cb84-31"><a href="intrinsic-rewards.html#cb84-31" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">3</span>) row <span class="ot">&lt;-</span> <span class="fu">min</span>(grid_size, row <span class="sc">+</span> <span class="dv">1</span>)  <span class="co"># down</span></span>
+<span id="cb84-32"><a href="intrinsic-rewards.html#cb84-32" tabindex="-1"></a>  <span class="cf">else</span> <span class="cf">if</span> (action <span class="sc">==</span> <span class="dv">4</span>) col <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, col <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># left</span></span>
+<span id="cb84-33"><a href="intrinsic-rewards.html#cb84-33" tabindex="-1"></a>  </span>
+<span id="cb84-34"><a href="intrinsic-rewards.html#cb84-34" tabindex="-1"></a>  <span class="fu">encode_state</span>(row, col)</span>
+<span id="cb84-35"><a href="intrinsic-rewards.html#cb84-35" tabindex="-1"></a>}</span>
+<span id="cb84-36"><a href="intrinsic-rewards.html#cb84-36" tabindex="-1"></a></span>
+<span id="cb84-37"><a href="intrinsic-rewards.html#cb84-37" tabindex="-1"></a><span class="co"># Extrinsic reward function</span></span>
+<span id="cb84-38"><a href="intrinsic-rewards.html#cb84-38" tabindex="-1"></a>get_extrinsic_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb84-39"><a href="intrinsic-rewards.html#cb84-39" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
+<span id="cb84-40"><a href="intrinsic-rewards.html#cb84-40" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">all</span>(pos <span class="sc">==</span> goal_state)) <span class="fu">return</span>(<span class="dv">10</span>)</span>
+<span id="cb84-41"><a href="intrinsic-rewards.html#cb84-41" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">0</span>)</span>
+<span id="cb84-42"><a href="intrinsic-rewards.html#cb84-42" tabindex="-1"></a>}</span>
+<span id="cb84-43"><a href="intrinsic-rewards.html#cb84-43" tabindex="-1"></a></span>
+<span id="cb84-44"><a href="intrinsic-rewards.html#cb84-44" tabindex="-1"></a><span class="co"># Intrinsic Curiosity Module implementation</span></span>
+<span id="cb84-45"><a href="intrinsic-rewards.html#cb84-45" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> grid_size<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb84-46"><a href="intrinsic-rewards.html#cb84-46" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb84-47"><a href="intrinsic-rewards.html#cb84-47" tabindex="-1"></a>feature_dim <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb84-48"><a href="intrinsic-rewards.html#cb84-48" tabindex="-1"></a></span>
+<span id="cb84-49"><a href="intrinsic-rewards.html#cb84-49" tabindex="-1"></a><span class="co"># Initialize networks (simplified linear models for demonstration)</span></span>
+<span id="cb84-50"><a href="intrinsic-rewards.html#cb84-50" tabindex="-1"></a><span class="co"># Forward model: predicts next state features from current features and action</span></span>
+<span id="cb84-51"><a href="intrinsic-rewards.html#cb84-51" tabindex="-1"></a>forward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(feature_dim <span class="sc">*</span> (feature_dim <span class="sc">+</span> n_actions), <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb84-52"><a href="intrinsic-rewards.html#cb84-52" tabindex="-1"></a>                      <span class="at">dim =</span> <span class="fu">c</span>(feature_dim, feature_dim <span class="sc">+</span> n_actions))</span>
+<span id="cb84-53"><a href="intrinsic-rewards.html#cb84-53" tabindex="-1"></a></span>
+<span id="cb84-54"><a href="intrinsic-rewards.html#cb84-54" tabindex="-1"></a><span class="co"># Inverse model: predicts action from state transition</span></span>
+<span id="cb84-55"><a href="intrinsic-rewards.html#cb84-55" tabindex="-1"></a>inverse_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(n_actions <span class="sc">*</span> (<span class="dv">2</span> <span class="sc">*</span> feature_dim), <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb84-56"><a href="intrinsic-rewards.html#cb84-56" tabindex="-1"></a>                      <span class="at">dim =</span> <span class="fu">c</span>(n_actions, <span class="dv">2</span> <span class="sc">*</span> feature_dim))</span>
+<span id="cb84-57"><a href="intrinsic-rewards.html#cb84-57" tabindex="-1"></a></span>
+<span id="cb84-58"><a href="intrinsic-rewards.html#cb84-58" tabindex="-1"></a><span class="co"># Feature encoder: maps states to feature representations</span></span>
+<span id="cb84-59"><a href="intrinsic-rewards.html#cb84-59" tabindex="-1"></a>feature_encoder <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="fu">runif</span>(feature_dim <span class="sc">*</span> <span class="dv">2</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb84-60"><a href="intrinsic-rewards.html#cb84-60" tabindex="-1"></a>                        <span class="at">dim =</span> <span class="fu">c</span>(feature_dim, <span class="dv">2</span>))</span>
+<span id="cb84-61"><a href="intrinsic-rewards.html#cb84-61" tabindex="-1"></a></span>
+<span id="cb84-62"><a href="intrinsic-rewards.html#cb84-62" tabindex="-1"></a><span class="co"># Helper functions for neural network operations</span></span>
+<span id="cb84-63"><a href="intrinsic-rewards.html#cb84-63" tabindex="-1"></a>get_features <span class="ot">&lt;-</span> <span class="cf">function</span>(state) {</span>
+<span id="cb84-64"><a href="intrinsic-rewards.html#cb84-64" tabindex="-1"></a>  pos <span class="ot">&lt;-</span> <span class="fu">decode_state</span>(state)</span>
+<span id="cb84-65"><a href="intrinsic-rewards.html#cb84-65" tabindex="-1"></a>  normalized_pos <span class="ot">&lt;-</span> (pos <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> (grid_size <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># normalize to [0,1]</span></span>
+<span id="cb84-66"><a href="intrinsic-rewards.html#cb84-66" tabindex="-1"></a>  features <span class="ot">&lt;-</span> feature_encoder <span class="sc">%*%</span> normalized_pos</span>
+<span id="cb84-67"><a href="intrinsic-rewards.html#cb84-67" tabindex="-1"></a>  <span class="fu">tanh</span>(features)  <span class="co"># activation function</span></span>
+<span id="cb84-68"><a href="intrinsic-rewards.html#cb84-68" tabindex="-1"></a>}</span>
+<span id="cb84-69"><a href="intrinsic-rewards.html#cb84-69" tabindex="-1"></a></span>
+<span id="cb84-70"><a href="intrinsic-rewards.html#cb84-70" tabindex="-1"></a>action_to_onehot <span class="ot">&lt;-</span> <span class="cf">function</span>(action) {</span>
+<span id="cb84-71"><a href="intrinsic-rewards.html#cb84-71" tabindex="-1"></a>  onehot <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_actions)</span>
+<span id="cb84-72"><a href="intrinsic-rewards.html#cb84-72" tabindex="-1"></a>  onehot[action] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb84-73"><a href="intrinsic-rewards.html#cb84-73" tabindex="-1"></a>  onehot</span>
+<span id="cb84-74"><a href="intrinsic-rewards.html#cb84-74" tabindex="-1"></a>}</span>
+<span id="cb84-75"><a href="intrinsic-rewards.html#cb84-75" tabindex="-1"></a></span>
+<span id="cb84-76"><a href="intrinsic-rewards.html#cb84-76" tabindex="-1"></a><span class="co"># Compute intrinsic reward using ICM</span></span>
+<span id="cb84-77"><a href="intrinsic-rewards.html#cb84-77" tabindex="-1"></a>get_intrinsic_reward <span class="ot">&lt;-</span> <span class="cf">function</span>(state, action, next_state, <span class="at">alpha =</span> <span class="fl">0.01</span>) {</span>
+<span id="cb84-78"><a href="intrinsic-rewards.html#cb84-78" tabindex="-1"></a>  features_t <span class="ot">&lt;-</span> <span class="fu">get_features</span>(state)</span>
+<span id="cb84-79"><a href="intrinsic-rewards.html#cb84-79" tabindex="-1"></a>  features_t1 <span class="ot">&lt;-</span> <span class="fu">get_features</span>(next_state)</span>
+<span id="cb84-80"><a href="intrinsic-rewards.html#cb84-80" tabindex="-1"></a>  action_onehot <span class="ot">&lt;-</span> <span class="fu">action_to_onehot</span>(action)</span>
+<span id="cb84-81"><a href="intrinsic-rewards.html#cb84-81" tabindex="-1"></a>  </span>
+<span id="cb84-82"><a href="intrinsic-rewards.html#cb84-82" tabindex="-1"></a>  <span class="co"># Forward model prediction</span></span>
+<span id="cb84-83"><a href="intrinsic-rewards.html#cb84-83" tabindex="-1"></a>  forward_input <span class="ot">&lt;-</span> <span class="fu">c</span>(features_t, action_onehot)</span>
+<span id="cb84-84"><a href="intrinsic-rewards.html#cb84-84" tabindex="-1"></a>  predicted_features <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(forward_model <span class="sc">%*%</span> forward_input)</span>
+<span id="cb84-85"><a href="intrinsic-rewards.html#cb84-85" tabindex="-1"></a>  </span>
+<span id="cb84-86"><a href="intrinsic-rewards.html#cb84-86" tabindex="-1"></a>  <span class="co"># Prediction error as intrinsic reward</span></span>
+<span id="cb84-87"><a href="intrinsic-rewards.html#cb84-87" tabindex="-1"></a>  prediction_error <span class="ot">&lt;-</span> <span class="fu">sum</span>((predicted_features <span class="sc">-</span> features_t1)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb84-88"><a href="intrinsic-rewards.html#cb84-88" tabindex="-1"></a>  intrinsic_reward <span class="ot">&lt;-</span> alpha <span class="sc">*</span> prediction_error</span>
+<span id="cb84-89"><a href="intrinsic-rewards.html#cb84-89" tabindex="-1"></a>  </span>
+<span id="cb84-90"><a href="intrinsic-rewards.html#cb84-90" tabindex="-1"></a>  <span class="co"># Update forward model (simple gradient descent)</span></span>
+<span id="cb84-91"><a href="intrinsic-rewards.html#cb84-91" tabindex="-1"></a>  <span class="co"># Gradient of loss w.r.t. weights: error * input</span></span>
+<span id="cb84-92"><a href="intrinsic-rewards.html#cb84-92" tabindex="-1"></a>  error_gradient <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (predicted_features <span class="sc">-</span> features_t1)</span>
+<span id="cb84-93"><a href="intrinsic-rewards.html#cb84-93" tabindex="-1"></a>  </span>
+<span id="cb84-94"><a href="intrinsic-rewards.html#cb84-94" tabindex="-1"></a>  <span class="co"># Update each row of the forward model</span></span>
+<span id="cb84-95"><a href="intrinsic-rewards.html#cb84-95" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>feature_dim) {</span>
+<span id="cb84-96"><a href="intrinsic-rewards.html#cb84-96" tabindex="-1"></a>    forward_model[i, ] <span class="ot">&lt;&lt;-</span> forward_model[i, ] <span class="sc">-</span> <span class="fl">0.001</span> <span class="sc">*</span> error_gradient[i] <span class="sc">*</span> forward_input</span>
+<span id="cb84-97"><a href="intrinsic-rewards.html#cb84-97" tabindex="-1"></a>  }</span>
+<span id="cb84-98"><a href="intrinsic-rewards.html#cb84-98" tabindex="-1"></a>  </span>
+<span id="cb84-99"><a href="intrinsic-rewards.html#cb84-99" tabindex="-1"></a>  intrinsic_reward</span>
+<span id="cb84-100"><a href="intrinsic-rewards.html#cb84-100" tabindex="-1"></a>}</span>
+<span id="cb84-101"><a href="intrinsic-rewards.html#cb84-101" tabindex="-1"></a></span>
+<span id="cb84-102"><a href="intrinsic-rewards.html#cb84-102" tabindex="-1"></a><span class="co"># Q-learning with intrinsic motivation</span></span>
+<span id="cb84-103"><a href="intrinsic-rewards.html#cb84-103" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb84-104"><a href="intrinsic-rewards.html#cb84-104" tabindex="-1"></a>visit_counts <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states))</span>
+<span id="cb84-105"><a href="intrinsic-rewards.html#cb84-105" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb84-106"><a href="intrinsic-rewards.html#cb84-106" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.99</span></span>
+<span id="cb84-107"><a href="intrinsic-rewards.html#cb84-107" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
+<span id="cb84-108"><a href="intrinsic-rewards.html#cb84-108" tabindex="-1"></a>intrinsic_weight <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb84-109"><a href="intrinsic-rewards.html#cb84-109" tabindex="-1"></a></span>
+<span id="cb84-110"><a href="intrinsic-rewards.html#cb84-110" tabindex="-1"></a><span class="co"># Training metrics</span></span>
+<span id="cb84-111"><a href="intrinsic-rewards.html#cb84-111" tabindex="-1"></a>episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb84-112"><a href="intrinsic-rewards.html#cb84-112" tabindex="-1"></a>episode_lengths <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb84-113"><a href="intrinsic-rewards.html#cb84-113" tabindex="-1"></a>intrinsic_rewards_history <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb84-114"><a href="intrinsic-rewards.html#cb84-114" tabindex="-1"></a></span>
+<span id="cb84-115"><a href="intrinsic-rewards.html#cb84-115" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Training curiosity-driven agent...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## Training curiosity-driven agent...</code></pre>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="intrinsic-rewards.html#cb79-1" tabindex="-1"></a><span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
-<span id="cb79-2"><a href="intrinsic-rewards.html#cb79-2" tabindex="-1"></a>  state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(<span class="dv">1</span>, <span class="dv">1</span>)  <span class="co"># start at top-left</span></span>
-<span id="cb79-3"><a href="intrinsic-rewards.html#cb79-3" tabindex="-1"></a>  episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb79-4"><a href="intrinsic-rewards.html#cb79-4" tabindex="-1"></a>  episode_intrinsic <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb79-5"><a href="intrinsic-rewards.html#cb79-5" tabindex="-1"></a>  </span>
-<span id="cb79-6"><a href="intrinsic-rewards.html#cb79-6" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>max_steps) {</span>
-<span id="cb79-7"><a href="intrinsic-rewards.html#cb79-7" tabindex="-1"></a>    visit_counts[state] <span class="ot">&lt;-</span> visit_counts[state] <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb79-8"><a href="intrinsic-rewards.html#cb79-8" tabindex="-1"></a>    </span>
-<span id="cb79-9"><a href="intrinsic-rewards.html#cb79-9" tabindex="-1"></a>    <span class="co"># Epsilon-greedy action selection</span></span>
-<span id="cb79-10"><a href="intrinsic-rewards.html#cb79-10" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
-<span id="cb79-11"><a href="intrinsic-rewards.html#cb79-11" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
-<span id="cb79-12"><a href="intrinsic-rewards.html#cb79-12" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb79-13"><a href="intrinsic-rewards.html#cb79-13" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
-<span id="cb79-14"><a href="intrinsic-rewards.html#cb79-14" tabindex="-1"></a>    }</span>
-<span id="cb79-15"><a href="intrinsic-rewards.html#cb79-15" tabindex="-1"></a>    </span>
-<span id="cb79-16"><a href="intrinsic-rewards.html#cb79-16" tabindex="-1"></a>    <span class="co"># Take action</span></span>
-<span id="cb79-17"><a href="intrinsic-rewards.html#cb79-17" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">get_next_state</span>(state, action)</span>
-<span id="cb79-18"><a href="intrinsic-rewards.html#cb79-18" tabindex="-1"></a>    </span>
-<span id="cb79-19"><a href="intrinsic-rewards.html#cb79-19" tabindex="-1"></a>    <span class="co"># Compute rewards</span></span>
-<span id="cb79-20"><a href="intrinsic-rewards.html#cb79-20" tabindex="-1"></a>    extrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_extrinsic_reward</span>(next_state)</span>
-<span id="cb79-21"><a href="intrinsic-rewards.html#cb79-21" tabindex="-1"></a>    intrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_intrinsic_reward</span>(state, action, next_state)</span>
-<span id="cb79-22"><a href="intrinsic-rewards.html#cb79-22" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> extrinsic_reward <span class="sc">+</span> intrinsic_weight <span class="sc">*</span> intrinsic_reward</span>
-<span id="cb79-23"><a href="intrinsic-rewards.html#cb79-23" tabindex="-1"></a>    </span>
-<span id="cb79-24"><a href="intrinsic-rewards.html#cb79-24" tabindex="-1"></a>    episode_intrinsic <span class="ot">&lt;-</span> <span class="fu">c</span>(episode_intrinsic, intrinsic_reward)</span>
-<span id="cb79-25"><a href="intrinsic-rewards.html#cb79-25" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> extrinsic_reward</span>
-<span id="cb79-26"><a href="intrinsic-rewards.html#cb79-26" tabindex="-1"></a>    </span>
-<span id="cb79-27"><a href="intrinsic-rewards.html#cb79-27" tabindex="-1"></a>    <span class="co"># Q-learning update</span></span>
-<span id="cb79-28"><a href="intrinsic-rewards.html#cb79-28" tabindex="-1"></a>    td_target <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[next_state, ])</span>
-<span id="cb79-29"><a href="intrinsic-rewards.html#cb79-29" tabindex="-1"></a>    td_error <span class="ot">&lt;-</span> td_target <span class="sc">-</span> Q[state, action]</span>
-<span id="cb79-30"><a href="intrinsic-rewards.html#cb79-30" tabindex="-1"></a>    Q[state, action] <span class="ot">&lt;-</span> Q[state, action] <span class="sc">+</span> learning_rate <span class="sc">*</span> td_error</span>
-<span id="cb79-31"><a href="intrinsic-rewards.html#cb79-31" tabindex="-1"></a>    </span>
-<span id="cb79-32"><a href="intrinsic-rewards.html#cb79-32" tabindex="-1"></a>    <span class="co"># Check for goal</span></span>
-<span id="cb79-33"><a href="intrinsic-rewards.html#cb79-33" tabindex="-1"></a>    <span class="cf">if</span> (extrinsic_reward <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb79-34"><a href="intrinsic-rewards.html#cb79-34" tabindex="-1"></a>      episode_lengths[episode] <span class="ot">&lt;-</span> step</span>
-<span id="cb79-35"><a href="intrinsic-rewards.html#cb79-35" tabindex="-1"></a>      <span class="cf">break</span></span>
-<span id="cb79-36"><a href="intrinsic-rewards.html#cb79-36" tabindex="-1"></a>    }</span>
-<span id="cb79-37"><a href="intrinsic-rewards.html#cb79-37" tabindex="-1"></a>    </span>
-<span id="cb79-38"><a href="intrinsic-rewards.html#cb79-38" tabindex="-1"></a>    state <span class="ot">&lt;-</span> next_state</span>
-<span id="cb79-39"><a href="intrinsic-rewards.html#cb79-39" tabindex="-1"></a>  }</span>
-<span id="cb79-40"><a href="intrinsic-rewards.html#cb79-40" tabindex="-1"></a>  </span>
-<span id="cb79-41"><a href="intrinsic-rewards.html#cb79-41" tabindex="-1"></a>  <span class="cf">if</span> (episode_reward <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb79-42"><a href="intrinsic-rewards.html#cb79-42" tabindex="-1"></a>    episode_lengths[episode] <span class="ot">&lt;-</span> max_steps</span>
-<span id="cb79-43"><a href="intrinsic-rewards.html#cb79-43" tabindex="-1"></a>  }</span>
-<span id="cb79-44"><a href="intrinsic-rewards.html#cb79-44" tabindex="-1"></a>  </span>
-<span id="cb79-45"><a href="intrinsic-rewards.html#cb79-45" tabindex="-1"></a>  episode_rewards[episode] <span class="ot">&lt;-</span> episode_reward</span>
-<span id="cb79-46"><a href="intrinsic-rewards.html#cb79-46" tabindex="-1"></a>  intrinsic_rewards_history[[episode]] <span class="ot">&lt;-</span> episode_intrinsic</span>
-<span id="cb79-47"><a href="intrinsic-rewards.html#cb79-47" tabindex="-1"></a>  </span>
-<span id="cb79-48"><a href="intrinsic-rewards.html#cb79-48" tabindex="-1"></a>  <span class="co"># Decay exploration</span></span>
-<span id="cb79-49"><a href="intrinsic-rewards.html#cb79-49" tabindex="-1"></a>  <span class="cf">if</span> (episode <span class="sc">%%</span> <span class="dv">50</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb79-50"><a href="intrinsic-rewards.html#cb79-50" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.05</span>, epsilon <span class="sc">*</span> <span class="fl">0.95</span>)</span>
-<span id="cb79-51"><a href="intrinsic-rewards.html#cb79-51" tabindex="-1"></a>    avg_length <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_lengths[<span class="fu">max</span>(<span class="dv">1</span>, episode<span class="dv">-49</span>)<span class="sc">:</span>episode])</span>
-<span id="cb79-52"><a href="intrinsic-rewards.html#cb79-52" tabindex="-1"></a>    success_rate <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_rewards[<span class="fu">max</span>(<span class="dv">1</span>, episode<span class="dv">-49</span>)<span class="sc">:</span>episode] <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb79-53"><a href="intrinsic-rewards.html#cb79-53" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Episode %d: Success rate %.2f, Avg length %.1f</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
-<span id="cb79-54"><a href="intrinsic-rewards.html#cb79-54" tabindex="-1"></a>                episode, success_rate, avg_length))</span>
-<span id="cb79-55"><a href="intrinsic-rewards.html#cb79-55" tabindex="-1"></a>  }</span>
-<span id="cb79-56"><a href="intrinsic-rewards.html#cb79-56" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="intrinsic-rewards.html#cb86-1" tabindex="-1"></a><span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb86-2"><a href="intrinsic-rewards.html#cb86-2" tabindex="-1"></a>  state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(<span class="dv">1</span>, <span class="dv">1</span>)  <span class="co"># start at top-left</span></span>
+<span id="cb86-3"><a href="intrinsic-rewards.html#cb86-3" tabindex="-1"></a>  episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb86-4"><a href="intrinsic-rewards.html#cb86-4" tabindex="-1"></a>  episode_intrinsic <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb86-5"><a href="intrinsic-rewards.html#cb86-5" tabindex="-1"></a>  </span>
+<span id="cb86-6"><a href="intrinsic-rewards.html#cb86-6" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>max_steps) {</span>
+<span id="cb86-7"><a href="intrinsic-rewards.html#cb86-7" tabindex="-1"></a>    visit_counts[state] <span class="ot">&lt;-</span> visit_counts[state] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb86-8"><a href="intrinsic-rewards.html#cb86-8" tabindex="-1"></a>    </span>
+<span id="cb86-9"><a href="intrinsic-rewards.html#cb86-9" tabindex="-1"></a>    <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb86-10"><a href="intrinsic-rewards.html#cb86-10" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb86-11"><a href="intrinsic-rewards.html#cb86-11" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb86-12"><a href="intrinsic-rewards.html#cb86-12" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb86-13"><a href="intrinsic-rewards.html#cb86-13" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
+<span id="cb86-14"><a href="intrinsic-rewards.html#cb86-14" tabindex="-1"></a>    }</span>
+<span id="cb86-15"><a href="intrinsic-rewards.html#cb86-15" tabindex="-1"></a>    </span>
+<span id="cb86-16"><a href="intrinsic-rewards.html#cb86-16" tabindex="-1"></a>    <span class="co"># Take action</span></span>
+<span id="cb86-17"><a href="intrinsic-rewards.html#cb86-17" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">get_next_state</span>(state, action)</span>
+<span id="cb86-18"><a href="intrinsic-rewards.html#cb86-18" tabindex="-1"></a>    </span>
+<span id="cb86-19"><a href="intrinsic-rewards.html#cb86-19" tabindex="-1"></a>    <span class="co"># Compute rewards</span></span>
+<span id="cb86-20"><a href="intrinsic-rewards.html#cb86-20" tabindex="-1"></a>    extrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_extrinsic_reward</span>(next_state)</span>
+<span id="cb86-21"><a href="intrinsic-rewards.html#cb86-21" tabindex="-1"></a>    intrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_intrinsic_reward</span>(state, action, next_state)</span>
+<span id="cb86-22"><a href="intrinsic-rewards.html#cb86-22" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> extrinsic_reward <span class="sc">+</span> intrinsic_weight <span class="sc">*</span> intrinsic_reward</span>
+<span id="cb86-23"><a href="intrinsic-rewards.html#cb86-23" tabindex="-1"></a>    </span>
+<span id="cb86-24"><a href="intrinsic-rewards.html#cb86-24" tabindex="-1"></a>    episode_intrinsic <span class="ot">&lt;-</span> <span class="fu">c</span>(episode_intrinsic, intrinsic_reward)</span>
+<span id="cb86-25"><a href="intrinsic-rewards.html#cb86-25" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> extrinsic_reward</span>
+<span id="cb86-26"><a href="intrinsic-rewards.html#cb86-26" tabindex="-1"></a>    </span>
+<span id="cb86-27"><a href="intrinsic-rewards.html#cb86-27" tabindex="-1"></a>    <span class="co"># Q-learning update</span></span>
+<span id="cb86-28"><a href="intrinsic-rewards.html#cb86-28" tabindex="-1"></a>    td_target <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[next_state, ])</span>
+<span id="cb86-29"><a href="intrinsic-rewards.html#cb86-29" tabindex="-1"></a>    td_error <span class="ot">&lt;-</span> td_target <span class="sc">-</span> Q[state, action]</span>
+<span id="cb86-30"><a href="intrinsic-rewards.html#cb86-30" tabindex="-1"></a>    Q[state, action] <span class="ot">&lt;-</span> Q[state, action] <span class="sc">+</span> learning_rate <span class="sc">*</span> td_error</span>
+<span id="cb86-31"><a href="intrinsic-rewards.html#cb86-31" tabindex="-1"></a>    </span>
+<span id="cb86-32"><a href="intrinsic-rewards.html#cb86-32" tabindex="-1"></a>    <span class="co"># Check for goal</span></span>
+<span id="cb86-33"><a href="intrinsic-rewards.html#cb86-33" tabindex="-1"></a>    <span class="cf">if</span> (extrinsic_reward <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb86-34"><a href="intrinsic-rewards.html#cb86-34" tabindex="-1"></a>      episode_lengths[episode] <span class="ot">&lt;-</span> step</span>
+<span id="cb86-35"><a href="intrinsic-rewards.html#cb86-35" tabindex="-1"></a>      <span class="cf">break</span></span>
+<span id="cb86-36"><a href="intrinsic-rewards.html#cb86-36" tabindex="-1"></a>    }</span>
+<span id="cb86-37"><a href="intrinsic-rewards.html#cb86-37" tabindex="-1"></a>    </span>
+<span id="cb86-38"><a href="intrinsic-rewards.html#cb86-38" tabindex="-1"></a>    state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb86-39"><a href="intrinsic-rewards.html#cb86-39" tabindex="-1"></a>  }</span>
+<span id="cb86-40"><a href="intrinsic-rewards.html#cb86-40" tabindex="-1"></a>  </span>
+<span id="cb86-41"><a href="intrinsic-rewards.html#cb86-41" tabindex="-1"></a>  <span class="cf">if</span> (episode_reward <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb86-42"><a href="intrinsic-rewards.html#cb86-42" tabindex="-1"></a>    episode_lengths[episode] <span class="ot">&lt;-</span> max_steps</span>
+<span id="cb86-43"><a href="intrinsic-rewards.html#cb86-43" tabindex="-1"></a>  }</span>
+<span id="cb86-44"><a href="intrinsic-rewards.html#cb86-44" tabindex="-1"></a>  </span>
+<span id="cb86-45"><a href="intrinsic-rewards.html#cb86-45" tabindex="-1"></a>  episode_rewards[episode] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb86-46"><a href="intrinsic-rewards.html#cb86-46" tabindex="-1"></a>  intrinsic_rewards_history[[episode]] <span class="ot">&lt;-</span> episode_intrinsic</span>
+<span id="cb86-47"><a href="intrinsic-rewards.html#cb86-47" tabindex="-1"></a>  </span>
+<span id="cb86-48"><a href="intrinsic-rewards.html#cb86-48" tabindex="-1"></a>  <span class="co"># Decay exploration</span></span>
+<span id="cb86-49"><a href="intrinsic-rewards.html#cb86-49" tabindex="-1"></a>  <span class="cf">if</span> (episode <span class="sc">%%</span> <span class="dv">50</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb86-50"><a href="intrinsic-rewards.html#cb86-50" tabindex="-1"></a>    epsilon <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fl">0.05</span>, epsilon <span class="sc">*</span> <span class="fl">0.95</span>)</span>
+<span id="cb86-51"><a href="intrinsic-rewards.html#cb86-51" tabindex="-1"></a>    avg_length <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_lengths[<span class="fu">max</span>(<span class="dv">1</span>, episode<span class="dv">-49</span>)<span class="sc">:</span>episode])</span>
+<span id="cb86-52"><a href="intrinsic-rewards.html#cb86-52" tabindex="-1"></a>    success_rate <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_rewards[<span class="fu">max</span>(<span class="dv">1</span>, episode<span class="dv">-49</span>)<span class="sc">:</span>episode] <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb86-53"><a href="intrinsic-rewards.html#cb86-53" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Episode %d: Success rate %.2f, Avg length %.1f</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb86-54"><a href="intrinsic-rewards.html#cb86-54" tabindex="-1"></a>                episode, success_rate, avg_length))</span>
+<span id="cb86-55"><a href="intrinsic-rewards.html#cb86-55" tabindex="-1"></a>  }</span>
+<span id="cb86-56"><a href="intrinsic-rewards.html#cb86-56" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Episode 50: Success rate 0.00, Avg length 100.0
 ## Episode 100: Success rate 0.00, Avg length 100.0
 ## Episode 150: Success rate 0.00, Avg length 100.0
@@ -701,107 +701,107 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Episode 400: Success rate 0.00, Avg length 100.0
 ## Episode 450: Success rate 0.00, Avg length 100.0
 ## Episode 500: Success rate 0.00, Avg length 100.0</code></pre>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="intrinsic-rewards.html#cb81-1" tabindex="-1"></a><span class="co"># Analyze learning progress</span></span>
-<span id="cb81-2"><a href="intrinsic-rewards.html#cb81-2" tabindex="-1"></a>success_episodes <span class="ot">&lt;-</span> <span class="fu">which</span>(episode_rewards <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb81-3"><a href="intrinsic-rewards.html#cb81-3" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(success_episodes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb81-4"><a href="intrinsic-rewards.html#cb81-4" tabindex="-1"></a>  first_success <span class="ot">&lt;-</span> <span class="fu">min</span>(success_episodes)</span>
-<span id="cb81-5"><a href="intrinsic-rewards.html#cb81-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;First successful episode: %d</span><span class="sc">\n</span><span class="st">&quot;</span>, first_success))</span>
-<span id="cb81-6"><a href="intrinsic-rewards.html#cb81-6" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final success rate (last 100 episodes): %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
-<span id="cb81-7"><a href="intrinsic-rewards.html#cb81-7" tabindex="-1"></a>              <span class="fu">mean</span>(episode_rewards[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes] <span class="sc">&gt;</span> <span class="dv">0</span>)))</span>
-<span id="cb81-8"><a href="intrinsic-rewards.html#cb81-8" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb81-9"><a href="intrinsic-rewards.html#cb81-9" tabindex="-1"></a>  first_success <span class="ot">&lt;-</span> n_episodes</span>
-<span id="cb81-10"><a href="intrinsic-rewards.html#cb81-10" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;No successful episodes found</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb81-11"><a href="intrinsic-rewards.html#cb81-11" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="intrinsic-rewards.html#cb88-1" tabindex="-1"></a><span class="co"># Analyze learning progress</span></span>
+<span id="cb88-2"><a href="intrinsic-rewards.html#cb88-2" tabindex="-1"></a>success_episodes <span class="ot">&lt;-</span> <span class="fu">which</span>(episode_rewards <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb88-3"><a href="intrinsic-rewards.html#cb88-3" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(success_episodes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb88-4"><a href="intrinsic-rewards.html#cb88-4" tabindex="-1"></a>  first_success <span class="ot">&lt;-</span> <span class="fu">min</span>(success_episodes)</span>
+<span id="cb88-5"><a href="intrinsic-rewards.html#cb88-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;First successful episode: %d</span><span class="sc">\n</span><span class="st">&quot;</span>, first_success))</span>
+<span id="cb88-6"><a href="intrinsic-rewards.html#cb88-6" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final success rate (last 100 episodes): %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb88-7"><a href="intrinsic-rewards.html#cb88-7" tabindex="-1"></a>              <span class="fu">mean</span>(episode_rewards[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes] <span class="sc">&gt;</span> <span class="dv">0</span>)))</span>
+<span id="cb88-8"><a href="intrinsic-rewards.html#cb88-8" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb88-9"><a href="intrinsic-rewards.html#cb88-9" tabindex="-1"></a>  first_success <span class="ot">&lt;-</span> n_episodes</span>
+<span id="cb88-10"><a href="intrinsic-rewards.html#cb88-10" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;No successful episodes found</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb88-11"><a href="intrinsic-rewards.html#cb88-11" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## No successful episodes found</code></pre>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="intrinsic-rewards.html#cb83-1" tabindex="-1"></a><span class="co"># Visualize learned policy</span></span>
-<span id="cb83-2"><a href="intrinsic-rewards.html#cb83-2" tabindex="-1"></a>learned_policy <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(grid_size, grid_size))</span>
-<span id="cb83-3"><a href="intrinsic-rewards.html#cb83-3" tabindex="-1"></a><span class="cf">for</span> (row <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
-<span id="cb83-4"><a href="intrinsic-rewards.html#cb83-4" tabindex="-1"></a>  <span class="cf">for</span> (col <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
-<span id="cb83-5"><a href="intrinsic-rewards.html#cb83-5" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(row, col)</span>
-<span id="cb83-6"><a href="intrinsic-rewards.html#cb83-6" tabindex="-1"></a>    learned_policy[row, col] <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
-<span id="cb83-7"><a href="intrinsic-rewards.html#cb83-7" tabindex="-1"></a>  }</span>
-<span id="cb83-8"><a href="intrinsic-rewards.html#cb83-8" tabindex="-1"></a>}</span>
-<span id="cb83-9"><a href="intrinsic-rewards.html#cb83-9" tabindex="-1"></a></span>
-<span id="cb83-10"><a href="intrinsic-rewards.html#cb83-10" tabindex="-1"></a><span class="co"># Create visualization data frame</span></span>
-<span id="cb83-11"><a href="intrinsic-rewards.html#cb83-11" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span>grid_size, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span>grid_size)</span>
-<span id="cb83-12"><a href="intrinsic-rewards.html#cb83-12" tabindex="-1"></a>policy_df<span class="sc">$</span>action <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(learned_policy)</span>
-<span id="cb83-13"><a href="intrinsic-rewards.html#cb83-13" tabindex="-1"></a>policy_df<span class="sc">$</span>action_char <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;↑&quot;</span>, <span class="st">&quot;→&quot;</span>, <span class="st">&quot;↓&quot;</span>, <span class="st">&quot;←&quot;</span>)[policy_df<span class="sc">$</span>action]</span>
-<span id="cb83-14"><a href="intrinsic-rewards.html#cb83-14" tabindex="-1"></a></span>
-<span id="cb83-15"><a href="intrinsic-rewards.html#cb83-15" tabindex="-1"></a><span class="co"># Create heatmap of visit counts</span></span>
-<span id="cb83-16"><a href="intrinsic-rewards.html#cb83-16" tabindex="-1"></a>visit_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(visit_counts, <span class="at">nrow =</span> grid_size, <span class="at">ncol =</span> grid_size, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb83-17"><a href="intrinsic-rewards.html#cb83-17" tabindex="-1"></a>visit_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span>grid_size, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span>grid_size)</span>
-<span id="cb83-18"><a href="intrinsic-rewards.html#cb83-18" tabindex="-1"></a>visit_df<span class="sc">$</span>visits <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(visit_matrix)</span>
-<span id="cb83-19"><a href="intrinsic-rewards.html#cb83-19" tabindex="-1"></a></span>
-<span id="cb83-20"><a href="intrinsic-rewards.html#cb83-20" tabindex="-1"></a><span class="co"># Plot learning curves</span></span>
-<span id="cb83-21"><a href="intrinsic-rewards.html#cb83-21" tabindex="-1"></a>learning_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb83-22"><a href="intrinsic-rewards.html#cb83-22" tabindex="-1"></a>  <span class="at">episode =</span> <span class="dv">1</span><span class="sc">:</span>n_episodes,</span>
-<span id="cb83-23"><a href="intrinsic-rewards.html#cb83-23" tabindex="-1"></a>  <span class="at">success =</span> <span class="fu">as.numeric</span>(episode_rewards <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
-<span id="cb83-24"><a href="intrinsic-rewards.html#cb83-24" tabindex="-1"></a>  <span class="at">length =</span> episode_lengths</span>
-<span id="cb83-25"><a href="intrinsic-rewards.html#cb83-25" tabindex="-1"></a>)</span>
-<span id="cb83-26"><a href="intrinsic-rewards.html#cb83-26" tabindex="-1"></a></span>
-<span id="cb83-27"><a href="intrinsic-rewards.html#cb83-27" tabindex="-1"></a><span class="co"># Moving average for smoothing (handle edge cases)</span></span>
-<span id="cb83-28"><a href="intrinsic-rewards.html#cb83-28" tabindex="-1"></a>window_size <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb83-29"><a href="intrinsic-rewards.html#cb83-29" tabindex="-1"></a><span class="cf">if</span> (n_episodes <span class="sc">&gt;=</span> window_size) {</span>
-<span id="cb83-30"><a href="intrinsic-rewards.html#cb83-30" tabindex="-1"></a>  success_smooth <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, n_episodes)</span>
-<span id="cb83-31"><a href="intrinsic-rewards.html#cb83-31" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> window_size<span class="sc">:</span>n_episodes) {</span>
-<span id="cb83-32"><a href="intrinsic-rewards.html#cb83-32" tabindex="-1"></a>    success_smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(learning_data<span class="sc">$</span>success[(i<span class="sc">-</span>window_size<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>i])</span>
-<span id="cb83-33"><a href="intrinsic-rewards.html#cb83-33" tabindex="-1"></a>  }</span>
-<span id="cb83-34"><a href="intrinsic-rewards.html#cb83-34" tabindex="-1"></a>  learning_data<span class="sc">$</span>success_ma <span class="ot">&lt;-</span> success_smooth</span>
-<span id="cb83-35"><a href="intrinsic-rewards.html#cb83-35" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb83-36"><a href="intrinsic-rewards.html#cb83-36" tabindex="-1"></a>  learning_data<span class="sc">$</span>success_ma <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(learning_data<span class="sc">$</span>success) <span class="sc">/</span> <span class="fu">seq_along</span>(learning_data<span class="sc">$</span>success)</span>
-<span id="cb83-37"><a href="intrinsic-rewards.html#cb83-37" tabindex="-1"></a>}</span>
-<span id="cb83-38"><a href="intrinsic-rewards.html#cb83-38" tabindex="-1"></a></span>
-<span id="cb83-39"><a href="intrinsic-rewards.html#cb83-39" tabindex="-1"></a><span class="co"># Create learning curve plot</span></span>
-<span id="cb83-40"><a href="intrinsic-rewards.html#cb83-40" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(learning_data, <span class="fu">aes</span>(<span class="at">x =</span> episode)) <span class="sc">+</span></span>
-<span id="cb83-41"><a href="intrinsic-rewards.html#cb83-41" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> success_ma), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb83-42"><a href="intrinsic-rewards.html#cb83-42" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> success), <span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">span =</span> <span class="fl">0.3</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb83-43"><a href="intrinsic-rewards.html#cb83-43" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Progress&quot;</span>,</span>
-<span id="cb83-44"><a href="intrinsic-rewards.html#cb83-44" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
-<span id="cb83-45"><a href="intrinsic-rewards.html#cb83-45" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Success Rate&quot;</span>,</span>
-<span id="cb83-46"><a href="intrinsic-rewards.html#cb83-46" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Blue: Moving average, Red: Smoothed trend&quot;</span>) <span class="sc">+</span></span>
-<span id="cb83-47"><a href="intrinsic-rewards.html#cb83-47" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="intrinsic-rewards.html#cb90-1" tabindex="-1"></a><span class="co"># Visualize learned policy</span></span>
+<span id="cb90-2"><a href="intrinsic-rewards.html#cb90-2" tabindex="-1"></a>learned_policy <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(grid_size, grid_size))</span>
+<span id="cb90-3"><a href="intrinsic-rewards.html#cb90-3" tabindex="-1"></a><span class="cf">for</span> (row <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
+<span id="cb90-4"><a href="intrinsic-rewards.html#cb90-4" tabindex="-1"></a>  <span class="cf">for</span> (col <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
+<span id="cb90-5"><a href="intrinsic-rewards.html#cb90-5" tabindex="-1"></a>    state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(row, col)</span>
+<span id="cb90-6"><a href="intrinsic-rewards.html#cb90-6" tabindex="-1"></a>    learned_policy[row, col] <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[state, ])</span>
+<span id="cb90-7"><a href="intrinsic-rewards.html#cb90-7" tabindex="-1"></a>  }</span>
+<span id="cb90-8"><a href="intrinsic-rewards.html#cb90-8" tabindex="-1"></a>}</span>
+<span id="cb90-9"><a href="intrinsic-rewards.html#cb90-9" tabindex="-1"></a></span>
+<span id="cb90-10"><a href="intrinsic-rewards.html#cb90-10" tabindex="-1"></a><span class="co"># Create visualization data frame</span></span>
+<span id="cb90-11"><a href="intrinsic-rewards.html#cb90-11" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span>grid_size, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span>grid_size)</span>
+<span id="cb90-12"><a href="intrinsic-rewards.html#cb90-12" tabindex="-1"></a>policy_df<span class="sc">$</span>action <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(learned_policy)</span>
+<span id="cb90-13"><a href="intrinsic-rewards.html#cb90-13" tabindex="-1"></a>policy_df<span class="sc">$</span>action_char <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;↑&quot;</span>, <span class="st">&quot;→&quot;</span>, <span class="st">&quot;↓&quot;</span>, <span class="st">&quot;←&quot;</span>)[policy_df<span class="sc">$</span>action]</span>
+<span id="cb90-14"><a href="intrinsic-rewards.html#cb90-14" tabindex="-1"></a></span>
+<span id="cb90-15"><a href="intrinsic-rewards.html#cb90-15" tabindex="-1"></a><span class="co"># Create heatmap of visit counts</span></span>
+<span id="cb90-16"><a href="intrinsic-rewards.html#cb90-16" tabindex="-1"></a>visit_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(visit_counts, <span class="at">nrow =</span> grid_size, <span class="at">ncol =</span> grid_size, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb90-17"><a href="intrinsic-rewards.html#cb90-17" tabindex="-1"></a>visit_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span>grid_size, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span>grid_size)</span>
+<span id="cb90-18"><a href="intrinsic-rewards.html#cb90-18" tabindex="-1"></a>visit_df<span class="sc">$</span>visits <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(visit_matrix)</span>
+<span id="cb90-19"><a href="intrinsic-rewards.html#cb90-19" tabindex="-1"></a></span>
+<span id="cb90-20"><a href="intrinsic-rewards.html#cb90-20" tabindex="-1"></a><span class="co"># Plot learning curves</span></span>
+<span id="cb90-21"><a href="intrinsic-rewards.html#cb90-21" tabindex="-1"></a>learning_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb90-22"><a href="intrinsic-rewards.html#cb90-22" tabindex="-1"></a>  <span class="at">episode =</span> <span class="dv">1</span><span class="sc">:</span>n_episodes,</span>
+<span id="cb90-23"><a href="intrinsic-rewards.html#cb90-23" tabindex="-1"></a>  <span class="at">success =</span> <span class="fu">as.numeric</span>(episode_rewards <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb90-24"><a href="intrinsic-rewards.html#cb90-24" tabindex="-1"></a>  <span class="at">length =</span> episode_lengths</span>
+<span id="cb90-25"><a href="intrinsic-rewards.html#cb90-25" tabindex="-1"></a>)</span>
+<span id="cb90-26"><a href="intrinsic-rewards.html#cb90-26" tabindex="-1"></a></span>
+<span id="cb90-27"><a href="intrinsic-rewards.html#cb90-27" tabindex="-1"></a><span class="co"># Moving average for smoothing (handle edge cases)</span></span>
+<span id="cb90-28"><a href="intrinsic-rewards.html#cb90-28" tabindex="-1"></a>window_size <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb90-29"><a href="intrinsic-rewards.html#cb90-29" tabindex="-1"></a><span class="cf">if</span> (n_episodes <span class="sc">&gt;=</span> window_size) {</span>
+<span id="cb90-30"><a href="intrinsic-rewards.html#cb90-30" tabindex="-1"></a>  success_smooth <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, n_episodes)</span>
+<span id="cb90-31"><a href="intrinsic-rewards.html#cb90-31" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> window_size<span class="sc">:</span>n_episodes) {</span>
+<span id="cb90-32"><a href="intrinsic-rewards.html#cb90-32" tabindex="-1"></a>    success_smooth[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(learning_data<span class="sc">$</span>success[(i<span class="sc">-</span>window_size<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>i])</span>
+<span id="cb90-33"><a href="intrinsic-rewards.html#cb90-33" tabindex="-1"></a>  }</span>
+<span id="cb90-34"><a href="intrinsic-rewards.html#cb90-34" tabindex="-1"></a>  learning_data<span class="sc">$</span>success_ma <span class="ot">&lt;-</span> success_smooth</span>
+<span id="cb90-35"><a href="intrinsic-rewards.html#cb90-35" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb90-36"><a href="intrinsic-rewards.html#cb90-36" tabindex="-1"></a>  learning_data<span class="sc">$</span>success_ma <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(learning_data<span class="sc">$</span>success) <span class="sc">/</span> <span class="fu">seq_along</span>(learning_data<span class="sc">$</span>success)</span>
+<span id="cb90-37"><a href="intrinsic-rewards.html#cb90-37" tabindex="-1"></a>}</span>
+<span id="cb90-38"><a href="intrinsic-rewards.html#cb90-38" tabindex="-1"></a></span>
+<span id="cb90-39"><a href="intrinsic-rewards.html#cb90-39" tabindex="-1"></a><span class="co"># Create learning curve plot</span></span>
+<span id="cb90-40"><a href="intrinsic-rewards.html#cb90-40" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(learning_data, <span class="fu">aes</span>(<span class="at">x =</span> episode)) <span class="sc">+</span></span>
+<span id="cb90-41"><a href="intrinsic-rewards.html#cb90-41" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> success_ma), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb90-42"><a href="intrinsic-rewards.html#cb90-42" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">y =</span> success), <span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">span =</span> <span class="fl">0.3</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb90-43"><a href="intrinsic-rewards.html#cb90-43" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Progress&quot;</span>,</span>
+<span id="cb90-44"><a href="intrinsic-rewards.html#cb90-44" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
+<span id="cb90-45"><a href="intrinsic-rewards.html#cb90-45" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Success Rate&quot;</span>,</span>
+<span id="cb90-46"><a href="intrinsic-rewards.html#cb90-46" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Blue: Moving average, Red: Smoothed trend&quot;</span>) <span class="sc">+</span></span>
+<span id="cb90-47"><a href="intrinsic-rewards.html#cb90-47" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
 <pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 ## ℹ Please use `linewidth` instead.
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="intrinsic-rewards.html#cb85-1" tabindex="-1"></a><span class="co"># Create policy visualization</span></span>
-<span id="cb85-2"><a href="intrinsic-rewards.html#cb85-2" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> grid_size <span class="sc">+</span> <span class="dv">1</span> <span class="sc">-</span> row)) <span class="sc">+</span></span>
-<span id="cb85-3"><a href="intrinsic-rewards.html#cb85-3" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
-<span id="cb85-4"><a href="intrinsic-rewards.html#cb85-4" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> action_char), <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
-<span id="cb85-5"><a href="intrinsic-rewards.html#cb85-5" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">col =</span> grid_size, <span class="at">row =</span> <span class="dv">1</span>), </span>
-<span id="cb85-6"><a href="intrinsic-rewards.html#cb85-6" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> row), <span class="at">fill =</span> <span class="st">&quot;gold&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb85-7"><a href="intrinsic-rewards.html#cb85-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learned Policy&quot;</span>, </span>
-<span id="cb85-8"><a href="intrinsic-rewards.html#cb85-8" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Arrows show best action, Gold = Goal&quot;</span>) <span class="sc">+</span></span>
-<span id="cb85-9"><a href="intrinsic-rewards.html#cb85-9" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
-<span id="cb85-10"><a href="intrinsic-rewards.html#cb85-10" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
-<span id="cb85-11"><a href="intrinsic-rewards.html#cb85-11" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb85-12"><a href="intrinsic-rewards.html#cb85-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span>
-<span id="cb85-13"><a href="intrinsic-rewards.html#cb85-13" tabindex="-1"></a></span>
-<span id="cb85-14"><a href="intrinsic-rewards.html#cb85-14" tabindex="-1"></a><span class="co"># Create visit count heatmap</span></span>
-<span id="cb85-15"><a href="intrinsic-rewards.html#cb85-15" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(visit_df, <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> grid_size <span class="sc">+</span> <span class="dv">1</span> <span class="sc">-</span> row, <span class="at">fill =</span> visits)) <span class="sc">+</span></span>
-<span id="cb85-16"><a href="intrinsic-rewards.html#cb85-16" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
-<span id="cb85-17"><a href="intrinsic-rewards.html#cb85-17" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;white&quot;</span>, <span class="at">high =</span> <span class="st">&quot;darkblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb85-18"><a href="intrinsic-rewards.html#cb85-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;State Visitation Frequency&quot;</span>,</span>
-<span id="cb85-19"><a href="intrinsic-rewards.html#cb85-19" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Visit Count&quot;</span>) <span class="sc">+</span></span>
-<span id="cb85-20"><a href="intrinsic-rewards.html#cb85-20" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
-<span id="cb85-21"><a href="intrinsic-rewards.html#cb85-21" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
-<span id="cb85-22"><a href="intrinsic-rewards.html#cb85-22" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb85-23"><a href="intrinsic-rewards.html#cb85-23" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span>
-<span id="cb85-24"><a href="intrinsic-rewards.html#cb85-24" tabindex="-1"></a></span>
-<span id="cb85-25"><a href="intrinsic-rewards.html#cb85-25" tabindex="-1"></a><span class="fu">print</span>(p1)</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="intrinsic-rewards.html#cb92-1" tabindex="-1"></a><span class="co"># Create policy visualization</span></span>
+<span id="cb92-2"><a href="intrinsic-rewards.html#cb92-2" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df, <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> grid_size <span class="sc">+</span> <span class="dv">1</span> <span class="sc">-</span> row)) <span class="sc">+</span></span>
+<span id="cb92-3"><a href="intrinsic-rewards.html#cb92-3" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb92-4"><a href="intrinsic-rewards.html#cb92-4" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> action_char), <span class="at">size =</span> <span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb92-5"><a href="intrinsic-rewards.html#cb92-5" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">col =</span> grid_size, <span class="at">row =</span> <span class="dv">1</span>), </span>
+<span id="cb92-6"><a href="intrinsic-rewards.html#cb92-6" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> row), <span class="at">fill =</span> <span class="st">&quot;gold&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb92-7"><a href="intrinsic-rewards.html#cb92-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learned Policy&quot;</span>, </span>
+<span id="cb92-8"><a href="intrinsic-rewards.html#cb92-8" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Arrows show best action, Gold = Goal&quot;</span>) <span class="sc">+</span></span>
+<span id="cb92-9"><a href="intrinsic-rewards.html#cb92-9" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb92-10"><a href="intrinsic-rewards.html#cb92-10" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb92-11"><a href="intrinsic-rewards.html#cb92-11" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb92-12"><a href="intrinsic-rewards.html#cb92-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span>
+<span id="cb92-13"><a href="intrinsic-rewards.html#cb92-13" tabindex="-1"></a></span>
+<span id="cb92-14"><a href="intrinsic-rewards.html#cb92-14" tabindex="-1"></a><span class="co"># Create visit count heatmap</span></span>
+<span id="cb92-15"><a href="intrinsic-rewards.html#cb92-15" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(visit_df, <span class="fu">aes</span>(<span class="at">x =</span> col, <span class="at">y =</span> grid_size <span class="sc">+</span> <span class="dv">1</span> <span class="sc">-</span> row, <span class="at">fill =</span> visits)) <span class="sc">+</span></span>
+<span id="cb92-16"><a href="intrinsic-rewards.html#cb92-16" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb92-17"><a href="intrinsic-rewards.html#cb92-17" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;white&quot;</span>, <span class="at">high =</span> <span class="st">&quot;darkblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb92-18"><a href="intrinsic-rewards.html#cb92-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;State Visitation Frequency&quot;</span>,</span>
+<span id="cb92-19"><a href="intrinsic-rewards.html#cb92-19" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Visit Count&quot;</span>) <span class="sc">+</span></span>
+<span id="cb92-20"><a href="intrinsic-rewards.html#cb92-20" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb92-21"><a href="intrinsic-rewards.html#cb92-21" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>grid_size) <span class="sc">+</span></span>
+<span id="cb92-22"><a href="intrinsic-rewards.html#cb92-22" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb92-23"><a href="intrinsic-rewards.html#cb92-23" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span>
+<span id="cb92-24"><a href="intrinsic-rewards.html#cb92-24" tabindex="-1"></a></span>
+<span id="cb92-25"><a href="intrinsic-rewards.html#cb92-25" tabindex="-1"></a><span class="fu">print</span>(p1)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <pre><code>## Warning: Removed 49 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="intrinsic-rewards.html#cb88-1" tabindex="-1"></a><span class="fu">print</span>(p2)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-33-2.png" width="672" /></p>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="intrinsic-rewards.html#cb89-1" tabindex="-1"></a><span class="fu">print</span>(p3)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-33-3.png" width="672" /></p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="intrinsic-rewards.html#cb90-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Learned policy (arrows show best action):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="intrinsic-rewards.html#cb95-1" tabindex="-1"></a><span class="fu">print</span>(p2)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="intrinsic-rewards.html#cb96-1" tabindex="-1"></a><span class="fu">print</span>(p3)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-25-3.png" width="672" /></p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="intrinsic-rewards.html#cb97-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Learned policy (arrows show best action):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## Learned policy (arrows show best action):</code></pre>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="intrinsic-rewards.html#cb92-1" tabindex="-1"></a><span class="cf">for</span> (row <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
-<span id="cb92-2"><a href="intrinsic-rewards.html#cb92-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Row %d: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, row, </span>
-<span id="cb92-3"><a href="intrinsic-rewards.html#cb92-3" tabindex="-1"></a>              <span class="fu">paste</span>(<span class="fu">c</span>(<span class="st">&quot;↑&quot;</span>, <span class="st">&quot;→&quot;</span>, <span class="st">&quot;↓&quot;</span>, <span class="st">&quot;←&quot;</span>)[learned_policy[row, ]], <span class="at">collapse =</span> <span class="st">&quot; &quot;</span>)))</span>
-<span id="cb92-4"><a href="intrinsic-rewards.html#cb92-4" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="intrinsic-rewards.html#cb99-1" tabindex="-1"></a><span class="cf">for</span> (row <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>grid_size) {</span>
+<span id="cb99-2"><a href="intrinsic-rewards.html#cb99-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Row %d: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, row, </span>
+<span id="cb99-3"><a href="intrinsic-rewards.html#cb99-3" tabindex="-1"></a>              <span class="fu">paste</span>(<span class="fu">c</span>(<span class="st">&quot;↑&quot;</span>, <span class="st">&quot;→&quot;</span>, <span class="st">&quot;↓&quot;</span>, <span class="st">&quot;←&quot;</span>)[learned_policy[row, ]], <span class="at">collapse =</span> <span class="st">&quot; &quot;</span>)))</span>
+<span id="cb99-4"><a href="intrinsic-rewards.html#cb99-4" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Row 1: → → → → → → → ←
 ## Row 2: ↑ ← ↑ ↑ ↑ ↑ ↑ ←
 ## Row 3: ↑ ↑ ↑ ↑ ↑ ← → ←
@@ -810,65 +810,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Row 6: ↑ ↑ → ↑ ↑ ↑ ↑ ↑
 ## Row 7: ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑
 ## Row 8: ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑</code></pre>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="intrinsic-rewards.html#cb94-1" tabindex="-1"></a><span class="co"># Compare with baseline (random exploration)</span></span>
-<span id="cb94-2"><a href="intrinsic-rewards.html#cb94-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Comparing with random baseline...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="intrinsic-rewards.html#cb101-1" tabindex="-1"></a><span class="co"># Compare with baseline (random exploration)</span></span>
+<span id="cb101-2"><a href="intrinsic-rewards.html#cb101-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Comparing with random baseline...</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## Comparing with random baseline...</code></pre>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="intrinsic-rewards.html#cb96-1" tabindex="-1"></a>Q_random <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
-<span id="cb96-2"><a href="intrinsic-rewards.html#cb96-2" tabindex="-1"></a>random_success <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
-<span id="cb96-3"><a href="intrinsic-rewards.html#cb96-3" tabindex="-1"></a></span>
-<span id="cb96-4"><a href="intrinsic-rewards.html#cb96-4" tabindex="-1"></a><span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
-<span id="cb96-5"><a href="intrinsic-rewards.html#cb96-5" tabindex="-1"></a>  state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb96-6"><a href="intrinsic-rewards.html#cb96-6" tabindex="-1"></a>  </span>
-<span id="cb96-7"><a href="intrinsic-rewards.html#cb96-7" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>max_steps) {</span>
-<span id="cb96-8"><a href="intrinsic-rewards.html#cb96-8" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
-<span id="cb96-9"><a href="intrinsic-rewards.html#cb96-9" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
-<span id="cb96-10"><a href="intrinsic-rewards.html#cb96-10" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb96-11"><a href="intrinsic-rewards.html#cb96-11" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q_random[state, ])</span>
-<span id="cb96-12"><a href="intrinsic-rewards.html#cb96-12" tabindex="-1"></a>    }</span>
-<span id="cb96-13"><a href="intrinsic-rewards.html#cb96-13" tabindex="-1"></a>    </span>
-<span id="cb96-14"><a href="intrinsic-rewards.html#cb96-14" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">get_next_state</span>(state, action)</span>
-<span id="cb96-15"><a href="intrinsic-rewards.html#cb96-15" tabindex="-1"></a>    extrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_extrinsic_reward</span>(next_state)</span>
-<span id="cb96-16"><a href="intrinsic-rewards.html#cb96-16" tabindex="-1"></a>    </span>
-<span id="cb96-17"><a href="intrinsic-rewards.html#cb96-17" tabindex="-1"></a>    <span class="co"># Standard Q-learning (no intrinsic reward)</span></span>
-<span id="cb96-18"><a href="intrinsic-rewards.html#cb96-18" tabindex="-1"></a>    td_target <span class="ot">&lt;-</span> extrinsic_reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q_random[next_state, ])</span>
-<span id="cb96-19"><a href="intrinsic-rewards.html#cb96-19" tabindex="-1"></a>    td_error <span class="ot">&lt;-</span> td_target <span class="sc">-</span> Q_random[state, action]</span>
-<span id="cb96-20"><a href="intrinsic-rewards.html#cb96-20" tabindex="-1"></a>    Q_random[state, action] <span class="ot">&lt;-</span> Q_random[state, action] <span class="sc">+</span> learning_rate <span class="sc">*</span> td_error</span>
-<span id="cb96-21"><a href="intrinsic-rewards.html#cb96-21" tabindex="-1"></a>    </span>
-<span id="cb96-22"><a href="intrinsic-rewards.html#cb96-22" tabindex="-1"></a>    <span class="cf">if</span> (extrinsic_reward <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb96-23"><a href="intrinsic-rewards.html#cb96-23" tabindex="-1"></a>      random_success[episode] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb96-24"><a href="intrinsic-rewards.html#cb96-24" tabindex="-1"></a>      <span class="cf">break</span></span>
-<span id="cb96-25"><a href="intrinsic-rewards.html#cb96-25" tabindex="-1"></a>    }</span>
-<span id="cb96-26"><a href="intrinsic-rewards.html#cb96-26" tabindex="-1"></a>    </span>
-<span id="cb96-27"><a href="intrinsic-rewards.html#cb96-27" tabindex="-1"></a>    state <span class="ot">&lt;-</span> next_state</span>
-<span id="cb96-28"><a href="intrinsic-rewards.html#cb96-28" tabindex="-1"></a>  }</span>
-<span id="cb96-29"><a href="intrinsic-rewards.html#cb96-29" tabindex="-1"></a>}</span>
-<span id="cb96-30"><a href="intrinsic-rewards.html#cb96-30" tabindex="-1"></a></span>
-<span id="cb96-31"><a href="intrinsic-rewards.html#cb96-31" tabindex="-1"></a>random_first_success <span class="ot">&lt;-</span> <span class="fu">which</span>(random_success <span class="sc">&gt;</span> <span class="dv">0</span>)[<span class="dv">1</span>]</span>
-<span id="cb96-32"><a href="intrinsic-rewards.html#cb96-32" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(random_first_success)) random_first_success <span class="ot">&lt;-</span> n_episodes</span>
-<span id="cb96-33"><a href="intrinsic-rewards.html#cb96-33" tabindex="-1"></a></span>
-<span id="cb96-34"><a href="intrinsic-rewards.html#cb96-34" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Curiosity agent first success: episode %d</span><span class="sc">\n</span><span class="st">&quot;</span>, first_success))</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="intrinsic-rewards.html#cb103-1" tabindex="-1"></a>Q_random <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb103-2"><a href="intrinsic-rewards.html#cb103-2" tabindex="-1"></a>random_success <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_episodes)</span>
+<span id="cb103-3"><a href="intrinsic-rewards.html#cb103-3" tabindex="-1"></a></span>
+<span id="cb103-4"><a href="intrinsic-rewards.html#cb103-4" tabindex="-1"></a><span class="cf">for</span> (episode <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_episodes) {</span>
+<span id="cb103-5"><a href="intrinsic-rewards.html#cb103-5" tabindex="-1"></a>  state <span class="ot">&lt;-</span> <span class="fu">encode_state</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb103-6"><a href="intrinsic-rewards.html#cb103-6" tabindex="-1"></a>  </span>
+<span id="cb103-7"><a href="intrinsic-rewards.html#cb103-7" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>max_steps) {</span>
+<span id="cb103-8"><a href="intrinsic-rewards.html#cb103-8" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fl">0.3</span>) {</span>
+<span id="cb103-9"><a href="intrinsic-rewards.html#cb103-9" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb103-10"><a href="intrinsic-rewards.html#cb103-10" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb103-11"><a href="intrinsic-rewards.html#cb103-11" tabindex="-1"></a>      action <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q_random[state, ])</span>
+<span id="cb103-12"><a href="intrinsic-rewards.html#cb103-12" tabindex="-1"></a>    }</span>
+<span id="cb103-13"><a href="intrinsic-rewards.html#cb103-13" tabindex="-1"></a>    </span>
+<span id="cb103-14"><a href="intrinsic-rewards.html#cb103-14" tabindex="-1"></a>    next_state <span class="ot">&lt;-</span> <span class="fu">get_next_state</span>(state, action)</span>
+<span id="cb103-15"><a href="intrinsic-rewards.html#cb103-15" tabindex="-1"></a>    extrinsic_reward <span class="ot">&lt;-</span> <span class="fu">get_extrinsic_reward</span>(next_state)</span>
+<span id="cb103-16"><a href="intrinsic-rewards.html#cb103-16" tabindex="-1"></a>    </span>
+<span id="cb103-17"><a href="intrinsic-rewards.html#cb103-17" tabindex="-1"></a>    <span class="co"># Standard Q-learning (no intrinsic reward)</span></span>
+<span id="cb103-18"><a href="intrinsic-rewards.html#cb103-18" tabindex="-1"></a>    td_target <span class="ot">&lt;-</span> extrinsic_reward <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q_random[next_state, ])</span>
+<span id="cb103-19"><a href="intrinsic-rewards.html#cb103-19" tabindex="-1"></a>    td_error <span class="ot">&lt;-</span> td_target <span class="sc">-</span> Q_random[state, action]</span>
+<span id="cb103-20"><a href="intrinsic-rewards.html#cb103-20" tabindex="-1"></a>    Q_random[state, action] <span class="ot">&lt;-</span> Q_random[state, action] <span class="sc">+</span> learning_rate <span class="sc">*</span> td_error</span>
+<span id="cb103-21"><a href="intrinsic-rewards.html#cb103-21" tabindex="-1"></a>    </span>
+<span id="cb103-22"><a href="intrinsic-rewards.html#cb103-22" tabindex="-1"></a>    <span class="cf">if</span> (extrinsic_reward <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb103-23"><a href="intrinsic-rewards.html#cb103-23" tabindex="-1"></a>      random_success[episode] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb103-24"><a href="intrinsic-rewards.html#cb103-24" tabindex="-1"></a>      <span class="cf">break</span></span>
+<span id="cb103-25"><a href="intrinsic-rewards.html#cb103-25" tabindex="-1"></a>    }</span>
+<span id="cb103-26"><a href="intrinsic-rewards.html#cb103-26" tabindex="-1"></a>    </span>
+<span id="cb103-27"><a href="intrinsic-rewards.html#cb103-27" tabindex="-1"></a>    state <span class="ot">&lt;-</span> next_state</span>
+<span id="cb103-28"><a href="intrinsic-rewards.html#cb103-28" tabindex="-1"></a>  }</span>
+<span id="cb103-29"><a href="intrinsic-rewards.html#cb103-29" tabindex="-1"></a>}</span>
+<span id="cb103-30"><a href="intrinsic-rewards.html#cb103-30" tabindex="-1"></a></span>
+<span id="cb103-31"><a href="intrinsic-rewards.html#cb103-31" tabindex="-1"></a>random_first_success <span class="ot">&lt;-</span> <span class="fu">which</span>(random_success <span class="sc">&gt;</span> <span class="dv">0</span>)[<span class="dv">1</span>]</span>
+<span id="cb103-32"><a href="intrinsic-rewards.html#cb103-32" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">is.na</span>(random_first_success)) random_first_success <span class="ot">&lt;-</span> n_episodes</span>
+<span id="cb103-33"><a href="intrinsic-rewards.html#cb103-33" tabindex="-1"></a></span>
+<span id="cb103-34"><a href="intrinsic-rewards.html#cb103-34" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Curiosity agent first success: episode %d</span><span class="sc">\n</span><span class="st">&quot;</span>, first_success))</span></code></pre></div>
 <pre><code>## Curiosity agent first success: episode 500</code></pre>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="intrinsic-rewards.html#cb98-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Random agent first success: episode %d</span><span class="sc">\n</span><span class="st">&quot;</span>, random_first_success))</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="intrinsic-rewards.html#cb105-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Random agent first success: episode %d</span><span class="sc">\n</span><span class="st">&quot;</span>, random_first_success))</span></code></pre></div>
 <pre><code>## Random agent first success: episode 500</code></pre>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="intrinsic-rewards.html#cb100-1" tabindex="-1"></a><span class="cf">if</span> (first_success <span class="sc">&lt;</span> n_episodes <span class="sc">&amp;&amp;</span> random_first_success <span class="sc">&lt;</span> n_episodes) {</span>
-<span id="cb100-2"><a href="intrinsic-rewards.html#cb100-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Improvement: %.1fx faster learning</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
-<span id="cb100-3"><a href="intrinsic-rewards.html#cb100-3" tabindex="-1"></a>              random_first_success <span class="sc">/</span> first_success))</span>
-<span id="cb100-4"><a href="intrinsic-rewards.html#cb100-4" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (first_success <span class="sc">&lt;</span> random_first_success) {</span>
-<span id="cb100-5"><a href="intrinsic-rewards.html#cb100-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Curiosity agent learned faster</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb100-6"><a href="intrinsic-rewards.html#cb100-6" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb100-7"><a href="intrinsic-rewards.html#cb100-7" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Both agents had similar performance</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb100-8"><a href="intrinsic-rewards.html#cb100-8" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="intrinsic-rewards.html#cb107-1" tabindex="-1"></a><span class="cf">if</span> (first_success <span class="sc">&lt;</span> n_episodes <span class="sc">&amp;&amp;</span> random_first_success <span class="sc">&lt;</span> n_episodes) {</span>
+<span id="cb107-2"><a href="intrinsic-rewards.html#cb107-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Improvement: %.1fx faster learning</span><span class="sc">\n</span><span class="st">&quot;</span>, </span>
+<span id="cb107-3"><a href="intrinsic-rewards.html#cb107-3" tabindex="-1"></a>              random_first_success <span class="sc">/</span> first_success))</span>
+<span id="cb107-4"><a href="intrinsic-rewards.html#cb107-4" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (first_success <span class="sc">&lt;</span> random_first_success) {</span>
+<span id="cb107-5"><a href="intrinsic-rewards.html#cb107-5" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Curiosity agent learned faster</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb107-6"><a href="intrinsic-rewards.html#cb107-6" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb107-7"><a href="intrinsic-rewards.html#cb107-7" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Both agents had similar performance</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb107-8"><a href="intrinsic-rewards.html#cb107-8" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Both agents had similar performance</code></pre>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="intrinsic-rewards.html#cb102-1" tabindex="-1"></a><span class="co"># Final performance comparison</span></span>
-<span id="cb102-2"><a href="intrinsic-rewards.html#cb102-2" tabindex="-1"></a>curiosity_final_success <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_rewards[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes] <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb102-3"><a href="intrinsic-rewards.html#cb102-3" tabindex="-1"></a>random_final_success <span class="ot">&lt;-</span> <span class="fu">mean</span>(random_success[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes])</span>
-<span id="cb102-4"><a href="intrinsic-rewards.html#cb102-4" tabindex="-1"></a></span>
-<span id="cb102-5"><a href="intrinsic-rewards.html#cb102-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final 100 episodes success rate:</span><span class="sc">\n</span><span class="st">&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="intrinsic-rewards.html#cb109-1" tabindex="-1"></a><span class="co"># Final performance comparison</span></span>
+<span id="cb109-2"><a href="intrinsic-rewards.html#cb109-2" tabindex="-1"></a>curiosity_final_success <span class="ot">&lt;-</span> <span class="fu">mean</span>(episode_rewards[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes] <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb109-3"><a href="intrinsic-rewards.html#cb109-3" tabindex="-1"></a>random_final_success <span class="ot">&lt;-</span> <span class="fu">mean</span>(random_success[(n_episodes<span class="dv">-99</span>)<span class="sc">:</span>n_episodes])</span>
+<span id="cb109-4"><a href="intrinsic-rewards.html#cb109-4" tabindex="-1"></a></span>
+<span id="cb109-5"><a href="intrinsic-rewards.html#cb109-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Final 100 episodes success rate:</span><span class="sc">\n</span><span class="st">&quot;</span>))</span></code></pre></div>
 <pre><code>## Final 100 episodes success rate:</code></pre>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="intrinsic-rewards.html#cb104-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Curiosity agent: %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, curiosity_final_success))</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="intrinsic-rewards.html#cb111-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Curiosity agent: %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, curiosity_final_success))</span></code></pre></div>
 <pre><code>## Curiosity agent: 0.00</code></pre>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="intrinsic-rewards.html#cb106-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Random agent: %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, random_final_success))</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="intrinsic-rewards.html#cb113-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Random agent: %.2f</span><span class="sc">\n</span><span class="st">&quot;</span>, random_final_success))</span></code></pre></div>
 <pre><code>## Random agent: 0.00</code></pre>
 </div>
 <div id="advanced-intrinsic-motivation-mechanisms" class="section level2 hasAnchor" number="15.4">
