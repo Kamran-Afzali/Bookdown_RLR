@@ -14,8 +14,6 @@ tabular methods. We provide mathematical formulations, R code, and
 comparisons with tabular Q-Learning, focusing on generalization,
 scalability, and practical implications.
 
-## Theoretical Background
-
 Function approximation in RL aims to estimate the action-value function:
 
 $$
@@ -232,14 +230,7 @@ policy_plot
 ```  
 
 
-
-
-
-Nice — I’ll walk through this **chunk by chunk**, explain what each piece does, point out subtle behaviors/bugs, and finish with a few short, practical fixes and suggestions. I’ll keep it factual and focused.
-
-
-
-#### Top-level settings
+**Top-level settings**
 
 ```r
 n_states <- 10
@@ -254,7 +245,7 @@ terminal_state <- n_states
 
 
 
-####  Environment: transition and reward models
+**Environment: transition and reward models**
 
 ```r
 set.seed(42)
@@ -276,7 +267,6 @@ transition_model[n_states, , ] <- 0
 reward_model[n_states, , ] <- 0
 ```
 
-What this builds:
 
 * `transition_model[s, a, s']` is the probability of transitioning from state `s` with action `a` to next state `s'`.
 * `reward_model[s, a, s']` is the reward received for that transition.
@@ -305,7 +295,7 @@ Important behavioral details and **issues**:
 
 
 
-####  Sampling function
+**Sampling function**
 
 ```r
 sample_env <- function(s, a) {
@@ -322,7 +312,7 @@ sample_env <- function(s, a) {
 
 
 
-####  Feature creation (one-hot for (state,action))
+**Feature creation (one-hot for (state,action))**
 
 ```r
 create_features <- function(s, a, n_states, n_actions) {
@@ -339,7 +329,7 @@ create_features <- function(s, a, n_states, n_actions) {
 
 
 
-####  Weights and Q-value function
+**Weights and Q-value function**
 
 ```r
 n_features <- n_states * n_actions
@@ -356,7 +346,7 @@ q_hat <- function(s, a, theta) {
 
 
 
-####  Q-learning with function approximation
+**Q-learning with function approximation**
 
 ```r
 q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
@@ -405,8 +395,6 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
 }
 ```
 
-Step-by-step explanation:
-
 1. **Initialization**: new `theta` vector and a `rewards` vector to store total reward per episode.
 2. **Episode start**: `s <- sample(1:(n_states - 1), 1)` picks a random non-terminal start state for each episode.
 3. **Action selection (epsilon-greedy)**:
@@ -430,9 +418,6 @@ Step-by-step explanation:
 9. After all episodes, **derive greedy policy** from final `theta`: for each non-terminal state pick `argmax_a q_hat(s,a,theta)`.
 
 
-
-####  Running the learner
-
 ```r
 set.seed(42)
 fa_result <- q_learning_fa(episodes = 1000, alpha = 0.1, epsilon = 0.1)
@@ -445,7 +430,7 @@ fa_rewards <- fa_result$rewards
 
 
 
-####  Visualization
+**Visualization**
 
 ```r
 library(ggplot2)
@@ -478,10 +463,4 @@ policy_plot
 * `policy_plot` shows the greedy action (1 or 2) for each state as points/line.
 * `reward_df` computes **cumulative** rewards, but note: the code builds `reward_df` but never plots it. Only `policy_plot` is shown at the end. If you want episode-by-episode reward or moving average, you'd need to add a `ggplot` call for `reward_df` (see suggestions below).
 
-
-
-####  Overall algorithmic behavior & complexity
-
-* Because features are one-hot, this is function approximation that reduces exactly to **tabular Q-learning**.
-* Per update cost: O(n_actions) for computing max over next-state actions. Per episode cost depends on episode length (random here), so total complexity roughly `O(episodes * average_episode_length * n_actions)`.
 
