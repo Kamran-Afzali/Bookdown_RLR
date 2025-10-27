@@ -109,19 +109,51 @@ set.seed(42)
 transition_model <- array(0, dim = c(n_states, n_actions, n_states))
 reward_model <- array(0, dim = c(n_states, n_actions, n_states))
 
+# Build transition and reward models
 for (s in 1:(n_states - 1)) {
+  # Action 1: 90% to s+1, 10% to a different random state
   transition_model[s, 1, s + 1] <- 0.9
-  transition_model[s, 1, sample(1:n_states, 1)] <- 0.1
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.8
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.2
-  for (s_prime in 1:n_states) {
-    reward_model[s, 1, s_prime] <- ifelse(s_prime == n_states, 1.0, 0.1 * runif(1))
-    reward_model[s, 2, s_prime] <- ifelse(s_prime == n_states, 0.5, 0.05 * runif(1))
+  other_states <- setdiff(1:n_states, s + 1)
+  random_state <- sample(other_states, 1)
+  transition_model[s, 1, random_state] <- 0.1
+  
+  # Action 2: 80% and 20% to two different random states
+  two_states <- sample(1:n_states, 2, replace = FALSE)
+  transition_model[s, 2, two_states[1]] <- 0.8
+  transition_model[s, 2, two_states[2]] <- 0.2
+}
+
+# Make terminal state absorbing (stays in itself)
+transition_model[n_states, , n_states] <- 1
+
+# Set rewards (fixed, not random each time)
+set.seed(42)
+for (s in 1:(n_states - 1)) {
+  for (a in 1:n_actions) {
+    for (s_prime in 1:n_states) {
+      if (transition_model[s, a, s_prime] > 0) {
+        if (s_prime == n_states) {
+          reward_model[s, a, s_prime] <- ifelse(a == 1, 1.0, 0.5)
+        } else {
+          reward_model[s, a, s_prime] <- ifelse(a == 1, 0.1 * runif(1), 0.05 * runif(1))
+        }
+      }
+    }
   }
 }
 
-transition_model[n_states, , ] <- 0
+# Terminal state has no rewards
 reward_model[n_states, , ] <- 0
+
+# Verify transition probabilities sum to 1
+for (s in 1:n_states) {
+  for (a in 1:n_actions) {
+    prob_sum <- sum(transition_model[s, a, ])
+    if (abs(prob_sum - 1.0) > 1e-10) {
+      warning(sprintf("State %d, Action %d: probabilities sum to %.4f", s, a, prob_sum))
+    }
+  }
+}
 
 # Sampling function
 sample_env <- function(s, a) {
@@ -157,7 +189,12 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   for (ep in 1:episodes) {
     s <- sample(1:(n_states - 1), 1)
     episode_reward <- 0
-    while (TRUE) {
+    step_count <- 0
+    max_steps <- 1000  # Prevent infinite loops
+    
+    while (step_count < max_steps) {
+      step_count <- step_count + 1
+      
       # Epsilon-greedy action selection
       a <- if (runif(1) < epsilon) {
         sample(1:n_actions, 1)
@@ -173,7 +210,11 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
       
       # Compute TD target and error
       q_current <- q_hat(s, a, theta)
-      q_next <- if (s_prime == terminal_state) 0 else max(sapply(1:n_actions, function(a_) q_hat(s_prime, a_, theta)))
+      q_next <- if (s_prime == terminal_state) {
+        0
+      } else {
+        max(sapply(1:n_actions, function(a_) q_hat(s_prime, a_, theta)))
+      }
       target <- r + gamma * q_next
       error <- target - q_current
       
@@ -184,12 +225,17 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
       if (s_prime == terminal_state) break
       s <- s_prime
     }
+    
     rewards[ep] <- episode_reward
   }
   
   # Derive policy
   policy <- sapply(1:n_states, function(s) {
-    if (s == terminal_state) NA else which.max(sapply(1:n_actions, function(a) q_hat(s, a, theta)))
+    if (s == terminal_state) {
+      NA
+    } else {
+      which.max(sapply(1:n_actions, function(a) q_hat(s, a, theta)))
+    }
   })
   
   list(theta = theta, policy = policy, rewards = rewards)
@@ -203,18 +249,21 @@ fa_rewards <- fa_result$rewards
 
 # Visualize policy
 library(ggplot2)
+
 policy_df <- data.frame(
   State = 1:n_states,
   Policy = fa_policy,
   Algorithm = "Q-Learning FA"
 )
-policy_df$Policy[n_states] <- NA  # Terminal state
 
-policy_plot <- ggplot(policy_df, aes(x = State, y = Policy)) +
+policy_plot <- ggplot(policy_df[!is.na(policy_df$Policy), ], 
+                      aes(x = State, y = Policy)) +
   geom_point(size = 3, color = "deepskyblue") +
-  geom_line(na.rm = TRUE, color = "deepskyblue") +
+  geom_line(color = "deepskyblue") +
   theme_minimal() +
-  labs(title = "Policy from Q-Learning with Function Approximation", x = "State", y = "Action") +
+  labs(title = "Policy from Q-Learning with Function Approximation", 
+       x = "State", 
+       y = "Action") +
   scale_x_continuous(breaks = 1:n_states) +
   scale_y_continuous(breaks = 1:n_actions, labels = c("Action 1", "Action 2")) +
   theme(legend.position = "none")
@@ -222,11 +271,30 @@ policy_plot <- ggplot(policy_df, aes(x = State, y = Policy)) +
 # Visualize cumulative rewards
 reward_df <- data.frame(
   Episode = 1:1000,
-  Reward = cumsum(fa_rewards),
+  CumulativeReward = cumsum(fa_rewards),
   Algorithm = "Q-Learning FA"
 )
 
-policy_plot
+reward_plot <- ggplot(reward_df, aes(x = Episode, y = CumulativeReward)) +
+  geom_line(color = "deepskyblue", linewidth = 1) +
+  theme_minimal() +
+  labs(title = "Cumulative Rewards Over Episodes",
+       x = "Episode",
+       y = "Cumulative Reward")
+
+# Display plots
+print(policy_plot)
+print(reward_plot)
+
+# Print summary statistics
+cat("\nPolicy Summary:\n")
+print(table(fa_policy, useNA = "ifany"))
+
+cat("\nFinal 10 Episode Rewards:\n")
+print(tail(fa_rewards, 10))
+
+cat("\nMean Episode Reward (last 100 episodes):\n")
+print(mean(tail(fa_rewards, 100)))
 ```  
 
 
@@ -244,7 +312,6 @@ terminal_state <- n_states
 * `terminal_state`: the index of the terminal state (state 10). Many later pieces use this to stop episodes and to set `q_next = 0` for transitions into terminal.
 
 
-
 **Environment: transition and reward models**
 
 ```r
@@ -253,47 +320,84 @@ transition_model <- array(0, dim = c(n_states, n_actions, n_states))
 reward_model <- array(0, dim = c(n_states, n_actions, n_states))
 
 for (s in 1:(n_states - 1)) {
+  # Action 1: 90% to s+1, 10% to a different random state
   transition_model[s, 1, s + 1] <- 0.9
-  transition_model[s, 1, sample(1:n_states, 1)] <- 0.1
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.8
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.2
-  for (s_prime in 1:n_states) {
-    reward_model[s, 1, s_prime] <- ifelse(s_prime == n_states, 1.0, 0.1 * runif(1))
-    reward_model[s, 2, s_prime] <- ifelse(s_prime == n_states, 0.5, 0.05 * runif(1))
+  other_states <- setdiff(1:n_states, s + 1)
+  random_state <- sample(other_states, 1)
+  transition_model[s, 1, random_state] <- 0.1
+  
+  # Action 2: 80% and 20% to two different random states
+  two_states <- sample(1:n_states, 2, replace = FALSE)
+  transition_model[s, 2, two_states[1]] <- 0.8
+  transition_model[s, 2, two_states[2]] <- 0.2
+}
+
+# Make terminal state absorbing (stays in itself)
+transition_model[n_states, , n_states] <- 1
+
+# Set rewards (fixed, not random each time)
+set.seed(42)
+for (s in 1:(n_states - 1)) {
+  for (a in 1:n_actions) {
+    for (s_prime in 1:n_states) {
+      if (transition_model[s, a, s_prime] > 0) {
+        if (s_prime == n_states) {
+          reward_model[s, a, s_prime] <- ifelse(a == 1, 1.0, 0.5)
+        } else {
+          reward_model[s, a, s_prime] <- ifelse(a == 1, 0.1 * runif(1), 0.05 * runif(1))
+        }
+      }
+    }
   }
 }
 
-transition_model[n_states, , ] <- 0
 reward_model[n_states, , ] <- 0
 ```
-
 
 * `transition_model[s, a, s']` is the probability of transitioning from state `s` with action `a` to next state `s'`.
 * `reward_model[s, a, s']` is the reward received for that transition.
 
-Important behavioral details and **issues**:
+**Key improvements and behavioral details**:
 
 1. **Seeding**: `set.seed(42)` fixes random draws so behavior is reproducible.
+
 2. **Action 1 transitions**:
+   * For non-terminal `s`, assigns `0.9` probability to go to `s+1`.
+   * Uses `setdiff()` to exclude `s+1` from the random selection, ensuring the 10% probability goes to a **different** state.
+   * **Result**: Each row for action 1 correctly sums to 1.0 with exactly two non-zero entries (0.9 and 0.1).
 
-   * For non-terminal `s` the code assigns `0.9` to go deterministically to `s+1` most of the time.
-   * Then it assigns `0.1` to a random state (`sample(1:n_states, 1)`).
-   * If the sampled random `s'` equals `s+1` you end up with `transition_model[s,1,s+1] = 0.9 + 0.1 = 1.0`. If it’s different, two entries are non-zero (0.9 and 0.1).
-3. **Action 2 transitions — probable bug / unintended overwrite**:
+3. **Action 2 transitions**:
+   * Uses `sample(1:n_states, 2, replace = FALSE)` to select **two different states**.
+   * Assigns 0.8 to the first state and 0.2 to the second.
+   * **Result**: Each row for action 2 correctly sums to 1.0 with exactly two non-zero entries, and they're guaranteed to be different states.
 
-   * The code calls `sample()` twice for action 2, assigning `0.8` and then `0.2` to (possibly) two *different* random indices. That is allowed, but these two `sample()` calls are independent and may pick the same `s'` — if they pick the same index the entry becomes `1.0`.
-   * More subtle: because the two `sample()` calls pick indices independently, it’s possible that only one index gets both probabilities or one gets 0.8 and another 0.2. This is probably **not** what the author intended (likely they wanted two different explicitly chosen next states).
-4. **Normalization**: `transition_model` rows are *not explicitly normalized*. In R, `sample()` will accept a `prob` vector that does not sum to 1 (it normalizes internally) — so sampling will still work even if rows don’t sum exactly to 1, provided the vector is non-negative and at least one positive entry exists. But for clarity and safety it’s better to ensure each `(s,a,·)` sums to 1.
+4. **Validation check**:
+   ```r
+   for (s in 1:n_states) {
+     for (a in 1:n_actions) {
+       prob_sum <- sum(transition_model[s, a, ])
+       if (abs(prob_sum - 1.0) > 1e-10) {
+         warning(sprintf("State %d, Action %d: probabilities sum to %.4f", s, a, prob_sum))
+       }
+     }
+   }
+   ```
+   * Validates that all transition probability rows sum to 1.0 (within numerical tolerance).
+   * Issues warnings if any row is malformed.
+
 5. **Rewards**:
-
-   * For action 1: if `s'` is terminal (`s_prime == n_states`) reward = `1.0`, else `0.1 * runif(1)` (random small reward).
+   * For action 1: if `s'` is terminal reward = `1.0`, else `0.1 * runif(1)` (random small reward).
    * For action 2: terminal reward `0.5`, else `0.05 * runif(1)` (even smaller).
-   * So action 1 gives larger terminal reward than action 2; also non-terminal rewards are noisy.
-6. **Terminal state rows zeroed**:
+   * **Efficiency improvement**: Rewards are only assigned for reachable states (where `transition_model[s, a, s_prime] > 0`).
+   * Rewards are generated once during initialization and remain fixed during training (deterministic environment).
 
-   * `transition_model[n_states,,] <- 0` and `reward_model[n_states,,] <- 0` make terminal state absorbing with no outgoing transitions/rewards. The code later treats terminal specially (stops episodes when reached).
+6. **Terminal state**:
+   * `transition_model[n_states, , n_states] <- 1` makes terminal state **absorbing** (transitions to itself with probability 1.0).
+   * This is the standard MDP formulation for terminal states.
+   * `reward_model[n_states, , ] <- 0` ensures no rewards from terminal state.
+   * Episodes still end when terminal is reached, so this absorbing property isn't exercised during training.
 
-
+---
 
 **Sampling function**
 
@@ -306,11 +410,12 @@ sample_env <- function(s, a) {
 }
 ```
 
-* Given `(s, a)`, it samples `s'` according to the probability vector `probs` (R will normalize probabilities if they don't sum to 1).
+* Given `(s, a)`, samples `s'` according to the probability vector `probs`.
 * Returns a list with `s_prime` and `reward = reward_model[s,a,s_prime]`.
-* If `probs` is all zeros (possible for terminal state row), `sample()` will error — but the code avoids calling `sample_env` from terminal because episodes end when `s_prime == terminal_state`. Still, careful code should check for zero-prob rows.
+* **Now safe**: Since all transition rows properly sum to 1.0, `sample()` will work correctly without needing to normalize.
+* The terminal state absorbing property means if `sample_env(n_states, a)` were called, it would always return `s_prime = n_states`, but episodes terminate before this occurs.
 
-
+---
 
 **Feature creation (one-hot for (state,action))**
 
@@ -323,11 +428,11 @@ create_features <- function(s, a, n_states, n_actions) {
 }
 ```
 
-* Creates a one-hot feature vector of length `n_states * n_actions`.
-* The mapping `index = (a - 1) * n_states + s` puts action blocks in the feature vector: first `n_states` entries correspond to action 1, next `n_states` to action 2, etc.
-* Because features are one-hot, linear function approximation `q(s,a) = x^T theta` is mathematically equivalent to a **tabular** Q-value representation (each `(s,a)` has its own weight in `theta`).
+* Creates a one-hot feature vector of length `n_states * n_actions = 20`.
+* The mapping `index = (a - 1) * n_states + s` organizes features in action blocks: entries 1-10 for action 1 (states 1-10), entries 11-20 for action 2 (states 1-10).
+* Because features are one-hot, linear function approximation `q(s,a) = x^T theta` is mathematically **equivalent to tabular Q-learning** (each `(s,a)` has its own independent weight in `theta`).
 
-
+---
 
 **Weights and Q-value function**
 
@@ -341,10 +446,10 @@ q_hat <- function(s, a, theta) {
 }
 ```
 
-* `theta` holds parameters for the linear approximator; initialized at zeros.
-* `q_hat(s,a,theta)` computes ( \hat{Q}(s,a) = x^\top \theta ). With one-hot `x` this returns the single `theta` entry corresponding to `(s,a)`.
+* `theta` holds 20 parameters for the linear approximator; initialized at zeros.
+* `q_hat(s,a,theta)` computes Q̂(s,a) = x^T θ. With one-hot `x`, this returns the single `theta` entry corresponding to `(s,a)`.
 
-
+---
 
 **Q-learning with function approximation**
 
@@ -356,7 +461,12 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   for (ep in 1:episodes) {
     s <- sample(1:(n_states - 1), 1)
     episode_reward <- 0
-    while (TRUE) {
+    step_count <- 0
+    max_steps <- 1000  # Prevent infinite loops
+    
+    while (step_count < max_steps) {
+      step_count <- step_count + 1
+      
       # Epsilon-greedy action selection
       a <- if (runif(1) < epsilon) {
         sample(1:n_actions, 1)
@@ -372,7 +482,11 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
       
       # Compute TD target and error
       q_current <- q_hat(s, a, theta)
-      q_next <- if (s_prime == terminal_state) 0 else max(sapply(1:n_actions, function(a_) q_hat(s_prime, a_, theta)))
+      q_next <- if (s_prime == terminal_state) {
+        0
+      } else {
+        max(sapply(1:n_actions, function(a_) q_hat(s_prime, a_, theta)))
+      }
       target <- r + gamma * q_next
       error <- target - q_current
       
@@ -383,40 +497,61 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
       if (s_prime == terminal_state) break
       s <- s_prime
     }
+    
     rewards[ep] <- episode_reward
   }
   
   # Derive policy
   policy <- sapply(1:n_states, function(s) {
-    if (s == terminal_state) NA else which.max(sapply(1:n_actions, function(a) q_hat(s, a, theta)))
+    if (s == terminal_state) {
+      NA
+    } else {
+      which.max(sapply(1:n_actions, function(a) q_hat(s, a, theta)))
+    }
   })
   
   list(theta = theta, policy = policy, rewards = rewards)
 }
 ```
 
-1. **Initialization**: new `theta` vector and a `rewards` vector to store total reward per episode.
-2. **Episode start**: `s <- sample(1:(n_states - 1), 1)` picks a random non-terminal start state for each episode.
-3. **Action selection (epsilon-greedy)**:
+**Algorithm details**:
 
-   * With probability `epsilon` pick a random action.
-   * Else compute Q-values `q_hat(s,a,theta)` for all actions and pick the action with maximum Q. Note: `which.max()` returns the index of the first maximum if there’s a tie.
-4. **Interact with environment** using `sample_env`.
-5. **TD target and error**:
+1. **Initialization**: New `theta` vector (zeros) and `rewards` vector to store total reward per episode.
 
-   * `q_current` is the estimate for `(s,a)`.
-   * `q_next` is `0` if `s_prime` is terminal, otherwise `max_a' q_hat(s', a')`.
-   * `target = r + gamma * q_next`
-   * `error = target - q_current`
-6. **Gradient (linear FA)** update:
+2. **Episode start**: `s <- sample(1:(n_states - 1), 1)` picks a random non-terminal start state.
 
-   * For linear Q with features `x`, gradient of `q_hat` w.r.t `theta` is `x`. So the parameter update `theta <- theta + alpha * error * x` is standard semi-gradient Q-learning.
-   * Because `x` is a one-hot, only the `(s,a)`-entry in `theta` is changed, identical to a tabular Q-learning update:
-     (\theta_{s,a} \leftarrow \theta_{s,a} + \alpha (r + \gamma \max_{a'} Q(s',a') - Q(s,a)).)
-7. **Episode termination**: break if `s_prime == terminal_state`; otherwise continue from `s <- s_prime`.
-8. **Record episode total reward** in `rewards[ep]`.
-9. After all episodes, **derive greedy policy** from final `theta`: for each non-terminal state pick `argmax_a q_hat(s,a,theta)`.
+3. **Safety mechanism**: `max_steps <- 1000` with `step_count` counter prevents infinite loops in case of implementation errors.
 
+4. **Action selection (epsilon-greedy)**:
+   * With probability `epsilon = 0.1`, pick a random action (exploration).
+   * Otherwise compute Q-values `q_hat(s,a,theta)` for all actions and pick `argmax_a Q(s,a)` (exploitation).
+   * Note: `which.max()` returns the first maximum if there's a tie.
+
+5. **Environment interaction**: Call `sample_env(s,a)` to get next state and reward.
+
+6. **TD target and error**:
+   * `q_current = Q̂(s,a; θ)`
+   * `q_next = 0` if terminal, else `max_a' Q̂(s',a'; θ)`
+   * `target = r + γ · q_next`
+   * `error = target - q_current` (TD error)
+
+7. **Semi-gradient update**:
+   * For linear Q with features `x`, the gradient ∇_θ Q̂(s,a) = x.
+   * Update: `θ ← θ + α · error · x`
+   * Because `x` is one-hot, only one entry of `θ` changes, making this **equivalent to tabular Q-learning**:
+     ```
+     θ[s,a] ← θ[s,a] + α(r + γ max_a' Q(s',a') - Q(s,a))
+     ```
+
+8. **Episode termination**: Break if `s_prime == terminal_state`; otherwise continue from `s <- s_prime`.
+
+9. **Record episode reward**: Store total episode reward in `rewards[ep]`.
+
+10. **Policy extraction**: After all episodes, derive greedy policy from final `θ`: for each non-terminal state, select `argmax_a Q̂(s,a; θ)`. Terminal state gets `NA`.
+
+---
+
+**Running the algorithm**
 
 ```r
 set.seed(42)
@@ -425,42 +560,91 @@ fa_policy <- fa_result$policy
 fa_rewards <- fa_result$rewards
 ```
 
-* Trains for 1000 episodes using `alpha=0.1` and `epsilon=0.1`.
-* Stores learned `policy` and episode rewards.
+* Trains for 1000 episodes using learning rate `alpha=0.1` and exploration rate `epsilon=0.1`.
+* Returns learned `policy`, final `theta` weights, and episode rewards.
 
-
+---
 
 **Visualization**
 
 ```r
 library(ggplot2)
+
 policy_df <- data.frame(
   State = 1:n_states,
   Policy = fa_policy,
   Algorithm = "Q-Learning FA"
 )
-policy_df$Policy[n_states] <- NA  # Terminal state
 
-policy_plot <- ggplot(policy_df, aes(x = State, y = Policy)) +
+policy_plot <- ggplot(policy_df[!is.na(policy_df$Policy), ], 
+                      aes(x = State, y = Policy)) +
   geom_point(size = 3, color = "deepskyblue") +
-  geom_line(na.rm = TRUE, color = "deepskyblue") +
+  geom_line(color = "deepskyblue") +
   theme_minimal() +
-  labs(title = "Policy from Q-Learning with Function Approximation", x = "State", y = "Action") +
+  labs(title = "Policy from Q-Learning with Function Approximation", 
+       x = "State", 
+       y = "Action") +
   scale_x_continuous(breaks = 1:n_states) +
   scale_y_continuous(breaks = 1:n_actions, labels = c("Action 1", "Action 2")) +
   theme(legend.position = "none")
 
-# Visualize cumulative rewards
 reward_df <- data.frame(
   Episode = 1:1000,
-  Reward = cumsum(fa_rewards),
+  CumulativeReward = cumsum(fa_rewards),
   Algorithm = "Q-Learning FA"
 )
 
-policy_plot
+reward_plot <- ggplot(reward_df, aes(x = Episode, y = CumulativeReward)) +
+  geom_line(color = "deepskyblue", linewidth = 1) +
+  theme_minimal() +
+  labs(title = "Cumulative Rewards Over Episodes",
+       x = "Episode",
+       y = "Cumulative Reward")
+
+print(policy_plot)
+print(reward_plot)
 ```
 
-* `policy_plot` shows the greedy action (1 or 2) for each state as points/line.
-* `reward_df` computes **cumulative** rewards, but note: the code builds `reward_df` but never plots it. Only `policy_plot` is shown at the end. If you want episode-by-episode reward or moving average, you'd need to add a `ggplot` call for `reward_df` (see suggestions below).
+**Visualization improvements**:
 
+1. **Policy plot**:
+   * Uses `policy_df[!is.na(policy_df$Policy), ]` to filter out the terminal state NA value before plotting.
+   * Prevents ggplot2 warnings about missing values.
+   * Shows the greedy action (1 or 2) for each non-terminal state as points connected by lines.
+
+2. **Reward plot (NEW)**:
+   * Creates and displays cumulative rewards over episodes.
+   * Shows learning progress: cumulative reward should increase as the agent learns better policies.
+   * Both plots are explicitly printed with `print()`.
+
+3. **Summary statistics (NEW)**:
+   ```r
+   cat("\nPolicy Summary:\n")
+   print(table(fa_policy, useNA = "ifany"))
+   
+   cat("\nFinal 10 Episode Rewards:\n")
+   print(tail(fa_rewards, 10))
+   
+   cat("\nMean Episode Reward (last 100 episodes):\n")
+   print(mean(tail(fa_rewards, 100)))
+   ```
+   * Provides quantitative analysis of learned policy.
+   * Shows distribution of actions across states.
+   * Displays recent performance metrics to assess convergence.
+
+---
+
+**Summary of Corrections**
+
+The corrected code fixes critical bugs in the original implementation:
+
+1. **Transition probabilities now properly sum to 1.0** for all state-action pairs
+2. **Terminal state is absorbing** (standard MDP formulation) rather than having zero outgoing probability
+3. **Action 2 transitions are guaranteed to be different states** (no accidental overwrites)
+4. **Validation checks** ensure environment is well-formed
+5. **Safety mechanisms** prevent infinite loops
+6. **Complete visualization** with both policy and reward plots
+7. **Efficiency improvements** in reward assignment
+
+The algorithm now implements correct tabular Q-learning on a well-defined Markov Decision Process.
 

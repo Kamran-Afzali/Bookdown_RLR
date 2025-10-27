@@ -1,4 +1,4 @@
-tab:unnamed-chunk-33
+tab:unnamed-chunk-37
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -82,16 +82,6 @@ gradient-based-learning
 comparison-with-previous-approaches
 r-implementation-2
 analysis-and-interpretation
-learning-dynamics
-function-representation
-generalization-properties
-training-stability
-practical-considerations
-architecture-selection
-training-frequency
-regularization
-initialization-and-convergence
-comparison-across-function-approximation-methods
 future-directions
 conclusion-5
 dyna-and-dynaq
