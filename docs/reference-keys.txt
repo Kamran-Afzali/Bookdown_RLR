@@ -1,4 +1,4 @@
-tab:unnamed-chunk-37
+tab:unnamed-chunk-34
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -68,11 +68,6 @@ q-learning-with-random-forest-approximation
 comparison-with-previous-methods
 r-implementation-1
 analysis-and-insights
-policy-learning-characteristics
-computational-considerations
-feature-importance-insights
-practical-implications-1
-comparison-with-linear-approximation
 conclusion-4
 deep-function-approximation-q-learning-with-neural-networks-in-r
 introduction-6
@@ -93,7 +88,6 @@ convergence-properties
 implementation-in-r
 environment-setup
 dyna-q-implementation
-standard-q-learning-for-comparison
 experimental-analysis
 learning-efficiency-comparison
 discussion

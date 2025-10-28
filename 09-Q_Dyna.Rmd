@@ -152,11 +152,7 @@ dyna_q <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1, n_planning = 5) 
   list(Q = Q, policy = apply(Q, 1, which.max), 
        episode_rewards = episode_rewards, episode_steps = episode_steps)
 }
-```
 
-### Standard Q-Learning for Comparison
-
-```r
 # Q-Learning with performance tracking
 q_learning <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   Q <- matrix(0, nrow = n_states, ncol = n_actions)

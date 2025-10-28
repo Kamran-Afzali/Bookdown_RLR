@@ -231,15 +231,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-previous-methods"><i class="fa fa-check"></i><b>7.1.2</b> Comparison with Previous Methods</a></li>
 </ul></li>
 <li class="chapter" data-level="7.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#r-implementation-1"><i class="fa fa-check"></i><b>7.2</b> R Implementation</a></li>
-<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.3</b> Analysis and Insights</a>
-<ul>
-<li class="chapter" data-level="7.3.1" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#policy-learning-characteristics"><i class="fa fa-check"></i><b>7.3.1</b> Policy Learning Characteristics</a></li>
-<li class="chapter" data-level="7.3.2" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#computational-considerations"><i class="fa fa-check"></i><b>7.3.2</b> Computational Considerations</a></li>
-<li class="chapter" data-level="7.3.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#feature-importance-insights"><i class="fa fa-check"></i><b>7.3.3</b> Feature Importance Insights</a></li>
-<li class="chapter" data-level="7.3.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#practical-implications-1"><i class="fa fa-check"></i><b>7.3.4</b> Practical Implications</a></li>
-</ul></li>
-<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#comparison-with-linear-approximation"><i class="fa fa-check"></i><b>7.4</b> Comparison with Linear Approximation</a></li>
-<li class="chapter" data-level="7.5" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.5</b> Conclusion</a></li>
+<li class="chapter" data-level="7.3" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#analysis-and-insights"><i class="fa fa-check"></i><b>7.3</b> Analysis and Insights</a></li>
+<li class="chapter" data-level="7.4" data-path="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html"><a href="beyond-linear-models-q-learning-with-random-forest-function-approximation-in-r.html#conclusion-4"><i class="fa fa-check"></i><b>7.4</b> Conclusion</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><a href="deep-function-approximation-q-learning-with-neural-networks-in-r.html"><i class="fa fa-check"></i><b>8</b> Deep Function Approximation: Q-Learning with Neural Networks in R</a>
 <ul>
@@ -268,7 +261,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="9.3.1" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#environment-setup"><i class="fa fa-check"></i><b>9.3.1</b> Environment Setup</a></li>
 <li class="chapter" data-level="9.3.2" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#dyna-q-implementation"><i class="fa fa-check"></i><b>9.3.2</b> Dyna-Q Implementation</a></li>
-<li class="chapter" data-level="9.3.3" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#standard-q-learning-for-comparison"><i class="fa fa-check"></i><b>9.3.3</b> Standard Q-Learning for Comparison</a></li>
 </ul></li>
 <li class="chapter" data-level="9.4" data-path="dyna-and-dynaq.html"><a href="dyna-and-dynaq.html#experimental-analysis"><i class="fa fa-check"></i><b>9.4</b> Experimental Analysis</a>
 <ul>
@@ -565,7 +557,7 @@ Here we run the value iteration function and extract the results. The <code>dp_v
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-1" tabindex="-1"></a><span class="fu">plot</span>(dp_value, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">19</span>,</span>
 <span id="cb9-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-2" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;State&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Value&quot;</span>,</span>
 <span id="cb9-3"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-3" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Optimal State Values via Value Iteration&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p><strong>Explanation:</strong>
 This plot shows the computed value function across all states. Higher values indicate states with greater expected long-term returns under the optimal policy. The shape of the curve helps us see how proximity to the terminal state (and the possibility of reaching it through Action 1) drives up the expected value.</p>
 </div>
