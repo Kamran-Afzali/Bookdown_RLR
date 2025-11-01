@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-10-27" />
+<meta name="date" content="2025-11-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -560,261 +560,261 @@ requires careful feature design to ensure convergence.</p>
 10-state, 2-action environment, using one-hot encoding for <span class="math inline">\(\phi(s, a)\)</span>.
 The environment mirrors the previous post, with action 1 yielding a 1.0
 reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="function-approximation-q-learning-with-linear-models.html#cb36-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
-<span id="cb36-2"><a href="function-approximation-q-learning-with-linear-models.html#cb36-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb36-3"><a href="function-approximation-q-learning-with-linear-models.html#cb36-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb36-4"><a href="function-approximation-q-learning-with-linear-models.html#cb36-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb36-5"><a href="function-approximation-q-learning-with-linear-models.html#cb36-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
-<span id="cb36-6"><a href="function-approximation-q-learning-with-linear-models.html#cb36-6" tabindex="-1"></a></span>
-<span id="cb36-7"><a href="function-approximation-q-learning-with-linear-models.html#cb36-7" tabindex="-1"></a><span class="co"># Environment: transition and reward models</span></span>
-<span id="cb36-8"><a href="function-approximation-q-learning-with-linear-models.html#cb36-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb36-9"><a href="function-approximation-q-learning-with-linear-models.html#cb36-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb36-10"><a href="function-approximation-q-learning-with-linear-models.html#cb36-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb36-11"><a href="function-approximation-q-learning-with-linear-models.html#cb36-11" tabindex="-1"></a></span>
-<span id="cb36-12"><a href="function-approximation-q-learning-with-linear-models.html#cb36-12" tabindex="-1"></a><span class="co"># Build transition and reward models</span></span>
-<span id="cb36-13"><a href="function-approximation-q-learning-with-linear-models.html#cb36-13" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb36-14"><a href="function-approximation-q-learning-with-linear-models.html#cb36-14" tabindex="-1"></a>  <span class="co"># Action 1: 90% to s+1, 10% to a different random state</span></span>
-<span id="cb36-15"><a href="function-approximation-q-learning-with-linear-models.html#cb36-15" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb36-16"><a href="function-approximation-q-learning-with-linear-models.html#cb36-16" tabindex="-1"></a>  other_states <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n_states, s <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb36-17"><a href="function-approximation-q-learning-with-linear-models.html#cb36-17" tabindex="-1"></a>  random_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(other_states, <span class="dv">1</span>)</span>
-<span id="cb36-18"><a href="function-approximation-q-learning-with-linear-models.html#cb36-18" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, random_state] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb36-19"><a href="function-approximation-q-learning-with-linear-models.html#cb36-19" tabindex="-1"></a>  </span>
-<span id="cb36-20"><a href="function-approximation-q-learning-with-linear-models.html#cb36-20" tabindex="-1"></a>  <span class="co"># Action 2: 80% and 20% to two different random states</span></span>
-<span id="cb36-21"><a href="function-approximation-q-learning-with-linear-models.html#cb36-21" tabindex="-1"></a>  two_states <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">2</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb36-22"><a href="function-approximation-q-learning-with-linear-models.html#cb36-22" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb36-23"><a href="function-approximation-q-learning-with-linear-models.html#cb36-23" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb36-24"><a href="function-approximation-q-learning-with-linear-models.html#cb36-24" tabindex="-1"></a>}</span>
-<span id="cb36-25"><a href="function-approximation-q-learning-with-linear-models.html#cb36-25" tabindex="-1"></a></span>
-<span id="cb36-26"><a href="function-approximation-q-learning-with-linear-models.html#cb36-26" tabindex="-1"></a><span class="co"># Make terminal state absorbing (stays in itself)</span></span>
-<span id="cb36-27"><a href="function-approximation-q-learning-with-linear-models.html#cb36-27" tabindex="-1"></a>transition_model[n_states, , n_states] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb36-28"><a href="function-approximation-q-learning-with-linear-models.html#cb36-28" tabindex="-1"></a></span>
-<span id="cb36-29"><a href="function-approximation-q-learning-with-linear-models.html#cb36-29" tabindex="-1"></a><span class="co"># Set rewards (fixed, not random each time)</span></span>
-<span id="cb36-30"><a href="function-approximation-q-learning-with-linear-models.html#cb36-30" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb36-31"><a href="function-approximation-q-learning-with-linear-models.html#cb36-31" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb36-32"><a href="function-approximation-q-learning-with-linear-models.html#cb36-32" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
-<span id="cb36-33"><a href="function-approximation-q-learning-with-linear-models.html#cb36-33" tabindex="-1"></a>    <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb36-34"><a href="function-approximation-q-learning-with-linear-models.html#cb36-34" tabindex="-1"></a>      <span class="cf">if</span> (transition_model[s, a, s_prime] <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb36-35"><a href="function-approximation-q-learning-with-linear-models.html#cb36-35" tabindex="-1"></a>        <span class="cf">if</span> (s_prime <span class="sc">==</span> n_states) {</span>
-<span id="cb36-36"><a href="function-approximation-q-learning-with-linear-models.html#cb36-36" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">1.0</span>, <span class="fl">0.5</span>)</span>
-<span id="cb36-37"><a href="function-approximation-q-learning-with-linear-models.html#cb36-37" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
-<span id="cb36-38"><a href="function-approximation-q-learning-with-linear-models.html#cb36-38" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>), <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb36-39"><a href="function-approximation-q-learning-with-linear-models.html#cb36-39" tabindex="-1"></a>        }</span>
-<span id="cb36-40"><a href="function-approximation-q-learning-with-linear-models.html#cb36-40" tabindex="-1"></a>      }</span>
-<span id="cb36-41"><a href="function-approximation-q-learning-with-linear-models.html#cb36-41" tabindex="-1"></a>    }</span>
-<span id="cb36-42"><a href="function-approximation-q-learning-with-linear-models.html#cb36-42" tabindex="-1"></a>  }</span>
-<span id="cb36-43"><a href="function-approximation-q-learning-with-linear-models.html#cb36-43" tabindex="-1"></a>}</span>
-<span id="cb36-44"><a href="function-approximation-q-learning-with-linear-models.html#cb36-44" tabindex="-1"></a></span>
-<span id="cb36-45"><a href="function-approximation-q-learning-with-linear-models.html#cb36-45" tabindex="-1"></a><span class="co"># Terminal state has no rewards</span></span>
-<span id="cb36-46"><a href="function-approximation-q-learning-with-linear-models.html#cb36-46" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb36-47"><a href="function-approximation-q-learning-with-linear-models.html#cb36-47" tabindex="-1"></a></span>
-<span id="cb36-48"><a href="function-approximation-q-learning-with-linear-models.html#cb36-48" tabindex="-1"></a><span class="co"># Verify transition probabilities sum to 1</span></span>
-<span id="cb36-49"><a href="function-approximation-q-learning-with-linear-models.html#cb36-49" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb36-50"><a href="function-approximation-q-learning-with-linear-models.html#cb36-50" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
-<span id="cb36-51"><a href="function-approximation-q-learning-with-linear-models.html#cb36-51" tabindex="-1"></a>    prob_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(transition_model[s, a, ])</span>
-<span id="cb36-52"><a href="function-approximation-q-learning-with-linear-models.html#cb36-52" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">abs</span>(prob_sum <span class="sc">-</span> <span class="fl">1.0</span>) <span class="sc">&gt;</span> <span class="fl">1e-10</span>) {</span>
-<span id="cb36-53"><a href="function-approximation-q-learning-with-linear-models.html#cb36-53" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="fu">sprintf</span>(<span class="st">&quot;State %d, Action %d: probabilities sum to %.4f&quot;</span>, s, a, prob_sum))</span>
-<span id="cb36-54"><a href="function-approximation-q-learning-with-linear-models.html#cb36-54" tabindex="-1"></a>    }</span>
-<span id="cb36-55"><a href="function-approximation-q-learning-with-linear-models.html#cb36-55" tabindex="-1"></a>  }</span>
-<span id="cb36-56"><a href="function-approximation-q-learning-with-linear-models.html#cb36-56" tabindex="-1"></a>}</span>
-<span id="cb36-57"><a href="function-approximation-q-learning-with-linear-models.html#cb36-57" tabindex="-1"></a></span>
-<span id="cb36-58"><a href="function-approximation-q-learning-with-linear-models.html#cb36-58" tabindex="-1"></a><span class="co"># Sampling function</span></span>
-<span id="cb36-59"><a href="function-approximation-q-learning-with-linear-models.html#cb36-59" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
-<span id="cb36-60"><a href="function-approximation-q-learning-with-linear-models.html#cb36-60" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
-<span id="cb36-61"><a href="function-approximation-q-learning-with-linear-models.html#cb36-61" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
-<span id="cb36-62"><a href="function-approximation-q-learning-with-linear-models.html#cb36-62" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
-<span id="cb36-63"><a href="function-approximation-q-learning-with-linear-models.html#cb36-63" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
-<span id="cb36-64"><a href="function-approximation-q-learning-with-linear-models.html#cb36-64" tabindex="-1"></a>}</span>
-<span id="cb36-65"><a href="function-approximation-q-learning-with-linear-models.html#cb36-65" tabindex="-1"></a></span>
-<span id="cb36-66"><a href="function-approximation-q-learning-with-linear-models.html#cb36-66" tabindex="-1"></a><span class="co"># Create one-hot features for (state, action) pairs</span></span>
-<span id="cb36-67"><a href="function-approximation-q-learning-with-linear-models.html#cb36-67" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
-<span id="cb36-68"><a href="function-approximation-q-learning-with-linear-models.html#cb36-68" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
-<span id="cb36-69"><a href="function-approximation-q-learning-with-linear-models.html#cb36-69" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
-<span id="cb36-70"><a href="function-approximation-q-learning-with-linear-models.html#cb36-70" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb36-71"><a href="function-approximation-q-learning-with-linear-models.html#cb36-71" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
-<span id="cb36-72"><a href="function-approximation-q-learning-with-linear-models.html#cb36-72" tabindex="-1"></a>}</span>
-<span id="cb36-73"><a href="function-approximation-q-learning-with-linear-models.html#cb36-73" tabindex="-1"></a></span>
-<span id="cb36-74"><a href="function-approximation-q-learning-with-linear-models.html#cb36-74" tabindex="-1"></a><span class="co"># Initialize weights</span></span>
-<span id="cb36-75"><a href="function-approximation-q-learning-with-linear-models.html#cb36-75" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
-<span id="cb36-76"><a href="function-approximation-q-learning-with-linear-models.html#cb36-76" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
-<span id="cb36-77"><a href="function-approximation-q-learning-with-linear-models.html#cb36-77" tabindex="-1"></a></span>
-<span id="cb36-78"><a href="function-approximation-q-learning-with-linear-models.html#cb36-78" tabindex="-1"></a><span class="co"># Q-value approximation function</span></span>
-<span id="cb36-79"><a href="function-approximation-q-learning-with-linear-models.html#cb36-79" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
-<span id="cb36-80"><a href="function-approximation-q-learning-with-linear-models.html#cb36-80" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
-<span id="cb36-81"><a href="function-approximation-q-learning-with-linear-models.html#cb36-81" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
-<span id="cb36-82"><a href="function-approximation-q-learning-with-linear-models.html#cb36-82" tabindex="-1"></a>}</span>
-<span id="cb36-83"><a href="function-approximation-q-learning-with-linear-models.html#cb36-83" tabindex="-1"></a></span>
-<span id="cb36-84"><a href="function-approximation-q-learning-with-linear-models.html#cb36-84" tabindex="-1"></a><span class="co"># Q-Learning with function approximation</span></span>
-<span id="cb36-85"><a href="function-approximation-q-learning-with-linear-models.html#cb36-85" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
-<span id="cb36-86"><a href="function-approximation-q-learning-with-linear-models.html#cb36-86" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
-<span id="cb36-87"><a href="function-approximation-q-learning-with-linear-models.html#cb36-87" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb36-88"><a href="function-approximation-q-learning-with-linear-models.html#cb36-88" tabindex="-1"></a>  </span>
-<span id="cb36-89"><a href="function-approximation-q-learning-with-linear-models.html#cb36-89" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb36-90"><a href="function-approximation-q-learning-with-linear-models.html#cb36-90" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
-<span id="cb36-91"><a href="function-approximation-q-learning-with-linear-models.html#cb36-91" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb36-92"><a href="function-approximation-q-learning-with-linear-models.html#cb36-92" tabindex="-1"></a>    step_count <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb36-93"><a href="function-approximation-q-learning-with-linear-models.html#cb36-93" tabindex="-1"></a>    max_steps <span class="ot">&lt;-</span> <span class="dv">1000</span>  <span class="co"># Prevent infinite loops</span></span>
-<span id="cb36-94"><a href="function-approximation-q-learning-with-linear-models.html#cb36-94" tabindex="-1"></a>    </span>
-<span id="cb36-95"><a href="function-approximation-q-learning-with-linear-models.html#cb36-95" tabindex="-1"></a>    <span class="cf">while</span> (step_count <span class="sc">&lt;</span> max_steps) {</span>
-<span id="cb36-96"><a href="function-approximation-q-learning-with-linear-models.html#cb36-96" tabindex="-1"></a>      step_count <span class="ot">&lt;-</span> step_count <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb36-97"><a href="function-approximation-q-learning-with-linear-models.html#cb36-97" tabindex="-1"></a>      </span>
-<span id="cb36-98"><a href="function-approximation-q-learning-with-linear-models.html#cb36-98" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
-<span id="cb36-99"><a href="function-approximation-q-learning-with-linear-models.html#cb36-99" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
-<span id="cb36-100"><a href="function-approximation-q-learning-with-linear-models.html#cb36-100" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
-<span id="cb36-101"><a href="function-approximation-q-learning-with-linear-models.html#cb36-101" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb36-102"><a href="function-approximation-q-learning-with-linear-models.html#cb36-102" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
-<span id="cb36-103"><a href="function-approximation-q-learning-with-linear-models.html#cb36-103" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
-<span id="cb36-104"><a href="function-approximation-q-learning-with-linear-models.html#cb36-104" tabindex="-1"></a>      }</span>
-<span id="cb36-105"><a href="function-approximation-q-learning-with-linear-models.html#cb36-105" tabindex="-1"></a>      </span>
-<span id="cb36-106"><a href="function-approximation-q-learning-with-linear-models.html#cb36-106" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb36-107"><a href="function-approximation-q-learning-with-linear-models.html#cb36-107" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
-<span id="cb36-108"><a href="function-approximation-q-learning-with-linear-models.html#cb36-108" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
-<span id="cb36-109"><a href="function-approximation-q-learning-with-linear-models.html#cb36-109" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
-<span id="cb36-110"><a href="function-approximation-q-learning-with-linear-models.html#cb36-110" tabindex="-1"></a>      </span>
-<span id="cb36-111"><a href="function-approximation-q-learning-with-linear-models.html#cb36-111" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
-<span id="cb36-112"><a href="function-approximation-q-learning-with-linear-models.html#cb36-112" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
-<span id="cb36-113"><a href="function-approximation-q-learning-with-linear-models.html#cb36-113" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) {</span>
-<span id="cb36-114"><a href="function-approximation-q-learning-with-linear-models.html#cb36-114" tabindex="-1"></a>        <span class="dv">0</span></span>
-<span id="cb36-115"><a href="function-approximation-q-learning-with-linear-models.html#cb36-115" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb36-116"><a href="function-approximation-q-learning-with-linear-models.html#cb36-116" tabindex="-1"></a>        <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
-<span id="cb36-117"><a href="function-approximation-q-learning-with-linear-models.html#cb36-117" tabindex="-1"></a>      }</span>
-<span id="cb36-118"><a href="function-approximation-q-learning-with-linear-models.html#cb36-118" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
-<span id="cb36-119"><a href="function-approximation-q-learning-with-linear-models.html#cb36-119" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
-<span id="cb36-120"><a href="function-approximation-q-learning-with-linear-models.html#cb36-120" tabindex="-1"></a>      </span>
-<span id="cb36-121"><a href="function-approximation-q-learning-with-linear-models.html#cb36-121" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
-<span id="cb36-122"><a href="function-approximation-q-learning-with-linear-models.html#cb36-122" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
-<span id="cb36-123"><a href="function-approximation-q-learning-with-linear-models.html#cb36-123" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
-<span id="cb36-124"><a href="function-approximation-q-learning-with-linear-models.html#cb36-124" tabindex="-1"></a>      </span>
-<span id="cb36-125"><a href="function-approximation-q-learning-with-linear-models.html#cb36-125" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
-<span id="cb36-126"><a href="function-approximation-q-learning-with-linear-models.html#cb36-126" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb36-127"><a href="function-approximation-q-learning-with-linear-models.html#cb36-127" tabindex="-1"></a>    }</span>
-<span id="cb36-128"><a href="function-approximation-q-learning-with-linear-models.html#cb36-128" tabindex="-1"></a>    </span>
-<span id="cb36-129"><a href="function-approximation-q-learning-with-linear-models.html#cb36-129" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
-<span id="cb36-130"><a href="function-approximation-q-learning-with-linear-models.html#cb36-130" tabindex="-1"></a>  }</span>
-<span id="cb36-131"><a href="function-approximation-q-learning-with-linear-models.html#cb36-131" tabindex="-1"></a>  </span>
-<span id="cb36-132"><a href="function-approximation-q-learning-with-linear-models.html#cb36-132" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
-<span id="cb36-133"><a href="function-approximation-q-learning-with-linear-models.html#cb36-133" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
-<span id="cb36-134"><a href="function-approximation-q-learning-with-linear-models.html#cb36-134" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) {</span>
-<span id="cb36-135"><a href="function-approximation-q-learning-with-linear-models.html#cb36-135" tabindex="-1"></a>      <span class="cn">NA</span></span>
-<span id="cb36-136"><a href="function-approximation-q-learning-with-linear-models.html#cb36-136" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb36-137"><a href="function-approximation-q-learning-with-linear-models.html#cb36-137" tabindex="-1"></a>      <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
-<span id="cb36-138"><a href="function-approximation-q-learning-with-linear-models.html#cb36-138" tabindex="-1"></a>    }</span>
-<span id="cb36-139"><a href="function-approximation-q-learning-with-linear-models.html#cb36-139" tabindex="-1"></a>  })</span>
-<span id="cb36-140"><a href="function-approximation-q-learning-with-linear-models.html#cb36-140" tabindex="-1"></a>  </span>
-<span id="cb36-141"><a href="function-approximation-q-learning-with-linear-models.html#cb36-141" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
-<span id="cb36-142"><a href="function-approximation-q-learning-with-linear-models.html#cb36-142" tabindex="-1"></a>}</span>
-<span id="cb36-143"><a href="function-approximation-q-learning-with-linear-models.html#cb36-143" tabindex="-1"></a></span>
-<span id="cb36-144"><a href="function-approximation-q-learning-with-linear-models.html#cb36-144" tabindex="-1"></a><span class="co"># Run Q-Learning with function approximation</span></span>
-<span id="cb36-145"><a href="function-approximation-q-learning-with-linear-models.html#cb36-145" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb36-146"><a href="function-approximation-q-learning-with-linear-models.html#cb36-146" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
-<span id="cb36-147"><a href="function-approximation-q-learning-with-linear-models.html#cb36-147" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
-<span id="cb36-148"><a href="function-approximation-q-learning-with-linear-models.html#cb36-148" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span>
-<span id="cb36-149"><a href="function-approximation-q-learning-with-linear-models.html#cb36-149" tabindex="-1"></a></span>
-<span id="cb36-150"><a href="function-approximation-q-learning-with-linear-models.html#cb36-150" tabindex="-1"></a><span class="co"># Visualize policy</span></span>
-<span id="cb36-151"><a href="function-approximation-q-learning-with-linear-models.html#cb36-151" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb36-152"><a href="function-approximation-q-learning-with-linear-models.html#cb36-152" tabindex="-1"></a></span>
-<span id="cb36-153"><a href="function-approximation-q-learning-with-linear-models.html#cb36-153" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb36-154"><a href="function-approximation-q-learning-with-linear-models.html#cb36-154" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
-<span id="cb36-155"><a href="function-approximation-q-learning-with-linear-models.html#cb36-155" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
-<span id="cb36-156"><a href="function-approximation-q-learning-with-linear-models.html#cb36-156" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
-<span id="cb36-157"><a href="function-approximation-q-learning-with-linear-models.html#cb36-157" tabindex="-1"></a>)</span>
-<span id="cb36-158"><a href="function-approximation-q-learning-with-linear-models.html#cb36-158" tabindex="-1"></a></span>
-<span id="cb36-159"><a href="function-approximation-q-learning-with-linear-models.html#cb36-159" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df[<span class="sc">!</span><span class="fu">is.na</span>(policy_df<span class="sc">$</span>Policy), ], </span>
-<span id="cb36-160"><a href="function-approximation-q-learning-with-linear-models.html#cb36-160" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
-<span id="cb36-161"><a href="function-approximation-q-learning-with-linear-models.html#cb36-161" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb36-162"><a href="function-approximation-q-learning-with-linear-models.html#cb36-162" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb36-163"><a href="function-approximation-q-learning-with-linear-models.html#cb36-163" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb36-164"><a href="function-approximation-q-learning-with-linear-models.html#cb36-164" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, </span>
-<span id="cb36-165"><a href="function-approximation-q-learning-with-linear-models.html#cb36-165" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, </span>
-<span id="cb36-166"><a href="function-approximation-q-learning-with-linear-models.html#cb36-166" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
-<span id="cb36-167"><a href="function-approximation-q-learning-with-linear-models.html#cb36-167" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
-<span id="cb36-168"><a href="function-approximation-q-learning-with-linear-models.html#cb36-168" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb36-169"><a href="function-approximation-q-learning-with-linear-models.html#cb36-169" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
-<span id="cb36-170"><a href="function-approximation-q-learning-with-linear-models.html#cb36-170" tabindex="-1"></a></span>
-<span id="cb36-171"><a href="function-approximation-q-learning-with-linear-models.html#cb36-171" tabindex="-1"></a><span class="co"># Visualize cumulative rewards</span></span>
-<span id="cb36-172"><a href="function-approximation-q-learning-with-linear-models.html#cb36-172" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb36-173"><a href="function-approximation-q-learning-with-linear-models.html#cb36-173" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
-<span id="cb36-174"><a href="function-approximation-q-learning-with-linear-models.html#cb36-174" tabindex="-1"></a>  <span class="at">CumulativeReward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
-<span id="cb36-175"><a href="function-approximation-q-learning-with-linear-models.html#cb36-175" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
-<span id="cb36-176"><a href="function-approximation-q-learning-with-linear-models.html#cb36-176" tabindex="-1"></a>)</span>
-<span id="cb36-177"><a href="function-approximation-q-learning-with-linear-models.html#cb36-177" tabindex="-1"></a></span>
-<span id="cb36-178"><a href="function-approximation-q-learning-with-linear-models.html#cb36-178" tabindex="-1"></a>reward_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reward_df, <span class="fu">aes</span>(<span class="at">x =</span> Episode, <span class="at">y =</span> CumulativeReward)) <span class="sc">+</span></span>
-<span id="cb36-179"><a href="function-approximation-q-learning-with-linear-models.html#cb36-179" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb36-180"><a href="function-approximation-q-learning-with-linear-models.html#cb36-180" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb36-181"><a href="function-approximation-q-learning-with-linear-models.html#cb36-181" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cumulative Rewards Over Episodes&quot;</span>,</span>
-<span id="cb36-182"><a href="function-approximation-q-learning-with-linear-models.html#cb36-182" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
-<span id="cb36-183"><a href="function-approximation-q-learning-with-linear-models.html#cb36-183" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Cumulative Reward&quot;</span>)</span>
-<span id="cb36-184"><a href="function-approximation-q-learning-with-linear-models.html#cb36-184" tabindex="-1"></a></span>
-<span id="cb36-185"><a href="function-approximation-q-learning-with-linear-models.html#cb36-185" tabindex="-1"></a><span class="co"># Display plots</span></span>
-<span id="cb36-186"><a href="function-approximation-q-learning-with-linear-models.html#cb36-186" tabindex="-1"></a><span class="fu">print</span>(policy_plot)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="function-approximation-q-learning-with-linear-models.html#cb37-1" tabindex="-1"></a><span class="fu">print</span>(reward_plot)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="function-approximation-q-learning-with-linear-models.html#cb38-1" tabindex="-1"></a><span class="co"># Print summary statistics</span></span>
-<span id="cb38-2"><a href="function-approximation-q-learning-with-linear-models.html#cb38-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Policy Summary:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="function-approximation-q-learning-with-linear-models.html#cb39-1" tabindex="-1"></a><span class="co"># Common settings</span></span>
+<span id="cb39-2"><a href="function-approximation-q-learning-with-linear-models.html#cb39-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb39-3"><a href="function-approximation-q-learning-with-linear-models.html#cb39-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb39-4"><a href="function-approximation-q-learning-with-linear-models.html#cb39-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb39-5"><a href="function-approximation-q-learning-with-linear-models.html#cb39-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb39-6"><a href="function-approximation-q-learning-with-linear-models.html#cb39-6" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="function-approximation-q-learning-with-linear-models.html#cb39-7" tabindex="-1"></a><span class="co"># Environment: transition and reward models</span></span>
+<span id="cb39-8"><a href="function-approximation-q-learning-with-linear-models.html#cb39-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb39-9"><a href="function-approximation-q-learning-with-linear-models.html#cb39-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb39-10"><a href="function-approximation-q-learning-with-linear-models.html#cb39-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb39-11"><a href="function-approximation-q-learning-with-linear-models.html#cb39-11" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="function-approximation-q-learning-with-linear-models.html#cb39-12" tabindex="-1"></a><span class="co"># Build transition and reward models</span></span>
+<span id="cb39-13"><a href="function-approximation-q-learning-with-linear-models.html#cb39-13" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb39-14"><a href="function-approximation-q-learning-with-linear-models.html#cb39-14" tabindex="-1"></a>  <span class="co"># Action 1: 90% to s+1, 10% to a different random state</span></span>
+<span id="cb39-15"><a href="function-approximation-q-learning-with-linear-models.html#cb39-15" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb39-16"><a href="function-approximation-q-learning-with-linear-models.html#cb39-16" tabindex="-1"></a>  other_states <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n_states, s <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb39-17"><a href="function-approximation-q-learning-with-linear-models.html#cb39-17" tabindex="-1"></a>  random_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(other_states, <span class="dv">1</span>)</span>
+<span id="cb39-18"><a href="function-approximation-q-learning-with-linear-models.html#cb39-18" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, random_state] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb39-19"><a href="function-approximation-q-learning-with-linear-models.html#cb39-19" tabindex="-1"></a>  </span>
+<span id="cb39-20"><a href="function-approximation-q-learning-with-linear-models.html#cb39-20" tabindex="-1"></a>  <span class="co"># Action 2: 80% and 20% to two different random states</span></span>
+<span id="cb39-21"><a href="function-approximation-q-learning-with-linear-models.html#cb39-21" tabindex="-1"></a>  two_states <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">2</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-22"><a href="function-approximation-q-learning-with-linear-models.html#cb39-22" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb39-23"><a href="function-approximation-q-learning-with-linear-models.html#cb39-23" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb39-24"><a href="function-approximation-q-learning-with-linear-models.html#cb39-24" tabindex="-1"></a>}</span>
+<span id="cb39-25"><a href="function-approximation-q-learning-with-linear-models.html#cb39-25" tabindex="-1"></a></span>
+<span id="cb39-26"><a href="function-approximation-q-learning-with-linear-models.html#cb39-26" tabindex="-1"></a><span class="co"># Make terminal state absorbing (stays in itself)</span></span>
+<span id="cb39-27"><a href="function-approximation-q-learning-with-linear-models.html#cb39-27" tabindex="-1"></a>transition_model[n_states, , n_states] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb39-28"><a href="function-approximation-q-learning-with-linear-models.html#cb39-28" tabindex="-1"></a></span>
+<span id="cb39-29"><a href="function-approximation-q-learning-with-linear-models.html#cb39-29" tabindex="-1"></a><span class="co"># Set rewards (fixed, not random each time)</span></span>
+<span id="cb39-30"><a href="function-approximation-q-learning-with-linear-models.html#cb39-30" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb39-31"><a href="function-approximation-q-learning-with-linear-models.html#cb39-31" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb39-32"><a href="function-approximation-q-learning-with-linear-models.html#cb39-32" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
+<span id="cb39-33"><a href="function-approximation-q-learning-with-linear-models.html#cb39-33" tabindex="-1"></a>    <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb39-34"><a href="function-approximation-q-learning-with-linear-models.html#cb39-34" tabindex="-1"></a>      <span class="cf">if</span> (transition_model[s, a, s_prime] <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb39-35"><a href="function-approximation-q-learning-with-linear-models.html#cb39-35" tabindex="-1"></a>        <span class="cf">if</span> (s_prime <span class="sc">==</span> n_states) {</span>
+<span id="cb39-36"><a href="function-approximation-q-learning-with-linear-models.html#cb39-36" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">1.0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb39-37"><a href="function-approximation-q-learning-with-linear-models.html#cb39-37" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb39-38"><a href="function-approximation-q-learning-with-linear-models.html#cb39-38" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>), <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb39-39"><a href="function-approximation-q-learning-with-linear-models.html#cb39-39" tabindex="-1"></a>        }</span>
+<span id="cb39-40"><a href="function-approximation-q-learning-with-linear-models.html#cb39-40" tabindex="-1"></a>      }</span>
+<span id="cb39-41"><a href="function-approximation-q-learning-with-linear-models.html#cb39-41" tabindex="-1"></a>    }</span>
+<span id="cb39-42"><a href="function-approximation-q-learning-with-linear-models.html#cb39-42" tabindex="-1"></a>  }</span>
+<span id="cb39-43"><a href="function-approximation-q-learning-with-linear-models.html#cb39-43" tabindex="-1"></a>}</span>
+<span id="cb39-44"><a href="function-approximation-q-learning-with-linear-models.html#cb39-44" tabindex="-1"></a></span>
+<span id="cb39-45"><a href="function-approximation-q-learning-with-linear-models.html#cb39-45" tabindex="-1"></a><span class="co"># Terminal state has no rewards</span></span>
+<span id="cb39-46"><a href="function-approximation-q-learning-with-linear-models.html#cb39-46" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb39-47"><a href="function-approximation-q-learning-with-linear-models.html#cb39-47" tabindex="-1"></a></span>
+<span id="cb39-48"><a href="function-approximation-q-learning-with-linear-models.html#cb39-48" tabindex="-1"></a><span class="co"># Verify transition probabilities sum to 1</span></span>
+<span id="cb39-49"><a href="function-approximation-q-learning-with-linear-models.html#cb39-49" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb39-50"><a href="function-approximation-q-learning-with-linear-models.html#cb39-50" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
+<span id="cb39-51"><a href="function-approximation-q-learning-with-linear-models.html#cb39-51" tabindex="-1"></a>    prob_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(transition_model[s, a, ])</span>
+<span id="cb39-52"><a href="function-approximation-q-learning-with-linear-models.html#cb39-52" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">abs</span>(prob_sum <span class="sc">-</span> <span class="fl">1.0</span>) <span class="sc">&gt;</span> <span class="fl">1e-10</span>) {</span>
+<span id="cb39-53"><a href="function-approximation-q-learning-with-linear-models.html#cb39-53" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="fu">sprintf</span>(<span class="st">&quot;State %d, Action %d: probabilities sum to %.4f&quot;</span>, s, a, prob_sum))</span>
+<span id="cb39-54"><a href="function-approximation-q-learning-with-linear-models.html#cb39-54" tabindex="-1"></a>    }</span>
+<span id="cb39-55"><a href="function-approximation-q-learning-with-linear-models.html#cb39-55" tabindex="-1"></a>  }</span>
+<span id="cb39-56"><a href="function-approximation-q-learning-with-linear-models.html#cb39-56" tabindex="-1"></a>}</span>
+<span id="cb39-57"><a href="function-approximation-q-learning-with-linear-models.html#cb39-57" tabindex="-1"></a></span>
+<span id="cb39-58"><a href="function-approximation-q-learning-with-linear-models.html#cb39-58" tabindex="-1"></a><span class="co"># Sampling function</span></span>
+<span id="cb39-59"><a href="function-approximation-q-learning-with-linear-models.html#cb39-59" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb39-60"><a href="function-approximation-q-learning-with-linear-models.html#cb39-60" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb39-61"><a href="function-approximation-q-learning-with-linear-models.html#cb39-61" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb39-62"><a href="function-approximation-q-learning-with-linear-models.html#cb39-62" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb39-63"><a href="function-approximation-q-learning-with-linear-models.html#cb39-63" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb39-64"><a href="function-approximation-q-learning-with-linear-models.html#cb39-64" tabindex="-1"></a>}</span>
+<span id="cb39-65"><a href="function-approximation-q-learning-with-linear-models.html#cb39-65" tabindex="-1"></a></span>
+<span id="cb39-66"><a href="function-approximation-q-learning-with-linear-models.html#cb39-66" tabindex="-1"></a><span class="co"># Create one-hot features for (state, action) pairs</span></span>
+<span id="cb39-67"><a href="function-approximation-q-learning-with-linear-models.html#cb39-67" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
+<span id="cb39-68"><a href="function-approximation-q-learning-with-linear-models.html#cb39-68" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
+<span id="cb39-69"><a href="function-approximation-q-learning-with-linear-models.html#cb39-69" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
+<span id="cb39-70"><a href="function-approximation-q-learning-with-linear-models.html#cb39-70" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb39-71"><a href="function-approximation-q-learning-with-linear-models.html#cb39-71" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
+<span id="cb39-72"><a href="function-approximation-q-learning-with-linear-models.html#cb39-72" tabindex="-1"></a>}</span>
+<span id="cb39-73"><a href="function-approximation-q-learning-with-linear-models.html#cb39-73" tabindex="-1"></a></span>
+<span id="cb39-74"><a href="function-approximation-q-learning-with-linear-models.html#cb39-74" tabindex="-1"></a><span class="co"># Initialize weights</span></span>
+<span id="cb39-75"><a href="function-approximation-q-learning-with-linear-models.html#cb39-75" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
+<span id="cb39-76"><a href="function-approximation-q-learning-with-linear-models.html#cb39-76" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb39-77"><a href="function-approximation-q-learning-with-linear-models.html#cb39-77" tabindex="-1"></a></span>
+<span id="cb39-78"><a href="function-approximation-q-learning-with-linear-models.html#cb39-78" tabindex="-1"></a><span class="co"># Q-value approximation function</span></span>
+<span id="cb39-79"><a href="function-approximation-q-learning-with-linear-models.html#cb39-79" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
+<span id="cb39-80"><a href="function-approximation-q-learning-with-linear-models.html#cb39-80" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb39-81"><a href="function-approximation-q-learning-with-linear-models.html#cb39-81" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
+<span id="cb39-82"><a href="function-approximation-q-learning-with-linear-models.html#cb39-82" tabindex="-1"></a>}</span>
+<span id="cb39-83"><a href="function-approximation-q-learning-with-linear-models.html#cb39-83" tabindex="-1"></a></span>
+<span id="cb39-84"><a href="function-approximation-q-learning-with-linear-models.html#cb39-84" tabindex="-1"></a><span class="co"># Q-Learning with function approximation</span></span>
+<span id="cb39-85"><a href="function-approximation-q-learning-with-linear-models.html#cb39-85" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb39-86"><a href="function-approximation-q-learning-with-linear-models.html#cb39-86" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb39-87"><a href="function-approximation-q-learning-with-linear-models.html#cb39-87" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb39-88"><a href="function-approximation-q-learning-with-linear-models.html#cb39-88" tabindex="-1"></a>  </span>
+<span id="cb39-89"><a href="function-approximation-q-learning-with-linear-models.html#cb39-89" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb39-90"><a href="function-approximation-q-learning-with-linear-models.html#cb39-90" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb39-91"><a href="function-approximation-q-learning-with-linear-models.html#cb39-91" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb39-92"><a href="function-approximation-q-learning-with-linear-models.html#cb39-92" tabindex="-1"></a>    step_count <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb39-93"><a href="function-approximation-q-learning-with-linear-models.html#cb39-93" tabindex="-1"></a>    max_steps <span class="ot">&lt;-</span> <span class="dv">1000</span>  <span class="co"># Prevent infinite loops</span></span>
+<span id="cb39-94"><a href="function-approximation-q-learning-with-linear-models.html#cb39-94" tabindex="-1"></a>    </span>
+<span id="cb39-95"><a href="function-approximation-q-learning-with-linear-models.html#cb39-95" tabindex="-1"></a>    <span class="cf">while</span> (step_count <span class="sc">&lt;</span> max_steps) {</span>
+<span id="cb39-96"><a href="function-approximation-q-learning-with-linear-models.html#cb39-96" tabindex="-1"></a>      step_count <span class="ot">&lt;-</span> step_count <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb39-97"><a href="function-approximation-q-learning-with-linear-models.html#cb39-97" tabindex="-1"></a>      </span>
+<span id="cb39-98"><a href="function-approximation-q-learning-with-linear-models.html#cb39-98" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb39-99"><a href="function-approximation-q-learning-with-linear-models.html#cb39-99" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb39-100"><a href="function-approximation-q-learning-with-linear-models.html#cb39-100" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb39-101"><a href="function-approximation-q-learning-with-linear-models.html#cb39-101" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb39-102"><a href="function-approximation-q-learning-with-linear-models.html#cb39-102" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
+<span id="cb39-103"><a href="function-approximation-q-learning-with-linear-models.html#cb39-103" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
+<span id="cb39-104"><a href="function-approximation-q-learning-with-linear-models.html#cb39-104" tabindex="-1"></a>      }</span>
+<span id="cb39-105"><a href="function-approximation-q-learning-with-linear-models.html#cb39-105" tabindex="-1"></a>      </span>
+<span id="cb39-106"><a href="function-approximation-q-learning-with-linear-models.html#cb39-106" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb39-107"><a href="function-approximation-q-learning-with-linear-models.html#cb39-107" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb39-108"><a href="function-approximation-q-learning-with-linear-models.html#cb39-108" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb39-109"><a href="function-approximation-q-learning-with-linear-models.html#cb39-109" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
+<span id="cb39-110"><a href="function-approximation-q-learning-with-linear-models.html#cb39-110" tabindex="-1"></a>      </span>
+<span id="cb39-111"><a href="function-approximation-q-learning-with-linear-models.html#cb39-111" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
+<span id="cb39-112"><a href="function-approximation-q-learning-with-linear-models.html#cb39-112" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
+<span id="cb39-113"><a href="function-approximation-q-learning-with-linear-models.html#cb39-113" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) {</span>
+<span id="cb39-114"><a href="function-approximation-q-learning-with-linear-models.html#cb39-114" tabindex="-1"></a>        <span class="dv">0</span></span>
+<span id="cb39-115"><a href="function-approximation-q-learning-with-linear-models.html#cb39-115" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb39-116"><a href="function-approximation-q-learning-with-linear-models.html#cb39-116" tabindex="-1"></a>        <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
+<span id="cb39-117"><a href="function-approximation-q-learning-with-linear-models.html#cb39-117" tabindex="-1"></a>      }</span>
+<span id="cb39-118"><a href="function-approximation-q-learning-with-linear-models.html#cb39-118" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
+<span id="cb39-119"><a href="function-approximation-q-learning-with-linear-models.html#cb39-119" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
+<span id="cb39-120"><a href="function-approximation-q-learning-with-linear-models.html#cb39-120" tabindex="-1"></a>      </span>
+<span id="cb39-121"><a href="function-approximation-q-learning-with-linear-models.html#cb39-121" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
+<span id="cb39-122"><a href="function-approximation-q-learning-with-linear-models.html#cb39-122" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb39-123"><a href="function-approximation-q-learning-with-linear-models.html#cb39-123" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
+<span id="cb39-124"><a href="function-approximation-q-learning-with-linear-models.html#cb39-124" tabindex="-1"></a>      </span>
+<span id="cb39-125"><a href="function-approximation-q-learning-with-linear-models.html#cb39-125" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
+<span id="cb39-126"><a href="function-approximation-q-learning-with-linear-models.html#cb39-126" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb39-127"><a href="function-approximation-q-learning-with-linear-models.html#cb39-127" tabindex="-1"></a>    }</span>
+<span id="cb39-128"><a href="function-approximation-q-learning-with-linear-models.html#cb39-128" tabindex="-1"></a>    </span>
+<span id="cb39-129"><a href="function-approximation-q-learning-with-linear-models.html#cb39-129" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb39-130"><a href="function-approximation-q-learning-with-linear-models.html#cb39-130" tabindex="-1"></a>  }</span>
+<span id="cb39-131"><a href="function-approximation-q-learning-with-linear-models.html#cb39-131" tabindex="-1"></a>  </span>
+<span id="cb39-132"><a href="function-approximation-q-learning-with-linear-models.html#cb39-132" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
+<span id="cb39-133"><a href="function-approximation-q-learning-with-linear-models.html#cb39-133" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
+<span id="cb39-134"><a href="function-approximation-q-learning-with-linear-models.html#cb39-134" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) {</span>
+<span id="cb39-135"><a href="function-approximation-q-learning-with-linear-models.html#cb39-135" tabindex="-1"></a>      <span class="cn">NA</span></span>
+<span id="cb39-136"><a href="function-approximation-q-learning-with-linear-models.html#cb39-136" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb39-137"><a href="function-approximation-q-learning-with-linear-models.html#cb39-137" tabindex="-1"></a>      <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
+<span id="cb39-138"><a href="function-approximation-q-learning-with-linear-models.html#cb39-138" tabindex="-1"></a>    }</span>
+<span id="cb39-139"><a href="function-approximation-q-learning-with-linear-models.html#cb39-139" tabindex="-1"></a>  })</span>
+<span id="cb39-140"><a href="function-approximation-q-learning-with-linear-models.html#cb39-140" tabindex="-1"></a>  </span>
+<span id="cb39-141"><a href="function-approximation-q-learning-with-linear-models.html#cb39-141" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb39-142"><a href="function-approximation-q-learning-with-linear-models.html#cb39-142" tabindex="-1"></a>}</span>
+<span id="cb39-143"><a href="function-approximation-q-learning-with-linear-models.html#cb39-143" tabindex="-1"></a></span>
+<span id="cb39-144"><a href="function-approximation-q-learning-with-linear-models.html#cb39-144" tabindex="-1"></a><span class="co"># Run Q-Learning with function approximation</span></span>
+<span id="cb39-145"><a href="function-approximation-q-learning-with-linear-models.html#cb39-145" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb39-146"><a href="function-approximation-q-learning-with-linear-models.html#cb39-146" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb39-147"><a href="function-approximation-q-learning-with-linear-models.html#cb39-147" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
+<span id="cb39-148"><a href="function-approximation-q-learning-with-linear-models.html#cb39-148" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span>
+<span id="cb39-149"><a href="function-approximation-q-learning-with-linear-models.html#cb39-149" tabindex="-1"></a></span>
+<span id="cb39-150"><a href="function-approximation-q-learning-with-linear-models.html#cb39-150" tabindex="-1"></a><span class="co"># Visualize policy</span></span>
+<span id="cb39-151"><a href="function-approximation-q-learning-with-linear-models.html#cb39-151" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb39-152"><a href="function-approximation-q-learning-with-linear-models.html#cb39-152" tabindex="-1"></a></span>
+<span id="cb39-153"><a href="function-approximation-q-learning-with-linear-models.html#cb39-153" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-154"><a href="function-approximation-q-learning-with-linear-models.html#cb39-154" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
+<span id="cb39-155"><a href="function-approximation-q-learning-with-linear-models.html#cb39-155" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
+<span id="cb39-156"><a href="function-approximation-q-learning-with-linear-models.html#cb39-156" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb39-157"><a href="function-approximation-q-learning-with-linear-models.html#cb39-157" tabindex="-1"></a>)</span>
+<span id="cb39-158"><a href="function-approximation-q-learning-with-linear-models.html#cb39-158" tabindex="-1"></a></span>
+<span id="cb39-159"><a href="function-approximation-q-learning-with-linear-models.html#cb39-159" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df[<span class="sc">!</span><span class="fu">is.na</span>(policy_df<span class="sc">$</span>Policy), ], </span>
+<span id="cb39-160"><a href="function-approximation-q-learning-with-linear-models.html#cb39-160" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
+<span id="cb39-161"><a href="function-approximation-q-learning-with-linear-models.html#cb39-161" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-162"><a href="function-approximation-q-learning-with-linear-models.html#cb39-162" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-163"><a href="function-approximation-q-learning-with-linear-models.html#cb39-163" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-164"><a href="function-approximation-q-learning-with-linear-models.html#cb39-164" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, </span>
+<span id="cb39-165"><a href="function-approximation-q-learning-with-linear-models.html#cb39-165" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, </span>
+<span id="cb39-166"><a href="function-approximation-q-learning-with-linear-models.html#cb39-166" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
+<span id="cb39-167"><a href="function-approximation-q-learning-with-linear-models.html#cb39-167" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb39-168"><a href="function-approximation-q-learning-with-linear-models.html#cb39-168" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb39-169"><a href="function-approximation-q-learning-with-linear-models.html#cb39-169" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb39-170"><a href="function-approximation-q-learning-with-linear-models.html#cb39-170" tabindex="-1"></a></span>
+<span id="cb39-171"><a href="function-approximation-q-learning-with-linear-models.html#cb39-171" tabindex="-1"></a><span class="co"># Visualize cumulative rewards</span></span>
+<span id="cb39-172"><a href="function-approximation-q-learning-with-linear-models.html#cb39-172" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-173"><a href="function-approximation-q-learning-with-linear-models.html#cb39-173" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb39-174"><a href="function-approximation-q-learning-with-linear-models.html#cb39-174" tabindex="-1"></a>  <span class="at">CumulativeReward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
+<span id="cb39-175"><a href="function-approximation-q-learning-with-linear-models.html#cb39-175" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb39-176"><a href="function-approximation-q-learning-with-linear-models.html#cb39-176" tabindex="-1"></a>)</span>
+<span id="cb39-177"><a href="function-approximation-q-learning-with-linear-models.html#cb39-177" tabindex="-1"></a></span>
+<span id="cb39-178"><a href="function-approximation-q-learning-with-linear-models.html#cb39-178" tabindex="-1"></a>reward_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reward_df, <span class="fu">aes</span>(<span class="at">x =</span> Episode, <span class="at">y =</span> CumulativeReward)) <span class="sc">+</span></span>
+<span id="cb39-179"><a href="function-approximation-q-learning-with-linear-models.html#cb39-179" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb39-180"><a href="function-approximation-q-learning-with-linear-models.html#cb39-180" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-181"><a href="function-approximation-q-learning-with-linear-models.html#cb39-181" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cumulative Rewards Over Episodes&quot;</span>,</span>
+<span id="cb39-182"><a href="function-approximation-q-learning-with-linear-models.html#cb39-182" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
+<span id="cb39-183"><a href="function-approximation-q-learning-with-linear-models.html#cb39-183" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Cumulative Reward&quot;</span>)</span>
+<span id="cb39-184"><a href="function-approximation-q-learning-with-linear-models.html#cb39-184" tabindex="-1"></a></span>
+<span id="cb39-185"><a href="function-approximation-q-learning-with-linear-models.html#cb39-185" tabindex="-1"></a><span class="co"># Display plots</span></span>
+<span id="cb39-186"><a href="function-approximation-q-learning-with-linear-models.html#cb39-186" tabindex="-1"></a><span class="fu">print</span>(policy_plot)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="function-approximation-q-learning-with-linear-models.html#cb40-1" tabindex="-1"></a><span class="fu">print</span>(reward_plot)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-27-2.png" width="672" /></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="function-approximation-q-learning-with-linear-models.html#cb41-1" tabindex="-1"></a><span class="co"># Print summary statistics</span></span>
+<span id="cb41-2"><a href="function-approximation-q-learning-with-linear-models.html#cb41-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Policy Summary:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## Policy Summary:</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="function-approximation-q-learning-with-linear-models.html#cb40-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(fa_policy, <span class="at">useNA =</span> <span class="st">&quot;ifany&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="function-approximation-q-learning-with-linear-models.html#cb43-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(fa_policy, <span class="at">useNA =</span> <span class="st">&quot;ifany&quot;</span>))</span></code></pre></div>
 <pre><code>## fa_policy
 ##    1    2 &lt;NA&gt; 
 ##    8    1    1</code></pre>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="function-approximation-q-learning-with-linear-models.html#cb42-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Final 10 Episode Rewards:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="function-approximation-q-learning-with-linear-models.html#cb45-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Final 10 Episode Rewards:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## Final 10 Episode Rewards:</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="function-approximation-q-learning-with-linear-models.html#cb44-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">10</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="function-approximation-q-learning-with-linear-models.html#cb47-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">10</span>))</span></code></pre></div>
 <pre><code>##  [1] 1.415547 1.316729 1.145381 1.352685 1.181336 1.110396 1.382692 1.234756 1.158847 1.008244</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="function-approximation-q-learning-with-linear-models.html#cb46-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Mean Episode Reward (last 100 episodes):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="function-approximation-q-learning-with-linear-models.html#cb49-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Mean Episode Reward (last 100 episodes):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## Mean Episode Reward (last 100 episodes):</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="function-approximation-q-learning-with-linear-models.html#cb48-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">mean</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">100</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="function-approximation-q-learning-with-linear-models.html#cb51-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">mean</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">100</span>)))</span></code></pre></div>
 <pre><code>## [1] 1.187619</code></pre>
 <p><strong>Top-level settings</strong></p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="function-approximation-q-learning-with-linear-models.html#cb50-1" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb50-2"><a href="function-approximation-q-learning-with-linear-models.html#cb50-2" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb50-3"><a href="function-approximation-q-learning-with-linear-models.html#cb50-3" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb50-4"><a href="function-approximation-q-learning-with-linear-models.html#cb50-4" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="function-approximation-q-learning-with-linear-models.html#cb53-1" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb53-2"><a href="function-approximation-q-learning-with-linear-models.html#cb53-2" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb53-3"><a href="function-approximation-q-learning-with-linear-models.html#cb53-3" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb53-4"><a href="function-approximation-q-learning-with-linear-models.html#cb53-4" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span></code></pre></div>
 <ul>
 <li><code>n_states</code> and <code>n_actions</code>: size of the MDP (10 states, 2 actions).</li>
 <li><code>gamma</code>: discount factor (0.9).</li>
 <li><code>terminal_state</code>: the index of the terminal state (state 10). Many later pieces use this to stop episodes and to set <code>q_next = 0</code> for transitions into terminal.</li>
 </ul>
 <p><strong>Environment: transition and reward models</strong></p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="function-approximation-q-learning-with-linear-models.html#cb51-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb51-2"><a href="function-approximation-q-learning-with-linear-models.html#cb51-2" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb51-3"><a href="function-approximation-q-learning-with-linear-models.html#cb51-3" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb51-4"><a href="function-approximation-q-learning-with-linear-models.html#cb51-4" tabindex="-1"></a></span>
-<span id="cb51-5"><a href="function-approximation-q-learning-with-linear-models.html#cb51-5" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb51-6"><a href="function-approximation-q-learning-with-linear-models.html#cb51-6" tabindex="-1"></a>  <span class="co"># Action 1: 90% to s+1, 10% to a different random state</span></span>
-<span id="cb51-7"><a href="function-approximation-q-learning-with-linear-models.html#cb51-7" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb51-8"><a href="function-approximation-q-learning-with-linear-models.html#cb51-8" tabindex="-1"></a>  other_states <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n_states, s <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb51-9"><a href="function-approximation-q-learning-with-linear-models.html#cb51-9" tabindex="-1"></a>  random_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(other_states, <span class="dv">1</span>)</span>
-<span id="cb51-10"><a href="function-approximation-q-learning-with-linear-models.html#cb51-10" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, random_state] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb51-11"><a href="function-approximation-q-learning-with-linear-models.html#cb51-11" tabindex="-1"></a>  </span>
-<span id="cb51-12"><a href="function-approximation-q-learning-with-linear-models.html#cb51-12" tabindex="-1"></a>  <span class="co"># Action 2: 80% and 20% to two different random states</span></span>
-<span id="cb51-13"><a href="function-approximation-q-learning-with-linear-models.html#cb51-13" tabindex="-1"></a>  two_states <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">2</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb51-14"><a href="function-approximation-q-learning-with-linear-models.html#cb51-14" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb51-15"><a href="function-approximation-q-learning-with-linear-models.html#cb51-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb51-16"><a href="function-approximation-q-learning-with-linear-models.html#cb51-16" tabindex="-1"></a>}</span>
-<span id="cb51-17"><a href="function-approximation-q-learning-with-linear-models.html#cb51-17" tabindex="-1"></a></span>
-<span id="cb51-18"><a href="function-approximation-q-learning-with-linear-models.html#cb51-18" tabindex="-1"></a><span class="co"># Make terminal state absorbing (stays in itself)</span></span>
-<span id="cb51-19"><a href="function-approximation-q-learning-with-linear-models.html#cb51-19" tabindex="-1"></a>transition_model[n_states, , n_states] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb51-20"><a href="function-approximation-q-learning-with-linear-models.html#cb51-20" tabindex="-1"></a></span>
-<span id="cb51-21"><a href="function-approximation-q-learning-with-linear-models.html#cb51-21" tabindex="-1"></a><span class="co"># Set rewards (fixed, not random each time)</span></span>
-<span id="cb51-22"><a href="function-approximation-q-learning-with-linear-models.html#cb51-22" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb51-23"><a href="function-approximation-q-learning-with-linear-models.html#cb51-23" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb51-24"><a href="function-approximation-q-learning-with-linear-models.html#cb51-24" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
-<span id="cb51-25"><a href="function-approximation-q-learning-with-linear-models.html#cb51-25" tabindex="-1"></a>    <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb51-26"><a href="function-approximation-q-learning-with-linear-models.html#cb51-26" tabindex="-1"></a>      <span class="cf">if</span> (transition_model[s, a, s_prime] <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb51-27"><a href="function-approximation-q-learning-with-linear-models.html#cb51-27" tabindex="-1"></a>        <span class="cf">if</span> (s_prime <span class="sc">==</span> n_states) {</span>
-<span id="cb51-28"><a href="function-approximation-q-learning-with-linear-models.html#cb51-28" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">1.0</span>, <span class="fl">0.5</span>)</span>
-<span id="cb51-29"><a href="function-approximation-q-learning-with-linear-models.html#cb51-29" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
-<span id="cb51-30"><a href="function-approximation-q-learning-with-linear-models.html#cb51-30" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>), <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb51-31"><a href="function-approximation-q-learning-with-linear-models.html#cb51-31" tabindex="-1"></a>        }</span>
-<span id="cb51-32"><a href="function-approximation-q-learning-with-linear-models.html#cb51-32" tabindex="-1"></a>      }</span>
-<span id="cb51-33"><a href="function-approximation-q-learning-with-linear-models.html#cb51-33" tabindex="-1"></a>    }</span>
-<span id="cb51-34"><a href="function-approximation-q-learning-with-linear-models.html#cb51-34" tabindex="-1"></a>  }</span>
-<span id="cb51-35"><a href="function-approximation-q-learning-with-linear-models.html#cb51-35" tabindex="-1"></a>}</span>
-<span id="cb51-36"><a href="function-approximation-q-learning-with-linear-models.html#cb51-36" tabindex="-1"></a></span>
-<span id="cb51-37"><a href="function-approximation-q-learning-with-linear-models.html#cb51-37" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="function-approximation-q-learning-with-linear-models.html#cb54-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb54-2"><a href="function-approximation-q-learning-with-linear-models.html#cb54-2" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb54-3"><a href="function-approximation-q-learning-with-linear-models.html#cb54-3" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb54-4"><a href="function-approximation-q-learning-with-linear-models.html#cb54-4" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="function-approximation-q-learning-with-linear-models.html#cb54-5" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb54-6"><a href="function-approximation-q-learning-with-linear-models.html#cb54-6" tabindex="-1"></a>  <span class="co"># Action 1: 90% to s+1, 10% to a different random state</span></span>
+<span id="cb54-7"><a href="function-approximation-q-learning-with-linear-models.html#cb54-7" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb54-8"><a href="function-approximation-q-learning-with-linear-models.html#cb54-8" tabindex="-1"></a>  other_states <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n_states, s <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb54-9"><a href="function-approximation-q-learning-with-linear-models.html#cb54-9" tabindex="-1"></a>  random_state <span class="ot">&lt;-</span> <span class="fu">sample</span>(other_states, <span class="dv">1</span>)</span>
+<span id="cb54-10"><a href="function-approximation-q-learning-with-linear-models.html#cb54-10" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, random_state] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb54-11"><a href="function-approximation-q-learning-with-linear-models.html#cb54-11" tabindex="-1"></a>  </span>
+<span id="cb54-12"><a href="function-approximation-q-learning-with-linear-models.html#cb54-12" tabindex="-1"></a>  <span class="co"># Action 2: 80% and 20% to two different random states</span></span>
+<span id="cb54-13"><a href="function-approximation-q-learning-with-linear-models.html#cb54-13" tabindex="-1"></a>  two_states <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">2</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb54-14"><a href="function-approximation-q-learning-with-linear-models.html#cb54-14" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb54-15"><a href="function-approximation-q-learning-with-linear-models.html#cb54-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, two_states[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb54-16"><a href="function-approximation-q-learning-with-linear-models.html#cb54-16" tabindex="-1"></a>}</span>
+<span id="cb54-17"><a href="function-approximation-q-learning-with-linear-models.html#cb54-17" tabindex="-1"></a></span>
+<span id="cb54-18"><a href="function-approximation-q-learning-with-linear-models.html#cb54-18" tabindex="-1"></a><span class="co"># Make terminal state absorbing (stays in itself)</span></span>
+<span id="cb54-19"><a href="function-approximation-q-learning-with-linear-models.html#cb54-19" tabindex="-1"></a>transition_model[n_states, , n_states] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb54-20"><a href="function-approximation-q-learning-with-linear-models.html#cb54-20" tabindex="-1"></a></span>
+<span id="cb54-21"><a href="function-approximation-q-learning-with-linear-models.html#cb54-21" tabindex="-1"></a><span class="co"># Set rewards (fixed, not random each time)</span></span>
+<span id="cb54-22"><a href="function-approximation-q-learning-with-linear-models.html#cb54-22" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb54-23"><a href="function-approximation-q-learning-with-linear-models.html#cb54-23" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb54-24"><a href="function-approximation-q-learning-with-linear-models.html#cb54-24" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
+<span id="cb54-25"><a href="function-approximation-q-learning-with-linear-models.html#cb54-25" tabindex="-1"></a>    <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb54-26"><a href="function-approximation-q-learning-with-linear-models.html#cb54-26" tabindex="-1"></a>      <span class="cf">if</span> (transition_model[s, a, s_prime] <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb54-27"><a href="function-approximation-q-learning-with-linear-models.html#cb54-27" tabindex="-1"></a>        <span class="cf">if</span> (s_prime <span class="sc">==</span> n_states) {</span>
+<span id="cb54-28"><a href="function-approximation-q-learning-with-linear-models.html#cb54-28" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">1.0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb54-29"><a href="function-approximation-q-learning-with-linear-models.html#cb54-29" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb54-30"><a href="function-approximation-q-learning-with-linear-models.html#cb54-30" tabindex="-1"></a>          reward_model[s, a, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(a <span class="sc">==</span> <span class="dv">1</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>), <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb54-31"><a href="function-approximation-q-learning-with-linear-models.html#cb54-31" tabindex="-1"></a>        }</span>
+<span id="cb54-32"><a href="function-approximation-q-learning-with-linear-models.html#cb54-32" tabindex="-1"></a>      }</span>
+<span id="cb54-33"><a href="function-approximation-q-learning-with-linear-models.html#cb54-33" tabindex="-1"></a>    }</span>
+<span id="cb54-34"><a href="function-approximation-q-learning-with-linear-models.html#cb54-34" tabindex="-1"></a>  }</span>
+<span id="cb54-35"><a href="function-approximation-q-learning-with-linear-models.html#cb54-35" tabindex="-1"></a>}</span>
+<span id="cb54-36"><a href="function-approximation-q-learning-with-linear-models.html#cb54-36" tabindex="-1"></a></span>
+<span id="cb54-37"><a href="function-approximation-q-learning-with-linear-models.html#cb54-37" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
 <ul>
 <li><code>transition_model[s, a, s']</code> is the probability of transitioning from state <code>s</code> with action <code>a</code> to next state <code>s'</code>.</li>
 <li><code>reward_model[s, a, s']</code> is the reward received for that transition.</li>
@@ -835,14 +835,14 @@ reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
 <li><strong>Result</strong>: Each row for action 2 correctly sums to 1.0 with exactly two non-zero entries, and they’re guaranteed to be different states.</li>
 </ul></li>
 <li><p><strong>Validation check</strong>:</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="function-approximation-q-learning-with-linear-models.html#cb52-1" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb52-2"><a href="function-approximation-q-learning-with-linear-models.html#cb52-2" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
-<span id="cb52-3"><a href="function-approximation-q-learning-with-linear-models.html#cb52-3" tabindex="-1"></a>    prob_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(transition_model[s, a, ])</span>
-<span id="cb52-4"><a href="function-approximation-q-learning-with-linear-models.html#cb52-4" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">abs</span>(prob_sum <span class="sc">-</span> <span class="fl">1.0</span>) <span class="sc">&gt;</span> <span class="fl">1e-10</span>) {</span>
-<span id="cb52-5"><a href="function-approximation-q-learning-with-linear-models.html#cb52-5" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="fu">sprintf</span>(<span class="st">&quot;State %d, Action %d: probabilities sum to %.4f&quot;</span>, s, a, prob_sum))</span>
-<span id="cb52-6"><a href="function-approximation-q-learning-with-linear-models.html#cb52-6" tabindex="-1"></a>    }</span>
-<span id="cb52-7"><a href="function-approximation-q-learning-with-linear-models.html#cb52-7" tabindex="-1"></a>  }</span>
-<span id="cb52-8"><a href="function-approximation-q-learning-with-linear-models.html#cb52-8" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="function-approximation-q-learning-with-linear-models.html#cb55-1" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb55-2"><a href="function-approximation-q-learning-with-linear-models.html#cb55-2" tabindex="-1"></a>  <span class="cf">for</span> (a <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_actions) {</span>
+<span id="cb55-3"><a href="function-approximation-q-learning-with-linear-models.html#cb55-3" tabindex="-1"></a>    prob_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(transition_model[s, a, ])</span>
+<span id="cb55-4"><a href="function-approximation-q-learning-with-linear-models.html#cb55-4" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">abs</span>(prob_sum <span class="sc">-</span> <span class="fl">1.0</span>) <span class="sc">&gt;</span> <span class="fl">1e-10</span>) {</span>
+<span id="cb55-5"><a href="function-approximation-q-learning-with-linear-models.html#cb55-5" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="fu">sprintf</span>(<span class="st">&quot;State %d, Action %d: probabilities sum to %.4f&quot;</span>, s, a, prob_sum))</span>
+<span id="cb55-6"><a href="function-approximation-q-learning-with-linear-models.html#cb55-6" tabindex="-1"></a>    }</span>
+<span id="cb55-7"><a href="function-approximation-q-learning-with-linear-models.html#cb55-7" tabindex="-1"></a>  }</span>
+<span id="cb55-8"><a href="function-approximation-q-learning-with-linear-models.html#cb55-8" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>Validates that all transition probability rows sum to 1.0 (within numerical tolerance).</li>
 <li>Issues warnings if any row is malformed.</li>
@@ -864,12 +864,12 @@ reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
 </ol>
 <hr />
 <p><strong>Sampling function</strong></p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="function-approximation-q-learning-with-linear-models.html#cb53-1" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
-<span id="cb53-2"><a href="function-approximation-q-learning-with-linear-models.html#cb53-2" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
-<span id="cb53-3"><a href="function-approximation-q-learning-with-linear-models.html#cb53-3" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
-<span id="cb53-4"><a href="function-approximation-q-learning-with-linear-models.html#cb53-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
-<span id="cb53-5"><a href="function-approximation-q-learning-with-linear-models.html#cb53-5" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
-<span id="cb53-6"><a href="function-approximation-q-learning-with-linear-models.html#cb53-6" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="function-approximation-q-learning-with-linear-models.html#cb56-1" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb56-2"><a href="function-approximation-q-learning-with-linear-models.html#cb56-2" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb56-3"><a href="function-approximation-q-learning-with-linear-models.html#cb56-3" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb56-4"><a href="function-approximation-q-learning-with-linear-models.html#cb56-4" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb56-5"><a href="function-approximation-q-learning-with-linear-models.html#cb56-5" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb56-6"><a href="function-approximation-q-learning-with-linear-models.html#cb56-6" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>Given <code>(s, a)</code>, samples <code>s'</code> according to the probability vector <code>probs</code>.</li>
 <li>Returns a list with <code>s_prime</code> and <code>reward = reward_model[s,a,s_prime]</code>.</li>
@@ -878,12 +878,12 @@ reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
 </ul>
 <hr />
 <p><strong>Feature creation (one-hot for (state,action))</strong></p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="function-approximation-q-learning-with-linear-models.html#cb54-1" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
-<span id="cb54-2"><a href="function-approximation-q-learning-with-linear-models.html#cb54-2" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
-<span id="cb54-3"><a href="function-approximation-q-learning-with-linear-models.html#cb54-3" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
-<span id="cb54-4"><a href="function-approximation-q-learning-with-linear-models.html#cb54-4" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb54-5"><a href="function-approximation-q-learning-with-linear-models.html#cb54-5" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
-<span id="cb54-6"><a href="function-approximation-q-learning-with-linear-models.html#cb54-6" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="function-approximation-q-learning-with-linear-models.html#cb57-1" tabindex="-1"></a>create_features <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, n_states, n_actions) {</span>
+<span id="cb57-2"><a href="function-approximation-q-learning-with-linear-models.html#cb57-2" tabindex="-1"></a>  vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_states <span class="sc">*</span> n_actions)</span>
+<span id="cb57-3"><a href="function-approximation-q-learning-with-linear-models.html#cb57-3" tabindex="-1"></a>  index <span class="ot">&lt;-</span> (a <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> n_states <span class="sc">+</span> s</span>
+<span id="cb57-4"><a href="function-approximation-q-learning-with-linear-models.html#cb57-4" tabindex="-1"></a>  vec[index] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb57-5"><a href="function-approximation-q-learning-with-linear-models.html#cb57-5" tabindex="-1"></a>  <span class="fu">return</span>(vec)</span>
+<span id="cb57-6"><a href="function-approximation-q-learning-with-linear-models.html#cb57-6" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li>Creates a one-hot feature vector of length <code>n_states * n_actions = 20</code>.</li>
 <li>The mapping <code>index = (a - 1) * n_states + s</code> organizes features in action blocks: entries 1-10 for action 1 (states 1-10), entries 11-20 for action 2 (states 1-10).</li>
@@ -891,77 +891,77 @@ reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
 </ul>
 <hr />
 <p><strong>Weights and Q-value function</strong></p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="function-approximation-q-learning-with-linear-models.html#cb55-1" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
-<span id="cb55-2"><a href="function-approximation-q-learning-with-linear-models.html#cb55-2" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
-<span id="cb55-3"><a href="function-approximation-q-learning-with-linear-models.html#cb55-3" tabindex="-1"></a></span>
-<span id="cb55-4"><a href="function-approximation-q-learning-with-linear-models.html#cb55-4" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
-<span id="cb55-5"><a href="function-approximation-q-learning-with-linear-models.html#cb55-5" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
-<span id="cb55-6"><a href="function-approximation-q-learning-with-linear-models.html#cb55-6" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
-<span id="cb55-7"><a href="function-approximation-q-learning-with-linear-models.html#cb55-7" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="function-approximation-q-learning-with-linear-models.html#cb58-1" tabindex="-1"></a>n_features <span class="ot">&lt;-</span> n_states <span class="sc">*</span> n_actions</span>
+<span id="cb58-2"><a href="function-approximation-q-learning-with-linear-models.html#cb58-2" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb58-3"><a href="function-approximation-q-learning-with-linear-models.html#cb58-3" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="function-approximation-q-learning-with-linear-models.html#cb58-4" tabindex="-1"></a>q_hat <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a, theta) {</span>
+<span id="cb58-5"><a href="function-approximation-q-learning-with-linear-models.html#cb58-5" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb58-6"><a href="function-approximation-q-learning-with-linear-models.html#cb58-6" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">sum</span>(x <span class="sc">*</span> theta))</span>
+<span id="cb58-7"><a href="function-approximation-q-learning-with-linear-models.html#cb58-7" tabindex="-1"></a>}</span></code></pre></div>
 <ul>
 <li><code>theta</code> holds 20 parameters for the linear approximator; initialized at zeros.</li>
 <li><code>q_hat(s,a,theta)</code> computes Q̂(s,a) = x^T θ. With one-hot <code>x</code>, this returns the single <code>theta</code> entry corresponding to <code>(s,a)</code>.</li>
 </ul>
 <hr />
 <p><strong>Q-learning with function approximation</strong></p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="function-approximation-q-learning-with-linear-models.html#cb56-1" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
-<span id="cb56-2"><a href="function-approximation-q-learning-with-linear-models.html#cb56-2" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
-<span id="cb56-3"><a href="function-approximation-q-learning-with-linear-models.html#cb56-3" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb56-4"><a href="function-approximation-q-learning-with-linear-models.html#cb56-4" tabindex="-1"></a>  </span>
-<span id="cb56-5"><a href="function-approximation-q-learning-with-linear-models.html#cb56-5" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb56-6"><a href="function-approximation-q-learning-with-linear-models.html#cb56-6" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
-<span id="cb56-7"><a href="function-approximation-q-learning-with-linear-models.html#cb56-7" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb56-8"><a href="function-approximation-q-learning-with-linear-models.html#cb56-8" tabindex="-1"></a>    step_count <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb56-9"><a href="function-approximation-q-learning-with-linear-models.html#cb56-9" tabindex="-1"></a>    max_steps <span class="ot">&lt;-</span> <span class="dv">1000</span>  <span class="co"># Prevent infinite loops</span></span>
-<span id="cb56-10"><a href="function-approximation-q-learning-with-linear-models.html#cb56-10" tabindex="-1"></a>    </span>
-<span id="cb56-11"><a href="function-approximation-q-learning-with-linear-models.html#cb56-11" tabindex="-1"></a>    <span class="cf">while</span> (step_count <span class="sc">&lt;</span> max_steps) {</span>
-<span id="cb56-12"><a href="function-approximation-q-learning-with-linear-models.html#cb56-12" tabindex="-1"></a>      step_count <span class="ot">&lt;-</span> step_count <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb56-13"><a href="function-approximation-q-learning-with-linear-models.html#cb56-13" tabindex="-1"></a>      </span>
-<span id="cb56-14"><a href="function-approximation-q-learning-with-linear-models.html#cb56-14" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
-<span id="cb56-15"><a href="function-approximation-q-learning-with-linear-models.html#cb56-15" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
-<span id="cb56-16"><a href="function-approximation-q-learning-with-linear-models.html#cb56-16" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
-<span id="cb56-17"><a href="function-approximation-q-learning-with-linear-models.html#cb56-17" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb56-18"><a href="function-approximation-q-learning-with-linear-models.html#cb56-18" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
-<span id="cb56-19"><a href="function-approximation-q-learning-with-linear-models.html#cb56-19" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
-<span id="cb56-20"><a href="function-approximation-q-learning-with-linear-models.html#cb56-20" tabindex="-1"></a>      }</span>
-<span id="cb56-21"><a href="function-approximation-q-learning-with-linear-models.html#cb56-21" tabindex="-1"></a>      </span>
-<span id="cb56-22"><a href="function-approximation-q-learning-with-linear-models.html#cb56-22" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb56-23"><a href="function-approximation-q-learning-with-linear-models.html#cb56-23" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
-<span id="cb56-24"><a href="function-approximation-q-learning-with-linear-models.html#cb56-24" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
-<span id="cb56-25"><a href="function-approximation-q-learning-with-linear-models.html#cb56-25" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
-<span id="cb56-26"><a href="function-approximation-q-learning-with-linear-models.html#cb56-26" tabindex="-1"></a>      </span>
-<span id="cb56-27"><a href="function-approximation-q-learning-with-linear-models.html#cb56-27" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
-<span id="cb56-28"><a href="function-approximation-q-learning-with-linear-models.html#cb56-28" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
-<span id="cb56-29"><a href="function-approximation-q-learning-with-linear-models.html#cb56-29" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) {</span>
-<span id="cb56-30"><a href="function-approximation-q-learning-with-linear-models.html#cb56-30" tabindex="-1"></a>        <span class="dv">0</span></span>
-<span id="cb56-31"><a href="function-approximation-q-learning-with-linear-models.html#cb56-31" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb56-32"><a href="function-approximation-q-learning-with-linear-models.html#cb56-32" tabindex="-1"></a>        <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
-<span id="cb56-33"><a href="function-approximation-q-learning-with-linear-models.html#cb56-33" tabindex="-1"></a>      }</span>
-<span id="cb56-34"><a href="function-approximation-q-learning-with-linear-models.html#cb56-34" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
-<span id="cb56-35"><a href="function-approximation-q-learning-with-linear-models.html#cb56-35" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
-<span id="cb56-36"><a href="function-approximation-q-learning-with-linear-models.html#cb56-36" tabindex="-1"></a>      </span>
-<span id="cb56-37"><a href="function-approximation-q-learning-with-linear-models.html#cb56-37" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
-<span id="cb56-38"><a href="function-approximation-q-learning-with-linear-models.html#cb56-38" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
-<span id="cb56-39"><a href="function-approximation-q-learning-with-linear-models.html#cb56-39" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
-<span id="cb56-40"><a href="function-approximation-q-learning-with-linear-models.html#cb56-40" tabindex="-1"></a>      </span>
-<span id="cb56-41"><a href="function-approximation-q-learning-with-linear-models.html#cb56-41" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
-<span id="cb56-42"><a href="function-approximation-q-learning-with-linear-models.html#cb56-42" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb56-43"><a href="function-approximation-q-learning-with-linear-models.html#cb56-43" tabindex="-1"></a>    }</span>
-<span id="cb56-44"><a href="function-approximation-q-learning-with-linear-models.html#cb56-44" tabindex="-1"></a>    </span>
-<span id="cb56-45"><a href="function-approximation-q-learning-with-linear-models.html#cb56-45" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
-<span id="cb56-46"><a href="function-approximation-q-learning-with-linear-models.html#cb56-46" tabindex="-1"></a>  }</span>
-<span id="cb56-47"><a href="function-approximation-q-learning-with-linear-models.html#cb56-47" tabindex="-1"></a>  </span>
-<span id="cb56-48"><a href="function-approximation-q-learning-with-linear-models.html#cb56-48" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
-<span id="cb56-49"><a href="function-approximation-q-learning-with-linear-models.html#cb56-49" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
-<span id="cb56-50"><a href="function-approximation-q-learning-with-linear-models.html#cb56-50" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) {</span>
-<span id="cb56-51"><a href="function-approximation-q-learning-with-linear-models.html#cb56-51" tabindex="-1"></a>      <span class="cn">NA</span></span>
-<span id="cb56-52"><a href="function-approximation-q-learning-with-linear-models.html#cb56-52" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb56-53"><a href="function-approximation-q-learning-with-linear-models.html#cb56-53" tabindex="-1"></a>      <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
-<span id="cb56-54"><a href="function-approximation-q-learning-with-linear-models.html#cb56-54" tabindex="-1"></a>    }</span>
-<span id="cb56-55"><a href="function-approximation-q-learning-with-linear-models.html#cb56-55" tabindex="-1"></a>  })</span>
-<span id="cb56-56"><a href="function-approximation-q-learning-with-linear-models.html#cb56-56" tabindex="-1"></a>  </span>
-<span id="cb56-57"><a href="function-approximation-q-learning-with-linear-models.html#cb56-57" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
-<span id="cb56-58"><a href="function-approximation-q-learning-with-linear-models.html#cb56-58" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="function-approximation-q-learning-with-linear-models.html#cb59-1" tabindex="-1"></a>q_learning_fa <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb59-2"><a href="function-approximation-q-learning-with-linear-models.html#cb59-2" tabindex="-1"></a>  theta <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, n_features)</span>
+<span id="cb59-3"><a href="function-approximation-q-learning-with-linear-models.html#cb59-3" tabindex="-1"></a>  rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb59-4"><a href="function-approximation-q-learning-with-linear-models.html#cb59-4" tabindex="-1"></a>  </span>
+<span id="cb59-5"><a href="function-approximation-q-learning-with-linear-models.html#cb59-5" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb59-6"><a href="function-approximation-q-learning-with-linear-models.html#cb59-6" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span>)</span>
+<span id="cb59-7"><a href="function-approximation-q-learning-with-linear-models.html#cb59-7" tabindex="-1"></a>    episode_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb59-8"><a href="function-approximation-q-learning-with-linear-models.html#cb59-8" tabindex="-1"></a>    step_count <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb59-9"><a href="function-approximation-q-learning-with-linear-models.html#cb59-9" tabindex="-1"></a>    max_steps <span class="ot">&lt;-</span> <span class="dv">1000</span>  <span class="co"># Prevent infinite loops</span></span>
+<span id="cb59-10"><a href="function-approximation-q-learning-with-linear-models.html#cb59-10" tabindex="-1"></a>    </span>
+<span id="cb59-11"><a href="function-approximation-q-learning-with-linear-models.html#cb59-11" tabindex="-1"></a>    <span class="cf">while</span> (step_count <span class="sc">&lt;</span> max_steps) {</span>
+<span id="cb59-12"><a href="function-approximation-q-learning-with-linear-models.html#cb59-12" tabindex="-1"></a>      step_count <span class="ot">&lt;-</span> step_count <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb59-13"><a href="function-approximation-q-learning-with-linear-models.html#cb59-13" tabindex="-1"></a>      </span>
+<span id="cb59-14"><a href="function-approximation-q-learning-with-linear-models.html#cb59-14" tabindex="-1"></a>      <span class="co"># Epsilon-greedy action selection</span></span>
+<span id="cb59-15"><a href="function-approximation-q-learning-with-linear-models.html#cb59-15" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb59-16"><a href="function-approximation-q-learning-with-linear-models.html#cb59-16" tabindex="-1"></a>        <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb59-17"><a href="function-approximation-q-learning-with-linear-models.html#cb59-17" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb59-18"><a href="function-approximation-q-learning-with-linear-models.html#cb59-18" tabindex="-1"></a>        q_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s, a_, theta))</span>
+<span id="cb59-19"><a href="function-approximation-q-learning-with-linear-models.html#cb59-19" tabindex="-1"></a>        <span class="fu">which.max</span>(q_vals)</span>
+<span id="cb59-20"><a href="function-approximation-q-learning-with-linear-models.html#cb59-20" tabindex="-1"></a>      }</span>
+<span id="cb59-21"><a href="function-approximation-q-learning-with-linear-models.html#cb59-21" tabindex="-1"></a>      </span>
+<span id="cb59-22"><a href="function-approximation-q-learning-with-linear-models.html#cb59-22" tabindex="-1"></a>      out <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb59-23"><a href="function-approximation-q-learning-with-linear-models.html#cb59-23" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> out<span class="sc">$</span>s_prime</span>
+<span id="cb59-24"><a href="function-approximation-q-learning-with-linear-models.html#cb59-24" tabindex="-1"></a>      r <span class="ot">&lt;-</span> out<span class="sc">$</span>reward</span>
+<span id="cb59-25"><a href="function-approximation-q-learning-with-linear-models.html#cb59-25" tabindex="-1"></a>      episode_reward <span class="ot">&lt;-</span> episode_reward <span class="sc">+</span> r</span>
+<span id="cb59-26"><a href="function-approximation-q-learning-with-linear-models.html#cb59-26" tabindex="-1"></a>      </span>
+<span id="cb59-27"><a href="function-approximation-q-learning-with-linear-models.html#cb59-27" tabindex="-1"></a>      <span class="co"># Compute TD target and error</span></span>
+<span id="cb59-28"><a href="function-approximation-q-learning-with-linear-models.html#cb59-28" tabindex="-1"></a>      q_current <span class="ot">&lt;-</span> <span class="fu">q_hat</span>(s, a, theta)</span>
+<span id="cb59-29"><a href="function-approximation-q-learning-with-linear-models.html#cb59-29" tabindex="-1"></a>      q_next <span class="ot">&lt;-</span> <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) {</span>
+<span id="cb59-30"><a href="function-approximation-q-learning-with-linear-models.html#cb59-30" tabindex="-1"></a>        <span class="dv">0</span></span>
+<span id="cb59-31"><a href="function-approximation-q-learning-with-linear-models.html#cb59-31" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb59-32"><a href="function-approximation-q-learning-with-linear-models.html#cb59-32" tabindex="-1"></a>        <span class="fu">max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a_) <span class="fu">q_hat</span>(s_prime, a_, theta)))</span>
+<span id="cb59-33"><a href="function-approximation-q-learning-with-linear-models.html#cb59-33" tabindex="-1"></a>      }</span>
+<span id="cb59-34"><a href="function-approximation-q-learning-with-linear-models.html#cb59-34" tabindex="-1"></a>      target <span class="ot">&lt;-</span> r <span class="sc">+</span> gamma <span class="sc">*</span> q_next</span>
+<span id="cb59-35"><a href="function-approximation-q-learning-with-linear-models.html#cb59-35" tabindex="-1"></a>      error <span class="ot">&lt;-</span> target <span class="sc">-</span> q_current</span>
+<span id="cb59-36"><a href="function-approximation-q-learning-with-linear-models.html#cb59-36" tabindex="-1"></a>      </span>
+<span id="cb59-37"><a href="function-approximation-q-learning-with-linear-models.html#cb59-37" tabindex="-1"></a>      <span class="co"># Gradient update</span></span>
+<span id="cb59-38"><a href="function-approximation-q-learning-with-linear-models.html#cb59-38" tabindex="-1"></a>      x <span class="ot">&lt;-</span> <span class="fu">create_features</span>(s, a, n_states, n_actions)</span>
+<span id="cb59-39"><a href="function-approximation-q-learning-with-linear-models.html#cb59-39" tabindex="-1"></a>      theta <span class="ot">&lt;-</span> theta <span class="sc">+</span> alpha <span class="sc">*</span> error <span class="sc">*</span> x</span>
+<span id="cb59-40"><a href="function-approximation-q-learning-with-linear-models.html#cb59-40" tabindex="-1"></a>      </span>
+<span id="cb59-41"><a href="function-approximation-q-learning-with-linear-models.html#cb59-41" tabindex="-1"></a>      <span class="cf">if</span> (s_prime <span class="sc">==</span> terminal_state) <span class="cf">break</span></span>
+<span id="cb59-42"><a href="function-approximation-q-learning-with-linear-models.html#cb59-42" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb59-43"><a href="function-approximation-q-learning-with-linear-models.html#cb59-43" tabindex="-1"></a>    }</span>
+<span id="cb59-44"><a href="function-approximation-q-learning-with-linear-models.html#cb59-44" tabindex="-1"></a>    </span>
+<span id="cb59-45"><a href="function-approximation-q-learning-with-linear-models.html#cb59-45" tabindex="-1"></a>    rewards[ep] <span class="ot">&lt;-</span> episode_reward</span>
+<span id="cb59-46"><a href="function-approximation-q-learning-with-linear-models.html#cb59-46" tabindex="-1"></a>  }</span>
+<span id="cb59-47"><a href="function-approximation-q-learning-with-linear-models.html#cb59-47" tabindex="-1"></a>  </span>
+<span id="cb59-48"><a href="function-approximation-q-learning-with-linear-models.html#cb59-48" tabindex="-1"></a>  <span class="co"># Derive policy</span></span>
+<span id="cb59-49"><a href="function-approximation-q-learning-with-linear-models.html#cb59-49" tabindex="-1"></a>  policy <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="cf">function</span>(s) {</span>
+<span id="cb59-50"><a href="function-approximation-q-learning-with-linear-models.html#cb59-50" tabindex="-1"></a>    <span class="cf">if</span> (s <span class="sc">==</span> terminal_state) {</span>
+<span id="cb59-51"><a href="function-approximation-q-learning-with-linear-models.html#cb59-51" tabindex="-1"></a>      <span class="cn">NA</span></span>
+<span id="cb59-52"><a href="function-approximation-q-learning-with-linear-models.html#cb59-52" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb59-53"><a href="function-approximation-q-learning-with-linear-models.html#cb59-53" tabindex="-1"></a>      <span class="fu">which.max</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="cf">function</span>(a) <span class="fu">q_hat</span>(s, a, theta)))</span>
+<span id="cb59-54"><a href="function-approximation-q-learning-with-linear-models.html#cb59-54" tabindex="-1"></a>    }</span>
+<span id="cb59-55"><a href="function-approximation-q-learning-with-linear-models.html#cb59-55" tabindex="-1"></a>  })</span>
+<span id="cb59-56"><a href="function-approximation-q-learning-with-linear-models.html#cb59-56" tabindex="-1"></a>  </span>
+<span id="cb59-57"><a href="function-approximation-q-learning-with-linear-models.html#cb59-57" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">policy =</span> policy, <span class="at">rewards =</span> rewards)</span>
+<span id="cb59-58"><a href="function-approximation-q-learning-with-linear-models.html#cb59-58" tabindex="-1"></a>}</span></code></pre></div>
 <p><strong>Algorithm details</strong>:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Initialization</strong>: New <code>theta</code> vector (zeros) and <code>rewards</code> vector to store total reward per episode.</p></li>
@@ -994,51 +994,51 @@ reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
 </ol>
 <hr />
 <p><strong>Running the algorithm</strong></p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="function-approximation-q-learning-with-linear-models.html#cb58-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb58-2"><a href="function-approximation-q-learning-with-linear-models.html#cb58-2" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
-<span id="cb58-3"><a href="function-approximation-q-learning-with-linear-models.html#cb58-3" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
-<span id="cb58-4"><a href="function-approximation-q-learning-with-linear-models.html#cb58-4" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="function-approximation-q-learning-with-linear-models.html#cb61-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb61-2"><a href="function-approximation-q-learning-with-linear-models.html#cb61-2" tabindex="-1"></a>fa_result <span class="ot">&lt;-</span> <span class="fu">q_learning_fa</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>)</span>
+<span id="cb61-3"><a href="function-approximation-q-learning-with-linear-models.html#cb61-3" tabindex="-1"></a>fa_policy <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>policy</span>
+<span id="cb61-4"><a href="function-approximation-q-learning-with-linear-models.html#cb61-4" tabindex="-1"></a>fa_rewards <span class="ot">&lt;-</span> fa_result<span class="sc">$</span>rewards</span></code></pre></div>
 <ul>
 <li>Trains for 1000 episodes using learning rate <code>alpha=0.1</code> and exploration rate <code>epsilon=0.1</code>.</li>
 <li>Returns learned <code>policy</code>, final <code>theta</code> weights, and episode rewards.</li>
 </ul>
 <hr />
 <p><strong>Visualization</strong></p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="function-approximation-q-learning-with-linear-models.html#cb59-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb59-2"><a href="function-approximation-q-learning-with-linear-models.html#cb59-2" tabindex="-1"></a></span>
-<span id="cb59-3"><a href="function-approximation-q-learning-with-linear-models.html#cb59-3" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb59-4"><a href="function-approximation-q-learning-with-linear-models.html#cb59-4" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
-<span id="cb59-5"><a href="function-approximation-q-learning-with-linear-models.html#cb59-5" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
-<span id="cb59-6"><a href="function-approximation-q-learning-with-linear-models.html#cb59-6" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
-<span id="cb59-7"><a href="function-approximation-q-learning-with-linear-models.html#cb59-7" tabindex="-1"></a>)</span>
-<span id="cb59-8"><a href="function-approximation-q-learning-with-linear-models.html#cb59-8" tabindex="-1"></a></span>
-<span id="cb59-9"><a href="function-approximation-q-learning-with-linear-models.html#cb59-9" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df[<span class="sc">!</span><span class="fu">is.na</span>(policy_df<span class="sc">$</span>Policy), ], </span>
-<span id="cb59-10"><a href="function-approximation-q-learning-with-linear-models.html#cb59-10" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
-<span id="cb59-11"><a href="function-approximation-q-learning-with-linear-models.html#cb59-11" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb59-12"><a href="function-approximation-q-learning-with-linear-models.html#cb59-12" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb59-13"><a href="function-approximation-q-learning-with-linear-models.html#cb59-13" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb59-14"><a href="function-approximation-q-learning-with-linear-models.html#cb59-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, </span>
-<span id="cb59-15"><a href="function-approximation-q-learning-with-linear-models.html#cb59-15" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, </span>
-<span id="cb59-16"><a href="function-approximation-q-learning-with-linear-models.html#cb59-16" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
-<span id="cb59-17"><a href="function-approximation-q-learning-with-linear-models.html#cb59-17" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
-<span id="cb59-18"><a href="function-approximation-q-learning-with-linear-models.html#cb59-18" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb59-19"><a href="function-approximation-q-learning-with-linear-models.html#cb59-19" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
-<span id="cb59-20"><a href="function-approximation-q-learning-with-linear-models.html#cb59-20" tabindex="-1"></a></span>
-<span id="cb59-21"><a href="function-approximation-q-learning-with-linear-models.html#cb59-21" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb59-22"><a href="function-approximation-q-learning-with-linear-models.html#cb59-22" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
-<span id="cb59-23"><a href="function-approximation-q-learning-with-linear-models.html#cb59-23" tabindex="-1"></a>  <span class="at">CumulativeReward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
-<span id="cb59-24"><a href="function-approximation-q-learning-with-linear-models.html#cb59-24" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
-<span id="cb59-25"><a href="function-approximation-q-learning-with-linear-models.html#cb59-25" tabindex="-1"></a>)</span>
-<span id="cb59-26"><a href="function-approximation-q-learning-with-linear-models.html#cb59-26" tabindex="-1"></a></span>
-<span id="cb59-27"><a href="function-approximation-q-learning-with-linear-models.html#cb59-27" tabindex="-1"></a>reward_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reward_df, <span class="fu">aes</span>(<span class="at">x =</span> Episode, <span class="at">y =</span> CumulativeReward)) <span class="sc">+</span></span>
-<span id="cb59-28"><a href="function-approximation-q-learning-with-linear-models.html#cb59-28" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb59-29"><a href="function-approximation-q-learning-with-linear-models.html#cb59-29" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb59-30"><a href="function-approximation-q-learning-with-linear-models.html#cb59-30" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cumulative Rewards Over Episodes&quot;</span>,</span>
-<span id="cb59-31"><a href="function-approximation-q-learning-with-linear-models.html#cb59-31" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
-<span id="cb59-32"><a href="function-approximation-q-learning-with-linear-models.html#cb59-32" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Cumulative Reward&quot;</span>)</span>
-<span id="cb59-33"><a href="function-approximation-q-learning-with-linear-models.html#cb59-33" tabindex="-1"></a></span>
-<span id="cb59-34"><a href="function-approximation-q-learning-with-linear-models.html#cb59-34" tabindex="-1"></a><span class="fu">print</span>(policy_plot)</span>
-<span id="cb59-35"><a href="function-approximation-q-learning-with-linear-models.html#cb59-35" tabindex="-1"></a><span class="fu">print</span>(reward_plot)</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="function-approximation-q-learning-with-linear-models.html#cb62-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb62-2"><a href="function-approximation-q-learning-with-linear-models.html#cb62-2" tabindex="-1"></a></span>
+<span id="cb62-3"><a href="function-approximation-q-learning-with-linear-models.html#cb62-3" tabindex="-1"></a>policy_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb62-4"><a href="function-approximation-q-learning-with-linear-models.html#cb62-4" tabindex="-1"></a>  <span class="at">State =</span> <span class="dv">1</span><span class="sc">:</span>n_states,</span>
+<span id="cb62-5"><a href="function-approximation-q-learning-with-linear-models.html#cb62-5" tabindex="-1"></a>  <span class="at">Policy =</span> fa_policy,</span>
+<span id="cb62-6"><a href="function-approximation-q-learning-with-linear-models.html#cb62-6" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb62-7"><a href="function-approximation-q-learning-with-linear-models.html#cb62-7" tabindex="-1"></a>)</span>
+<span id="cb62-8"><a href="function-approximation-q-learning-with-linear-models.html#cb62-8" tabindex="-1"></a></span>
+<span id="cb62-9"><a href="function-approximation-q-learning-with-linear-models.html#cb62-9" tabindex="-1"></a>policy_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(policy_df[<span class="sc">!</span><span class="fu">is.na</span>(policy_df<span class="sc">$</span>Policy), ], </span>
+<span id="cb62-10"><a href="function-approximation-q-learning-with-linear-models.html#cb62-10" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x =</span> State, <span class="at">y =</span> Policy)) <span class="sc">+</span></span>
+<span id="cb62-11"><a href="function-approximation-q-learning-with-linear-models.html#cb62-11" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb62-12"><a href="function-approximation-q-learning-with-linear-models.html#cb62-12" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb62-13"><a href="function-approximation-q-learning-with-linear-models.html#cb62-13" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb62-14"><a href="function-approximation-q-learning-with-linear-models.html#cb62-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Policy from Q-Learning with Function Approximation&quot;</span>, </span>
+<span id="cb62-15"><a href="function-approximation-q-learning-with-linear-models.html#cb62-15" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;State&quot;</span>, </span>
+<span id="cb62-16"><a href="function-approximation-q-learning-with-linear-models.html#cb62-16" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Action&quot;</span>) <span class="sc">+</span></span>
+<span id="cb62-17"><a href="function-approximation-q-learning-with-linear-models.html#cb62-17" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_states) <span class="sc">+</span></span>
+<span id="cb62-18"><a href="function-approximation-q-learning-with-linear-models.html#cb62-18" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>n_actions, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Action 1&quot;</span>, <span class="st">&quot;Action 2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb62-19"><a href="function-approximation-q-learning-with-linear-models.html#cb62-19" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb62-20"><a href="function-approximation-q-learning-with-linear-models.html#cb62-20" tabindex="-1"></a></span>
+<span id="cb62-21"><a href="function-approximation-q-learning-with-linear-models.html#cb62-21" tabindex="-1"></a>reward_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb62-22"><a href="function-approximation-q-learning-with-linear-models.html#cb62-22" tabindex="-1"></a>  <span class="at">Episode =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb62-23"><a href="function-approximation-q-learning-with-linear-models.html#cb62-23" tabindex="-1"></a>  <span class="at">CumulativeReward =</span> <span class="fu">cumsum</span>(fa_rewards),</span>
+<span id="cb62-24"><a href="function-approximation-q-learning-with-linear-models.html#cb62-24" tabindex="-1"></a>  <span class="at">Algorithm =</span> <span class="st">&quot;Q-Learning FA&quot;</span></span>
+<span id="cb62-25"><a href="function-approximation-q-learning-with-linear-models.html#cb62-25" tabindex="-1"></a>)</span>
+<span id="cb62-26"><a href="function-approximation-q-learning-with-linear-models.html#cb62-26" tabindex="-1"></a></span>
+<span id="cb62-27"><a href="function-approximation-q-learning-with-linear-models.html#cb62-27" tabindex="-1"></a>reward_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reward_df, <span class="fu">aes</span>(<span class="at">x =</span> Episode, <span class="at">y =</span> CumulativeReward)) <span class="sc">+</span></span>
+<span id="cb62-28"><a href="function-approximation-q-learning-with-linear-models.html#cb62-28" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;deepskyblue&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb62-29"><a href="function-approximation-q-learning-with-linear-models.html#cb62-29" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb62-30"><a href="function-approximation-q-learning-with-linear-models.html#cb62-30" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cumulative Rewards Over Episodes&quot;</span>,</span>
+<span id="cb62-31"><a href="function-approximation-q-learning-with-linear-models.html#cb62-31" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>,</span>
+<span id="cb62-32"><a href="function-approximation-q-learning-with-linear-models.html#cb62-32" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Cumulative Reward&quot;</span>)</span>
+<span id="cb62-33"><a href="function-approximation-q-learning-with-linear-models.html#cb62-33" tabindex="-1"></a></span>
+<span id="cb62-34"><a href="function-approximation-q-learning-with-linear-models.html#cb62-34" tabindex="-1"></a><span class="fu">print</span>(policy_plot)</span>
+<span id="cb62-35"><a href="function-approximation-q-learning-with-linear-models.html#cb62-35" tabindex="-1"></a><span class="fu">print</span>(reward_plot)</span></code></pre></div>
 <p><strong>Visualization improvements</strong>:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Policy plot</strong>:</p>
@@ -1054,14 +1054,14 @@ reward at the terminal state (state 10) and action 2 yielding 0.5.</p>
 <li>Both plots are explicitly printed with <code>print()</code>.</li>
 </ul></li>
 <li><p><strong>Summary statistics (NEW)</strong>:</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="function-approximation-q-learning-with-linear-models.html#cb60-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Policy Summary:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb60-2"><a href="function-approximation-q-learning-with-linear-models.html#cb60-2" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(fa_policy, <span class="at">useNA =</span> <span class="st">&quot;ifany&quot;</span>))</span>
-<span id="cb60-3"><a href="function-approximation-q-learning-with-linear-models.html#cb60-3" tabindex="-1"></a></span>
-<span id="cb60-4"><a href="function-approximation-q-learning-with-linear-models.html#cb60-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Final 10 Episode Rewards:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb60-5"><a href="function-approximation-q-learning-with-linear-models.html#cb60-5" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">10</span>))</span>
-<span id="cb60-6"><a href="function-approximation-q-learning-with-linear-models.html#cb60-6" tabindex="-1"></a></span>
-<span id="cb60-7"><a href="function-approximation-q-learning-with-linear-models.html#cb60-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Mean Episode Reward (last 100 episodes):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb60-8"><a href="function-approximation-q-learning-with-linear-models.html#cb60-8" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">mean</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">100</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="function-approximation-q-learning-with-linear-models.html#cb63-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Policy Summary:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb63-2"><a href="function-approximation-q-learning-with-linear-models.html#cb63-2" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(fa_policy, <span class="at">useNA =</span> <span class="st">&quot;ifany&quot;</span>))</span>
+<span id="cb63-3"><a href="function-approximation-q-learning-with-linear-models.html#cb63-3" tabindex="-1"></a></span>
+<span id="cb63-4"><a href="function-approximation-q-learning-with-linear-models.html#cb63-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Final 10 Episode Rewards:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb63-5"><a href="function-approximation-q-learning-with-linear-models.html#cb63-5" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">10</span>))</span>
+<span id="cb63-6"><a href="function-approximation-q-learning-with-linear-models.html#cb63-6" tabindex="-1"></a></span>
+<span id="cb63-7"><a href="function-approximation-q-learning-with-linear-models.html#cb63-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Mean Episode Reward (last 100 episodes):</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb63-8"><a href="function-approximation-q-learning-with-linear-models.html#cb63-8" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">mean</span>(<span class="fu">tail</span>(fa_rewards, <span class="dv">100</span>)))</span></code></pre></div>
 <ul>
 <li>Provides quantitative analysis of learned policy.</li>
 <li>Shows distribution of actions across states.</li>
