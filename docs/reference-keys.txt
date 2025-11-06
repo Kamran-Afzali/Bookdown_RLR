@@ -1,4 +1,5 @@
 tab:unnamed-chunk-43
+tab:unnamed-chunk-57
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
