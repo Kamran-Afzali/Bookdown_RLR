@@ -77,7 +77,7 @@ Coarse coding represents the state space using overlapping binary features, wher
 
 The degree of overlap controls the smoothness of the learned function. Greater overlap produces broader generalization but reduces discrimination. The optimal balance depends on the problem structure and the complexity of the target function. Coarse coding mimics biological neural representations, where individual neurons respond to ranges of stimuli with overlapping tuning curves.
 
-```r
+```{r}
 # Load required libraries
 library(ggplot2)
 library(ggforce)
@@ -198,12 +198,33 @@ For any given state, exactly one tile from each tiling will be active, ensuring 
 
 Tile coding's rectangular structure creates asymmetric generalization that aligns with coordinate axes. This asymmetry is often desirable in control problems where different state dimensions represent distinct physical quantities with different units and scaling properties. A robot's position and velocity, for example, should generalize differently along each dimension.
 
-```r
+```{r}
 # Tile Coding Implementation
 create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim) {
+  state_low <- as.numeric(state_low)
+  state_high <- as.numeric(state_high)
+  tiles_per_dim <- as.integer(tiles_per_dim)
+  
+  if (length(state_low) != length(state_high)) {
+    stop("state_low and state_high must have same length")
+  }
+  if (any(tiles_per_dim <= 0)) {
+    stop("tiles_per_dim must be positive integers")
+  }
+  if (num_tilings <= 0) {
+    stop("num_tilings must be positive")
+  }
+  if (any(state_low >= state_high)) {
+    stop("Each element of state_low must be < state_high")
+  }
+  
   state_dims <- length(state_low)
   state_range <- state_high - state_low
   tile_widths <- state_range / tiles_per_dim
+  
+  if (any(tile_widths <= 0)) {
+    stop("Invalid state range or tiles_per_dim leading to non-positive tile width")
+  }
   
   # Generate offsets for each tiling
   offsets <- array(0, dim = c(num_tilings, state_dims))
@@ -214,16 +235,23 @@ create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim)
   # Function to get indices of active tiles for given state
   encode <- function(state) {
     state_vec <- as.numeric(state)
-    active_tiles <- list()
+    if (length(state_vec) != state_dims) {
+      stop("State dimension mismatch")
+    }
+    if (any(!is.finite(state_vec))) {
+      stop("State contains non-finite values")
+    }
+    
+    active_tiles <- vector("list", num_tilings)
     
     for (t in 1:num_tilings) {
       # Apply offset and compute tile indices
       offset_state <- state_vec - state_low + offsets[t, ]
       tile_indices <- floor(offset_state / tile_widths)
       
-      # Clip to valid range
+      # Clip to valid range [0, tiles_per_dim - 1]
       tile_indices <- pmax(0, pmin(tile_indices, tiles_per_dim - 1))
-      active_tiles[[t]] <- tile_indices
+      active_tiles[[t]] <- as.integer(tile_indices)
     }
     return(active_tiles)
   }
@@ -234,27 +262,32 @@ create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim)
       stop("Visualization only supports 2D state spaces")
     }
     
+    # Fix: extract scalar limits for x and y
+    xlims <- c(state_low[1], state_high[1])
+    ylims <- c(state_low[2], state_high[2])
+    
     # Create base plot
     p <- ggplot() +
-      coord_fixed(xlim = state_low, ylim = state_high, expand = FALSE)
+      coord_fixed(xlim = xlims, ylim = ylims, expand = FALSE)
     
     # Generate colors for tilings
-    colors <- RColorBrewer::brewer.pal(min(num_tilings, 8), "Set1")
-    if (num_tilings > 8) colors <- rep(colors, ceiling(num_tilings / 8))
+    colors <- if (num_tilings <= 8) {
+      RColorBrewer::brewer.pal(num_tilings, "Set1")
+    } else {
+      rep(RColorBrewer::brewer.pal(8, "Set1"), length.out = num_tilings)
+    }
     
     # Draw grid lines for each tiling
     for (t in 1:num_tilings) {
       color <- colors[t]
       
       # Vertical lines
-      x_lines <- seq(
-        state_low[1] - offsets[t, 1],
-        state_high[1] + tile_widths[1],
-        by = tile_widths[1]
-      )
+      x_start <- state_low[1] - offsets[t, 1]
+      x_end   <- state_high[1] + tile_widths[1]
+      x_lines <- seq(x_start, x_end, by = tile_widths[1])
       valid_x <- x_lines[x_lines >= state_low[1] & x_lines <= state_high[1]]
       
-      if (length(valid_x) > 0) {
+      if (length(valid_x) > 0 && all(is.finite(valid_x))) {
         p <- p + geom_vline(
           xintercept = valid_x, 
           color = color, 
@@ -265,14 +298,12 @@ create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim)
       }
       
       # Horizontal lines
-      y_lines <- seq(
-        state_low[2] - offsets[t, 2],
-        state_high[2] + tile_widths[2],
-        by = tile_widths[2]
-      )
+      y_start <- state_low[2] - offsets[t, 2]
+      y_end   <- state_high[2] + tile_widths[2]
+      y_lines <- seq(y_start, y_end, by = tile_widths[2])
       valid_y <- y_lines[y_lines >= state_low[2] & y_lines <= state_high[2]]
       
-      if (length(valid_y) > 0) {
+      if (length(valid_y) > 0 && all(is.finite(valid_y))) {
         p <- p + geom_hline(
           yintercept = valid_y, 
           color = color, 
@@ -285,31 +316,42 @@ create_tile_coder <- function(state_low, state_high, num_tilings, tiles_per_dim)
     
     # Highlight active tiles for query state
     if (!is.null(query_state)) {
+      query_state <- as.numeric(query_state)
+      if (length(query_state) != 2 || any(!is.finite(query_state))) {
+        stop("query_state must be a 2D finite numeric vector")
+      }
+      
       active_tiles_indices <- encode(query_state)
       
+      rect_data_list <- vector("list", num_tilings)
+      
       for (t in 1:num_tilings) {
-        color <- colors[t]
         tile_indices <- active_tiles_indices[[t]]
         
-        # Calculate tile boundaries
-        tile_x <- state_low[1] + tile_indices[1] * tile_widths[1] - offsets[t, 1]
-        tile_y <- state_low[2] + tile_indices[2] * tile_widths[2] - offsets[t, 2]
+        # Reconstruct lower-left corner of tile in world coordinates
+        tile_x <- state_low[1] - offsets[t, 1] + tile_indices[1] * tile_widths[1]
+        tile_y <- state_low[2] - offsets[t, 2] + tile_indices[2] * tile_widths[2]
         
-        # Create rectangle data
-        rect_data <- data.frame(
+        rect_data_list[[t]] <- data.frame(
+          tiling = t,
           xmin = tile_x,
           xmax = tile_x + tile_widths[1],
           ymin = tile_y,
           ymax = tile_y + tile_widths[2]
         )
-        
-        # Add highlighted tile
+      }
+      
+      all_rects <- do.call(rbind, rect_data_list)
+      # Ensure all values are finite
+      if (!all(is.finite(as.matrix(all_rects[, c("xmin", "xmax", "ymin", "ymax")])))) {
+        warning("Non-finite tile coordinates detected; skipping highlighting")
+      } else {
         p <- p + geom_rect(
-          data = rect_data,
+          data = all_rects,
           aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-          fill = color, 
-          alpha = 0.4, 
-          color = color, 
+          fill = colors[all_rects$tiling],
+          alpha = 0.4,
+          color = colors[all_rects$tiling],
           size = 1.2
         )
       }
@@ -374,8 +416,9 @@ The width parameter σ plays a crucial role in controlling the locality of influ
 
 RBF networks possess powerful theoretical properties. They are universal approximators, meaning they can represent any continuous function to arbitrary accuracy given sufficient basis functions. The placement of centers and selection of widths determine the network's effectiveness. Centers can be positioned on regular grids, placed randomly, or adapted during learning using techniques like k-means clustering on experienced states.
 
-```r
+```{r}
 # Load additional libraries for RBF network
+library(ggplot2)
 library(viridis)
 library(RColorBrewer)
 
@@ -386,18 +429,30 @@ create_rbf_network <- function(centers, widths) {
     centers <- as.matrix(centers)
   }
   
+  if (!is.matrix(centers) || ncol(centers) != 2) {
+    stop("centers must be a 2-column matrix or data frame")
+  }
+  
   n_rbf <- nrow(centers)
   
   # Handle scalar or vector widths
   if (length(widths) == 1) {
     widths <- rep(widths, n_rbf)
+  } else if (length(widths) != n_rbf) {
+    stop("length of widths must be 1 or equal to number of centers")
   }
   
   # Function to compute RBF activations for given state
   encode <- function(state) {
     state_vec <- as.numeric(state)
-    distances_sq <- rowSums((centers - matrix(rep(state_vec, n_rbf), 
-                                            nrow = n_rbf, byrow = TRUE))^2)
+    if (length(state_vec) != 2) {
+      stop("State must be 2-dimensional for current implementation")
+    }
+    if (any(!is.finite(state_vec))) {
+      stop("State contains non-finite values")
+    }
+    state_mat <- matrix(rep(state_vec, n_rbf), nrow = n_rbf, byrow = TRUE)
+    distances_sq <- rowSums((centers - state_mat)^2)
     activations <- exp(-distances_sq / (2 * widths^2))
     return(activations)
   }
@@ -406,36 +461,38 @@ create_rbf_network <- function(centers, widths) {
   create_adaptive_centers <- function(state_dims, n_centers, n_samples = 1000, seed = 42) {
     set.seed(seed)
     
-    # Generate random samples from state space
+    # Generate random samples from state space [0, state_dims[1]] x [0, state_dims[2]]
     samples <- data.frame(
       x = runif(n_samples, 0, state_dims[1]),
       y = runif(n_samples, 0, state_dims[2])
     )
     
-    # Simple k-means implementation
-    centers <- samples[sample(nrow(samples), n_centers), ]
+    # Initialize centers randomly
+    centers_df <- samples[sample(nrow(samples), n_centers), , drop = FALSE]
+    centers_mat <- as.matrix(centers_df)
     
     for (iter in 1:50) {
-      # Assign points to closest centers
-      distances <- as.matrix(dist(rbind(centers, samples)))
-      distances <- distances[(n_centers + 1):(n_centers + n_samples), 1:n_centers]
-      assignments <- apply(distances, 1, which.min)
+      # Compute distances from all samples to all centers
+      # Efficient vectorized approach
+      dists <- outer(samples$x, centers_mat[,1], FUN = function(a,b) (a - b)^2) +
+               outer(samples$y, centers_mat[,2], FUN = function(a,b) (a - b)^2)
+      assignments <- max.col(-dists)  # equivalent to which.min per row
       
       # Update centers
-      new_centers <- centers
+      new_centers <- centers_mat
       for (k in 1:n_centers) {
-        if (sum(assignments == k) > 0) {
-          cluster_points <- samples[assignments == k, ]
-          new_centers[k, ] <- colMeans(cluster_points)
+        idx <- which(assignments == k)
+        if (length(idx) > 0) {
+          new_centers[k, ] <- colMeans(samples[idx, , drop = FALSE])
         }
       }
       
       # Check convergence
-      if (sum((new_centers - centers)^2) < 1e-6) break
-      centers <- new_centers
+      if (sum((new_centers - centers_mat)^2) < 1e-6) break
+      centers_mat <- new_centers
     }
     
-    return(as.matrix(centers))
+    return(centers_mat)
   }
   
   # Visualization function for activation landscape
@@ -450,13 +507,19 @@ create_rbf_network <- function(centers, widths) {
       sum(encode(point))
     })
     
+    # Prepare center data frame with explicit column names
+    center_df <- data.frame(
+      x = centers[, 1],
+      y = centers[, 2]
+    )
+    
     # Create visualization
     p <- ggplot(grid_df, aes(x = x, y = y, fill = activation)) +
       geom_raster(interpolate = TRUE) +
       geom_contour(aes(z = activation), color = "white", alpha = 0.4, size = 0.3) +
       geom_point(
-        data = as.data.frame(centers), 
-        aes(x = V1, y = V2), 
+        data = center_df, 
+        aes(x = x, y = y), 
         color = "white", shape = 4, size = 3, stroke = 1.5,
         inherit.aes = FALSE
       ) +
@@ -489,12 +552,12 @@ create_rbf_network <- function(centers, widths) {
     grid_df <- expand.grid(x = x_seq, y = y_seq)
     
     # Prepare data for all RBFs
-    all_rbf_data <- list()
+    all_rbf_data <- vector("list", n_rbf)
     
     for (i in 1:n_rbf) {
       # Compute activation for this RBF only
-      distances_sq <- rowSums((grid_df - matrix(rep(centers[i, ], nrow(grid_df)), 
-                                              nrow = nrow(grid_df), byrow = TRUE))^2)
+      state_mat <- matrix(rep(centers[i, ], nrow(grid_df)), nrow = nrow(grid_df), byrow = TRUE)
+      distances_sq <- rowSums((grid_df - state_mat)^2)
       activations <- exp(-distances_sq / (2 * widths[i]^2))
       
       rbf_data <- grid_df
@@ -508,10 +571,10 @@ create_rbf_network <- function(centers, widths) {
     # Combine all data
     combined_data <- do.call(rbind, all_rbf_data)
     
-    # Add center information
+    # Add center information with named columns
     center_data <- data.frame(
-      x = rep(centers[, 1], each = 1),
-      y = rep(centers[, 2], each = 1),
+      x = centers[, 1],
+      y = centers[, 2],
       rbf_id = 1:n_rbf,
       rbf_label = paste0("RBF ", 1:n_rbf, " (σ=", round(widths, 1), ")")
     )
