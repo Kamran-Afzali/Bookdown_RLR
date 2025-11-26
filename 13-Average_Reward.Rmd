@@ -103,84 +103,84 @@ Q-learning extends to average reward settings through the **average reward Q-lea
 
 This algorithm learns differential action-values directly, avoiding the need to maintain a separate state value function.
 
-## Practical Implementation: Server Load Balancing
+## Practical Implementation: Patient Triage in Emergency Department
 
-Consider a web server load balancing system with three servers. Requests arrive continuously and must be routed to minimize average response time. This is naturally a continuing task where episodes don't exist, making it ideal for average reward formulation.
+Consider an emergency department with three treatment areas. Patients arrive continuously and must be triaged to minimize average wait time and maximize treatment efficiency. This is naturally a continuing task where episodes don't exist, making it ideal for average reward formulation.
 
-```{r}
-# Server Load Balancing with Average Reward Q-Learning
+```{r averev}
+# Emergency Department Triage with Average Reward Q-Learning
 library(ggplot2)
 
 # Environment setup
 set.seed(42)
-n_servers <- 3
-max_load <- 5
+n_treatment_areas <- 3
+max_patients <- 5
 n_steps <- 50000
 
 # State encoding and reward function
-encode_state <- function(loads) {
-  sum(loads * (max_load + 1)^(0:(length(loads)-1))) + 1
+encode_state <- function(patient_counts) {
+  sum(patient_counts * (max_patients + 1)^(0:(length(patient_counts)-1))) + 1
 }
 
 decode_state <- function(state_id) {
   state_id <- state_id - 1
-  loads <- numeric(n_servers)
-  for (i in 1:n_servers) {
-    loads[i] <- state_id %% (max_load + 1)
-    state_id <- state_id %/% (max_load + 1)
+  patient_counts <- numeric(n_treatment_areas)
+  for (i in 1:n_treatment_areas) {
+    patient_counts[i] <- state_id %% (max_patients + 1)
+    state_id <- state_id %/% (max_patients + 1)
   }
-  loads
+  patient_counts
 }
 
-get_reward <- function(loads, server_choice) {
-  new_loads <- loads
-  new_loads[server_choice] <- min(new_loads[server_choice] + 1, max_load)
+get_reward <- function(patient_counts, area_choice) {
+  new_counts <- patient_counts
+  new_counts[area_choice] <- min(new_counts[area_choice] + 1, max_patients)
   
-  # Response time model: linear in load
-  avg_load <- mean(new_loads)
-  reward <- -avg_load
+  # Wait time model: increases with patient count
+  avg_wait_time <- mean(new_counts)
+  reward <- -avg_wait_time  # Negative because we want to minimize wait time
   
-  # Simulate request completion
-  for (i in 1:n_servers) {
-    if (new_loads[i] > 0 && runif(1) < 0.3) {
-      new_loads[i] <- new_loads[i] - 1
+  # Simulate patient discharge (treatment completion)
+  for (i in 1:n_treatment_areas) {
+    if (new_counts[i] > 0 && runif(1) < 0.3) {
+      new_counts[i] <- new_counts[i] - 1
     }
   }
   
-  list(reward = reward, new_loads = new_loads)
+  list(reward = reward, new_counts = new_counts)
 }
 
 # Initialize parameters
-n_states <- (max_load + 1)^n_servers
-Q <- array(0, dim = c(n_states, n_servers))
+n_states <- (max_patients + 1)^n_treatment_areas
+Q <- array(0, dim = c(n_states, n_treatment_areas))
 rho_hat <- 0
 alpha <- 0.1
 beta <- 0.001
 epsilon <- 0.1
 
 # Training loop
-loads <- rep(0, n_servers)
-state_id <- encode_state(loads)
+patient_counts <- rep(0, n_treatment_areas)
+state_id <- encode_state(patient_counts)
 rewards_history <- numeric(n_steps)
 rho_history <- numeric(n_steps)
 
-cat("Training average reward Q-learning agent...\n")
+cat("Training average reward Q-learning agent for ED triage...\n")
 
 for (step in 1:n_steps) {
   # Epsilon-greedy action selection
   if (runif(1) < epsilon) {
-    action <- sample(1:n_servers, 1)
+    action <- sample(1:n_treatment_areas, 1)
   } else {
     action <- which.max(Q[state_id, ])
   }
   
   # Take action and observe reward
-  result <- get_reward(loads, action)
+  result <- get_reward(patient_counts, action)
   reward <- result$reward
-  loads <- result$new_loads
-  next_state_id <- encode_state(loads)
+  patient_counts <- result$new_counts
+  next_state_id <- encode_state(patient_counts)
   
-  # Q-learning update
+  # Average reward Q-learning update
   td_error <- reward - rho_hat + max(Q[next_state_id, ]) - Q[state_id, action]
   Q[state_id, action] <- Q[state_id, action] + alpha * td_error
   rho_hat <- rho_hat + beta * td_error
@@ -203,43 +203,61 @@ for (step in 1:n_steps) {
 
 # Evaluate learned policy
 eval_steps <- 10000
-loads <- rep(0, n_servers)
-state_id <- encode_state(loads)
+patient_counts <- rep(0, n_treatment_areas)
+state_id <- encode_state(patient_counts)
 eval_rewards <- numeric(eval_steps)
 
 for (step in 1:eval_steps) {
   action <- which.max(Q[state_id, ])
-  result <- get_reward(loads, action)
+  result <- get_reward(patient_counts, action)
   eval_rewards[step] <- result$reward
-  loads <- result$new_loads
-  state_id <- encode_state(loads)
+  patient_counts <- result$new_counts
+  state_id <- encode_state(patient_counts)
 }
 
 final_avg_reward <- mean(eval_rewards)
-cat(sprintf("Final average reward: %.4f\n", final_avg_reward))
+cat(sprintf("\nFinal average reward (negative wait time): %.4f\n", final_avg_reward))
 cat(sprintf("Training estimate: %.4f\n", rho_hat))
 
 # Policy analysis
-cat("\nLearned policy examples:\n")
+cat("\nLearned triage policy examples:\n")
 example_states <- list(
-  c(0, 0, 0),  # All servers idle
-  c(3, 1, 1),  # Server 1 heavily loaded
-  c(2, 2, 2),  # Balanced load
-  c(5, 0, 0),  # Server 1 at capacity
-  c(3, 3, 4)   # High overall load
+  c(0, 0, 0),  # All treatment areas empty
+  c(3, 1, 1),  # Area 1 has more patients
+  c(2, 2, 2),  # Balanced patient distribution
+  c(5, 0, 0),  # Area 1 at capacity
+  c(3, 3, 4)   # High overall patient volume
 )
 
 for (i in seq_along(example_states)) {
-  loads <- example_states[[i]]
-  state_id <- encode_state(loads)
+  counts <- example_states[[i]]
+  state_id <- encode_state(counts)
   q_values <- Q[state_id, ]
   best_action <- which.max(q_values)
   
-  cat(sprintf("Loads %s -> Route to server %d (Q-values: %.3f, %.3f, %.3f)\n",
-              paste(loads, collapse=", "), best_action,
+  cat(sprintf("Patient counts [%s] -> Assign to Area %d (Q-values: %.3f, %.3f, %.3f)\n",
+              paste(counts, collapse=", "), best_action,
               q_values[1], q_values[2], q_values[3]))
 }
+
+# Visualization
+cat("\nGenerating learning curve...\n")
+smoothing_window <- 500
+smoothed_rewards <- rewards_history
+
+plot_data <- data.frame(
+  step = 1:n_steps,
+  reward = as.numeric(smoothed_rewards)
+)
+
+ggplot(plot_data[!is.na(plot_data$reward),], aes(x = step, y = reward)) +
+  geom_line(color = "steelblue", linewidth = 0.8) +
+  labs(title = "Average Reward Learning Curve: ED Triage",
+       x = "Training Steps",
+       y = "Smoothed Reward (Negative Wait Time)") +
+  theme_minimal()
 ```
+
 
 ## Implementation Considerations
 
@@ -249,15 +267,11 @@ Unlike discounted RL, where initialization typically has limited impact on final
 
 Exploration-exploitation trade-offs require special consideration in average reward settings. Since there's no discounting to naturally prioritize immediate rewards, exploration strategies must be designed to maintain long-term effectiveness. Optimistic initialization works particularly well: initializing value functions optimistically encourages exploration while the agent discovers the true reward structure.
 
-## When to Choose Average Reward Over Discounting
-
 The choice between discounted and average reward formulations should be based on problem characteristics rather than mathematical convenience. Consider average reward when the task is genuinely continuing with no natural episodes, long-term steady-state performance is the primary concern, the discount factor feels arbitrary or its choice significantly affects learned behavior, or fairness across time steps is important.
 
 Moderate indicators include when the environment is relatively stable over long horizons, exploration can be maintained without artificial urgency from discounting, or the system will operate for extended periods without reset. However, choose against average reward when the task has clear episodes or terminal states, short-term performance is crucial (e.g., real-time systems), the environment is highly non-stationary, or mathematical tractability is paramount.
 
 Based on empirical studies and practical applications, server systems and manufacturing typically find average reward superior, while games with clear episodes often find discounting more natural. Financial trading uses average reward for long-term strategies and discounting for short-term tactics. In robotics, the choice depends on task duration and safety requirements, while recommendation systems use average reward for user satisfaction and discounting for engagement.
-
-## Appendix A: Mathematical Proofs and Derivations
 
 ### Convergence of Average Reward TD Learning
 

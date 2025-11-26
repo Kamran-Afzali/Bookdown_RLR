@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-11-21" />
+<meta name="date" content="2025-11-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -333,14 +333,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#value-functions-in-the-average-reward-setting"><i class="fa fa-check"></i><b>13.3</b> Value Functions in the Average Reward Setting</a></li>
 <li class="chapter" data-level="13.4" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-theory-for-average-reward"><i class="fa fa-check"></i><b>13.4</b> Optimality Theory for Average Reward</a></li>
 <li class="chapter" data-level="13.5" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#learning-algorithms-for-average-reward"><i class="fa fa-check"></i><b>13.5</b> Learning Algorithms for Average Reward</a></li>
-<li class="chapter" data-level="13.6" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#practical-implementation-server-load-balancing"><i class="fa fa-check"></i><b>13.6</b> Practical Implementation: Server Load Balancing</a></li>
-<li class="chapter" data-level="13.7" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#implementation-considerations"><i class="fa fa-check"></i><b>13.7</b> Implementation Considerations</a></li>
-<li class="chapter" data-level="13.8" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#when-to-choose-average-reward-over-discounting"><i class="fa fa-check"></i><b>13.8</b> When to Choose Average Reward Over Discounting</a></li>
-<li class="chapter" data-level="13.9" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#appendix-a-mathematical-proofs-and-derivations"><i class="fa fa-check"></i><b>13.9</b> Appendix A: Mathematical Proofs and Derivations</a>
+<li class="chapter" data-level="13.6" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#practical-implementation-patient-triage-in-emergency-department"><i class="fa fa-check"></i><b>13.6</b> Practical Implementation: Patient Triage in Emergency Department</a></li>
+<li class="chapter" data-level="13.7" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#implementation-considerations"><i class="fa fa-check"></i><b>13.7</b> Implementation Considerations</a>
 <ul>
-<li class="chapter" data-level="13.9.1" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#convergence-of-average-reward-td-learning"><i class="fa fa-check"></i><b>13.9.1</b> Convergence of Average Reward TD Learning</a></li>
-<li class="chapter" data-level="13.9.2" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#policy-gradient-theorem-for-average-reward"><i class="fa fa-check"></i><b>13.9.2</b> Policy Gradient Theorem for Average Reward</a></li>
-<li class="chapter" data-level="13.9.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-equations-derivation"><i class="fa fa-check"></i><b>13.9.3</b> Optimality Equations Derivation</a></li>
+<li class="chapter" data-level="13.7.1" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#convergence-of-average-reward-td-learning"><i class="fa fa-check"></i><b>13.7.1</b> Convergence of Average Reward TD Learning</a></li>
+<li class="chapter" data-level="13.7.2" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#policy-gradient-theorem-for-average-reward"><i class="fa fa-check"></i><b>13.7.2</b> Policy Gradient Theorem for Average Reward</a></li>
+<li class="chapter" data-level="13.7.3" data-path="average-reward-in-reinforcement-learning-a-comprehensive-guide.html"><a href="average-reward-in-reinforcement-learning-a-comprehensive-guide.html#optimality-equations-derivation"><i class="fa fa-check"></i><b>13.7.3</b> Optimality Equations Derivation</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="eligibility-traces.html"><a href="eligibility-traces.html"><i class="fa fa-check"></i><b>14</b> Eligibility Traces</a>
@@ -490,139 +488,139 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We implement Dyna-Q using the same 10-state environment from previous posts, allowing direct comparison with pure Q-Learning and SARSA approaches.</p>
 <div id="environment-setup" class="section level3 hasAnchor" number="9.3.1">
 <h3><span class="header-section-number">9.3.1</span> Environment Setup<a href="dyna-and-dynaq.html#environment-setup" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="dyna-and-dynaq.html#cb111-1" tabindex="-1"></a><span class="co"># Environment parameters</span></span>
-<span id="cb111-2"><a href="dyna-and-dynaq.html#cb111-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb111-3"><a href="dyna-and-dynaq.html#cb111-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb111-4"><a href="dyna-and-dynaq.html#cb111-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb111-5"><a href="dyna-and-dynaq.html#cb111-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
-<span id="cb111-6"><a href="dyna-and-dynaq.html#cb111-6" tabindex="-1"></a></span>
-<span id="cb111-7"><a href="dyna-and-dynaq.html#cb111-7" tabindex="-1"></a><span class="co"># Transition and reward models (same as previous posts)</span></span>
-<span id="cb111-8"><a href="dyna-and-dynaq.html#cb111-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb111-9"><a href="dyna-and-dynaq.html#cb111-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb111-10"><a href="dyna-and-dynaq.html#cb111-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
-<span id="cb111-11"><a href="dyna-and-dynaq.html#cb111-11" tabindex="-1"></a></span>
-<span id="cb111-12"><a href="dyna-and-dynaq.html#cb111-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
-<span id="cb111-13"><a href="dyna-and-dynaq.html#cb111-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
-<span id="cb111-14"><a href="dyna-and-dynaq.html#cb111-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
-<span id="cb111-15"><a href="dyna-and-dynaq.html#cb111-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
-<span id="cb111-16"><a href="dyna-and-dynaq.html#cb111-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb111-17"><a href="dyna-and-dynaq.html#cb111-17" tabindex="-1"></a>  </span>
-<span id="cb111-18"><a href="dyna-and-dynaq.html#cb111-18" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
-<span id="cb111-19"><a href="dyna-and-dynaq.html#cb111-19" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb111-20"><a href="dyna-and-dynaq.html#cb111-20" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
-<span id="cb111-21"><a href="dyna-and-dynaq.html#cb111-21" tabindex="-1"></a>  }</span>
-<span id="cb111-22"><a href="dyna-and-dynaq.html#cb111-22" tabindex="-1"></a>}</span>
-<span id="cb111-23"><a href="dyna-and-dynaq.html#cb111-23" tabindex="-1"></a></span>
-<span id="cb111-24"><a href="dyna-and-dynaq.html#cb111-24" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb111-25"><a href="dyna-and-dynaq.html#cb111-25" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb111-26"><a href="dyna-and-dynaq.html#cb111-26" tabindex="-1"></a></span>
-<span id="cb111-27"><a href="dyna-and-dynaq.html#cb111-27" tabindex="-1"></a><span class="co"># Environment interaction function</span></span>
-<span id="cb111-28"><a href="dyna-and-dynaq.html#cb111-28" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
-<span id="cb111-29"><a href="dyna-and-dynaq.html#cb111-29" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
-<span id="cb111-30"><a href="dyna-and-dynaq.html#cb111-30" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
-<span id="cb111-31"><a href="dyna-and-dynaq.html#cb111-31" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
-<span id="cb111-32"><a href="dyna-and-dynaq.html#cb111-32" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
-<span id="cb111-33"><a href="dyna-and-dynaq.html#cb111-33" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="dyna-and-dynaq.html#cb109-1" tabindex="-1"></a><span class="co"># Environment parameters</span></span>
+<span id="cb109-2"><a href="dyna-and-dynaq.html#cb109-2" tabindex="-1"></a>n_states <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb109-3"><a href="dyna-and-dynaq.html#cb109-3" tabindex="-1"></a>n_actions <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb109-4"><a href="dyna-and-dynaq.html#cb109-4" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb109-5"><a href="dyna-and-dynaq.html#cb109-5" tabindex="-1"></a>terminal_state <span class="ot">&lt;-</span> n_states</span>
+<span id="cb109-6"><a href="dyna-and-dynaq.html#cb109-6" tabindex="-1"></a></span>
+<span id="cb109-7"><a href="dyna-and-dynaq.html#cb109-7" tabindex="-1"></a><span class="co"># Transition and reward models (same as previous posts)</span></span>
+<span id="cb109-8"><a href="dyna-and-dynaq.html#cb109-8" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb109-9"><a href="dyna-and-dynaq.html#cb109-9" tabindex="-1"></a>transition_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb109-10"><a href="dyna-and-dynaq.html#cb109-10" tabindex="-1"></a>reward_model <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions, n_states))</span>
+<span id="cb109-11"><a href="dyna-and-dynaq.html#cb109-11" tabindex="-1"></a></span>
+<span id="cb109-12"><a href="dyna-and-dynaq.html#cb109-12" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n_states <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb109-13"><a href="dyna-and-dynaq.html#cb109-13" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, s <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb109-14"><a href="dyna-and-dynaq.html#cb109-14" tabindex="-1"></a>  transition_model[s, <span class="dv">1</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb109-15"><a href="dyna-and-dynaq.html#cb109-15" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb109-16"><a href="dyna-and-dynaq.html#cb109-16" tabindex="-1"></a>  transition_model[s, <span class="dv">2</span>, <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>)] <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb109-17"><a href="dyna-and-dynaq.html#cb109-17" tabindex="-1"></a>  </span>
+<span id="cb109-18"><a href="dyna-and-dynaq.html#cb109-18" tabindex="-1"></a>  <span class="cf">for</span> (s_prime <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_states) {</span>
+<span id="cb109-19"><a href="dyna-and-dynaq.html#cb109-19" tabindex="-1"></a>    reward_model[s, <span class="dv">1</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">1.0</span>, <span class="fl">0.1</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb109-20"><a href="dyna-and-dynaq.html#cb109-20" tabindex="-1"></a>    reward_model[s, <span class="dv">2</span>, s_prime] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(s_prime <span class="sc">==</span> n_states, <span class="fl">0.5</span>, <span class="fl">0.05</span> <span class="sc">*</span> <span class="fu">runif</span>(<span class="dv">1</span>))</span>
+<span id="cb109-21"><a href="dyna-and-dynaq.html#cb109-21" tabindex="-1"></a>  }</span>
+<span id="cb109-22"><a href="dyna-and-dynaq.html#cb109-22" tabindex="-1"></a>}</span>
+<span id="cb109-23"><a href="dyna-and-dynaq.html#cb109-23" tabindex="-1"></a></span>
+<span id="cb109-24"><a href="dyna-and-dynaq.html#cb109-24" tabindex="-1"></a>transition_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb109-25"><a href="dyna-and-dynaq.html#cb109-25" tabindex="-1"></a>reward_model[n_states, , ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb109-26"><a href="dyna-and-dynaq.html#cb109-26" tabindex="-1"></a></span>
+<span id="cb109-27"><a href="dyna-and-dynaq.html#cb109-27" tabindex="-1"></a><span class="co"># Environment interaction function</span></span>
+<span id="cb109-28"><a href="dyna-and-dynaq.html#cb109-28" tabindex="-1"></a>sample_env <span class="ot">&lt;-</span> <span class="cf">function</span>(s, a) {</span>
+<span id="cb109-29"><a href="dyna-and-dynaq.html#cb109-29" tabindex="-1"></a>  probs <span class="ot">&lt;-</span> transition_model[s, a, ]</span>
+<span id="cb109-30"><a href="dyna-and-dynaq.html#cb109-30" tabindex="-1"></a>  s_prime <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_states, <span class="dv">1</span>, <span class="at">prob =</span> probs)</span>
+<span id="cb109-31"><a href="dyna-and-dynaq.html#cb109-31" tabindex="-1"></a>  reward <span class="ot">&lt;-</span> reward_model[s, a, s_prime]</span>
+<span id="cb109-32"><a href="dyna-and-dynaq.html#cb109-32" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">s_prime =</span> s_prime, <span class="at">reward =</span> reward)</span>
+<span id="cb109-33"><a href="dyna-and-dynaq.html#cb109-33" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="dyna-q-implementation" class="section level3 hasAnchor" number="9.3.2">
 <h3><span class="header-section-number">9.3.2</span> Dyna-Q Implementation<a href="dyna-and-dynaq.html#dyna-q-implementation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="dyna-and-dynaq.html#cb112-1" tabindex="-1"></a><span class="co"># Dyna-Q algorithm with episode-wise performance tracking</span></span>
-<span id="cb112-2"><a href="dyna-and-dynaq.html#cb112-2" tabindex="-1"></a>dyna_q <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, <span class="at">n_planning =</span> <span class="dv">5</span>) {</span>
-<span id="cb112-3"><a href="dyna-and-dynaq.html#cb112-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
-<span id="cb112-4"><a href="dyna-and-dynaq.html#cb112-4" tabindex="-1"></a>  model_T <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
-<span id="cb112-5"><a href="dyna-and-dynaq.html#cb112-5" tabindex="-1"></a>  model_R <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
-<span id="cb112-6"><a href="dyna-and-dynaq.html#cb112-6" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb112-7"><a href="dyna-and-dynaq.html#cb112-7" tabindex="-1"></a>  </span>
-<span id="cb112-8"><a href="dyna-and-dynaq.html#cb112-8" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb112-9"><a href="dyna-and-dynaq.html#cb112-9" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb112-10"><a href="dyna-and-dynaq.html#cb112-10" tabindex="-1"></a>  </span>
-<span id="cb112-11"><a href="dyna-and-dynaq.html#cb112-11" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb112-12"><a href="dyna-and-dynaq.html#cb112-12" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb112-13"><a href="dyna-and-dynaq.html#cb112-13" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb112-14"><a href="dyna-and-dynaq.html#cb112-14" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb112-15"><a href="dyna-and-dynaq.html#cb112-15" tabindex="-1"></a>    </span>
-<span id="cb112-16"><a href="dyna-and-dynaq.html#cb112-16" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {  <span class="co"># Add max steps to prevent infinite loops</span></span>
-<span id="cb112-17"><a href="dyna-and-dynaq.html#cb112-17" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
-<span id="cb112-18"><a href="dyna-and-dynaq.html#cb112-18" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
-<span id="cb112-19"><a href="dyna-and-dynaq.html#cb112-19" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb112-20"><a href="dyna-and-dynaq.html#cb112-20" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[s, ])</span>
-<span id="cb112-21"><a href="dyna-and-dynaq.html#cb112-21" tabindex="-1"></a>      }</span>
-<span id="cb112-22"><a href="dyna-and-dynaq.html#cb112-22" tabindex="-1"></a>      </span>
-<span id="cb112-23"><a href="dyna-and-dynaq.html#cb112-23" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb112-24"><a href="dyna-and-dynaq.html#cb112-24" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
-<span id="cb112-25"><a href="dyna-and-dynaq.html#cb112-25" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
-<span id="cb112-26"><a href="dyna-and-dynaq.html#cb112-26" tabindex="-1"></a>      </span>
-<span id="cb112-27"><a href="dyna-and-dynaq.html#cb112-27" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
-<span id="cb112-28"><a href="dyna-and-dynaq.html#cb112-28" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb112-29"><a href="dyna-and-dynaq.html#cb112-29" tabindex="-1"></a>      </span>
-<span id="cb112-30"><a href="dyna-and-dynaq.html#cb112-30" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
-<span id="cb112-31"><a href="dyna-and-dynaq.html#cb112-31" tabindex="-1"></a>      </span>
-<span id="cb112-32"><a href="dyna-and-dynaq.html#cb112-32" tabindex="-1"></a>      model_T[s, a] <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb112-33"><a href="dyna-and-dynaq.html#cb112-33" tabindex="-1"></a>      model_R[s, a] <span class="ot">&lt;-</span> r</span>
-<span id="cb112-34"><a href="dyna-and-dynaq.html#cb112-34" tabindex="-1"></a>      </span>
-<span id="cb112-35"><a href="dyna-and-dynaq.html#cb112-35" tabindex="-1"></a>      sa_key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb112-36"><a href="dyna-and-dynaq.html#cb112-36" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>(sa_key <span class="sc">%in%</span> <span class="fu">names</span>(visited_sa))) {</span>
-<span id="cb112-37"><a href="dyna-and-dynaq.html#cb112-37" tabindex="-1"></a>        visited_sa[[sa_key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(s, a)</span>
-<span id="cb112-38"><a href="dyna-and-dynaq.html#cb112-38" tabindex="-1"></a>      }</span>
-<span id="cb112-39"><a href="dyna-and-dynaq.html#cb112-39" tabindex="-1"></a>      </span>
-<span id="cb112-40"><a href="dyna-and-dynaq.html#cb112-40" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(visited_sa) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb112-41"><a href="dyna-and-dynaq.html#cb112-41" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_planning) {</span>
-<span id="cb112-42"><a href="dyna-and-dynaq.html#cb112-42" tabindex="-1"></a>          sa_sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(visited_sa, <span class="dv">1</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb112-43"><a href="dyna-and-dynaq.html#cb112-43" tabindex="-1"></a>          s_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">1</span>]</span>
-<span id="cb112-44"><a href="dyna-and-dynaq.html#cb112-44" tabindex="-1"></a>          a_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">2</span>]</span>
-<span id="cb112-45"><a href="dyna-and-dynaq.html#cb112-45" tabindex="-1"></a>          </span>
-<span id="cb112-46"><a href="dyna-and-dynaq.html#cb112-46" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(model_T[s_plan, a_plan])) {</span>
-<span id="cb112-47"><a href="dyna-and-dynaq.html#cb112-47" tabindex="-1"></a>            s_prime_plan <span class="ot">&lt;-</span> model_T[s_plan, a_plan]</span>
-<span id="cb112-48"><a href="dyna-and-dynaq.html#cb112-48" tabindex="-1"></a>            r_plan <span class="ot">&lt;-</span> model_R[s_plan, a_plan]</span>
-<span id="cb112-49"><a href="dyna-and-dynaq.html#cb112-49" tabindex="-1"></a>            </span>
-<span id="cb112-50"><a href="dyna-and-dynaq.html#cb112-50" tabindex="-1"></a>            Q[s_plan, a_plan] <span class="ot">&lt;-</span> Q[s_plan, a_plan] <span class="sc">+</span> </span>
-<span id="cb112-51"><a href="dyna-and-dynaq.html#cb112-51" tabindex="-1"></a>              alpha <span class="sc">*</span> (r_plan <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime_plan, ]) <span class="sc">-</span> Q[s_plan, a_plan])</span>
-<span id="cb112-52"><a href="dyna-and-dynaq.html#cb112-52" tabindex="-1"></a>          }</span>
-<span id="cb112-53"><a href="dyna-and-dynaq.html#cb112-53" tabindex="-1"></a>        }</span>
-<span id="cb112-54"><a href="dyna-and-dynaq.html#cb112-54" tabindex="-1"></a>      }</span>
-<span id="cb112-55"><a href="dyna-and-dynaq.html#cb112-55" tabindex="-1"></a>      </span>
-<span id="cb112-56"><a href="dyna-and-dynaq.html#cb112-56" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb112-57"><a href="dyna-and-dynaq.html#cb112-57" tabindex="-1"></a>    }</span>
-<span id="cb112-58"><a href="dyna-and-dynaq.html#cb112-58" tabindex="-1"></a>    </span>
-<span id="cb112-59"><a href="dyna-and-dynaq.html#cb112-59" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
-<span id="cb112-60"><a href="dyna-and-dynaq.html#cb112-60" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
-<span id="cb112-61"><a href="dyna-and-dynaq.html#cb112-61" tabindex="-1"></a>  }</span>
-<span id="cb112-62"><a href="dyna-and-dynaq.html#cb112-62" tabindex="-1"></a>  </span>
-<span id="cb112-63"><a href="dyna-and-dynaq.html#cb112-63" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
-<span id="cb112-64"><a href="dyna-and-dynaq.html#cb112-64" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
-<span id="cb112-65"><a href="dyna-and-dynaq.html#cb112-65" tabindex="-1"></a>}</span>
-<span id="cb112-66"><a href="dyna-and-dynaq.html#cb112-66" tabindex="-1"></a></span>
-<span id="cb112-67"><a href="dyna-and-dynaq.html#cb112-67" tabindex="-1"></a><span class="co"># Q-Learning with performance tracking</span></span>
-<span id="cb112-68"><a href="dyna-and-dynaq.html#cb112-68" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
-<span id="cb112-69"><a href="dyna-and-dynaq.html#cb112-69" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
-<span id="cb112-70"><a href="dyna-and-dynaq.html#cb112-70" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb112-71"><a href="dyna-and-dynaq.html#cb112-71" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
-<span id="cb112-72"><a href="dyna-and-dynaq.html#cb112-72" tabindex="-1"></a>  </span>
-<span id="cb112-73"><a href="dyna-and-dynaq.html#cb112-73" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
-<span id="cb112-74"><a href="dyna-and-dynaq.html#cb112-74" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb112-75"><a href="dyna-and-dynaq.html#cb112-75" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb112-76"><a href="dyna-and-dynaq.html#cb112-76" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb112-77"><a href="dyna-and-dynaq.html#cb112-77" tabindex="-1"></a>    </span>
-<span id="cb112-78"><a href="dyna-and-dynaq.html#cb112-78" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {</span>
-<span id="cb112-79"><a href="dyna-and-dynaq.html#cb112-79" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
-<span id="cb112-80"><a href="dyna-and-dynaq.html#cb112-80" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
-<span id="cb112-81"><a href="dyna-and-dynaq.html#cb112-81" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
-<span id="cb112-82"><a href="dyna-and-dynaq.html#cb112-82" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
-<span id="cb112-83"><a href="dyna-and-dynaq.html#cb112-83" tabindex="-1"></a>      </span>
-<span id="cb112-84"><a href="dyna-and-dynaq.html#cb112-84" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
-<span id="cb112-85"><a href="dyna-and-dynaq.html#cb112-85" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb112-86"><a href="dyna-and-dynaq.html#cb112-86" tabindex="-1"></a>      </span>
-<span id="cb112-87"><a href="dyna-and-dynaq.html#cb112-87" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
-<span id="cb112-88"><a href="dyna-and-dynaq.html#cb112-88" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
-<span id="cb112-89"><a href="dyna-and-dynaq.html#cb112-89" tabindex="-1"></a>    }</span>
-<span id="cb112-90"><a href="dyna-and-dynaq.html#cb112-90" tabindex="-1"></a>    </span>
-<span id="cb112-91"><a href="dyna-and-dynaq.html#cb112-91" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
-<span id="cb112-92"><a href="dyna-and-dynaq.html#cb112-92" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
-<span id="cb112-93"><a href="dyna-and-dynaq.html#cb112-93" tabindex="-1"></a>  }</span>
-<span id="cb112-94"><a href="dyna-and-dynaq.html#cb112-94" tabindex="-1"></a>  </span>
-<span id="cb112-95"><a href="dyna-and-dynaq.html#cb112-95" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
-<span id="cb112-96"><a href="dyna-and-dynaq.html#cb112-96" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
-<span id="cb112-97"><a href="dyna-and-dynaq.html#cb112-97" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="dyna-and-dynaq.html#cb110-1" tabindex="-1"></a><span class="co"># Dyna-Q algorithm with episode-wise performance tracking</span></span>
+<span id="cb110-2"><a href="dyna-and-dynaq.html#cb110-2" tabindex="-1"></a>dyna_q <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>, <span class="at">n_planning =</span> <span class="dv">5</span>) {</span>
+<span id="cb110-3"><a href="dyna-and-dynaq.html#cb110-3" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb110-4"><a href="dyna-and-dynaq.html#cb110-4" tabindex="-1"></a>  model_T <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb110-5"><a href="dyna-and-dynaq.html#cb110-5" tabindex="-1"></a>  model_R <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(n_states, n_actions))</span>
+<span id="cb110-6"><a href="dyna-and-dynaq.html#cb110-6" tabindex="-1"></a>  visited_sa <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb110-7"><a href="dyna-and-dynaq.html#cb110-7" tabindex="-1"></a>  </span>
+<span id="cb110-8"><a href="dyna-and-dynaq.html#cb110-8" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb110-9"><a href="dyna-and-dynaq.html#cb110-9" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb110-10"><a href="dyna-and-dynaq.html#cb110-10" tabindex="-1"></a>  </span>
+<span id="cb110-11"><a href="dyna-and-dynaq.html#cb110-11" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb110-12"><a href="dyna-and-dynaq.html#cb110-12" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb110-13"><a href="dyna-and-dynaq.html#cb110-13" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb110-14"><a href="dyna-and-dynaq.html#cb110-14" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb110-15"><a href="dyna-and-dynaq.html#cb110-15" tabindex="-1"></a>    </span>
+<span id="cb110-16"><a href="dyna-and-dynaq.html#cb110-16" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {  <span class="co"># Add max steps to prevent infinite loops</span></span>
+<span id="cb110-17"><a href="dyna-and-dynaq.html#cb110-17" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) {</span>
+<span id="cb110-18"><a href="dyna-and-dynaq.html#cb110-18" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>)</span>
+<span id="cb110-19"><a href="dyna-and-dynaq.html#cb110-19" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb110-20"><a href="dyna-and-dynaq.html#cb110-20" tabindex="-1"></a>        a <span class="ot">&lt;-</span> <span class="fu">which.max</span>(Q[s, ])</span>
+<span id="cb110-21"><a href="dyna-and-dynaq.html#cb110-21" tabindex="-1"></a>      }</span>
+<span id="cb110-22"><a href="dyna-and-dynaq.html#cb110-22" tabindex="-1"></a>      </span>
+<span id="cb110-23"><a href="dyna-and-dynaq.html#cb110-23" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb110-24"><a href="dyna-and-dynaq.html#cb110-24" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb110-25"><a href="dyna-and-dynaq.html#cb110-25" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb110-26"><a href="dyna-and-dynaq.html#cb110-26" tabindex="-1"></a>      </span>
+<span id="cb110-27"><a href="dyna-and-dynaq.html#cb110-27" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
+<span id="cb110-28"><a href="dyna-and-dynaq.html#cb110-28" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb110-29"><a href="dyna-and-dynaq.html#cb110-29" tabindex="-1"></a>      </span>
+<span id="cb110-30"><a href="dyna-and-dynaq.html#cb110-30" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb110-31"><a href="dyna-and-dynaq.html#cb110-31" tabindex="-1"></a>      </span>
+<span id="cb110-32"><a href="dyna-and-dynaq.html#cb110-32" tabindex="-1"></a>      model_T[s, a] <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb110-33"><a href="dyna-and-dynaq.html#cb110-33" tabindex="-1"></a>      model_R[s, a] <span class="ot">&lt;-</span> r</span>
+<span id="cb110-34"><a href="dyna-and-dynaq.html#cb110-34" tabindex="-1"></a>      </span>
+<span id="cb110-35"><a href="dyna-and-dynaq.html#cb110-35" tabindex="-1"></a>      sa_key <span class="ot">&lt;-</span> <span class="fu">paste</span>(s, a, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb110-36"><a href="dyna-and-dynaq.html#cb110-36" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>(sa_key <span class="sc">%in%</span> <span class="fu">names</span>(visited_sa))) {</span>
+<span id="cb110-37"><a href="dyna-and-dynaq.html#cb110-37" tabindex="-1"></a>        visited_sa[[sa_key]] <span class="ot">&lt;-</span> <span class="fu">c</span>(s, a)</span>
+<span id="cb110-38"><a href="dyna-and-dynaq.html#cb110-38" tabindex="-1"></a>      }</span>
+<span id="cb110-39"><a href="dyna-and-dynaq.html#cb110-39" tabindex="-1"></a>      </span>
+<span id="cb110-40"><a href="dyna-and-dynaq.html#cb110-40" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(visited_sa) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb110-41"><a href="dyna-and-dynaq.html#cb110-41" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_planning) {</span>
+<span id="cb110-42"><a href="dyna-and-dynaq.html#cb110-42" tabindex="-1"></a>          sa_sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(visited_sa, <span class="dv">1</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb110-43"><a href="dyna-and-dynaq.html#cb110-43" tabindex="-1"></a>          s_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">1</span>]</span>
+<span id="cb110-44"><a href="dyna-and-dynaq.html#cb110-44" tabindex="-1"></a>          a_plan <span class="ot">&lt;-</span> sa_sample[<span class="dv">2</span>]</span>
+<span id="cb110-45"><a href="dyna-and-dynaq.html#cb110-45" tabindex="-1"></a>          </span>
+<span id="cb110-46"><a href="dyna-and-dynaq.html#cb110-46" tabindex="-1"></a>          <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(model_T[s_plan, a_plan])) {</span>
+<span id="cb110-47"><a href="dyna-and-dynaq.html#cb110-47" tabindex="-1"></a>            s_prime_plan <span class="ot">&lt;-</span> model_T[s_plan, a_plan]</span>
+<span id="cb110-48"><a href="dyna-and-dynaq.html#cb110-48" tabindex="-1"></a>            r_plan <span class="ot">&lt;-</span> model_R[s_plan, a_plan]</span>
+<span id="cb110-49"><a href="dyna-and-dynaq.html#cb110-49" tabindex="-1"></a>            </span>
+<span id="cb110-50"><a href="dyna-and-dynaq.html#cb110-50" tabindex="-1"></a>            Q[s_plan, a_plan] <span class="ot">&lt;-</span> Q[s_plan, a_plan] <span class="sc">+</span> </span>
+<span id="cb110-51"><a href="dyna-and-dynaq.html#cb110-51" tabindex="-1"></a>              alpha <span class="sc">*</span> (r_plan <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime_plan, ]) <span class="sc">-</span> Q[s_plan, a_plan])</span>
+<span id="cb110-52"><a href="dyna-and-dynaq.html#cb110-52" tabindex="-1"></a>          }</span>
+<span id="cb110-53"><a href="dyna-and-dynaq.html#cb110-53" tabindex="-1"></a>        }</span>
+<span id="cb110-54"><a href="dyna-and-dynaq.html#cb110-54" tabindex="-1"></a>      }</span>
+<span id="cb110-55"><a href="dyna-and-dynaq.html#cb110-55" tabindex="-1"></a>      </span>
+<span id="cb110-56"><a href="dyna-and-dynaq.html#cb110-56" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb110-57"><a href="dyna-and-dynaq.html#cb110-57" tabindex="-1"></a>    }</span>
+<span id="cb110-58"><a href="dyna-and-dynaq.html#cb110-58" tabindex="-1"></a>    </span>
+<span id="cb110-59"><a href="dyna-and-dynaq.html#cb110-59" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
+<span id="cb110-60"><a href="dyna-and-dynaq.html#cb110-60" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
+<span id="cb110-61"><a href="dyna-and-dynaq.html#cb110-61" tabindex="-1"></a>  }</span>
+<span id="cb110-62"><a href="dyna-and-dynaq.html#cb110-62" tabindex="-1"></a>  </span>
+<span id="cb110-63"><a href="dyna-and-dynaq.html#cb110-63" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
+<span id="cb110-64"><a href="dyna-and-dynaq.html#cb110-64" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
+<span id="cb110-65"><a href="dyna-and-dynaq.html#cb110-65" tabindex="-1"></a>}</span>
+<span id="cb110-66"><a href="dyna-and-dynaq.html#cb110-66" tabindex="-1"></a></span>
+<span id="cb110-67"><a href="dyna-and-dynaq.html#cb110-67" tabindex="-1"></a><span class="co"># Q-Learning with performance tracking</span></span>
+<span id="cb110-68"><a href="dyna-and-dynaq.html#cb110-68" tabindex="-1"></a>q_learning <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">episodes =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>, <span class="at">epsilon =</span> <span class="fl">0.1</span>) {</span>
+<span id="cb110-69"><a href="dyna-and-dynaq.html#cb110-69" tabindex="-1"></a>  Q <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_states, <span class="at">ncol =</span> n_actions)</span>
+<span id="cb110-70"><a href="dyna-and-dynaq.html#cb110-70" tabindex="-1"></a>  episode_rewards <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb110-71"><a href="dyna-and-dynaq.html#cb110-71" tabindex="-1"></a>  episode_steps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(episodes)</span>
+<span id="cb110-72"><a href="dyna-and-dynaq.html#cb110-72" tabindex="-1"></a>  </span>
+<span id="cb110-73"><a href="dyna-and-dynaq.html#cb110-73" tabindex="-1"></a>  <span class="cf">for</span> (ep <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>episodes) {</span>
+<span id="cb110-74"><a href="dyna-and-dynaq.html#cb110-74" tabindex="-1"></a>    s <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb110-75"><a href="dyna-and-dynaq.html#cb110-75" tabindex="-1"></a>    total_reward <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb110-76"><a href="dyna-and-dynaq.html#cb110-76" tabindex="-1"></a>    steps <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb110-77"><a href="dyna-and-dynaq.html#cb110-77" tabindex="-1"></a>    </span>
+<span id="cb110-78"><a href="dyna-and-dynaq.html#cb110-78" tabindex="-1"></a>    <span class="cf">while</span> (s <span class="sc">!=</span> terminal_state <span class="sc">&amp;&amp;</span> steps <span class="sc">&lt;</span> <span class="dv">100</span>) {</span>
+<span id="cb110-79"><a href="dyna-and-dynaq.html#cb110-79" tabindex="-1"></a>      a <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> epsilon) <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n_actions, <span class="dv">1</span>) <span class="cf">else</span> <span class="fu">which.max</span>(Q[s, ])</span>
+<span id="cb110-80"><a href="dyna-and-dynaq.html#cb110-80" tabindex="-1"></a>      outcome <span class="ot">&lt;-</span> <span class="fu">sample_env</span>(s, a)</span>
+<span id="cb110-81"><a href="dyna-and-dynaq.html#cb110-81" tabindex="-1"></a>      s_prime <span class="ot">&lt;-</span> outcome<span class="sc">$</span>s_prime</span>
+<span id="cb110-82"><a href="dyna-and-dynaq.html#cb110-82" tabindex="-1"></a>      r <span class="ot">&lt;-</span> outcome<span class="sc">$</span>reward</span>
+<span id="cb110-83"><a href="dyna-and-dynaq.html#cb110-83" tabindex="-1"></a>      </span>
+<span id="cb110-84"><a href="dyna-and-dynaq.html#cb110-84" tabindex="-1"></a>      total_reward <span class="ot">&lt;-</span> total_reward <span class="sc">+</span> r</span>
+<span id="cb110-85"><a href="dyna-and-dynaq.html#cb110-85" tabindex="-1"></a>      steps <span class="ot">&lt;-</span> steps <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb110-86"><a href="dyna-and-dynaq.html#cb110-86" tabindex="-1"></a>      </span>
+<span id="cb110-87"><a href="dyna-and-dynaq.html#cb110-87" tabindex="-1"></a>      Q[s, a] <span class="ot">&lt;-</span> Q[s, a] <span class="sc">+</span> alpha <span class="sc">*</span> (r <span class="sc">+</span> gamma <span class="sc">*</span> <span class="fu">max</span>(Q[s_prime, ]) <span class="sc">-</span> Q[s, a])</span>
+<span id="cb110-88"><a href="dyna-and-dynaq.html#cb110-88" tabindex="-1"></a>      s <span class="ot">&lt;-</span> s_prime</span>
+<span id="cb110-89"><a href="dyna-and-dynaq.html#cb110-89" tabindex="-1"></a>    }</span>
+<span id="cb110-90"><a href="dyna-and-dynaq.html#cb110-90" tabindex="-1"></a>    </span>
+<span id="cb110-91"><a href="dyna-and-dynaq.html#cb110-91" tabindex="-1"></a>    episode_rewards[ep] <span class="ot">&lt;-</span> total_reward</span>
+<span id="cb110-92"><a href="dyna-and-dynaq.html#cb110-92" tabindex="-1"></a>    episode_steps[ep] <span class="ot">&lt;-</span> steps</span>
+<span id="cb110-93"><a href="dyna-and-dynaq.html#cb110-93" tabindex="-1"></a>  }</span>
+<span id="cb110-94"><a href="dyna-and-dynaq.html#cb110-94" tabindex="-1"></a>  </span>
+<span id="cb110-95"><a href="dyna-and-dynaq.html#cb110-95" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">Q =</span> Q, <span class="at">policy =</span> <span class="fu">apply</span>(Q, <span class="dv">1</span>, which.max), </span>
+<span id="cb110-96"><a href="dyna-and-dynaq.html#cb110-96" tabindex="-1"></a>       <span class="at">episode_rewards =</span> episode_rewards, <span class="at">episode_steps =</span> episode_steps)</span>
+<span id="cb110-97"><a href="dyna-and-dynaq.html#cb110-97" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 </div>
 <div id="experimental-analysis" class="section level2 hasAnchor" number="9.4">
@@ -630,38 +628,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="learning-efficiency-comparison" class="section level3 hasAnchor" number="9.4.1">
 <h3><span class="header-section-number">9.4.1</span> Learning Efficiency Comparison<a href="dyna-and-dynaq.html#learning-efficiency-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We compare Dyna-Q against standard Q-Learning across different numbers of planning steps:</p>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="dyna-and-dynaq.html#cb113-1" tabindex="-1"></a><span class="co"># Run comprehensive experiments</span></span>
-<span id="cb113-2"><a href="dyna-and-dynaq.html#cb113-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb113-3"><a href="dyna-and-dynaq.html#cb113-3" tabindex="-1"></a>n_runs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb113-4"><a href="dyna-and-dynaq.html#cb113-4" tabindex="-1"></a>episodes <span class="ot">&lt;-</span> <span class="dv">300</span></span>
-<span id="cb113-5"><a href="dyna-and-dynaq.html#cb113-5" tabindex="-1"></a></span>
-<span id="cb113-6"><a href="dyna-and-dynaq.html#cb113-6" tabindex="-1"></a><span class="co"># Initialize results storage</span></span>
-<span id="cb113-7"><a href="dyna-and-dynaq.html#cb113-7" tabindex="-1"></a>all_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb113-8"><a href="dyna-and-dynaq.html#cb113-8" tabindex="-1"></a></span>
-<span id="cb113-9"><a href="dyna-and-dynaq.html#cb113-9" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Running experiments...&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="dyna-and-dynaq.html#cb111-1" tabindex="-1"></a><span class="co"># Run comprehensive experiments</span></span>
+<span id="cb111-2"><a href="dyna-and-dynaq.html#cb111-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb111-3"><a href="dyna-and-dynaq.html#cb111-3" tabindex="-1"></a>n_runs <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb111-4"><a href="dyna-and-dynaq.html#cb111-4" tabindex="-1"></a>episodes <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb111-5"><a href="dyna-and-dynaq.html#cb111-5" tabindex="-1"></a></span>
+<span id="cb111-6"><a href="dyna-and-dynaq.html#cb111-6" tabindex="-1"></a><span class="co"># Initialize results storage</span></span>
+<span id="cb111-7"><a href="dyna-and-dynaq.html#cb111-7" tabindex="-1"></a>all_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb111-8"><a href="dyna-and-dynaq.html#cb111-8" tabindex="-1"></a></span>
+<span id="cb111-9"><a href="dyna-and-dynaq.html#cb111-9" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Running experiments...&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] &quot;Running experiments...&quot;</code></pre>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="dyna-and-dynaq.html#cb115-1" tabindex="-1"></a><span class="cf">for</span> (run <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_runs) {</span>
-<span id="cb115-2"><a href="dyna-and-dynaq.html#cb115-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Run&quot;</span>, run, <span class="st">&quot;of&quot;</span>, n_runs, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb115-3"><a href="dyna-and-dynaq.html#cb115-3" tabindex="-1"></a>  </span>
-<span id="cb115-4"><a href="dyna-and-dynaq.html#cb115-4" tabindex="-1"></a>  <span class="co"># Run algorithms</span></span>
-<span id="cb115-5"><a href="dyna-and-dynaq.html#cb115-5" tabindex="-1"></a>  ql_result <span class="ot">&lt;-</span> <span class="fu">q_learning</span>(<span class="at">episodes =</span> episodes)</span>
-<span id="cb115-6"><a href="dyna-and-dynaq.html#cb115-6" tabindex="-1"></a>  dyna5_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">5</span>)</span>
-<span id="cb115-7"><a href="dyna-and-dynaq.html#cb115-7" tabindex="-1"></a>  dyna10_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">10</span>)</span>
-<span id="cb115-8"><a href="dyna-and-dynaq.html#cb115-8" tabindex="-1"></a>  dyna20_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">20</span>)</span>
-<span id="cb115-9"><a href="dyna-and-dynaq.html#cb115-9" tabindex="-1"></a>  </span>
-<span id="cb115-10"><a href="dyna-and-dynaq.html#cb115-10" tabindex="-1"></a>  <span class="co"># Store results</span></span>
-<span id="cb115-11"><a href="dyna-and-dynaq.html#cb115-11" tabindex="-1"></a>  run_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb115-12"><a href="dyna-and-dynaq.html#cb115-12" tabindex="-1"></a>    <span class="at">episode =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>episodes, <span class="dv">4</span>),</span>
-<span id="cb115-13"><a href="dyna-and-dynaq.html#cb115-13" tabindex="-1"></a>    <span class="at">run =</span> run,</span>
-<span id="cb115-14"><a href="dyna-and-dynaq.html#cb115-14" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span>, <span class="st">&quot;Dyna-Q (n=10)&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span>), <span class="at">each =</span> episodes),</span>
-<span id="cb115-15"><a href="dyna-and-dynaq.html#cb115-15" tabindex="-1"></a>    <span class="at">reward =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_rewards, dyna5_result<span class="sc">$</span>episode_rewards, </span>
-<span id="cb115-16"><a href="dyna-and-dynaq.html#cb115-16" tabindex="-1"></a>               dyna10_result<span class="sc">$</span>episode_rewards, dyna20_result<span class="sc">$</span>episode_rewards),</span>
-<span id="cb115-17"><a href="dyna-and-dynaq.html#cb115-17" tabindex="-1"></a>    <span class="at">steps =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_steps, dyna5_result<span class="sc">$</span>episode_steps,</span>
-<span id="cb115-18"><a href="dyna-and-dynaq.html#cb115-18" tabindex="-1"></a>              dyna10_result<span class="sc">$</span>episode_steps, dyna20_result<span class="sc">$</span>episode_steps)</span>
-<span id="cb115-19"><a href="dyna-and-dynaq.html#cb115-19" tabindex="-1"></a>  )</span>
-<span id="cb115-20"><a href="dyna-and-dynaq.html#cb115-20" tabindex="-1"></a>  </span>
-<span id="cb115-21"><a href="dyna-and-dynaq.html#cb115-21" tabindex="-1"></a>  all_results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_results, run_data)</span>
-<span id="cb115-22"><a href="dyna-and-dynaq.html#cb115-22" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="dyna-and-dynaq.html#cb113-1" tabindex="-1"></a><span class="cf">for</span> (run <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_runs) {</span>
+<span id="cb113-2"><a href="dyna-and-dynaq.html#cb113-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Run&quot;</span>, run, <span class="st">&quot;of&quot;</span>, n_runs, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb113-3"><a href="dyna-and-dynaq.html#cb113-3" tabindex="-1"></a>  </span>
+<span id="cb113-4"><a href="dyna-and-dynaq.html#cb113-4" tabindex="-1"></a>  <span class="co"># Run algorithms</span></span>
+<span id="cb113-5"><a href="dyna-and-dynaq.html#cb113-5" tabindex="-1"></a>  ql_result <span class="ot">&lt;-</span> <span class="fu">q_learning</span>(<span class="at">episodes =</span> episodes)</span>
+<span id="cb113-6"><a href="dyna-and-dynaq.html#cb113-6" tabindex="-1"></a>  dyna5_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">5</span>)</span>
+<span id="cb113-7"><a href="dyna-and-dynaq.html#cb113-7" tabindex="-1"></a>  dyna10_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">10</span>)</span>
+<span id="cb113-8"><a href="dyna-and-dynaq.html#cb113-8" tabindex="-1"></a>  dyna20_result <span class="ot">&lt;-</span> <span class="fu">dyna_q</span>(<span class="at">episodes =</span> episodes, <span class="at">n_planning =</span> <span class="dv">20</span>)</span>
+<span id="cb113-9"><a href="dyna-and-dynaq.html#cb113-9" tabindex="-1"></a>  </span>
+<span id="cb113-10"><a href="dyna-and-dynaq.html#cb113-10" tabindex="-1"></a>  <span class="co"># Store results</span></span>
+<span id="cb113-11"><a href="dyna-and-dynaq.html#cb113-11" tabindex="-1"></a>  run_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb113-12"><a href="dyna-and-dynaq.html#cb113-12" tabindex="-1"></a>    <span class="at">episode =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>episodes, <span class="dv">4</span>),</span>
+<span id="cb113-13"><a href="dyna-and-dynaq.html#cb113-13" tabindex="-1"></a>    <span class="at">run =</span> run,</span>
+<span id="cb113-14"><a href="dyna-and-dynaq.html#cb113-14" tabindex="-1"></a>    <span class="at">algorithm =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span>, <span class="st">&quot;Dyna-Q (n=10)&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span>), <span class="at">each =</span> episodes),</span>
+<span id="cb113-15"><a href="dyna-and-dynaq.html#cb113-15" tabindex="-1"></a>    <span class="at">reward =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_rewards, dyna5_result<span class="sc">$</span>episode_rewards, </span>
+<span id="cb113-16"><a href="dyna-and-dynaq.html#cb113-16" tabindex="-1"></a>               dyna10_result<span class="sc">$</span>episode_rewards, dyna20_result<span class="sc">$</span>episode_rewards),</span>
+<span id="cb113-17"><a href="dyna-and-dynaq.html#cb113-17" tabindex="-1"></a>    <span class="at">steps =</span> <span class="fu">c</span>(ql_result<span class="sc">$</span>episode_steps, dyna5_result<span class="sc">$</span>episode_steps,</span>
+<span id="cb113-18"><a href="dyna-and-dynaq.html#cb113-18" tabindex="-1"></a>              dyna10_result<span class="sc">$</span>episode_steps, dyna20_result<span class="sc">$</span>episode_steps)</span>
+<span id="cb113-19"><a href="dyna-and-dynaq.html#cb113-19" tabindex="-1"></a>  )</span>
+<span id="cb113-20"><a href="dyna-and-dynaq.html#cb113-20" tabindex="-1"></a>  </span>
+<span id="cb113-21"><a href="dyna-and-dynaq.html#cb113-21" tabindex="-1"></a>  all_results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_results, run_data)</span>
+<span id="cb113-22"><a href="dyna-and-dynaq.html#cb113-22" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Run 1 of 20 
 ## Run 2 of 20 
 ## Run 3 of 20 
@@ -682,97 +680,83 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Run 18 of 20 
 ## Run 19 of 20 
 ## Run 20 of 20</code></pre>
-<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="dyna-and-dynaq.html#cb117-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:gridExtra&#39;:
-## 
-##     combine</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="dyna-and-dynaq.html#cb122-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb122-2"><a href="dyna-and-dynaq.html#cb122-2" tabindex="-1"></a></span>
-<span id="cb122-3"><a href="dyna-and-dynaq.html#cb122-3" tabindex="-1"></a><span class="co"># Compute smoothed averages</span></span>
-<span id="cb122-4"><a href="dyna-and-dynaq.html#cb122-4" tabindex="-1"></a>smoothed_results <span class="ot">&lt;-</span> all_results <span class="sc">%&gt;%</span></span>
-<span id="cb122-5"><a href="dyna-and-dynaq.html#cb122-5" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm, episode) <span class="sc">%&gt;%</span></span>
-<span id="cb122-6"><a href="dyna-and-dynaq.html#cb122-6" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb122-7"><a href="dyna-and-dynaq.html#cb122-7" tabindex="-1"></a>    <span class="at">mean_reward =</span> <span class="fu">mean</span>(reward),</span>
-<span id="cb122-8"><a href="dyna-and-dynaq.html#cb122-8" tabindex="-1"></a>    <span class="at">se_reward =</span> <span class="fu">sd</span>(reward) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">n</span>()),</span>
-<span id="cb122-9"><a href="dyna-and-dynaq.html#cb122-9" tabindex="-1"></a>    <span class="at">mean_steps =</span> <span class="fu">mean</span>(steps),</span>
-<span id="cb122-10"><a href="dyna-and-dynaq.html#cb122-10" tabindex="-1"></a>    <span class="at">se_steps =</span> <span class="fu">sd</span>(steps) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">n</span>()),</span>
-<span id="cb122-11"><a href="dyna-and-dynaq.html#cb122-11" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span></span>
-<span id="cb122-12"><a href="dyna-and-dynaq.html#cb122-12" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb122-13"><a href="dyna-and-dynaq.html#cb122-13" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm) <span class="sc">%&gt;%</span></span>
-<span id="cb122-14"><a href="dyna-and-dynaq.html#cb122-14" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb122-15"><a href="dyna-and-dynaq.html#cb122-15" tabindex="-1"></a>    <span class="at">smooth_reward =</span> stats<span class="sc">::</span><span class="fu">filter</span>(mean_reward, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>, <span class="dv">10</span>), <span class="at">sides =</span> <span class="dv">2</span>),</span>
-<span id="cb122-16"><a href="dyna-and-dynaq.html#cb122-16" tabindex="-1"></a>    <span class="at">smooth_steps =</span> stats<span class="sc">::</span><span class="fu">filter</span>(mean_steps, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>, <span class="dv">10</span>), <span class="at">sides =</span> <span class="dv">2</span>)</span>
-<span id="cb122-17"><a href="dyna-and-dynaq.html#cb122-17" tabindex="-1"></a>  )</span>
-<span id="cb122-18"><a href="dyna-and-dynaq.html#cb122-18" tabindex="-1"></a></span>
-<span id="cb122-19"><a href="dyna-and-dynaq.html#cb122-19" tabindex="-1"></a><span class="co"># Create comprehensive visualization</span></span>
-<span id="cb122-20"><a href="dyna-and-dynaq.html#cb122-20" tabindex="-1"></a><span class="co"># Plot 1: Learning Curves (Rewards)</span></span>
-<span id="cb122-21"><a href="dyna-and-dynaq.html#cb122-21" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(smoothed_results, <span class="fu">aes</span>(<span class="at">x =</span> episode, <span class="at">y =</span> mean_reward, <span class="at">color =</span> algorithm)) <span class="sc">+</span></span>
-<span id="cb122-22"><a href="dyna-and-dynaq.html#cb122-22" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb122-23"><a href="dyna-and-dynaq.html#cb122-23" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_reward <span class="sc">-</span> se_reward, <span class="at">ymax =</span> mean_reward <span class="sc">+</span> se_reward, <span class="at">fill =</span> algorithm), </span>
-<span id="cb122-24"><a href="dyna-and-dynaq.html#cb122-24" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb122-25"><a href="dyna-and-dynaq.html#cb122-25" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
-<span id="cb122-26"><a href="dyna-and-dynaq.html#cb122-26" tabindex="-1"></a>                                <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb122-27"><a href="dyna-and-dynaq.html#cb122-27" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
-<span id="cb122-28"><a href="dyna-and-dynaq.html#cb122-28" tabindex="-1"></a>                               <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb122-29"><a href="dyna-and-dynaq.html#cb122-29" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Performance: Average Episode Rewards&quot;</span>,</span>
-<span id="cb122-30"><a href="dyna-and-dynaq.html#cb122-30" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Reward per Episode&quot;</span>,</span>
-<span id="cb122-31"><a href="dyna-and-dynaq.html#cb122-31" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Algorithm&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Algorithm&quot;</span>) <span class="sc">+</span></span>
-<span id="cb122-32"><a href="dyna-and-dynaq.html#cb122-32" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb122-33"><a href="dyna-and-dynaq.html#cb122-33" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
-<span id="cb122-34"><a href="dyna-and-dynaq.html#cb122-34" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
-<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-## ℹ Please use `linewidth` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="dyna-and-dynaq.html#cb124-1" tabindex="-1"></a><span class="co"># Plot 2: Steps to Terminal (Efficiency)</span></span>
-<span id="cb124-2"><a href="dyna-and-dynaq.html#cb124-2" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(smoothed_results, <span class="fu">aes</span>(<span class="at">x =</span> episode, <span class="at">y =</span> mean_steps, <span class="at">color =</span> algorithm)) <span class="sc">+</span></span>
-<span id="cb124-3"><a href="dyna-and-dynaq.html#cb124-3" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb124-4"><a href="dyna-and-dynaq.html#cb124-4" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_steps <span class="sc">-</span> se_steps, <span class="at">ymax =</span> mean_steps <span class="sc">+</span> se_steps, <span class="at">fill =</span> algorithm), </span>
-<span id="cb124-5"><a href="dyna-and-dynaq.html#cb124-5" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb124-6"><a href="dyna-and-dynaq.html#cb124-6" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
-<span id="cb124-7"><a href="dyna-and-dynaq.html#cb124-7" tabindex="-1"></a>                                <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb124-8"><a href="dyna-and-dynaq.html#cb124-8" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
-<span id="cb124-9"><a href="dyna-and-dynaq.html#cb124-9" tabindex="-1"></a>                               <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb124-10"><a href="dyna-and-dynaq.html#cb124-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Efficiency: Steps to Reach Terminal State&quot;</span>,</span>
-<span id="cb124-11"><a href="dyna-and-dynaq.html#cb124-11" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Steps per Episode&quot;</span>,</span>
-<span id="cb124-12"><a href="dyna-and-dynaq.html#cb124-12" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Algorithm&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Algorithm&quot;</span>) <span class="sc">+</span></span>
-<span id="cb124-13"><a href="dyna-and-dynaq.html#cb124-13" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb124-14"><a href="dyna-and-dynaq.html#cb124-14" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
-<span id="cb124-15"><a href="dyna-and-dynaq.html#cb124-15" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
-<span id="cb124-16"><a href="dyna-and-dynaq.html#cb124-16" tabindex="-1"></a></span>
-<span id="cb124-17"><a href="dyna-and-dynaq.html#cb124-17" tabindex="-1"></a><span class="co"># Plot 3: Final performance comparison (last 50 episodes)</span></span>
-<span id="cb124-18"><a href="dyna-and-dynaq.html#cb124-18" tabindex="-1"></a>final_performance <span class="ot">&lt;-</span> all_results <span class="sc">%&gt;%</span></span>
-<span id="cb124-19"><a href="dyna-and-dynaq.html#cb124-19" tabindex="-1"></a>  <span class="fu">filter</span>(episode <span class="sc">&gt;</span> episodes <span class="sc">-</span> <span class="dv">50</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb124-20"><a href="dyna-and-dynaq.html#cb124-20" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm, run) <span class="sc">%&gt;%</span></span>
-<span id="cb124-21"><a href="dyna-and-dynaq.html#cb124-21" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_reward =</span> <span class="fu">mean</span>(reward), <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span>)</span>
-<span id="cb124-22"><a href="dyna-and-dynaq.html#cb124-22" tabindex="-1"></a></span>
-<span id="cb124-23"><a href="dyna-and-dynaq.html#cb124-23" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(final_performance, <span class="fu">aes</span>(<span class="at">x =</span> algorithm, <span class="at">y =</span> avg_reward, <span class="at">fill =</span> algorithm)) <span class="sc">+</span></span>
-<span id="cb124-24"><a href="dyna-and-dynaq.html#cb124-24" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb124-25"><a href="dyna-and-dynaq.html#cb124-25" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb124-26"><a href="dyna-and-dynaq.html#cb124-26" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
-<span id="cb124-27"><a href="dyna-and-dynaq.html#cb124-27" tabindex="-1"></a>                               <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb124-28"><a href="dyna-and-dynaq.html#cb124-28" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Final Performance Comparison (Last 50 Episodes)&quot;</span>,</span>
-<span id="cb124-29"><a href="dyna-and-dynaq.html#cb124-29" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Algorithm&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Reward&quot;</span>,</span>
-<span id="cb124-30"><a href="dyna-and-dynaq.html#cb124-30" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Algorithm&quot;</span>) <span class="sc">+</span></span>
-<span id="cb124-31"><a href="dyna-and-dynaq.html#cb124-31" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb124-32"><a href="dyna-and-dynaq.html#cb124-32" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
-<span id="cb124-33"><a href="dyna-and-dynaq.html#cb124-33" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb124-34"><a href="dyna-and-dynaq.html#cb124-34" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
-<span id="cb124-35"><a href="dyna-and-dynaq.html#cb124-35" tabindex="-1"></a></span>
-<span id="cb124-36"><a href="dyna-and-dynaq.html#cb124-36" tabindex="-1"></a><span class="co"># Display all plots</span></span>
-<span id="cb124-37"><a href="dyna-and-dynaq.html#cb124-37" tabindex="-1"></a><span class="fu">print</span>(p1)</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="dyna-and-dynaq.html#cb115-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb115-2"><a href="dyna-and-dynaq.html#cb115-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb115-3"><a href="dyna-and-dynaq.html#cb115-3" tabindex="-1"></a></span>
+<span id="cb115-4"><a href="dyna-and-dynaq.html#cb115-4" tabindex="-1"></a><span class="co"># Compute smoothed averages</span></span>
+<span id="cb115-5"><a href="dyna-and-dynaq.html#cb115-5" tabindex="-1"></a>smoothed_results <span class="ot">&lt;-</span> all_results <span class="sc">%&gt;%</span></span>
+<span id="cb115-6"><a href="dyna-and-dynaq.html#cb115-6" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm, episode) <span class="sc">%&gt;%</span></span>
+<span id="cb115-7"><a href="dyna-and-dynaq.html#cb115-7" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb115-8"><a href="dyna-and-dynaq.html#cb115-8" tabindex="-1"></a>    <span class="at">mean_reward =</span> <span class="fu">mean</span>(reward),</span>
+<span id="cb115-9"><a href="dyna-and-dynaq.html#cb115-9" tabindex="-1"></a>    <span class="at">se_reward =</span> <span class="fu">sd</span>(reward) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">n</span>()),</span>
+<span id="cb115-10"><a href="dyna-and-dynaq.html#cb115-10" tabindex="-1"></a>    <span class="at">mean_steps =</span> <span class="fu">mean</span>(steps),</span>
+<span id="cb115-11"><a href="dyna-and-dynaq.html#cb115-11" tabindex="-1"></a>    <span class="at">se_steps =</span> <span class="fu">sd</span>(steps) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">n</span>()),</span>
+<span id="cb115-12"><a href="dyna-and-dynaq.html#cb115-12" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span></span>
+<span id="cb115-13"><a href="dyna-and-dynaq.html#cb115-13" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb115-14"><a href="dyna-and-dynaq.html#cb115-14" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm) <span class="sc">%&gt;%</span></span>
+<span id="cb115-15"><a href="dyna-and-dynaq.html#cb115-15" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb115-16"><a href="dyna-and-dynaq.html#cb115-16" tabindex="-1"></a>    <span class="at">smooth_reward =</span> stats<span class="sc">::</span><span class="fu">filter</span>(mean_reward, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>, <span class="dv">10</span>), <span class="at">sides =</span> <span class="dv">2</span>),</span>
+<span id="cb115-17"><a href="dyna-and-dynaq.html#cb115-17" tabindex="-1"></a>    <span class="at">smooth_steps =</span> stats<span class="sc">::</span><span class="fu">filter</span>(mean_steps, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>, <span class="dv">10</span>), <span class="at">sides =</span> <span class="dv">2</span>)</span>
+<span id="cb115-18"><a href="dyna-and-dynaq.html#cb115-18" tabindex="-1"></a>  )</span>
+<span id="cb115-19"><a href="dyna-and-dynaq.html#cb115-19" tabindex="-1"></a></span>
+<span id="cb115-20"><a href="dyna-and-dynaq.html#cb115-20" tabindex="-1"></a><span class="co"># Create comprehensive visualization</span></span>
+<span id="cb115-21"><a href="dyna-and-dynaq.html#cb115-21" tabindex="-1"></a><span class="co"># Plot 1: Learning Curves (Rewards)</span></span>
+<span id="cb115-22"><a href="dyna-and-dynaq.html#cb115-22" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(smoothed_results, <span class="fu">aes</span>(<span class="at">x =</span> episode, <span class="at">y =</span> mean_reward, <span class="at">color =</span> algorithm)) <span class="sc">+</span></span>
+<span id="cb115-23"><a href="dyna-and-dynaq.html#cb115-23" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb115-24"><a href="dyna-and-dynaq.html#cb115-24" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_reward <span class="sc">-</span> se_reward, <span class="at">ymax =</span> mean_reward <span class="sc">+</span> se_reward, <span class="at">fill =</span> algorithm), </span>
+<span id="cb115-25"><a href="dyna-and-dynaq.html#cb115-25" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb115-26"><a href="dyna-and-dynaq.html#cb115-26" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
+<span id="cb115-27"><a href="dyna-and-dynaq.html#cb115-27" tabindex="-1"></a>                                <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb115-28"><a href="dyna-and-dynaq.html#cb115-28" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
+<span id="cb115-29"><a href="dyna-and-dynaq.html#cb115-29" tabindex="-1"></a>                               <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb115-30"><a href="dyna-and-dynaq.html#cb115-30" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Performance: Average Episode Rewards&quot;</span>,</span>
+<span id="cb115-31"><a href="dyna-and-dynaq.html#cb115-31" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Reward per Episode&quot;</span>,</span>
+<span id="cb115-32"><a href="dyna-and-dynaq.html#cb115-32" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Algorithm&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Algorithm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb115-33"><a href="dyna-and-dynaq.html#cb115-33" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb115-34"><a href="dyna-and-dynaq.html#cb115-34" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb115-35"><a href="dyna-and-dynaq.html#cb115-35" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
+<span id="cb115-36"><a href="dyna-and-dynaq.html#cb115-36" tabindex="-1"></a></span>
+<span id="cb115-37"><a href="dyna-and-dynaq.html#cb115-37" tabindex="-1"></a><span class="co"># Plot 2: Steps to Terminal (Efficiency)</span></span>
+<span id="cb115-38"><a href="dyna-and-dynaq.html#cb115-38" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(smoothed_results, <span class="fu">aes</span>(<span class="at">x =</span> episode, <span class="at">y =</span> mean_steps, <span class="at">color =</span> algorithm)) <span class="sc">+</span></span>
+<span id="cb115-39"><a href="dyna-and-dynaq.html#cb115-39" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb115-40"><a href="dyna-and-dynaq.html#cb115-40" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_steps <span class="sc">-</span> se_steps, <span class="at">ymax =</span> mean_steps <span class="sc">+</span> se_steps, <span class="at">fill =</span> algorithm), </span>
+<span id="cb115-41"><a href="dyna-and-dynaq.html#cb115-41" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb115-42"><a href="dyna-and-dynaq.html#cb115-42" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
+<span id="cb115-43"><a href="dyna-and-dynaq.html#cb115-43" tabindex="-1"></a>                                <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb115-44"><a href="dyna-and-dynaq.html#cb115-44" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
+<span id="cb115-45"><a href="dyna-and-dynaq.html#cb115-45" tabindex="-1"></a>                               <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb115-46"><a href="dyna-and-dynaq.html#cb115-46" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Learning Efficiency: Steps to Reach Terminal State&quot;</span>,</span>
+<span id="cb115-47"><a href="dyna-and-dynaq.html#cb115-47" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Episode&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Steps per Episode&quot;</span>,</span>
+<span id="cb115-48"><a href="dyna-and-dynaq.html#cb115-48" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Algorithm&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Algorithm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb115-49"><a href="dyna-and-dynaq.html#cb115-49" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb115-50"><a href="dyna-and-dynaq.html#cb115-50" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb115-51"><a href="dyna-and-dynaq.html#cb115-51" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
+<span id="cb115-52"><a href="dyna-and-dynaq.html#cb115-52" tabindex="-1"></a></span>
+<span id="cb115-53"><a href="dyna-and-dynaq.html#cb115-53" tabindex="-1"></a><span class="co"># Plot 3: Final performance comparison (last 50 episodes)</span></span>
+<span id="cb115-54"><a href="dyna-and-dynaq.html#cb115-54" tabindex="-1"></a>final_performance <span class="ot">&lt;-</span> all_results <span class="sc">%&gt;%</span></span>
+<span id="cb115-55"><a href="dyna-and-dynaq.html#cb115-55" tabindex="-1"></a>  <span class="fu">filter</span>(episode <span class="sc">&gt;</span> episodes <span class="sc">-</span> <span class="dv">50</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb115-56"><a href="dyna-and-dynaq.html#cb115-56" tabindex="-1"></a>  <span class="fu">group_by</span>(algorithm, run) <span class="sc">%&gt;%</span></span>
+<span id="cb115-57"><a href="dyna-and-dynaq.html#cb115-57" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_reward =</span> <span class="fu">mean</span>(reward), <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span>)</span>
+<span id="cb115-58"><a href="dyna-and-dynaq.html#cb115-58" tabindex="-1"></a></span>
+<span id="cb115-59"><a href="dyna-and-dynaq.html#cb115-59" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(final_performance, <span class="fu">aes</span>(<span class="at">x =</span> algorithm, <span class="at">y =</span> avg_reward, <span class="at">fill =</span> algorithm)) <span class="sc">+</span></span>
+<span id="cb115-60"><a href="dyna-and-dynaq.html#cb115-60" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb115-61"><a href="dyna-and-dynaq.html#cb115-61" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb115-62"><a href="dyna-and-dynaq.html#cb115-62" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Q-Learning&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E31A1C&quot;</span>, <span class="st">&quot;Dyna-Q (n=5)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1F78B4&quot;</span>, </span>
+<span id="cb115-63"><a href="dyna-and-dynaq.html#cb115-63" tabindex="-1"></a>                               <span class="st">&quot;Dyna-Q (n=10)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#33A02C&quot;</span>, <span class="st">&quot;Dyna-Q (n=20)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#FF7F00&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb115-64"><a href="dyna-and-dynaq.html#cb115-64" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Final Performance Comparison (Last 50 Episodes)&quot;</span>,</span>
+<span id="cb115-65"><a href="dyna-and-dynaq.html#cb115-65" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Algorithm&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Average Reward&quot;</span>,</span>
+<span id="cb115-66"><a href="dyna-and-dynaq.html#cb115-66" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Algorithm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb115-67"><a href="dyna-and-dynaq.html#cb115-67" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb115-68"><a href="dyna-and-dynaq.html#cb115-68" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb115-69"><a href="dyna-and-dynaq.html#cb115-69" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb115-70"><a href="dyna-and-dynaq.html#cb115-70" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb115-71"><a href="dyna-and-dynaq.html#cb115-71" tabindex="-1"></a></span>
+<span id="cb115-72"><a href="dyna-and-dynaq.html#cb115-72" tabindex="-1"></a><span class="co"># Display all plots</span></span>
+<span id="cb115-73"><a href="dyna-and-dynaq.html#cb115-73" tabindex="-1"></a><span class="fu">print</span>(p1)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="dyna-and-dynaq.html#cb125-1" tabindex="-1"></a><span class="fu">print</span>(p2)</span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="dyna-and-dynaq.html#cb116-1" tabindex="-1"></a><span class="fu">print</span>(p2)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="dyna-and-dynaq.html#cb126-1" tabindex="-1"></a><span class="fu">print</span>(p3)</span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="dyna-and-dynaq.html#cb117-1" tabindex="-1"></a><span class="fu">print</span>(p3)</span></code></pre></div>
 <p><img src="bookdownproj_files/figure-html/unnamed-chunk-26-3.png" width="672" /></p>
 </div>
 </div>

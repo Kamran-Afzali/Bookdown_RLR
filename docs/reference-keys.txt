@@ -1,5 +1,5 @@
 tab:unnamed-chunk-33
-tab:unnamed-chunk-50
+tab:unnamed-chunk-49
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -139,10 +139,8 @@ the-average-reward-alternative-theoretical-foundations
 value-functions-in-the-average-reward-setting
 optimality-theory-for-average-reward
 learning-algorithms-for-average-reward
-practical-implementation-server-load-balancing
+practical-implementation-patient-triage-in-emergency-department
 implementation-considerations
-when-to-choose-average-reward-over-discounting
-appendix-a-mathematical-proofs-and-derivations
 convergence-of-average-reward-td-learning
 policy-gradient-theorem-for-average-reward
 optimality-equations-derivation
