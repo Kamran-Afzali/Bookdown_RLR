@@ -2,39 +2,37 @@
 
 ## Introduction
 
-Markov Decision Processes (MDPs) constitute a formal framework for modeling sequential decision-making under uncertainty. Widely applied in operations research, control theory, economics, and artificial intelligence, MDPs encapsulate the dynamics of environments where outcomes are partly stochastic and partly under an agent’s control. At their core, MDPs unify probabilistic transitions, state-contingent rewards, and long-term optimization goals. This post explores MDPs from a computational standpoint, emphasizing Dynamic Programming (DP) methods—particularly Value Iteration—for solving them when the model is fully known. We proceed by defining the mathematical components of MDPs, implementing them in R, and illustrating policy derivation using value iteration. A comparative summary of key aspects of DP methods concludes the post.
+Markov Decision Processes (MDPs) provide a mathematical framework for modeling sequential decision-making under uncertainty. Applied across operations research, control theory, economics, and artificial intelligence, MDPs capture environments where outcomes depend on both stochastic transitions and agent actions. This post explores MDPs from a computational perspective, emphasizing Dynamic Programming (DP) methods—particularly Value Iteration—for solving them when the model is fully known. We define the mathematical components of MDPs, implement them in R, and demonstrate policy derivation using value iteration.
 
-An MDP is formally defined by the tuple \$(S, A, P, R, \gamma)\$, where:
+An MDP is formally defined by the tuple $(S, A, P, R, \gamma)$, where:
 
-* \$S\$: a finite set of states.
-* \$A\$: a finite set of actions.
-* \$P(s'|s, a)\$: the transition probability function—probability of moving to state \$s'\$ given current state \$s\$ and action \$a\$.
-* \$R(s, a, s')\$: the reward received after transitioning from state \$s\$ to \$s'\$ via action \$a\$.
-* \$\gamma \in \[0,1]\$: the discount factor, representing the agent’s preference for immediate versus delayed rewards.
+* $S$: a finite set of states
+* $A$: a finite set of actions
+* $P(s'|s, a)$: the transition probability of moving to state $s'$ given current state $s$ and action $a$
+* $R(s, a, s')$: the reward received after transitioning from $s$ to $s'$ via action $a$
+* $\gamma \in [0,1]$: the discount factor, representing preference for immediate versus delayed rewards
 
-The agent’s objective is to learn a policy \$\pi: S \to A\$ that maximizes the expected cumulative discounted reward:
+The agent's objective is to learn a policy $\pi: S \to A$ that maximizes expected cumulative discounted reward:
 
 $$
 V^\pi(s) = \mathbb{E}_\pi \left[ \sum_{t=0}^{\infty} \gamma^t R(S_t, A_t, S_{t+1}) \,\bigg|\, S_0 = s \right]
 $$
 
-The optimal value function \$V^\*\$ satisfies the Bellman optimality equation:
+The optimal value function $V^*$ satisfies the Bellman optimality equation:
 
 $$
 V^*(s) = \max_{a \in A} \sum_{s' \in S} P(s'|s,a) \left[ R(s,a,s') + \gamma V^*(s') \right]
-
 $$
 
-Once \$V^*\$ is computed, the optimal policy \$\pi^*\$ is obtained via:
+Once $V^*$ is computed, the optimal policy $\pi^*$ follows:
 
 $$
 \pi^*(s) = \arg\max_{a \in A} \sum_{s'} P(s'|s,a) \left[ R(s,a,s') + \gamma V^*(s') \right]
-
 $$
 
 ## Constructing the MDP in R
 
-We now implement an environment with 10 states and 2 actions per state, following stochastic transition and reward dynamics. The final state is absorbing, with no further transitions or rewards.
+We implement an environment with 10 states and 2 actions per state, with stochastic transitions and rewards. The final state is absorbing.
 
 ```{r}
 n_states <- 10
@@ -47,28 +45,34 @@ transition_model <- array(0, dim = c(n_states, n_actions, n_states))
 reward_model <- array(0, dim = c(n_states, n_actions, n_states))
 
 for (s in 1:(n_states - 1)) {
+  # Action 1: 90% forward, 10% random
   transition_model[s, 1, s + 1] <- 0.9
-  transition_model[s, 1, sample(1:n_states, 1)] <- 0.1
-
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.8
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.2
-
+  random_state <- sample(setdiff(1:n_states, s + 1), 1)
+  transition_model[s, 1, random_state] <- 0.1
+  
+  # Action 2: split between two random states
+  random_states <- sample(1:n_states, 2, replace = FALSE)
+  transition_model[s, 2, random_states[1]] <- 0.8
+  transition_model[s, 2, random_states[2]] <- 0.2
+  
+  # Rewards
   for (s_prime in 1:n_states) {
     reward_model[s, 1, s_prime] <- ifelse(s_prime == n_states, 1.0, 0.1 * runif(1))
     reward_model[s, 2, s_prime] <- ifelse(s_prime == n_states, 0.5, 0.05 * runif(1))
   }
 }
 
-transition_model[n_states, , ] <- 0
+# Terminal state: absorbing with no rewards
+transition_model[n_states, , n_states] <- 1
 reward_model[n_states, , ] <- 0
 ```
 
 **Explanation:**
-This block defines the MDP. We create `n_states = 10` with `n_actions = 2`. The transition probabilities are stored in a 3D array, where the first dimension is the current state, the second is the action, and the third is the next state. Action 1 strongly favors moving forward to the next state (90% chance), while Action 2 introduces more randomness (different probabilities to jump to random states). Rewards are drawn randomly, but reaching the terminal state yields higher rewards (1.0 for Action 1 and 0.5 for Action 2). Finally, the terminal state has no outgoing transitions or rewards, making it absorbing.
+This defines the MDP with 10 states and 2 actions. Transition probabilities are stored in a 3D array indexed by current state, action, and next state. Action 1 strongly favors moving forward (90% to next state), while Action 2 distributes probability between random states. Rewards are stochastic, with higher values (1.0 for Action 1, 0.5 for Action 2) upon reaching the terminal state. The terminal state transitions to itself with probability 1 and yields no further rewards.
 
 We define a function to sample from the environment:
 
-```{r}
+```r
 sample_env <- function(s, a) {
   probs <- transition_model[s, a, ]
   s_prime <- sample(1:n_states, 1, prob = probs)
@@ -78,11 +82,11 @@ sample_env <- function(s, a) {
 ```
 
 **Explanation:**
-This function simulates environment dynamics. Given a current state `s` and action `a`, it samples the next state `s_prime` according to the transition probabilities and retrieves the corresponding reward. The function outputs both the next state and the reward, mimicking how an agent would experience interaction with the MDP.
+This function simulates the MDP dynamics. Given state `s` and action `a`, it samples the next state according to transition probabilities and retrieves the corresponding reward, mimicking agent-environment interaction.
 
 ## Value Iteration Algorithm
 
-Value Iteration is a fundamental DP method for computing the optimal value function and deriving the optimal policy. It exploits the Bellman optimality equation through successive approximation.
+Value Iteration is a fundamental DP method that computes the optimal value function through successive approximation of the Bellman optimality equation.
 
 ```{r}
 value_iteration <- function() {
@@ -95,6 +99,7 @@ value_iteration <- function() {
     for (s in 1:(n_states - 1)) {
       v <- V[s]
       q_values <- numeric(n_actions)
+      
       for (a in 1:n_actions) {
         for (s_prime in 1:n_states) {
           q_values[a] <- q_values[a] +
@@ -102,22 +107,25 @@ value_iteration <- function() {
             (reward_model[s, a, s_prime] + gamma * V[s_prime])
         }
       }
+      
       V[s] <- max(q_values)
       policy[s] <- which.max(q_values)
       delta <- max(delta, abs(v - V[s]))
     }
+    
     if (delta < theta) break
   }
+  
   list(V = V, policy = policy)
 }
 ```
 
 **Explanation:**
-This function implements value iteration. It initializes all state values `V` to zero and assigns a default policy of choosing action 1. At each iteration, the algorithm updates the value of each state by computing expected returns for all actions (`q_values`) and taking the maximum. The associated action becomes the new policy for that state. The process continues until the maximum change in values (`delta`) is below the convergence threshold `theta`. The function outputs both the value function and the derived policy.
+This implements value iteration. Starting with zero-initialized values, the algorithm iteratively updates each state's value by computing expected returns for all actions and selecting the maximum. The associated action becomes the policy for that state. Iteration continues until the maximum value change falls below threshold `theta`.
 
-We now apply the algorithm and extract the resulting value function and policy:
+Apply the algorithm:
 
-```{r}
+```r
 dp_result <- value_iteration()
 dp_value <- dp_result$V
 dp_policy <- dp_result$policy
@@ -125,24 +133,59 @@ dp_policy
 ```
 
 **Explanation:**
-Here we run the value iteration function and extract the results. The `dp_value` vector contains the optimal state values, while `dp_policy` indicates the best action to take at each state. Printing `dp_policy` gives us a direct mapping from state to optimal action.
+Running value iteration yields the optimal state values (`dp_value`) and policy (`dp_policy`), providing a complete mapping from states to optimal actions.
 
 ## Evaluation and Interpretation
 
-The policy and value function obtained via value iteration provide complete guidance for optimal behavior in the modeled environment. In this setting:
+The derived policy reflects optimal behavior in this environment. Action 1 typically yields higher long-term returns due to its tendency to reach the high-reward terminal state efficiently. Action 2, introducing more randomness and lower rewards, is optimal only where it offers better expected value. This exemplifies the Bellman principle: every sub-policy of an optimal policy must itself be optimal.
 
-* The forward action (Action 1) is generally rewarded with higher long-term return due to its tendency to reach the terminal (high-reward) state.
-* The second action (Action 2) introduces randomness and lower rewards, thus is optimal only in specific states where it offers a better expected value.
+Visualize the value function:
 
-Such interpretation emphasizes the Bellman principle of optimality: every sub-policy of an optimal policy must itself be optimal for the corresponding subproblem.
-
-We can visualize the value function:
-
-```{r}
+```r
 plot(dp_value, type = "b", col = "blue", pch = 19,
      xlab = "State", ylab = "Value",
      main = "Optimal State Values via Value Iteration")
+grid()
 ```
+
+**Explanation:**
+This plot displays the value function across states. Higher values indicate greater expected long-term returns. The pattern reveals how proximity to the terminal state and the effectiveness of Action 1 drive expected values.
+
+## Theoretical Properties
+
+Value Iteration provides strong guarantees:
+
+* **Convergence**: Guaranteed convergence to $V^*$ for any finite MDP with bounded rewards and $0 \leq \gamma < 1$
+* **Optimality**: The greedy policy derived from $V^*$ is optimal
+* **Complexity**: Each iteration requires $O(S^2 A)$ operations
+
+Practical limitations include:
+
+* Requirement for complete knowledge of $P$ and $R$
+* Infeasibility in large or continuous state spaces (curse of dimensionality)
+
+These constraints motivate approximation methods, sampling-based approaches, and model-free reinforcement learning.
+
+## Summary Table
+
+| **Property**             | **Value Iteration (DP)**                    |
+| ------------------------ | ------------------------------------------- |
+| Model Required           | Yes (transition probabilities and rewards)  |
+| State Representation     | Tabular (explicit state-value storage)      |
+| Action Selection         | Greedy w.r.t. value estimates              |
+| Convergence Guarantee    | Yes (under finite $S, A$, $\gamma < 1$)     |
+| Sample Efficiency        | High (uses full model, no sampling error)   |
+| Scalability              | Poor in large or continuous state spaces    |
+| Output                   | Optimal value function and policy           |
+| Computational Complexity | $O(S^2 A)$ per iteration                    |
+
+## Conclusion
+
+Dynamic Programming offers theoretically grounded algorithms for solving MDPs with complete environment models. Value Iteration leverages the recursive Bellman optimality equation to iteratively compute optimal value functions and policies.
+
+While limited by scalability and model requirements, DP forms the foundation for understanding decision processes. These principles extend naturally to model-free reinforcement learning, function approximation, and policy gradient methods.
+
+Future posts will explore Temporal Difference learning, Monte Carlo methods, and policy optimization—approaches that relax model requirements and enable learning from interaction, opening pathways to real-world applications.
 
 **Explanation:**
 This plot shows the computed value function across all states. Higher values indicate states with greater expected long-term returns under the optimal policy. The shape of the curve helps us see how proximity to the terminal state (and the possibility of reaching it through Action 1) drives up the expected value.
