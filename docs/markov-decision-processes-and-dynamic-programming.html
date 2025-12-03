@@ -23,7 +23,7 @@
 <meta name="author" content="Kamran Afzalui" />
 
 
-<meta name="date" content="2025-12-01" />
+<meta name="date" content="2025-12-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -555,6 +555,7 @@ This implements value iteration. Starting with zero-initialized values, the algo
 <span id="cb7-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-2" tabindex="-1"></a>dp_value <span class="ot">&lt;-</span> dp_result<span class="sc">$</span>V</span>
 <span id="cb7-3"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-3" tabindex="-1"></a>dp_policy <span class="ot">&lt;-</span> dp_result<span class="sc">$</span>policy</span>
 <span id="cb7-4"><a href="markov-decision-processes-and-dynamic-programming.html#cb7-4" tabindex="-1"></a>dp_policy</span></code></pre></div>
+<pre><code>##  [1] 2 2 1 1 2 1 1 1 1 1</code></pre>
 <p><strong>Explanation:</strong>
 Running value iteration yields the optimal state values (<code>dp_value</code>) and policy (<code>dp_policy</code>), providing a complete mapping from states to optimal actions.</p>
 </div>
@@ -562,10 +563,11 @@ Running value iteration yields the optimal state values (<code>dp_value</code>) 
 <h2><span class="header-section-number">3.4</span> Evaluation and Interpretation<a href="markov-decision-processes-and-dynamic-programming.html#evaluation-and-interpretation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The derived policy reflects optimal behavior in this environment. Action 1 typically yields higher long-term returns due to its tendency to reach the high-reward terminal state efficiently. Action 2, introducing more randomness and lower rewards, is optimal only where it offers better expected value. This exemplifies the Bellman principle: every sub-policy of an optimal policy must itself be optimal.</p>
 <p>Visualize the value function:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="markov-decision-processes-and-dynamic-programming.html#cb8-1" tabindex="-1"></a><span class="fu">plot</span>(dp_value, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">19</span>,</span>
-<span id="cb8-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb8-2" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;State&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Value&quot;</span>,</span>
-<span id="cb8-3"><a href="markov-decision-processes-and-dynamic-programming.html#cb8-3" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Optimal State Values via Value Iteration&quot;</span>)</span>
-<span id="cb8-4"><a href="markov-decision-processes-and-dynamic-programming.html#cb8-4" tabindex="-1"></a><span class="fu">grid</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-1" tabindex="-1"></a><span class="fu">plot</span>(dp_value, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">19</span>,</span>
+<span id="cb9-2"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-2" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;State&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Value&quot;</span>,</span>
+<span id="cb9-3"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-3" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Optimal State Values via Value Iteration&quot;</span>)</span>
+<span id="cb9-4"><a href="markov-decision-processes-and-dynamic-programming.html#cb9-4" tabindex="-1"></a><span class="fu">grid</span>()</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p><strong>Explanation:</strong>
 This plot displays the value function across states. Higher values indicate greater expected long-term returns. The pattern reveals how proximity to the terminal state and the effectiveness of Action 1 drive expected values.</p>
 </div>

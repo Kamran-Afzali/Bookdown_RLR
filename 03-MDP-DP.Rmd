@@ -125,7 +125,7 @@ This implements value iteration. Starting with zero-initialized values, the algo
 
 Apply the algorithm:
 
-```r
+```{r}
 dp_result <- value_iteration()
 dp_value <- dp_result$V
 dp_policy <- dp_result$policy
@@ -141,7 +141,7 @@ The derived policy reflects optimal behavior in this environment. Action 1 typic
 
 Visualize the value function:
 
-```r
+```{r}
 plot(dp_value, type = "b", col = "blue", pch = 19,
      xlab = "State", ylab = "Value",
      main = "Optimal State Values via Value Iteration")
