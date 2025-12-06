@@ -1,63 +1,25 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
-Of course. Here is the provided text with detailed explanations added
-below each code chunk.
-
 # Model-Free Reinforcement Learning: Temporal Difference and Monte Carlo Methods in R
 
 ## Introduction
 
-In many real-world decision-making problems, the environment
-model—comprising transition probabilities and reward functions—is
-unknown or too complex to specify explicitly. Model-free reinforcement
-learning (RL) methods address this by learning optimal policies directly
-from experience or sample trajectories, without requiring full knowledge
-of the underlying Markov Decision Process (MDP). Two foundational
-model-free methods are **Temporal Difference (TD) learning** and **Monte
-Carlo (MC) methods**. TD learning updates value estimates online based
-on one-step lookahead and bootstrapping, while MC methods learn from
-complete episodes by averaging returns. This post presents these
-approaches with mathematical intuition, R implementations, and an
-illustrative environment. We also compare how learned policies adapt—or
-fail to adapt—when rewards are changed after training, illuminating the
-distinction between goal-directed and habitual learning.
+In many real-world decision-making problems, the environment model—comprising transition probabilities and reward functions—is unknown or too complex to specify explicitly. Model-free reinforcement learning (RL) methods address this by learning optimal policies directly from experience, without requiring full knowledge of the underlying Markov Decision Process (MDP). Two foundational model-free methods are **Temporal Difference (TD) learning** and **Monte Carlo (MC) methods**. TD learning updates value estimates online using one-step lookahead and bootstrapping, while MC methods learn from complete episodes by averaging returns. This post presents these approaches with mathematical intuition, R implementations, and an illustrative environment. We also compare how learned policies adapt—or fail to adapt—when rewards change after training, illuminating the distinction between goal-directed and habitual learning.
 
-## Theoretical Background
-
-Suppose an agent interacts with an environment defined by states $S$,
-actions $A$, a discount factor $\gamma \in [0,1]$, and an unknown MDP
-dynamics. The goal is to learn the action-value function $Q^\pi(s,a)$,
-the expected discounted return starting from state $s$, taking action
-$a$, and following policy $\pi$ thereafter:
+Suppose an agent interacts with an environment defined by states $S$, actions $A$, and a discount factor $\gamma \in [0,1]$. The goal is to learn the action-value function $Q^\pi(s,a)$, the expected discounted return starting from state $s$, taking action $a$, and following policy $\pi$ thereafter:
 $$Q^\pi(s,a) = \mathbb{E}_\pi \left[ \sum_{t=0}^\infty \gamma^t R_{t+1} \mid S_0 = s, A_0 = a \right]$$
 
-### Temporal Difference Learning (Q-Learning)
-
-Q-Learning is an off-policy TD control method that updates the estimate
-$Q(s,a)$ incrementally after each transition:
+Q-Learning is an off-policy TD control method that updates the estimate $Q(s,a)$ incrementally after each transition:
 $$Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a'} Q(s', a') - Q(s,a) \right)$$
-where $\alpha$ is the learning rate, $r$ the reward received, and $s'$
-the next state. This update uses the current estimate of $Q$ at $s'$
-(bootstrapping).
+where $\alpha$ is the learning rate, $r$ the reward received, and $s'$ the next state. This update bootstraps using the current estimate of $Q$ at $s'$.
 
-### Monte Carlo Methods
+Monte Carlo methods learn $Q$ by averaging returns observed after visiting $(s,a)$. Every-visit MC estimates $Q$ by averaging the total discounted return $G_t$ following each occurrence of $(s,a)$ within complete episodes:
+$$Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}$$
+where $N(s,a)$ is the count of visits to $(s,a)$ and $G_t^{(i)}$ is the return following the $i$-th visit.
 
-Monte Carlo methods learn $Q$ by averaging returns observed after
-visiting $(s,a)$. Every-visit MC estimates $Q$ by averaging the total
-discounted return $G_t$ following each occurrence of $(s,a)$ within
-complete episodes:
-$$Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}$$ where
-$N(s,a)$ is the count of visits to $(s,a)$ and $G_t^{(i)}$ is the return
-following the $i$-th visit.
+## Implementation
 
-### Step 1: Defining the Environment in R
+- Step 1: Defining the Environment
 
-We use a 10-state, 2-action environment with stochastic transitions and
-rewards, as in previous work:
+We use a 10-state, 2-action environment with stochastic transitions and rewards:
 
 ```{r}
 # Common settings
@@ -65,22 +27,34 @@ n_states <- 10
 n_actions <- 2
 gamma <- 0.9
 terminal_state <- n_states
+
 # Environment: transition + reward models
 set.seed(42)
 transition_model <- array(0, dim = c(n_states, n_actions, n_states))
 reward_model <- array(0, dim = c(n_states, n_actions, n_states))
+
 for (s in 1:(n_states - 1)) {
+  # Action 1: 90% to next state, 10% to random state
   transition_model[s, 1, s + 1] <- 0.9
-  transition_model[s, 1, sample(1:n_states, 1)] <- 0.1
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.8
-  transition_model[s, 2, sample(1:n_states, 1)] <- 0.2
+  rand_state_1 <- sample(1:n_states, 1)
+  transition_model[s, 1, rand_state_1] <- transition_model[s, 1, rand_state_1] + 0.1
+  
+  # Action 2: 80% and 20% to random states
+  rand_states_2 <- sample(1:n_states, 2, replace = TRUE)
+  transition_model[s, 2, rand_states_2[1]] <- transition_model[s, 2, rand_states_2[1]] + 0.8
+  transition_model[s, 2, rand_states_2[2]] <- transition_model[s, 2, rand_states_2[2]] + 0.2
+  
+  # Rewards
   for (s_prime in 1:n_states) {
     reward_model[s, 1, s_prime] <- ifelse(s_prime == n_states, 1.0, 0.1 * runif(1))
     reward_model[s, 2, s_prime] <- ifelse(s_prime == n_states, 0.5, 0.05 * runif(1))
   }
 }
+
+# Terminal state
 transition_model[n_states, , ] <- 0
 reward_model[n_states, , ] <- 0
+
 # Sampling function
 sample_env <- function(s, a) {
   probs <- transition_model[s, a, ]
@@ -90,43 +64,11 @@ sample_env <- function(s, a) {
 }
 ```
 
-This code chunk sets up the simulation environment.
+This environment simulates stochastic state transitions where action 1 favors forward progress with higher terminal reward, while action 2 introduces more randomness with lower terminal reward.
 
--   **Common settings**: It begins by defining the core parameters of
-    the Markov Decision Process (MDP): 10 states, 2 actions, a discount
-    factor `gamma` of 0.9, and defines the 10th state as the terminal
-    state.
--   **Environment Models**: `set.seed(42)` is used to ensure the random
-    elements are reproducible. It then initializes two 3D arrays,
-    `transition_model` and `reward_model`, to store the environment's
-    dynamics. These arrays define the probability of moving from a state
-    `s` to a next state `s_prime` given an action `a`, and the reward
-    received for doing so.
--   **Populating Models**: The `for` loop defines the transitions and
-    rewards for all non-terminal states. For each state `s`:
-    -   Action 1 has a 90% chance of moving to the next state (`s + 1`)
-        and a 10% chance of moving to a random state. This introduces
-        stochasticity.
-    -   Action 2 has an 80% chance of moving to one random state and a
-        20% chance of moving to another.
-    -   The reward for transitioning to the terminal state is high (1.0
-        for action 1, 0.5 for action 2), while all other transitions
-        yield small, random rewards.
--   **Terminal State**: The transitions and rewards from the terminal
-    state are set to zero, as the episode ends there.
--   **Sampling Function**: The `sample_env` function simulates an
-    agent's interaction with the environment. Given a state `s` and
-    action `a`, it uses the defined probabilities in `transition_model`
-    to sample a next state `s_prime` and returns it along with the
-    corresponding reward from `reward_model`. This function allows the
-    model-free agents to get experience without having direct access to
-    the underlying model arrays.
+- Step 2: Q-Learning Implementation
 
-### Step 2: Q-Learning Implementation in R
-
-The Q-Learning function runs episodes, selects actions using
-$\epsilon$-greedy policy, updates Q-values using the TD rule, and
-outputs a policy by greedy action selection:
+The Q-Learning function runs episodes, selects actions using $\epsilon$-greedy exploration, and updates Q-values using the TD rule:
 
 ```{r}
 q_learning <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
@@ -135,144 +77,88 @@ q_learning <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
   for (ep in 1:episodes) {
     s <- 1
     while (TRUE) {
-      a <- if (runif(1) < epsilon) sample(1:n_actions, 1) else which.max(Q[s, ])
+      # Epsilon-greedy action selection
+      if (runif(1) < epsilon) {
+        a <- sample(1:n_actions, 1)
+      } else {
+        a <- which.max(Q[s, ])
+      }
+      
       out <- sample_env(s, a)
       s_prime <- out$s_prime
       reward <- out$reward
       
+      # TD update
       Q[s, a] <- Q[s, a] + alpha * (reward + gamma * max(Q[s_prime, ]) - Q[s, a])
       
       if (s_prime == n_states) break
       s <- s_prime
     }
   }
+  
   apply(Q, 1, which.max)
 }
-```
 
-This code implements the Q-learning algorithm.
-
--   **Initialization**: The function initializes a Q-table, `Q`, as a
-    matrix of zeros. Rows represent states, and columns represent
-    actions. This table will store the learned action-value estimates.
--   **Episode Loop**: The outer `for` loop runs the learning process for
-    a specified number of `episodes`.
--   **Step Loop**: The inner `while` loop simulates a single episode,
-    starting from state 1. It continues until the agent reaches the
-    terminal state.
--   **Action Selection**: Inside the loop, an action `a` is chosen using
-    an $\epsilon$-greedy strategy. With probability `epsilon`, a random
-    action is selected (exploration); otherwise, the action with the
-    highest current Q-value for state `s` is chosen (exploitation).
--   **Environment Interaction**: The agent takes action `a` by calling
-    `sample_env`, which returns the next state `s_prime` and a `reward`.
--   **Q-Value Update**: This is the core of the algorithm. The Q-value
-    for the state-action pair `(s, a)` is updated using the TD update
-    rule:
-    `Q[s, a] <- Q[s, a] + alpha * (reward + gamma * max(Q[s_prime, ]) - Q[s, a])`.
-    The update is based on the immediate reward and the discounted
-    maximum Q-value of the next state (bootstrapping).
--   **Termination**: The episode breaks if the `s_prime` is the terminal
-    state. Otherwise, the current state `s` is updated to `s_prime`.
--   **Policy Extraction**: After all episodes, the `apply` function is
-    used to extract the final policy. For each state (row), it finds the
-    action (column index) with the maximum Q-value, resulting in the
-    learned optimal policy. Running this yields the learned policy:
-
-<!-- end list -->
-
-```{r}
+# Train Q-Learning
 ql_policy_before <- q_learning()
-ql_policy_before
+print(ql_policy_before)
 ```
 
-This line executes the `q_learning` function with its default parameters
-(1000 episodes, a learning rate of 0.1, and an epsilon of 0.1). The
-resulting optimal policy, which is a vector indicating the best action
-for each state, is stored in the variable `ql_policy_before`.
+- Step 3: Monte Carlo Every-Visit Implementation
 
-### Step 3: Monte Carlo Every-Visit Implementation
-
-This MC method generates episodes, stores the full sequence of
-state-action-reward tuples, and updates $Q$ by averaging discounted
-returns for every visit of $(s,a)$:
+This MC method generates complete episodes and updates $Q$ by averaging discounted returns for every visit of $(s,a)$:
 
 ```{r}
 monte_carlo <- function(episodes = 1000, epsilon = 0.1) {
   Q <- matrix(0, nrow = n_states, ncol = n_actions)
   returns <- vector("list", n_states * n_actions)
-  names(returns) <- paste(rep(1:n_states, each = n_actions), rep(1:n_actions, n_states), sep = "_")
+  names(returns) <- paste(rep(1:n_states, each = n_actions), 
+                          rep(1:n_actions, n_states), sep = "_")
   
   for (ep in 1:episodes) {
     episode <- list()
     s <- 1
+    
+    # Generate episode
     while (TRUE) {
-      a <- if (runif(1) < epsilon) sample(1:n_actions, 1) else which.max(Q[s, ])
+      if (runif(1) < epsilon) {
+        a <- sample(1:n_actions, 1)
+      } else {
+        a <- which.max(Q[s, ])
+      }
+      
       out <- sample_env(s, a)
       episode[[length(episode) + 1]] <- list(state = s, action = a, reward = out$reward)
+      
       if (out$s_prime == n_states) break
       s <- out$s_prime
     }
     
+    # Compute returns backward
     G <- 0
     for (t in length(episode):1) {
       s <- episode[[t]]$state
       a <- episode[[t]]$action
       r <- episode[[t]]$reward
       G <- gamma * G + r
+      
       key <- paste(s, a, sep = "_")
       returns[[key]] <- c(returns[[key]], G)
       Q[s, a] <- mean(returns[[key]])
     }
   }
+  
   apply(Q, 1, which.max)
 }
-```
 
-This code implements the every-visit Monte Carlo control algorithm.
-
--   **Initialization**: It initializes a `Q` table similar to
-    Q-learning. It also creates a named list called `returns`, where
-    each element will store a vector of all returns observed for a
-    specific state-action pair.
--   **Episode Generation**: The first part of the main `for` loop
-    generates a complete episode. Using an $\epsilon$-greedy policy
-    based on the current `Q` table, it simulates steps until the
-    terminal state is reached. The entire trajectory of states, actions,
-    and rewards is stored in the `episode` list.
--   **Return Calculation**: After an episode is complete, the second
-    `for` loop iterates backward from the last step to the first.
-    -   It initializes the total discounted return, `G`, to 0.
-    -   In each step `t` of the backward loop, it updates `G` using the
-        formula `G <- gamma * G + r`. This correctly calculates the
-        discounted return from that time step to the end of the episode.
--   **Q-Value Update**:
-    -   For each state-action pair `(s, a)` encountered in the episode,
-        the calculated return `G` is appended to the corresponding list
-        in `returns`.
-    -   The Q-value `Q[s, a]` is then updated to be the **average** of
-        all returns collected so far for that pair. This is the defining
-        feature of the Monte Carlo method.
--   **Policy Extraction**: Finally, after all episodes, the optimal
-    policy is extracted from the `Q` table by selecting the action with
-    the maximum value for each state. The resulting policy is computed
-    by:
-
-<!-- end list -->
-
-```{r}
+# Train Monte Carlo
 mc_policy_before <- monte_carlo()
-mc_policy_before
+print(mc_policy_before)
 ```
 
-This line calls the `monte_carlo` function with its default parameters.
-It runs the simulation for 1000 episodes and stores the final learned
-policy in the `mc_policy_before` variable.
+- Step 4: Simulating Outcome Devaluation
 
-### Step 4: Simulating Outcome Devaluation
-
-We now alter the environment by removing the reward for reaching the
-terminal state, simulating a devaluation:
+We now alter the environment by removing the terminal reward, simulating devaluation:
 
 ```{r}
 # Devalue terminal reward
@@ -282,110 +168,94 @@ for (s in 1:(n_states - 1)) {
 }
 ```
 
-This code block directly modifies the environment's `reward_model`. The
-`for` loop iterates through all non-terminal states. For each state `s`,
-it sets the reward for any action that leads to the terminal state
-(`n_states`) to 0. This simulates "outcome devaluation," where the
-primary goal of the task is no longer rewarding.
+- Step 5: Dynamic Programming for Comparison
 
-### Step 5: Comparing Policies Before and After Devaluation
-
-We compare policies derived via:
-
--   **Dynamic Programming (DP)** which has full model knowledge and
-    updates instantly after reward changes,
--   **Q-Learning** and **Monte Carlo** which keep their previously
-    learned policies (habitual behavior without retraining).
+First, we implement value iteration to represent model-based learning:
 
 ```{r}
+value_iteration <- function(theta = 0.001, max_iter = 1000) {
+  V <- numeric(n_states)
+  
+  for (iter in 1:max_iter) {
+    delta <- 0
+    for (s in 1:(n_states - 1)) {
+      v <- V[s]
+      action_values <- numeric(n_actions)
+      
+      for (a in 1:n_actions) {
+        action_values[a] <- sum(transition_model[s, a, ] * 
+          (reward_model[s, a, ] + gamma * V))
+      }
+      
+      V[s] <- max(action_values)
+      delta <- max(delta, abs(v - V[s]))
+    }
+    
+    if (delta < theta) break
+  }
+  
+  # Extract policy
+  policy <- numeric(n_states)
+  for (s in 1:(n_states - 1)) {
+    action_values <- numeric(n_actions)
+    for (a in 1:n_actions) {
+      action_values[a] <- sum(transition_model[s, a, ] * 
+        (reward_model[s, a, ] + gamma * V))
+    }
+    policy[s] <- which.max(action_values)
+  }
+  
+  policy
+}
+
+# Compute policies before devaluation
+dp_policy_before <- value_iteration()
+```
+
+Now we compare policies after devaluation. DP recomputes with new rewards, while Q-Learning and Monte Carlo maintain their learned policies without retraining:
+
+```{r}
+# DP recomputes with new rewards
+dp_policy_after <- value_iteration()
+
 # Q-learning and MC keep previous policy (habitual)
 ql_policy_after <- ql_policy_before
 mc_policy_after <- mc_policy_before
 ```
 
-This chunk prepares the policies for comparison after the reward
-devaluation.
+- Step 6: Visualizing the Policies
 
--   **Dynamic Programming**: A call is made to a `value_iteration()`
-    function (assumed to exist elsewhere) to compute the new optimal
-    policy. Because DP is a model-based method, it uses the modified
-    `reward_model` to instantly calculate the best policy for the new
-    circumstances.
--   **Q-Learning and Monte Carlo**: For the model-free methods, no
-    retraining occurs. The "after" policies (`ql_policy_after`,
-    `mc_policy_after`) are simply assigned the values of the policies
-    learned *before* the devaluation (`ql_policy_before`,
-    `mc_policy_before`). This demonstrates that without new experience,
-    these agents will continue to follow their previously learned, now
-    suboptimal, "habitual" policies.
-
-### Step 6: Visualizing the Policies
-
-```r
+```{r}
 plot_policy <- function(policy, label, col = "skyblue") {
   barplot(policy, names.arg = 1:n_states, col = col,
           ylim = c(0, 3), ylab = "Action (1=A1, 2=A2)",
-          main = label)
+          main = label, las = 1)
   abline(h = 1.5, lty = 2, col = "gray")
 }
-par(mfrow = c(3, 2))
+
+par(mfrow = c(3, 2), mar = c(4, 4, 2, 1))
 plot_policy(dp_policy_before, "DP Policy Before")
-plot_policy(dp_policy_after,  "DP Policy After", "lightgreen")
+plot_policy(dp_policy_after, "DP Policy After", "lightgreen")
 plot_policy(ql_policy_before, "Q-Learning Policy Before")
-plot_policy(ql_policy_after,  "Q-Learning Policy After", "orange")
+plot_policy(ql_policy_after, "Q-Learning Policy After", "orange")
 plot_policy(mc_policy_before, "MC Policy Before")
-plot_policy(mc_policy_after,  "MC Policy After", "orchid")
+plot_policy(mc_policy_after, "MC Policy After", "orchid")
 ```
-
-This R code is for visualizing and comparing the different policies.
-
--   **`plot_policy` function**: This is a helper function created to
-    generate a consistent bar plot for any given policy. It takes a
-    policy vector, a title (`label`), and a color (`col`) as input. It
-    creates a bar plot where the x-axis represents the states and the
-    y-axis represents the chosen action (1 or 2). A dashed line is added
-    at y=1.5 to clearly separate the two actions.
--   **`par(mfrow = c(3, 2))`**: This command sets up the graphical
-    parameters to arrange the subsequent plots in a grid of 3 rows and 2
-    columns. This allows for a direct side-by-side comparison of all six
-    policies.
--   **Plotting Calls**: The six calls to `plot_policy` generate the
-    visualizations for the policies from Dynamic Programming,
-    Q-Learning, and Monte Carlo, both before and after the reward
-    devaluation, each with a distinct color and title.
 
 ## Interpretation and Discussion
 
-Dynamic Programming adapts immediately after devaluation because it
-recalculates the policy using the updated reward model. In contrast,
-Q-Learning and Monte Carlo methods, which are model-free and learn from
-past experience, maintain their prior policies unless explicitly
-retrained. This reflects **habitual behavior** — a policy learned from
-experience that does not flexibly adjust to changed outcomes without
-further learning. This illustrates a core difference:
+Dynamic Programming adapts immediately after devaluation because it recalculates the policy using the updated reward model. In contrast, Q-Learning and Monte Carlo methods, which learn from past experience, maintain their prior policies unless explicitly retrained. This reflects **habitual behavior**—a policy learned from experience that does not flexibly adjust to changed outcomes without further learning.
 
--   **Model-based methods** (like DP) support goal-directed behavior,
-    recomputing optimal decisions as the environment changes.
--   **Model-free methods** (like Q-Learning and MC) support habitual
-    behavior, relying on cached values learned from past rewards.
+This illustrates a core difference: **model-based methods** (like DP) support goal-directed behavior, recomputing optimal decisions as the environment changes, while **model-free methods** (like Q-Learning and MC) support habitual behavior, relying on cached values learned from past rewards.
 
-## Conclusion
+Temporal Difference and Monte Carlo methods provide powerful approaches to reinforcement learning when the environment is unknown. TD learning's bootstrapping allows online updates after each transition, while Monte Carlo averages full returns after complete episodes. Both learn policies from experience rather than models. Understanding their differences—particularly in terms of bias-variance tradeoffs and adaptability—is crucial for selecting the right approach for specific problems.
 
-Temporal Difference and Monte Carlo methods provide powerful approaches
-to reinforcement learning when the environment is unknown. TD learning’s
-bootstrapping allows online updates after each transition, while Monte
-Carlo averages full returns after complete episodes. Both learn policies
-from experience rather than models. Future posts will explore extensions
-including function approximation and policy gradient methods.
-
-| **Aspect** | **Monte Carlo (MC)** | **Temporal Difference (Q-Learning)** |
-|----|----|----|
-| **Learning Approach** | Learns from complete episodes by averaging returns after each episode. | Learns incrementally after each state-action transition using bootstrapping. |
-| **Update Rule** | Updates Q-value as the mean of observed returns: <br> $Q(s,a) \approx \frac{1}{N(s,a)} \sum_{i=1}^{N(s,a)} G_t^{(i)}$ | Updates Q-value using TD error: <br> $Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a'} Q(s', a') - Q(s,a) \right)$ |
-| **Episode Requirement** | Requires complete episodes to compute returns ($G_t$). | Does not require complete episodes; updates online after each step. |
-| **Bias and Variance** | Unbiased estimate of Q-value, but high variance due to full episode returns. | Biased due to bootstrapping (relies on current Q estimates), but lower variance. |
-| **Policy Type** | Typically on-policy (e.g., with ε-greedy exploration), but can be adapted for off-policy. | Off-policy; learns optimal policy regardless of exploration policy. |
-| **Computational Efficiency** | Less efficient; must wait for episode completion before updating. | More efficient; updates Q-values immediately after each transition. |
-| **Adaptation to Change** | Slow to adapt to environment changes without retraining, as it relies on past episode returns. | Slow to adapt without retraining, but incremental updates allow faster response to changes. |
-| **Implementation in Code** | Stores state-action-reward sequences, computes discounted returns backward. | Updates Q-values online using immediate reward and next state’s Q-value. |
-| **Example in Provided Code** | Every-visit MC: averages returns for each $(s,a)$ visit in an episode. | Q-Learning: updates Q-values after each transition using TD rule. |
+| **Aspect** | **Monte Carlo** | **Q-Learning (TD)** |
+|------------|-----------------|---------------------|
+| **Learning** | Learns from complete episodes | Learns after each transition |
+| **Update Rule** | $Q(s,a) \approx \frac{1}{N(s,a)} \sum G_t^{(i)}$ | $Q(s,a) \leftarrow Q(s,a) + \alpha [r + \gamma \max_{a'} Q(s', a') - Q(s,a)]$ |
+| **Episodes** | Requires complete episodes | Works with incomplete episodes |
+| **Bias-Variance** | Unbiased, high variance | Biased (bootstrapping), low variance |
+| **Policy Type** | On-policy (typically) | Off-policy |
+| **Efficiency** | Less efficient (waits for completion) | More efficient (immediate updates) |
+| **Adaptation** | Slow without retraining | Faster with incremental updates |

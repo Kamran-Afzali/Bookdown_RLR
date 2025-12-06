@@ -1,5 +1,5 @@
-tab:unnamed-chunk-32
-tab:unnamed-chunk-48
+tab:unnamed-chunk-45
+tab:unnamed-chunk-61
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -37,17 +37,8 @@ summary-table-2
 conclusion-2
 model-free-reinforcement-learning-temporal-difference-and-monte-carlo-methods-in-r
 introduction-2
-theoretical-background
-temporal-difference-learning-q-learning
-monte-carlo-methods
-step-1-defining-the-environment-in-r
-step-2-q-learning-implementation-in-r
-step-3-monte-carlo-every-visit-implementation
-step-4-simulating-outcome-devaluation
-step-5-comparing-policies-before-and-after-devaluation
-step-6-visualizing-the-policies
+implementation
 interpretation-and-discussion
-conclusion-3
 on-policy-vs-off-policy-reinforcement-learning-sarsa-q-learning-and-monte-carlo-in-r
 introduction-3
 sarsa-on-policy
@@ -59,7 +50,7 @@ policy-differences
 devaluation
 practical-implications
 experimental-observations
-conclusion-4
+conclusion-3
 comparison-table
 function-approximation-q-learning-with-linear-models
 introduction-4
@@ -72,7 +63,7 @@ q-learning-with-random-forest-approximation
 comparison-with-previous-methods
 r-implementation-1
 analysis-and-insights
-conclusion-5
+conclusion-4
 deep-function-approximation-q-learning-with-neural-networks-in-r
 introduction-6
 theoretical-foundation
@@ -82,7 +73,7 @@ comparison-with-previous-approaches
 r-implementation-2
 analysis-and-interpretation
 future-directions
-conclusion-6
+conclusion-5
 dyna-and-dynaq
 introduction-7
 theoretical-framework
@@ -114,7 +105,7 @@ example-running-the-sensitivity-analysis
 exploration-pattern-analysis
 example-visualizing-exploration-bonuses
 discussion-and-implementation-considerations
-conclusion-7
+conclusion-6
 function-approximation-and-feature-engineering
 feature-engineering-and-state-representation
 the-discrimination-vs.-generalization-tradeoff
@@ -135,7 +126,7 @@ value-based-methods-learning-worth-before-action
 policy-based-methods-direct-optimization-of-behavior
 the-policy-gradient-theorem
 variance-reduction-through-baselines
-conclusion-8
+conclusion-7
 average-reward-in-reinforcement-learning-a-comprehensive-guide
 the-limitations-of-discounted-reward-formulations
 the-average-reward-alternative-theoretical-foundations
@@ -154,7 +145,7 @@ the-tdlambda-algorithm-for-prediction
 control-with-eligibility-traces-average-reward-sarsalambda
 practical-implementation-server-load-balancing-with-sarsalambda
 computational-and-performance-considerations
-conclusion-9
+conclusion-8
 intrinsic-rewards
 the-sparse-reward-problem-and-its-implications
 mathematical-foundations-of-intrinsic-motivation
@@ -186,7 +177,7 @@ running-the-learning-rate-analysis
 variance-analysis-of-gradient-estimates
 example-analyzing-gradient-variance
 discussion-and-implementation-considerations-1
-conclusion-10
+conclusion-9
 actor-critic-methods-bridging-policy-and-value-learning-in-reinforcement-learning
 theoretical-framework-3
 implementation-and-comparative-analysis
@@ -194,7 +185,7 @@ variance-analysis-and-learning-dynamics
 algorithmic-variants-and-extensions
 computational-and-convergence-considerations
 comparative-performance-analysis
-conclusion-11
+conclusion-10
 appendix
 comprehensive-reinforcement-learning-concepts-guide
 learning-mechanisms
