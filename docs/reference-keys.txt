@@ -1,5 +1,5 @@
-tab:unnamed-chunk-45
-tab:unnamed-chunk-61
+tab:unnamed-chunk-39
+tab:unnamed-chunk-55
 understanding-reinforcement-learning-from-bandits-to-policy-optimization
 introduction-to-reinforcement-learning
 the-multi-armed-bandit-the-simplest-case
@@ -44,7 +44,12 @@ introduction-3
 sarsa-on-policy
 q-learning-off-policy
 off-policy-monte-carlo-with-importance-sampling
-key-differences
+environment-and-common-r-components
+sarsa-in-r
+q-learning-in-r
+off-policy-monte-carlo-in-r
+value-iteration-in-r
+running-and-visualizing-the-algorithms-in-r
 interpretation-and-discussion-1
 policy-differences
 devaluation
