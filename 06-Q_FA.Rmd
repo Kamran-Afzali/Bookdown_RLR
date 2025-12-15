@@ -298,7 +298,7 @@ print(mean(tail(fa_rewards, 100)))
 ```  
 
 
-**Top-level settings**
+**Environment settings**
 
 ```r
 n_states <- 10
@@ -357,7 +357,7 @@ reward_model[n_states, , ] <- 0
 * `transition_model[s, a, s']` is the probability of transitioning from state `s` with action `a` to next state `s'`.
 * `reward_model[s, a, s']` is the reward received for that transition.
 
-**Key improvements and behavioral details**:
+**Key behavioral details**:
 
 1. **Seeding**: `set.seed(42)` fixes random draws so behavior is reproducible.
 
@@ -397,7 +397,7 @@ reward_model[n_states, , ] <- 0
    * `reward_model[n_states, , ] <- 0` ensures no rewards from terminal state.
    * Episodes still end when terminal is reached, so this absorbing property isn't exercised during training.
 
----
+
 
 **Sampling function**
 
@@ -415,7 +415,7 @@ sample_env <- function(s, a) {
 * **Now safe**: Since all transition rows properly sum to 1.0, `sample()` will work correctly without needing to normalize.
 * The terminal state absorbing property means if `sample_env(n_states, a)` were called, it would always return `s_prime = n_states`, but episodes terminate before this occurs.
 
----
+
 
 **Feature creation (one-hot for (state,action))**
 
@@ -432,7 +432,7 @@ create_features <- function(s, a, n_states, n_actions) {
 * The mapping `index = (a - 1) * n_states + s` organizes features in action blocks: entries 1-10 for action 1 (states 1-10), entries 11-20 for action 2 (states 1-10).
 * Because features are one-hot, linear function approximation `q(s,a) = x^T theta` is mathematically **equivalent to tabular Q-learning** (each `(s,a)` has its own independent weight in `theta`).
 
----
+
 
 **Weights and Q-value function**
 
@@ -449,7 +449,7 @@ q_hat <- function(s, a, theta) {
 * `theta` holds 20 parameters for the linear approximator; initialized at zeros.
 * `q_hat(s,a,theta)` computes Q̂(s,a) = x^T θ. With one-hot `x`, this returns the single `theta` entry corresponding to `(s,a)`.
 
----
+
 
 **Q-learning with function approximation**
 
@@ -549,7 +549,7 @@ q_learning_fa <- function(episodes = 1000, alpha = 0.1, epsilon = 0.1) {
 
 10. **Policy extraction**: After all episodes, derive greedy policy from final `θ`: for each non-terminal state, select `argmax_a Q̂(s,a; θ)`. Terminal state gets `NA`.
 
----
+
 
 **Running the algorithm**
 
@@ -563,7 +563,7 @@ fa_rewards <- fa_result$rewards
 * Trains for 1000 episodes using learning rate `alpha=0.1` and exploration rate `epsilon=0.1`.
 * Returns learned `policy`, final `theta` weights, and episode rewards.
 
----
+
 
 **Visualization**
 
@@ -605,46 +605,13 @@ print(policy_plot)
 print(reward_plot)
 ```
 
-**Visualization improvements**:
-
 1. **Policy plot**:
    * Uses `policy_df[!is.na(policy_df$Policy), ]` to filter out the terminal state NA value before plotting.
    * Prevents ggplot2 warnings about missing values.
    * Shows the greedy action (1 or 2) for each non-terminal state as points connected by lines.
 
-2. **Reward plot (NEW)**:
+2. **Reward plot **:
    * Creates and displays cumulative rewards over episodes.
    * Shows learning progress: cumulative reward should increase as the agent learns better policies.
    * Both plots are explicitly printed with `print()`.
-
-3. **Summary statistics (NEW)**:
-   ```r
-   cat("\nPolicy Summary:\n")
-   print(table(fa_policy, useNA = "ifany"))
-   
-   cat("\nFinal 10 Episode Rewards:\n")
-   print(tail(fa_rewards, 10))
-   
-   cat("\nMean Episode Reward (last 100 episodes):\n")
-   print(mean(tail(fa_rewards, 100)))
-   ```
-   * Provides quantitative analysis of learned policy.
-   * Shows distribution of actions across states.
-   * Displays recent performance metrics to assess convergence.
-
----
-
-**Summary of Corrections**
-
-The corrected code fixes critical bugs in the original implementation:
-
-1. **Transition probabilities now properly sum to 1.0** for all state-action pairs
-2. **Terminal state is absorbing** (standard MDP formulation) rather than having zero outgoing probability
-3. **Action 2 transitions are guaranteed to be different states** (no accidental overwrites)
-4. **Validation checks** ensure environment is well-formed
-5. **Safety mechanisms** prevent infinite loops
-6. **Complete visualization** with both policy and reward plots
-7. **Efficiency improvements** in reward assignment
-
-The algorithm now implements correct tabular Q-learning on a well-defined Markov Decision Process.
 
